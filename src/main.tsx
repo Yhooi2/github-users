@@ -7,10 +7,8 @@ import './index.css'
 
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <ApolloAppProvider>
     <App />
     <Toaster richColors closeButton />
     </ApolloAppProvider>
-  </StrictMode>,
 )
