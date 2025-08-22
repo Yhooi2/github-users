@@ -46,7 +46,9 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
 
   return (
     <div className="mb-6 rounded-lg bg-background p-6 shadow-md">
-      <h2 className="mb-4 text-xl font-bold text-foreground">Top Repositories</h2>
+      <h2 className="mb-4 text-xl font-bold text-foreground">
+        Top Repositories
+      </h2>
       <div className="space-y-3">
         {topRepos.map((repo, index) => (
           <div
@@ -83,37 +85,37 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
                         bg: "bg-[hsl(var(--muted))]",
                         text: "text-[hsl(var(--muted-foreground))]",
                       },
-                      TypeScript: { 
-                        bg: "bg-[hsl(var(--accent))]", 
-                        text: "text-[hsl(var(--accent-foreground))]" 
+                      TypeScript: {
+                        bg: "bg-[hsl(var(--accent))]",
+                        text: "text-[hsl(var(--accent-foreground))]",
                       },
-                      Python: { 
-                        bg: "bg-[hsl(var(--primary))]", 
-                        text: "text-[hsl(var(--primary-foreground))]" 
+                      Python: {
+                        bg: "bg-[hsl(var(--primary))]",
+                        text: "text-[hsl(var(--primary-foreground))]",
                       },
-                      Java: { 
-                        bg: "bg-[hsl(var(--destructive))]", 
-                        text: "text-[hsl(var(--primary-foreground))]" 
+                      Java: {
+                        bg: "bg-[hsl(var(--destructive))]",
+                        text: "text-[hsl(var(--primary-foreground))]",
                       },
-                      "C++": { 
-                        bg: "bg-[hsl(var(--secondary))]", 
-                        text: "text-[hsl(var(--secondary-foreground))]" 
+                      "C++": {
+                        bg: "bg-[hsl(var(--secondary))]",
+                        text: "text-[hsl(var(--secondary-foreground))]",
                       },
-                      Ruby: { 
-                        bg: "bg-[hsl(var(--ring))]", 
-                        text: "text-[hsl(var(--card-foreground))]" 
+                      Ruby: {
+                        bg: "bg-[hsl(var(--ring))]",
+                        text: "text-[hsl(var(--card-foreground))]",
                       },
-                      Go: { 
-                        bg: "bg-[hsl(var(--chart-1))]", 
-                        text: "text-[hsl(var(--primary-foreground))]" 
+                      Go: {
+                        bg: "bg-[hsl(var(--chart-1))]",
+                        text: "text-[hsl(var(--primary-foreground))]",
                       },
-                      PHP: { 
-                        bg: "bg-[hsl(var(--chart-2))]", 
-                        text: "text-[hsl(var(--primary-foreground))]" 
+                      PHP: {
+                        bg: "bg-[hsl(var(--chart-2))]",
+                        text: "text-[hsl(var(--primary-foreground))]",
                       },
-                      Rust: { 
-                        bg: "bg-[hsl(var(--chart-3))]", 
-                        text: "text-[hsl(var(--primary-foreground))]" 
+                      Rust: {
+                        bg: "bg-[hsl(var(--chart-3))]",
+                        text: "text-[hsl(var(--primary-foreground))]",
                       },
                     };
 
@@ -127,7 +129,7 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
                       ).toFixed(1);
                       const colors = colorMap[languageName] || {
                         bg: "bg-[hsl(var(--muted))]",
-                        text: "text-[hsl(var(--muted-foreground))]",
+                        text: "text-[hsl(var(--muted-background))]",
                       };
 
                       return (
