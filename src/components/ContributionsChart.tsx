@@ -13,14 +13,23 @@ export function ContributionsChart({ user }: ContributionsChartProps) {
     // Создаем массив всех годов от создания аккаунта до текущего
     const contributions = []
     for (let year = accountCreatedYear; year <= currentYear; year++) {
+      // Ищем данные для текущего года
       const contribKey = `contrib${year}` as keyof GitHubUser
       const contribData = user[contribKey]
       
-      const commits = isYearlyContributions(contribData)
-        ? contribData.totalCommitContributions
-        : 0
+      // Проверяем, есть ли данные для этого года
+      if (isYearlyContributions(contribData)) {
+        const commits = contribData.totalCommitContributions
         
-      contributions.push({ year, commits })
+        // Пропускаем будущие годы и текущий год без данных
+        const isCurrentYear = year === currentYear
+        const isFutureYear = year > currentYear
+        if (commits === 0 && (isFutureYear || (isCurrentYear && !contribData))) {
+          continue
+        }
+        
+        contributions.push({ year, commits })
+      }
     }
     
     // Сортируем по году в обратном порядке (от новых к старым)

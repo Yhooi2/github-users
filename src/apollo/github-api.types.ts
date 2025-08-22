@@ -1,134 +1,137 @@
 // Pagination types
-type PageInfo = {
-    endCursor: string;
-    hasNextPage: boolean;
-  };
-  
-  // Programming language types
-  type ProgrammingLanguage = {
-    name: string;
-  };
-  
-  type LanguageEdge = {
-    size: number;
-    node: ProgrammingLanguage;
-  };
-  
-  type Languages = {
-    totalSize: number;
-    edges: LanguageEdge[];
-  };
-  
-  // Commit history types
-  type CommitHistory = {
-    totalCount: number;
-  };
-  
-  type GitTarget = {
-    history: CommitHistory;
-  };
-  
-  type BranchRef = {
-    target: GitTarget;
-  };
-  
-  // Repository contribution types
-  type ContributionsByRepository = {
-    totalCount: number;
-  };
-  
-  type RepositoryContributions = {
-    contributions: ContributionsByRepository;
-    repository: {
-      name: string;
-    };
-  };
-  
-  // Contribution collection types
-  type ContributionsCollection = {
-    totalCommitContributions: number;
-    commitContributionsByRepository: RepositoryContributions[];
-  };
-  
-  // Yearly contribution types
-  type YearlyContributions = {
-    totalCommitContributions: number;
-  };
-  
-  // Connection count types (followers/following/gists)
-  type ConnectionCount = {
-    totalCount: number;
-  };
-  
-  // Repository type
-  type Repository = {
-    name: string;
-    id: string;
-    description: string | null;
-    forkCount: number;
-    stargazerCount: number;
-    url: string;
-    defaultBranchRef: BranchRef | null;
-    primaryLanguage: ProgrammingLanguage | null;
-    languages: Languages;
-  };
-  
-  // Repository collection types
-  type Repositories = {
-    totalCount: number;
-    pageInfo: PageInfo;
-    nodes: Repository[];
-  };
-  
-  // Simple user type for createdAt query
-  type SimpleUser = {
-    createdAt: string;
-  };
+export type PageInfo = {
+  endCursor: string;
+  hasNextPage: boolean;
+};
 
-  // GitHub user type
-  type GitHubUser = {
-    id: string;
-    login: string;
-    name: string;
-    avatarUrl: string;
-    bio: string;
-    url: string;
-    location: string | null;
-    followers: ConnectionCount;
-    following: ConnectionCount;
-    gists: ConnectionCount;
-    [key: `contrib${number}`]: YearlyContributions; // Динамические свойства для годовых вкладов
-    createdAt: string;
-    contributionsCollection: ContributionsCollection;
-    repositories: Repositories;
-  };
-  
-  // Root GraphQL response type
-  type GitHubGraphQLResponse = {
-      user: GitHubUser;
-  };
+// Programming language types
+export type ProgrammingLanguage = {
+  name: string;
+};
 
-  // Simple GraphQL response type for createdAt query
-  type SimpleUserGraphQLResponse = {
-    user: SimpleUser;
+export type LanguageEdge = {
+  size: number;
+  node: ProgrammingLanguage;
+};
+
+export type Languages = {
+  totalSize: number;
+  edges: LanguageEdge[];
+};
+
+// Commit history types
+export type CommitHistory = {
+  totalCount: number;
+};
+
+export type GitTarget = {
+  history: CommitHistory;
+};
+
+export type BranchRef = {
+  target: GitTarget;
+};
+
+// Repository contribution types
+export type ContributionsByRepository = {
+  totalCount: number;
+};
+
+export type RepositoryContributions = {
+  contributions: ContributionsByRepository;
+  repository: {
+    name: string;
   };
-  
-  // Хелпер для проверки типа YearlyContributions
-  export function isYearlyContributions(obj: any): obj is YearlyContributions {
-    return obj && typeof obj === 'object' && 'totalCommitContributions' in obj
+};
+
+// Contribution collection types
+export type ContributionsCollection = {
+  totalCommitContributions: number;
+  commitContributionsByRepository: RepositoryContributions[];
+};
+
+// Yearly contribution types
+export type YearlyContributions = {
+  totalCommitContributions: number;
+};
+
+// Contribution variables type
+export type ContributionQueryVariables = {
+  login: string;
+  from: string;
+  to: string;
+  [key: `year${number}From`]: string;
+  [key: `year${number}To`]: string;
+};
+
+// Connection count types (followers/following/gists)
+export type ConnectionCount = {
+  totalCount: number;
+};
+
+// Repository type
+export type Repository = {
+  name: string;
+  id: string;
+  description: string | null;
+  forkCount: number;
+  stargazerCount: number;
+  url: string;
+  defaultBranchRef: BranchRef | null;
+  primaryLanguage: ProgrammingLanguage | null;
+  languages: Languages;
+};
+
+// Repository collection types
+export type Repositories = {
+  totalCount: number;
+  pageInfo: PageInfo;
+  nodes: Repository[];
+};
+
+// Simple user type for createdAt query
+export type SimpleUser = {
+  createdAt: string;
+};
+
+// GitHub user type
+export type GitHubUser = {
+  id: string;
+  login: string;
+  name: string;
+  avatarUrl: string;
+  bio: string;
+  url: string;
+  location: string | null;
+  createdAt: string;
+  followers: ConnectionCount;
+  following: ConnectionCount;
+  gists: ConnectionCount;
+  contributionsCollection: ContributionsCollection;
+  repositories: Repositories;
+  [key: `contrib${number}`]: YearlyContributions; // Динамические свойства для годовых вкладов
+};
+
+// Root GraphQL response types
+export type GitHubGraphQLResponse = {
+  user: GitHubUser;
+};
+
+export type SimpleUserGraphQLResponse = {
+  user: SimpleUser;
+};
+
+// Utility type guard для проверки годовых вкладов
+export const isYearlyContributions = (value: any): value is YearlyContributions => {
+  return value && typeof value.totalCommitContributions === 'number';
+};
+
+// Utility function для создания переменных запроса по годам
+export const createYearVariables = (startYear: number, endYear: number): Partial<ContributionQueryVariables> => {
+  const variables: Partial<ContributionQueryVariables> = {};
+  for (let year = startYear; year <= endYear; year++) {
+    variables[`year${year}From`] = `${year}-01-01T00:00:00Z`;
+    variables[`year${year}To`] = `${year}-12-31T23:59:59Z`;
   }
-
-  export type {
-    GitHubGraphQLResponse,
-    SimpleUserGraphQLResponse,
-    GitHubUser,
-    SimpleUser,
-    Repository,
-    Languages,
-    ProgrammingLanguage,
-    ContributionsCollection,
-    RepositoryContributions,
-    YearlyContributions,
-    PageInfo,
-    ConnectionCount
-  };
+  return variables;
+};

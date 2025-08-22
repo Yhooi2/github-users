@@ -1,6 +1,6 @@
 import { useQuery, gql } from "@apollo/client"
 import { useMemo } from "react"
-import { getQueryDates, getAllYearRanges, formatDate, validateCreatedAt } from "./date-helpers";
+import { getQueryDates, getAllYearRanges, validateCreatedAt } from "./date-helpers";
 import { createDynamicUserQuery } from "./queriers";
 import type { GitHubGraphQLResponse } from "./github-api.types";
 import { useQueryUserCreatedAt } from "./useQueryUserCreatedAt";
@@ -22,7 +22,7 @@ export type UseQueryUserResult = {
   networkStatus: number;
 };
 
-function useQueryUser(login: string, daysBack: number = 365, yearCount: number = 3): UseQueryUserResult {
+function useQueryUser(login: string, daysBack: number = 365): UseQueryUserResult {
   // Предварительный запрос для получения даты создания
   const { data: createdAtData, loading: loadingCreatedAt, error: errorCreatedAt, refetch: refetchCreatedAt } =
     useQueryUserCreatedAt(login);
@@ -41,19 +41,18 @@ function useQueryUser(login: string, daysBack: number = 365, yearCount: number =
 
     try {
       const queryDates = getQueryDates(daysBack);
-      const dynamicQuery = createDynamicUserQuery(yearCount);
       const currentDate = new Date();
+      const createdAtDate = new Date(createdAt);
       
       // Получаем все годовые диапазоны на основе реальной даты создания
       const allYearRanges = getAllYearRanges(createdAt, currentDate);
-      const yearKeys = Object.keys(allYearRanges);
       
-      // Для новых пользователей (менее года) используем все доступные годы
-      const lastYearKeys = yearCount > yearKeys.length
-        ? yearKeys
-        : yearKeys.slice(-yearCount);
+      // Вычисляем количество полных лет с момента создания аккаунта
+      const startYear = createdAtDate.getFullYear();
+      const currentYear = currentDate.getFullYear();
       
-      const actualYearCount = Math.min(yearCount, yearKeys.length);
+      // Создаем динамический запрос со всеми годами
+      const dynamicQuery = createDynamicUserQuery(startYear, currentYear);
       
       const queryVariables: Record<string, any> = {
         login,
@@ -62,21 +61,11 @@ function useQueryUser(login: string, daysBack: number = 365, yearCount: number =
       };
       
       // Формируем переменные для каждого года
-      lastYearKeys.forEach((key, index) => {
-        const range = allYearRanges[key];
-        const yearNum = index + 1;
-        queryVariables[`year${yearNum}From`] = range.from;
-        queryVariables[`year${yearNum}To`] = range.to;
-      });
-      
-      // Добавляем пустые диапазоны для недостающих лет
-      // (если запрошено больше лет, чем доступно)
-      for (let i = lastYearKeys.length; i < yearCount; i++) {
-        const yearNum = i + 1;
-        const currentDateStr = formatDate(currentDate);
-        queryVariables[`year${yearNum}From`] = currentDateStr;
-        queryVariables[`year${yearNum}To`] = currentDateStr;
-      }
+      for (let year = startYear; year <= currentYear; year++) {
+        const range = allYearRanges[year.toString()];
+        queryVariables[`year${year}From`] = range.from;
+        queryVariables[`year${year}To`] = range.to;
+      };
       
       return {
         query: dynamicQuery,
@@ -91,7 +80,7 @@ function useQueryUser(login: string, daysBack: number = 365, yearCount: number =
         skip: true
       };
     }
-  }, [login, daysBack, yearCount, createdAt]);
+  }, [login, daysBack, createdAt]);
   
   const mainQuery = useQuery<GitHubGraphQLResponse>(query, {
     variables,

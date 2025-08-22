@@ -85,17 +85,19 @@ const REPOSITORY_COMMIT_HISTORY_FRAGMENT = gql`
 `;
 
 // Функция для создания динамического запроса с произвольным количеством годов
-export const createDynamicUserQuery = (yearCount: number) => {
+export const createDynamicUserQuery = (startYear: number, endYear: number) => {
+  const yearCount = endYear - startYear + 1;
+  
   // Создаем переменные для годов
   const yearVariables = Array.from({ length: yearCount }, (_, index) => {
-    const yearNum = index + 1;
-    return `$year${yearNum}From: DateTime!, $year${yearNum}To: DateTime!`;
+    const year = startYear + index;
+    return `$year${year}From: DateTime!, $year${year}To: DateTime!`;
   }).join(',\n    ');
 
   // Создаем поля для вкладов по годам
   const yearContributions = Array.from({ length: yearCount }, (_, index) => {
-    const yearNum = index + 1;
-    return `contrib${2023 + index}: contributionsCollection(from: $year${yearNum}From, to: $year${yearNum}To) {
+    const year = startYear + index;
+    return `contrib${year}: contributionsCollection(from: $year${year}From, to: $year${year}To) {
         totalCommitContributions
       }`;
   }).join('\n      ');
@@ -136,8 +138,20 @@ export const createDynamicUserQuery = (yearCount: number) => {
   `;
 };
 
-// Статический запрос для обратной совместимости (3 года)
-export const GET_USER_INFO = createDynamicUserQuery(3);
+// Вспомогательная функция для получения года из даты
+export const getYearFromDate = (date: string | Date): number => {
+  return new Date(date).getFullYear();
+};
 
-// Динамический запрос по умолчанию (3 года)
+// Функция для создания запроса на основе даты создания аккаунта
+export const createUserQueryFromCreationDate = (createdAt: string | Date) => {
+  const startYear = getYearFromDate(createdAt);
+  const currentYear = new Date().getFullYear();
+  return createDynamicUserQuery(startYear, currentYear);
+};
+
+// Временный запрос по умолчанию (будет заменен на динамический после обновления хука)
+export const GET_USER_INFO = createDynamicUserQuery(new Date().getFullYear() - 2, new Date().getFullYear());
+
+// Динамический запрос (будет использоваться после получения даты создания аккаунта)
 export const GET_USER_INFO_DYNAMIC = GET_USER_INFO;
