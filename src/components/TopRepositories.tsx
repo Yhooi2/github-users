@@ -56,7 +56,7 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
             className="flex items-center justify-between rounded-lg bg-muted p-4 transition-colors hover:bg-muted/50"
           >
             <div className="flex flex-1 items-center space-x-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-background">
                 {index + 1}
               </div>
               <div className="flex-1">
@@ -129,7 +129,7 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
                       ).toFixed(1);
                       const colors = colorMap[languageName] || {
                         bg: "bg-[hsl(var(--muted))]",
-                        text: "text-[hsl(var(--muted-background))]",
+                        text: "text-[hsl(var(--muted-foreground))]",
                       };
 
                       return (
