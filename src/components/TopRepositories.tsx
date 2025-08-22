@@ -35,31 +35,31 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
     .slice(0, 5);
   if (topRepos.length === 0) {
     return (
-      <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-xl font-bold text-gray-900">
+      <div className="mb-6 rounded-lg bg-background p-6 shadow-md">
+        <h2 className="mb-4 text-xl font-bold text-foreground">
           Top Repositories
         </h2>
-        <p className="text-gray-600">No repository data available</p>
+        <p className="text-muted-foreground">No repository data available</p>
       </div>
     );
   }
 
   return (
-    <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-xl font-bold text-gray-900">Top Repositories</h2>
+    <div className="mb-6 rounded-lg bg-background p-6 shadow-md">
+      <h2 className="mb-4 text-xl font-bold text-foreground">Top Repositories</h2>
       <div className="space-y-3">
         {topRepos.map((repo, index) => (
           <div
             key={repo.name}
-            className="flex items-center justify-between rounded-lg bg-gray-50 p-4 transition-colors hover:bg-gray-100"
+            className="flex items-center justify-between rounded-lg bg-muted p-4 transition-colors hover:bg-muted/50"
           >
             <div className="flex flex-1 items-center space-x-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-sm font-bold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
                 {index + 1}
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{repo.name}</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-foreground">{repo.name}</h3>
+                <p className="text-sm text-muted-foreground">
                   {repo.description || "No description"}
                 </p>
                 <div className="mt-1 flex flex-wrap gap-2">
@@ -80,17 +80,41 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
                       { bg: string; text: string }
                     > = {
                       JavaScript: {
-                        bg: "bg-yellow-100",
-                        text: "text-yellow-800",
+                        bg: "bg-[hsl(var(--muted))]",
+                        text: "text-[hsl(var(--muted-foreground))]",
                       },
-                      TypeScript: { bg: "bg-blue-100", text: "text-blue-800" },
-                      Python: { bg: "bg-green-100", text: "text-green-800" },
-                      Java: { bg: "bg-orange-100", text: "text-orange-800" },
-                      "C++": { bg: "bg-purple-100", text: "text-purple-800" },
-                      Ruby: { bg: "bg-red-100", text: "text-red-800" },
-                      Go: { bg: "bg-cyan-100", text: "text-cyan-800" },
-                      PHP: { bg: "bg-indigo-100", text: "text-indigo-800" },
-                      Rust: { bg: "bg-amber-100", text: "text-amber-800" },
+                      TypeScript: { 
+                        bg: "bg-[hsl(var(--accent))]", 
+                        text: "text-[hsl(var(--accent-foreground))]" 
+                      },
+                      Python: { 
+                        bg: "bg-[hsl(var(--primary))]", 
+                        text: "text-[hsl(var(--primary-foreground))]" 
+                      },
+                      Java: { 
+                        bg: "bg-[hsl(var(--destructive))]", 
+                        text: "text-[hsl(var(--primary-foreground))]" 
+                      },
+                      "C++": { 
+                        bg: "bg-[hsl(var(--secondary))]", 
+                        text: "text-[hsl(var(--secondary-foreground))]" 
+                      },
+                      Ruby: { 
+                        bg: "bg-[hsl(var(--ring))]", 
+                        text: "text-[hsl(var(--card-foreground))]" 
+                      },
+                      Go: { 
+                        bg: "bg-[hsl(var(--chart-1))]", 
+                        text: "text-[hsl(var(--primary-foreground))]" 
+                      },
+                      PHP: { 
+                        bg: "bg-[hsl(var(--chart-2))]", 
+                        text: "text-[hsl(var(--primary-foreground))]" 
+                      },
+                      Rust: { 
+                        bg: "bg-[hsl(var(--chart-3))]", 
+                        text: "text-[hsl(var(--primary-foreground))]" 
+                      },
                     };
 
                     return sortedLanguages.map((edge) => {
@@ -102,8 +126,8 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
                         100
                       ).toFixed(1);
                       const colors = colorMap[languageName] || {
-                        bg: "bg-gray-100",
-                        text: "text-gray-800",
+                        bg: "bg-[hsl(var(--muted))]",
+                        text: "text-[hsl(var(--muted-foreground))]",
                       };
 
                       return (
@@ -121,11 +145,11 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
               </div>
             </div>
             <div className="space-y-1 text-right">
-              <div className="text-lg font-bold text-green-600">
+              <div className="text-lg font-bold text-primary">
                 {repo.commits.toLocaleString()}
               </div>
-              <div className="text-xs text-gray-500">commits</div>
-              <div className="text-sm font-medium text-blue-600">
+              <div className="text-xs text-muted-foreground">commits</div>
+              <div className="text-sm font-medium text-primary">
                 {formatLines(repo.linesOfCode)} lines
               </div>
             </div>

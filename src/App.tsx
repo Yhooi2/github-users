@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SearchForm from "./components/SearchForm";
-import { UserProfile } from "./components/UserProfile";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { UserProfile } from "./components/UserProfile";
 
 function App() {
   const [userName, setUserName] = useState("Yhooi2");
@@ -23,7 +23,7 @@ function App() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="mb-6 flex items-center justify-between gap-4">
           <SearchForm userName={userName} setUserName={setUserName} />
           <ThemeToggle />
         </div>
