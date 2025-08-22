@@ -57,11 +57,50 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
                                 <p className="text-sm text-gray-600">
                                     {repo.description || "No description"}
                                 </p>
-                                {repo.primaryLanguage && (
-                                    <span className="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                        {repo.primaryLanguage.name}
-                                    </span>
-                                )}
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                    {(() => {
+                                        const edges = repo.languages?.edges || [];
+                                        const sortedLanguages = [...edges].sort((a, b) => {
+                                            const aIsPrimary = a.node.name === repo.primaryLanguage?.name;
+                                            const bIsPrimary = b.node.name === repo.primaryLanguage?.name;
+                                            if (aIsPrimary) return -1;
+                                            if (bIsPrimary) return 1;
+                                            return b.size - a.size;
+                                        });
+
+                                        const colorMap: Record<string, { bg: string; text: string }> = {
+                                            JavaScript: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+                                            TypeScript: { bg: 'bg-blue-100', text: 'text-blue-800' },
+                                            Python: { bg: 'bg-green-100', text: 'text-green-800' },
+                                            Java: { bg: 'bg-orange-100', text: 'text-orange-800' },
+                                            'C++': { bg: 'bg-purple-100', text: 'text-purple-800' },
+                                            Ruby: { bg: 'bg-red-100', text: 'text-red-800' },
+                                            Go: { bg: 'bg-cyan-100', text: 'text-cyan-800' },
+                                            PHP: { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+                                            Rust: { bg: 'bg-amber-100', text: 'text-amber-800' }
+                                        };
+
+                                        return sortedLanguages.map(edge => {
+                                            const languageName = edge.node.name;
+                                            const isPrimary = languageName === repo.primaryLanguage?.name;
+                                            const percentage = ((edge.size / repo.languages.totalSize) * 100).toFixed(1);
+                                            const colors = colorMap[languageName] || { bg: 'bg-gray-100', text: 'text-gray-800' };
+
+                                            return (
+                                                <span
+                                                    key={languageName}
+                                                    className={`inline-flex items-center px-2 py-1 ${colors.bg} ${colors.text} text-xs rounded-full
+                                                        ${isPrimary ? 'ring-2 ring-offset-1 ring-blue-500 font-medium' : ''}`}
+                                                >
+                                                    {languageName}
+                                                    <span className="ml-1 opacity-75">
+                                                        {percentage}%
+                                                    </span>
+                                                </span>
+                                            );
+                                        });
+                                    })()}
+                                </div>
                             </div>
                         </div>
                         <div className="text-right space-y-1">
