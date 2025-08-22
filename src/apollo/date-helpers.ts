@@ -32,7 +32,7 @@ export const getAllYearRanges = (createdAt: string, currentDate: Date = new Date
   const yearRanges: Record<string, { from: string; to: string }> = {};
   
   for (let year = startYear; year <= endYear; year++) {
-    const yearKey = year.toString(); // Используем сам год как ключ
+    const yearKey = year.toString(); // Using the year itself as the key
     
     const fromDate = year === startYear 
       ? new Date(createdAtDate) // Use actual creation date for first year

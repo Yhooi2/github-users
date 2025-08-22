@@ -109,7 +109,7 @@ export type GitHubUser = {
   gists: ConnectionCount;
   contributionsCollection: ContributionsCollection;
   repositories: Repositories;
-  [key: `contrib${number}`]: YearlyContributions; // Динамические свойства для годовых вкладов
+  [key: `contrib${number}`]: YearlyContributions; // Dynamic properties for yearly contributions
 };
 
 // Root GraphQL response types
@@ -121,12 +121,12 @@ export type SimpleUserGraphQLResponse = {
   user: SimpleUser;
 };
 
-// Utility type guard для проверки годовых вкладов
+// Utility type guard for checking yearly contributions
 export const isYearlyContributions = (value: any): value is YearlyContributions => {
   return value && typeof value.totalCommitContributions === 'number';
 };
 
-// Utility function для создания переменных запроса по годам
+// Utility function for creating query variables by years
 export const createYearVariables = (startYear: number, endYear: number): Partial<ContributionQueryVariables> => {
   const variables: Partial<ContributionQueryVariables> = {};
   for (let year = startYear; year <= endYear; year++) {

@@ -5,14 +5,14 @@ import { createDynamicUserQuery } from "./queriers";
 import type { GitHubGraphQLResponse } from "./github-api.types";
 import { useQueryUserCreatedAt } from "./useQueryUserCreatedAt";
 
-// Фиктивный запрос для случая пропуска
+// Dummy query for skip case
 const EMPTY_QUERY = gql`
   query EmptyQuery {
     __typename
   }
 `;
 
-// Тип возвращаемого значения хука
+// Hook return type
 export type UseQueryUserResult = {
   data?: GitHubGraphQLResponse;
   loading: boolean;
@@ -23,13 +23,13 @@ export type UseQueryUserResult = {
 };
 
 function useQueryUser(login: string, daysBack: number = 365): UseQueryUserResult {
-  // Предварительный запрос для получения даты создания
+  // Pre-query to get account creation date
   const { data: createdAtData, loading: loadingCreatedAt, error: errorCreatedAt, refetch: refetchCreatedAt } =
     useQueryUserCreatedAt(login);
   
   const createdAt = createdAtData?.user?.createdAt;
 
-  // Основной запрос с использованием реальной даты создания
+  // Main query using actual creation date
   const { query, variables, skip } = useMemo(() => {
     if (!createdAt || !validateCreatedAt(createdAt)) {
       return {
@@ -44,14 +44,14 @@ function useQueryUser(login: string, daysBack: number = 365): UseQueryUserResult
       const currentDate = new Date();
       const createdAtDate = new Date(createdAt);
       
-      // Получаем все годовые диапазоны на основе реальной даты создания
+      // Get all year ranges based on actual creation date
       const allYearRanges = getAllYearRanges(createdAt, currentDate);
       
-      // Вычисляем количество полных лет с момента создания аккаунта
+      // Calculate number of full years since account creation
       const startYear = createdAtDate.getFullYear();
       const currentYear = currentDate.getFullYear();
       
-      // Создаем динамический запрос со всеми годами
+      // Create dynamic query for all years
       const dynamicQuery = createDynamicUserQuery(startYear, currentYear);
       
       const queryVariables: Record<string, any> = {
@@ -60,7 +60,7 @@ function useQueryUser(login: string, daysBack: number = 365): UseQueryUserResult
         to: queryDates.to,
       };
       
-      // Формируем переменные для каждого года
+      // Create variables for each year
       for (let year = startYear; year <= currentYear; year++) {
         const range = allYearRanges[year.toString()];
         queryVariables[`year${year}From`] = range.from;
@@ -87,14 +87,14 @@ function useQueryUser(login: string, daysBack: number = 365): UseQueryUserResult
     skip: skip || !login,
     errorPolicy: 'all',
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-first' // Используем кэширование
+    fetchPolicy: 'cache-first' // Using caching
   });
 
   return {
     ...mainQuery,
     loading: loadingCreatedAt || mainQuery.loading,
     error: errorCreatedAt || mainQuery.error,
-    createdAt, // Возвращаем дату создания для использования в компонентах
+    createdAt, // Return creation date for use in components
     refetch: () => {
       refetchCreatedAt();
       mainQuery.refetch();

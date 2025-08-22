@@ -5,23 +5,23 @@ type ContributionsChartProps = {
 }
 
 export function ContributionsChart({ user }: ContributionsChartProps) {
-    // Получаем год создания аккаунта
+    // Get account creation year
     const createdAtDate = new Date(user.createdAt)
     const accountCreatedYear = isNaN(createdAtDate.getTime()) ? new Date().getFullYear() : createdAtDate.getFullYear()
     const currentYear = new Date().getFullYear()
     
-    // Создаем массив всех годов от создания аккаунта до текущего
+    // Create array of all years from account creation to current
     const contributions = []
     for (let year = accountCreatedYear; year <= currentYear; year++) {
-      // Ищем данные для текущего года
+      // Find data for current year
       const contribKey = `contrib${year}` as keyof GitHubUser
       const contribData = user[contribKey]
       
-      // Проверяем, есть ли данные для этого года
+      // Check if data exists for this year
       if (isYearlyContributions(contribData)) {
         const commits = contribData.totalCommitContributions
         
-        // Пропускаем будущие годы и текущий год без данных
+        // Skip future years and current year without data
         const isCurrentYear = year === currentYear
         const isFutureYear = year > currentYear
         if (commits === 0 && (isFutureYear || (isCurrentYear && !contribData))) {
@@ -32,7 +32,7 @@ export function ContributionsChart({ user }: ContributionsChartProps) {
       }
     }
     
-    // Сортируем по году в обратном порядке (от новых к старым)
+    // Sort by year in reverse order (newest to oldest)
     contributions.sort((a, b) => b.year - a.year)
 
     const maxCommits = contributions.length

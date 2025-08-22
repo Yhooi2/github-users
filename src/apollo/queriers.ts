@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-// GraphQL фрагменты для повторяющихся полей
+// GraphQL fragments for repeated fields
 const USER_BASIC_INFO_FRAGMENT = gql`
   fragment UserBasicInfo on User {
     id
@@ -84,17 +84,17 @@ const REPOSITORY_COMMIT_HISTORY_FRAGMENT = gql`
   }
 `;
 
-// Функция для создания динамического запроса с произвольным количеством годов
+// Function to create dynamic query for arbitrary number of years
 export const createDynamicUserQuery = (startYear: number, endYear: number) => {
   const yearCount = endYear - startYear + 1;
   
-  // Создаем переменные для годов
+  // Create variables for years
   const yearVariables = Array.from({ length: yearCount }, (_, index) => {
     const year = startYear + index;
     return `$year${year}From: DateTime!, $year${year}To: DateTime!`;
   }).join(',\n    ');
 
-  // Создаем поля для вкладов по годам
+  // Create fields for contributions by year
   const yearContributions = Array.from({ length: yearCount }, (_, index) => {
     const year = startYear + index;
     return `contrib${year}: contributionsCollection(from: $year${year}From, to: $year${year}To) {
@@ -138,20 +138,20 @@ export const createDynamicUserQuery = (startYear: number, endYear: number) => {
   `;
 };
 
-// Вспомогательная функция для получения года из даты
+// Helper function to get year from date
 export const getYearFromDate = (date: string | Date): number => {
   return new Date(date).getFullYear();
 };
 
-// Функция для создания запроса на основе даты создания аккаунта
+// Function to create query based on account creation date
 export const createUserQueryFromCreationDate = (createdAt: string | Date) => {
   const startYear = getYearFromDate(createdAt);
   const currentYear = new Date().getFullYear();
   return createDynamicUserQuery(startYear, currentYear);
 };
 
-// Временный запрос по умолчанию (будет заменен на динамический после обновления хука)
+// Temporary default query (will be replaced with dynamic after hook update)
 export const GET_USER_INFO = createDynamicUserQuery(new Date().getFullYear() - 2, new Date().getFullYear());
 
-// Динамический запрос (будет использоваться после получения даты создания аккаунта)
+// Dynamic query (will be used after getting account creation date)
 export const GET_USER_INFO_DYNAMIC = GET_USER_INFO;
