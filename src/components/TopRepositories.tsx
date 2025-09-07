@@ -1,5 +1,5 @@
 import { type GitHubUser } from "@/apollo/github-api.types";
-import { createContributionsLookup } from "./TopRepositories.helpers";
+import { createContributionsLookup, filterRepositoriesWithUserContributions } from "./TopRepositories.helpers";
 
 type TopRepositoriesProps = {
   user: GitHubUser;
@@ -26,8 +26,8 @@ export function TopRepositories({ user }: TopRepositoriesProps) {
   const contributions = createContributionsLookup(user);
 
   // Use commit history from repository data
-  const topRepos = repositories
-    .filter(repo => !repo.isFork || (contributions[repo.name] || 0) > 0) // Filter out forks without contributions
+  const filteredRepositories = filterRepositoriesWithUserContributions(repositories, contributions);
+  const topRepos = filteredRepositories
     .map((repo) => ({
       ...repo,
       commits: contributions[repo.name] || 0,

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { TopRepositories } from './TopRepositories';
 import { type GitHubUser } from '@/apollo/github-api.types';
+import '@testing-library/jest-dom';
 
 // Mock data for testing
 const mockUser: GitHubUser = {
@@ -20,15 +21,15 @@ const mockUser: GitHubUser = {
     commitContributionsByRepository: [
       {
         contributions: { totalCount: 200 },
-        repository: { name: 'repo1' }
+        repository: { name: 'repo1', isFork: false }
       },
       {
         contributions: { totalCount: 150 },
-        repository: { name: 'repo2' }
+        repository: { name: 'repo2', isFork: false }
       },
       {
         contributions: { totalCount: 100 },
-        repository: { name: 'repo3' }
+        repository: { name: 'repo3', isFork: true }
       }
     ]
   },

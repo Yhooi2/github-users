@@ -1,4 +1,4 @@
-import { type GitHubUser } from "@/apollo/github-api.types";
+import { type GitHubUser, type Repository } from "@/apollo/github-api.types";
 
 // Helper function to create a lookup object for contributions by repository name
 export function createContributionsLookup(user: GitHubUser): Record<string, number> {
@@ -35,4 +35,14 @@ export function createContributionsLookup(user: GitHubUser): Record<string, numb
   }
   
   return contributions;
+}
+
+// Helper function to filter repositories - exclude forks without user contributions
+export function filterRepositoriesWithUserContributions(
+  repositories: Repository[],
+  contributions: Record<string, number>
+): Repository[] {
+  return repositories.filter(
+    repo => !repo.isFork || (contributions[repo.name] || 0) > 0
+  );
 }

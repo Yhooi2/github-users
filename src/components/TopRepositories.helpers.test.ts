@@ -1,5 +1,6 @@
 import { createContributionsLookup } from './TopRepositories.helpers';
 import { type GitHubUser } from '@/apollo/github-api.types';
+import '@testing-library/jest-dom';
 
 // Mock data for testing
 const mockUser: GitHubUser = {

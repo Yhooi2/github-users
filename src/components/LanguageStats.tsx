@@ -1,5 +1,5 @@
 import { type GitHubUser } from "@/apollo/github-api.types";
-import { createContributionsLookup } from "@/components/TopRepositories.helpers";
+import { createContributionsLookup, filterRepositoriesWithUserContributions } from "@/components/TopRepositories.helpers";
 
 type LanguageStatsProps = {
   user: GitHubUser;
@@ -25,9 +25,7 @@ export function LanguageStats({ user }: LanguageStatsProps) {
   const contributions = createContributionsLookup(user);
 
   // Filter repositories - exclude forks without user contributions
-  const filteredRepositories = repositories.filter(
-    repo => !repo.isFork || (contributions[repo.name] || 0) > 0
-  );
+  const filteredRepositories = filterRepositoriesWithUserContributions(repositories, contributions);
 
   // Collect language statistics
   const languageStats = new Map<string, { bytes: number; repos: number }>();

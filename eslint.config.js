@@ -24,5 +24,5 @@ export default tseslint.config([
     },
   },
   ...tailwind.configs["flat/recommended"],
-  prettier.configs.recommended
+  prettier
 ])

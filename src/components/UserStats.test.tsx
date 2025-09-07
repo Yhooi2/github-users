@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { UserStats } from './UserStats';
 import { type GitHubUser } from '@/apollo/github-api.types';
+import '@testing-library/jest-dom';
 
 // Mock data for testing
 const mockUser: GitHubUser = {

@@ -3,18 +3,38 @@ import {
   type CommitContributionsByRepository,
   isYearlyContributions,
 } from "@/apollo/github-api.types";
+import { createContributionsLookup, filterRepositoriesWithUserContributions } from "@/components/TopRepositories.helpers";
+import { type Repository } from "@/apollo/github-api.types";
 
 type ContributionsChartProps = {
   user: GitHubUser;
 };
 
-// Функция для фильтрации форкнутых репозиториев
-const filterForkedRepositories = (
-  contributions: CommitContributionsByRepository[]
+// Функция для фильтрации форкнутых репозиториев с учетом вкладов пользователя
+const filterForkedRepositoriesWithContributions = (
+  contributions: CommitContributionsByRepository[],
+  userContributions: Record<string, number>
 ): CommitContributionsByRepository[] => {
-  return contributions.filter(
-    (contribution) => !contribution.repository.isFork
-  );
+  // Преобразуем CommitContributionsByRepository в Repository для совместимости с filterRepositoriesWithUserContributions
+  const repositories: Repository[] = contributions.map(contribution => ({
+    name: contribution.repository.name,
+    id: "", // Не используется в фильтрации
+    description: null, // Не используется в фильтрации
+    forkCount: 0, // Не используется в фильтрации
+    stargazerCount: 0, // Не используется в фильтрации
+    url: "", // Не используется в фильтрации
+    isFork: contribution.repository.isFork,
+    defaultBranchRef: null, // Не используется в фильтрации
+    primaryLanguage: null, // Не используется в фильтрации
+    languages: { totalSize: 0, edges: [] }, // Не используется в фильтрации
+  }));
+  
+  // Фильтруем репозитории
+  const filteredRepositories = filterRepositoriesWithUserContributions(repositories, userContributions);
+  
+  // Преобразуем обратно в CommitContributionsByRepository
+  const filteredRepoNames = new Set(filteredRepositories.map(repo => repo.name));
+  return contributions.filter(contribution => filteredRepoNames.has(contribution.repository.name));
 };
 
 // Функция для агрегации коммитов по годам
@@ -46,8 +66,9 @@ export function ContributionsChart({ user }: ContributionsChartProps) {
     // Check if data exists for this year
     if (isYearlyContributions(contribData)) {
       // Фильтруем форкнутые репозитории
-      const filteredContributions = filterForkedRepositories(
-        contribData.commitContributionsByRepository
+      const filteredContributions = filterForkedRepositoriesWithContributions(
+        contribData.commitContributionsByRepository,
+        createContributionsLookup(user)
       );
       
       // Агрегируем коммиты по годам

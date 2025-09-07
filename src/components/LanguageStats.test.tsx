@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { LanguageStats } from "./LanguageStats";
 import { type GitHubUser } from "@/apollo/github-api.types";
+import '@testing-library/jest-dom';
 
 // Mock data for testing
 const mockUser: GitHubUser = {
@@ -17,6 +18,10 @@ const mockUser: GitHubUser = {
   gists: { totalCount: 10 },
   repositories: {
     totalCount: 5,
+    pageInfo: {
+      endCursor: "cursor1",
+      hasNextPage: false
+    },
     nodes: [
       {
         id: "1",
@@ -26,6 +31,7 @@ const mockUser: GitHubUser = {
         forkCount: 5,
         stargazerCount: 10,
         url: "https://github.com/testuser/repo1",
+        defaultBranchRef: null,
         primaryLanguage: { name: "JavaScript" },
         languages: {
           totalSize: 10000,
@@ -43,6 +49,7 @@ const mockUser: GitHubUser = {
         forkCount: 2,
         stargazerCount: 5,
         url: "https://github.com/testuser/repo2",
+        defaultBranchRef: null,
         primaryLanguage: { name: "TypeScript" },
         languages: {
           totalSize: 15000,
@@ -60,6 +67,7 @@ const mockUser: GitHubUser = {
         forkCount: 0,
         stargazerCount: 20,
         url: "https://github.com/testuser/repo3",
+        defaultBranchRef: null,
         primaryLanguage: { name: "Python" },
         languages: {
           totalSize: 20000,
@@ -76,15 +84,15 @@ const mockUser: GitHubUser = {
     commitContributionsByRepository: [
       {
         contributions: { totalCount: 50 },
-        repository: { name: "repo1" },
+        repository: { name: "repo1", isFork: false },
       },
       {
         contributions: { totalCount: 30 },
-        repository: { name: "repo2" },
+        repository: { name: "repo2", isFork: true },
       },
       {
         contributions: { totalCount: 20 },
-        repository: { name: "repo3" },
+        repository: { name: "repo3", isFork: false },
       },
     ],
   },
@@ -93,15 +101,15 @@ const mockUser: GitHubUser = {
     commitContributionsByRepository: [
       {
         contributions: { totalCount: 50 },
-        repository: { name: "repo1" },
+        repository: { name: "repo1", isFork: false },
       },
       {
         contributions: { totalCount: 30 },
-        repository: { name: "repo2" },
+        repository: { name: "repo2", isFork: true },
       },
       {
         contributions: { totalCount: 20 },
-        repository: { name: "repo3" },
+        repository: { name: "repo3", isFork: false },
       },
     ],
   },
@@ -128,6 +136,10 @@ describe("LanguageStats", () => {
       ...mockUser,
       repositories: {
         totalCount: 6,
+        pageInfo: {
+          endCursor: "cursor1",
+          hasNextPage: false
+        },
         nodes: [
           ...(mockUser.repositories.nodes || []),
           {
@@ -138,6 +150,7 @@ describe("LanguageStats", () => {
             forkCount: 1,
             stargazerCount: 0,
             url: "https://github.com/testuser/forked-repo",
+            defaultBranchRef: null,
             primaryLanguage: { name: "Java" },
             languages: {
               totalSize: 5000,
@@ -181,6 +194,10 @@ describe("LanguageStats", () => {
       ...mockUser,
       repositories: {
         totalCount: 6,
+        pageInfo: {
+          endCursor: "cursor1",
+          hasNextPage: false
+        },
         nodes: [
           ...(mockUser.repositories.nodes || []),
           {
@@ -191,6 +208,7 @@ describe("LanguageStats", () => {
             forkCount: 1,
             stargazerCount: 0,
             url: "https://github.com/testuser/contributed-fork",
+            defaultBranchRef: null,
             primaryLanguage: { name: "Go" },
             languages: {
               totalSize: 8000,
@@ -207,7 +225,7 @@ describe("LanguageStats", () => {
           ...mockUser.contributionsCollection.commitContributionsByRepository,
           {
             contributions: { totalCount: 15 },
-            repository: { name: "contributed-fork" },
+            repository: { name: "contributed-fork", isFork: true },
           },
         ],
       },
@@ -217,7 +235,7 @@ describe("LanguageStats", () => {
           ...mockUser.contrib2020.commitContributionsByRepository,
           {
             contributions: { totalCount: 15 },
-            repository: { name: "contributed-fork" },
+            repository: { name: "contributed-fork", isFork: true },
           },
         ],
       },
@@ -251,6 +269,10 @@ describe("LanguageStats", () => {
       ...mockUser,
       repositories: {
         totalCount: 0,
+        pageInfo: {
+          endCursor: "",
+          hasNextPage: false
+        },
         nodes: [],
       },
     };
