@@ -1,4 +1,5 @@
 import { type GitHubUser } from "@/apollo/github-api.types";
+import { createContributionsLookup } from "./TopRepositories.helpers";
 
 type TopRepositoriesProps = {
   user: GitHubUser;
@@ -18,18 +19,6 @@ function formatLines(lines: number): string {
     return `${(lines / 1000).toFixed(1)}K`;
   }
   return lines.toString();
-}
-
-// Helper function to create a lookup object for contributions by repository name
-function createContributionsLookup(user: GitHubUser): Record<string, number> {
-  const contributions: Record<string, number> = {};
-  
-  // Add contributions from overall collection
-  user.contributionsCollection.commitContributionsByRepository.forEach((repoContrib) => {
-    contributions[repoContrib.repository.name] = repoContrib.contributions.totalCount;
-  });
-  
-  return contributions;
 }
 
 export function TopRepositories({ user }: TopRepositoriesProps) {

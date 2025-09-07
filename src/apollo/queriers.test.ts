@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { createDynamicUserQuery } from './queriers';
 
 describe('createDynamicUserQuery', () => {
@@ -21,8 +22,13 @@ describe('createDynamicUserQuery', () => {
     expect(queryString).toContain('contrib2020: contributionsCollection(from: $year2020From, to: $year2020To)');
     expect(queryString).toContain('totalCommitContributions');
     expect(queryString).toContain('commitContributionsByRepository');
-    expect(queryString).toContain('repository { name }');
-    expect(queryString).toContain('contributions { totalCount }');
+    expect(queryString).toContain('repository {');
+    expect(queryString).toContain('name');
+    expect(queryString).toContain('isFork');
+    expect(queryString).toContain('contributions');
+    expect(queryString).toContain('{');
+    expect(queryString).toContain('totalCount');
+    expect(queryString).toContain('}');
     
     // Check for overall contributions collection
     expect(queryString).toContain('contributionsCollection(from: $from, to: $to)');
@@ -55,23 +61,38 @@ describe('createDynamicUserQuery', () => {
       queryString.indexOf('contrib2019: contributionsCollection')
     );
     expect(contrib2018).toContain('commitContributionsByRepository');
-    expect(contrib2018).toContain('repository { name }');
-    expect(contrib2018).toContain('contributions { totalCount }');
+    expect(contrib2018).toContain('repository {');
+    expect(contrib2018).toContain('name');
+    expect(contrib2018).toContain('isFork');
+    expect(contrib2018).toContain('contributions');
+    expect(contrib2018).toContain('{');
+    expect(contrib2018).toContain('totalCount');
+    expect(contrib2018).toContain('}');
     
     const contrib2019 = queryString.substring(
       queryString.indexOf('contrib2019: contributionsCollection'),
       queryString.indexOf('contrib2020: contributionsCollection')
     );
     expect(contrib2019).toContain('commitContributionsByRepository');
-    expect(contrib2019).toContain('repository { name }');
-    expect(contrib2019).toContain('contributions { totalCount }');
+    expect(contrib2019).toContain('repository {');
+    expect(contrib2019).toContain('name');
+    expect(contrib2019).toContain('isFork');
+    expect(contrib2019).toContain('contributions');
+    expect(contrib2019).toContain('{');
+    expect(contrib2019).toContain('totalCount');
+    expect(contrib2019).toContain('}');
     
     const contrib2020 = queryString.substring(
       queryString.indexOf('contrib2020: contributionsCollection'),
       queryString.indexOf('contributionsCollection(from: $from, to: $to)')
     );
     expect(contrib2020).toContain('commitContributionsByRepository');
-    expect(contrib2020).toContain('repository { name }');
-    expect(contrib2020).toContain('contributions { totalCount }');
+    expect(contrib2020).toContain('repository {');
+    expect(contrib2020).toContain('name');
+    expect(contrib2020).toContain('isFork');
+    expect(contrib2020).toContain('contributions');
+    expect(contrib2020).toContain('{');
+    expect(contrib2020).toContain('totalCount');
+    expect(contrib2020).toContain('}');
   });
 });

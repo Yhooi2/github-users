@@ -41,6 +41,7 @@ export type RepositoryContributions = {
   contributions: ContributionsByRepository;
   repository: {
     name: string;
+    isFork: boolean;
   };
 };
 
@@ -48,6 +49,7 @@ export type CommitContributionsByRepository = {
   contributions: ContributionsByRepository;
   repository: {
     name: string;
+    isFork: boolean;
   };
 };
 
@@ -91,6 +93,7 @@ export type Repository = {
   forkCount: number;
   stargazerCount: number;
   url: string;
+  isFork: boolean;
   defaultBranchRef: BranchRef | null;
   primaryLanguage: ProgrammingLanguage | null;
   languages: Languages;

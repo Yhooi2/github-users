@@ -1,10 +1,31 @@
 import {
   type GitHubUser,
+  type CommitContributionsByRepository,
   isYearlyContributions,
 } from "@/apollo/github-api.types";
 
 type ContributionsChartProps = {
   user: GitHubUser;
+};
+
+// Функция для фильтрации форкнутых репозиториев
+const filterForkedRepositories = (
+  contributions: CommitContributionsByRepository[]
+): CommitContributionsByRepository[] => {
+  return contributions.filter(
+    (contribution) => !contribution.repository.isFork
+  );
+};
+
+// Функция для агрегации коммитов по годам
+// Поскольку у нас нет точных дат коммитов, мы будем использовать год из ключа contrib${year}
+const aggregateCommitsByYear = (
+  contributions: CommitContributionsByRepository[]
+): number => {
+  return contributions.reduce(
+    (total, contribution) => total + contribution.contributions.totalCount,
+    0
+  );
 };
 
 export function ContributionsChart({ user }: ContributionsChartProps) {
@@ -24,12 +45,18 @@ export function ContributionsChart({ user }: ContributionsChartProps) {
 
     // Check if data exists for this year
     if (isYearlyContributions(contribData)) {
-      const commits = contribData.totalCommitContributions;
+      // Фильтруем форкнутые репозитории
+      const filteredContributions = filterForkedRepositories(
+        contribData.commitContributionsByRepository
+      );
+      
+      // Агрегируем коммиты по годам
+      const commits = aggregateCommitsByYear(filteredContributions);
 
-      // Skip future years and current year without data
+      // Skip future years and years with no commits
       const isCurrentYear = year === currentYear;
       const isFutureYear = year > currentYear;
-      if (commits === 0 && (isFutureYear || (isCurrentYear && !contribData))) {
+      if (commits === 0 && (isFutureYear || isCurrentYear || contribData === undefined)) {
         continue;
       }
 

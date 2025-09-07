@@ -75,7 +75,7 @@ describe('UserStats', () => {
     expect(screen.getByText('1,250')).toBeInTheDocument(); // Commits
     expect(screen.getByText('100')).toBeInTheDocument(); // Followers
     expect(screen.getByText('50')).toBeInTheDocument(); // Following
-    expect(screen.getByText('35K')).toBeInTheDocument(); // Lines of code (35000 bytes / 4 = 8750 lines ≈ 8.8K)
+    expect(screen.getByText('8.8K')).toBeInTheDocument(); // Lines of code (35000 bytes / 4 = 8750 lines ≈ 8.8K)
   });
 
   it('displays correct commit count from contributions collection', () => {
@@ -118,10 +118,7 @@ describe('UserStats', () => {
     render(<UserStats user={emptyUser} />);
     
     // Check that zero values are displayed correctly
-    expect(screen.getByText('0')).toBeInTheDocument(); // Repositories
-    expect(screen.getByText('0')).toBeInTheDocument(); // Commits
-    expect(screen.getByText('0')).toBeInTheDocument(); // Followers
-    expect(screen.getByText('0')).toBeInTheDocument(); // Following
-    expect(screen.getByText('0')).toBeInTheDocument(); // Lines of code
+    const zeroElements = screen.getAllByText('0');
+    expect(zeroElements).toHaveLength(5); // Repositories, Commits, Followers, Following, Lines of code
   });
 });

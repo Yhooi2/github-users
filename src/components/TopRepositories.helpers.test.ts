@@ -1,4 +1,4 @@
-import { createContributionsLookup } from './TopRepositories';
+import { createContributionsLookup } from './TopRepositories.helpers';
 import { type GitHubUser } from '@/apollo/github-api.types';
 
 // Mock data for testing
@@ -19,15 +19,15 @@ const mockUser: GitHubUser = {
     commitContributionsByRepository: [
       {
         contributions: { totalCount: 200 },
-        repository: { name: 'repo1' }
+        repository: { name: 'repo1', isFork: false }
       },
       {
         contributions: { totalCount: 150 },
-        repository: { name: 'repo2' }
+        repository: { name: 'repo2', isFork: false }
       },
       {
         contributions: { totalCount: 100 },
-        repository: { name: 'repo3' }
+        repository: { name: 'repo3', isFork: false }
       }
     ]
   },
@@ -63,15 +63,15 @@ const mockUser: GitHubUser = {
     commitContributionsByRepository: [
       {
         contributions: { totalCount: 100 },
-        repository: { name: 'repo1' }
+        repository: { name: 'repo1', isFork: false }
       },
       {
         contributions: { totalCount: 150 },
-        repository: { name: 'repo2' }
+        repository: { name: 'repo2', isFork: false }
       },
       {
         contributions: { totalCount: 50 },
-        repository: { name: 'repo4' }
+        repository: { name: 'repo4', isFork: false }
       }
     ]
   },
@@ -80,15 +80,15 @@ const mockUser: GitHubUser = {
     commitContributionsByRepository: [
       {
         contributions: { totalCount: 100 },
-        repository: { name: 'repo1' }
+        repository: { name: 'repo1', isFork: false }
       },
       {
         contributions: { totalCount: 50 },
-        repository: { name: 'repo3' }
+        repository: { name: 'repo3', isFork: false }
       },
       {
         contributions: { totalCount: 50 },
-        repository: { name: 'repo5' }
+        repository: { name: 'repo5', isFork: false }
       }
     ]
   }

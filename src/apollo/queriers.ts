@@ -37,6 +37,7 @@ const CONTRIBUTIONS_COLLECTION_FRAGMENT = gql`
       }
       repository {
         name
+        isFork
       }
     }
   }
@@ -64,6 +65,7 @@ const REPOSITORY_BASIC_INFO_FRAGMENT = gql`
     forkCount
     stargazerCount
     url
+    isFork
     primaryLanguage {
       name
     }
@@ -102,6 +104,7 @@ export const createDynamicUserQuery = (startYear: number, endYear: number) => {
         commitContributionsByRepository {
           repository {
             name
+            isFork
           }
           contributions {
             totalCount
