@@ -28,6 +28,9 @@ export function UserStats({ user }: UserStatsProps) {
       );
     }, 0) || 0;
 
+  // Calculate total commits from contributions collection
+  const totalCommits = user.contributionsCollection.totalCommitContributions;
+
   const stats = [
     {
       label: "Repositories",
@@ -36,21 +39,21 @@ export function UserStats({ user }: UserStatsProps) {
       color: "bg-blue-500",
     },
     {
+      label: "Commits",
+      value: totalCommits,
+      icon: "📝",
+      color: "bg-green-500",
+    },
+    {
       label: "Followers",
       value: user.followers.totalCount,
       icon: "👥",
-      color: "bg-green-500",
+      color: "bg-purple-500",
     },
     {
       label: "Following",
       value: user.following.totalCount,
       icon: "👤",
-      color: "bg-purple-500",
-    },
-    {
-      label: "Gists",
-      value: user.gists.totalCount,
-      icon: "📝",
       color: "bg-orange-500",
     },
     {

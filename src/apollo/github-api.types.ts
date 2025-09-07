@@ -44,15 +44,29 @@ export type RepositoryContributions = {
   };
 };
 
+export type CommitContributionsByRepository = {
+  contributions: ContributionsByRepository;
+  repository: {
+    name: string;
+  };
+};
+
 // Contribution collection types
 export type ContributionsCollection = {
   totalCommitContributions: number;
   commitContributionsByRepository: RepositoryContributions[];
 };
 
+// Yearly contributions collection with commit contributions by repository
+export type YearlyContributionsCollection = {
+  totalCommitContributions: number;
+  commitContributionsByRepository: CommitContributionsByRepository[];
+};
+
 // Yearly contribution types
 export type YearlyContributions = {
   totalCommitContributions: number;
+  commitContributionsByRepository: CommitContributionsByRepository[];
 };
 
 // Contribution variables type

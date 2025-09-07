@@ -99,6 +99,14 @@ export const createDynamicUserQuery = (startYear: number, endYear: number) => {
     const year = startYear + index;
     return `contrib${year}: contributionsCollection(from: $year${year}From, to: $year${year}To) {
         totalCommitContributions
+        commitContributionsByRepository {
+          repository {
+            name
+          }
+          contributions {
+            totalCount
+          }
+        }
       }`;
   }).join('\n      ');
 

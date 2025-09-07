@@ -20,14 +20,28 @@ function formatLines(lines: number): string {
   return lines.toString();
 }
 
+// Helper function to create a lookup object for contributions by repository name
+function createContributionsLookup(user: GitHubUser): Record<string, number> {
+  const contributions: Record<string, number> = {};
+  
+  // Add contributions from overall collection
+  user.contributionsCollection.commitContributionsByRepository.forEach((repoContrib) => {
+    contributions[repoContrib.repository.name] = repoContrib.contributions.totalCount;
+  });
+  
+  return contributions;
+}
+
 export function TopRepositories({ user }: TopRepositoriesProps) {
   const repositories = user.repositories.nodes || [];
+  const contributions = createContributionsLookup(user);
 
   // Use commit history from repository data
   const topRepos = repositories
+    .filter(repo => !repo.isFork || (contributions[repo.name] || 0) > 0) // Filter out forks without contributions
     .map((repo) => ({
       ...repo,
-      commits: repo.defaultBranchRef?.target?.history?.totalCount || 0,
+      commits: contributions[repo.name] || 0,
       linesOfCode: repo.languages ? bytesToLines(repo.languages.totalSize) : 0,
     }))
     .filter((repo) => repo.commits > 0) // Only show repos with commits
