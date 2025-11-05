@@ -4,26 +4,70 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 
-type props = {
+type Props = {
     userName: string,
     setUserName:  React.Dispatch<React.SetStateAction<string>>,
 }
 
-function SearchForm({userName, setUserName}: props) { 
+/**
+ * Search form component for GitHub username input
+ *
+ * Features:
+ * - Controlled input with local state
+ * - Client-side validation (non-empty check)
+ * - Toast notifications for validation errors
+ * - Accessible with screen reader support
+ *
+ * @param props - Component props
+ * @param props.userName - Initial username value
+ * @param props.setUserName - Callback to update parent's username state
+ * @returns Search form component
+ *
+ * @example
+ * ```typescript
+ * function App() {
+ *   const [userName, setUserName] = useState('')
+ *
+ *   return <SearchForm userName={userName} setUserName={setUserName} />
+ * }
+ * ```
+ */
+function SearchForm({userName, setUserName}: Props) {
     const [text, setText] = useState(userName);
 
-    function hundlerOnSubmit(e : React.FormEvent<HTMLFormElement>) {
+    /**
+     * Handles form submission with validation
+     *
+     * Validates that the input matches GitHub username format:
+     * - Only alphanumeric characters and hyphens
+     * - Cannot start or end with hyphen
+     * - Maximum 39 characters
+     * Shows a toast error notification if validation fails.
+     *
+     * @param e - Form submission event
+     */
+    function handleSubmit(e : React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (text.length === 0) {
-            toast.error("Please enter a  valid username")
+        const trimmed = text.trim();
+
+        if (trimmed.length === 0) {
+            toast.error("Please enter a valid username")
             return;
         }
-        setUserName(text);
+
+        // GitHub username validation: alphanumeric + hyphens, 1-39 chars, cannot start/end with hyphen
+        const githubUsernameRegex = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
+        if (!githubUsernameRegex.test(trimmed)) {
+            toast.error("Invalid GitHub username format")
+            return;
+        }
+
+        setUserName(trimmed);
     }
 
-    return <form onSubmit={hundlerOnSubmit} className="flex gap-2 items-center w-full lg:w-1/3 mb-8">
+    return <form onSubmit={handleSubmit} className="mb-8 flex w-full items-center gap-2 lg:w-1/3">
         <Label htmlFor="search" className="sr-only">Search</Label>
-        <Input type="text" id="search" value={text} placeholder="Search Githab User... " onChange={(e) => setText(e.target.value)} className="flex-grow bg-background" />
+        <Input type="text" id="search" value={text} placeholder="Search GitHub User..." onChange={(e) => setText(e.target.value)} className="bg-background flex-grow" />
         <Button type="submit">Search</Button>
     </form>
 }

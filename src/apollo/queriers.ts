@@ -1,5 +1,28 @@
 import { gql } from "@apollo/client";
 
+/**
+ * GraphQL query for fetching comprehensive GitHub user information
+ *
+ * This query retrieves:
+ * - User profile (name, bio, avatar, location, etc.)
+ * - Connection counts (followers, following, gists)
+ * - Yearly contribution statistics (last 3 years)
+ * - Contribution details for a specified date range
+ * - Repository list with metadata (max 100 repos per query)
+ *
+ * @remarks
+ * The query uses 9 date-time variables to support multiple time ranges:
+ * - $from, $to: Main contribution period
+ * - $year1From, $year1To: Year 1 (current-2 years)
+ * - $year2From, $year2To: Year 2 (current-1 year)
+ * - $year3From, $year3To: Year 3 (current year)
+ *
+ * Year aliases (year1, year2, year3) use generic names for future compatibility.
+ * Years are calculated dynamically by date-helpers.ts.
+ *
+ * @see {@link GitHubGraphQLResponse} for the response type definition
+ * @see {@link useQueryUser} for the hook that uses this query
+ */
 export const GET_USER_INFO= gql`query GetUser($login: String!, 
     $from: DateTime!, 
     $to: DateTime!,
@@ -27,13 +50,13 @@ export const GET_USER_INFO= gql`query GetUser($login: String!,
       gists {
         totalCount
       }
-      contrib2023: contributionsCollection(from: $year1From, to: $year1To) {
+      year1: contributionsCollection(from: $year1From, to: $year1To) {
         totalCommitContributions
       }
-      contrib2024: contributionsCollection(from: $year2From, to: $year2To) {
+      year2: contributionsCollection(from: $year2From, to: $year2To) {
         totalCommitContributions
       }
-      contrib2025: contributionsCollection(from: $year3From, to: $year3To) {
+      year3: contributionsCollection(from: $year3From, to: $year3To) {
         totalCommitContributions
       }
       createdAt

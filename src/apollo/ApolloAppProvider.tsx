@@ -1,4 +1,14 @@
-// Apollo Client v4 setup for React (Vite) with useQuery and global error handling
+/**
+ * Apollo Client configuration and provider for GitHub GraphQL API integration
+ *
+ * This module sets up a complete Apollo Client with:
+ * - Authentication via Bearer token (from env or localStorage)
+ * - Global error handling for GraphQL and network errors
+ * - Automatic token cleanup on authentication failures
+ * - Toast notifications for user feedback
+ *
+ * @module ApolloAppProvider
+ */
 
 import React from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink } from '@apollo/client';
@@ -60,7 +70,34 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-// 6. Wrap React app with ApolloProvider
+/**
+ * Apollo Provider component that wraps the React application
+ *
+ * Provides Apollo Client context to all child components, enabling them to use
+ * Apollo hooks like `useQuery`, `useMutation`, etc.
+ *
+ * The client is configured with:
+ * - Link chain: errorLink → authLink → httpLink
+ * - InMemoryCache for automatic query result caching
+ * - Global error handling with toast notifications
+ *
+ * @param props - Component props
+ * @param props.children - React children to wrap with Apollo context
+ * @returns Apollo Provider wrapper component
+ *
+ * @example
+ * ```typescript
+ * import { ApolloAppProvider } from './apollo/ApolloAppProvider'
+ *
+ * function App() {
+ *   return (
+ *     <ApolloAppProvider>
+ *       <YourApp />
+ *     </ApolloAppProvider>
+ *   )
+ * }
+ * ```
+ */
 export function ApolloAppProvider({ children }: { children: React.ReactNode }) {
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }

@@ -92,9 +92,9 @@ type PageInfo = {
     followers: ConnectionCount;
     following: ConnectionCount;
     gists: ConnectionCount;
-    contrib2023: YearlyContributions;
-    contrib2024: YearlyContributions;
-    contrib2025: YearlyContributions;
+    year1: YearlyContributions;
+    year2: YearlyContributions;
+    year3: YearlyContributions;
     createdAt: string;
     contributionsCollection: ContributionsCollection;
     repositories: Repositories;
