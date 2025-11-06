@@ -84,6 +84,51 @@ export const GET_USER_INFO= gql`query GetUser($login: String!,
         forkCount
         stargazerCount
         url  # For cloning (if precise LOC is needed)
+
+        # Authenticity detection fields
+        isFork  # Is this a forked repository?
+        isTemplate  # Is this a template repository?
+        parent {
+          # Parent repository info for forks
+          name
+          owner {
+            login
+          }
+          url
+        }
+
+        # Activity timestamps
+        createdAt  # Repository creation date
+        updatedAt  # Last update time
+        pushedAt  # Last push time (null if no pushes)
+
+        # Additional statistics
+        diskUsage  # Repository size in KB
+        isArchived  # Is archived/read-only?
+        homepageUrl  # Project homepage
+
+        # Engagement metrics
+        watchers {
+          totalCount  # Number of watchers
+        }
+        issues {
+          totalCount  # Total issue count
+        }
+
+        # Topics/tags
+        repositoryTopics(first: 20) {
+          nodes {
+            topic {
+              name  # Topic name (e.g., "react", "typescript")
+            }
+          }
+        }
+
+        # License information
+        licenseInfo {
+          name  # License name (e.g., "MIT License")
+        }
+
         defaultBranchRef {
           target {
             ... on Commit {

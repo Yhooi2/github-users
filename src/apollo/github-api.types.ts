@@ -60,6 +60,34 @@ type PageInfo = {
     totalCount: number;
   };
   
+  // Repository owner type
+  type RepositoryOwner = {
+    login: string;
+  };
+
+  // Parent repository type (for forks)
+  type ParentRepository = {
+    name: string;
+    owner: RepositoryOwner;
+    url: string;
+  };
+
+  // Repository topic type
+  type RepositoryTopic = {
+    topic: {
+      name: string;
+    };
+  };
+
+  type RepositoryTopics = {
+    nodes: RepositoryTopic[];
+  };
+
+  // License information type
+  type LicenseInfo = {
+    name: string;
+  };
+
   // Repository type
   type Repository = {
     name: string;
@@ -68,6 +96,31 @@ type PageInfo = {
     forkCount: number;
     stargazerCount: number;
     url: string;
+
+    // Authenticity fields
+    isFork: boolean;
+    isTemplate: boolean;
+    parent: ParentRepository | null;
+
+    // Timestamps
+    createdAt: string;
+    updatedAt: string;
+    pushedAt: string | null;
+
+    // Additional stats
+    diskUsage: number | null;
+    isArchived: boolean;
+    homepageUrl: string | null;
+
+    // Engagement
+    watchers: ConnectionCount;
+    issues: ConnectionCount;
+
+    // Topics and license
+    repositoryTopics: RepositoryTopics;
+    licenseInfo: LicenseInfo | null;
+
+    // Existing fields
     defaultBranchRef: BranchRef | null;
     primaryLanguage: ProgrammingLanguage | null;
     languages: Languages;
@@ -109,6 +162,11 @@ type PageInfo = {
     GitHubGraphQLResponse,
     GitHubUser,
     Repository,
+    ParentRepository,
+    RepositoryOwner,
+    RepositoryTopics,
+    RepositoryTopic,
+    LicenseInfo,
     Languages,
     ProgrammingLanguage,
     ContributionsCollection,
