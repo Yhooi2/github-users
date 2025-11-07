@@ -3,6 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import type { Repository } from '@/apollo/github-api.types';
 import { Star, GitFork, Eye, AlertCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { formatNumber } from '@/lib/statistics';
+import { getLanguageColor } from '@/lib/constants';
 
 type Props = {
   /**
@@ -160,45 +162,3 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
   );
 }
 
-/**
- * Format large numbers with K/M suffixes
- */
-function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-  }
-  return num.toString();
-}
-
-/**
- * Get color for programming language
- * Basic color mapping for common languages
- */
-function getLanguageColor(language: string): string {
-  const colors: Record<string, string> = {
-    TypeScript: '#3178c6',
-    JavaScript: '#f1e05a',
-    Python: '#3572A5',
-    Java: '#b07219',
-    Go: '#00ADD8',
-    Rust: '#dea584',
-    Ruby: '#701516',
-    PHP: '#4F5D95',
-    CSS: '#563d7c',
-    HTML: '#e34c26',
-    Swift: '#ffac45',
-    Kotlin: '#A97BFF',
-    Dart: '#00B4AB',
-    C: '#555555',
-    'C++': '#f34b7d',
-    'C#': '#178600',
-    Shell: '#89e051',
-    Vue: '#41b883',
-    React: '#61dafb',
-  };
-
-  return colors[language] || '#8b949e';
-}

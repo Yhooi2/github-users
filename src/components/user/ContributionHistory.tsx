@@ -31,8 +31,8 @@ export function ContributionHistory({ contributions, yearLabels }: ContributionH
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {years.map((year, index) => (
-            <div key={`year-${index}`} className="space-y-2 text-center">
+          {years.map((year) => (
+            <div key={year.label} className="space-y-2 text-center">
               <div className="text-sm text-muted-foreground">{year.label}</div>
               <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {year.commits.toLocaleString()}

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { LucideIcon, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { ReactNode } from 'react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import type { ReactNode, ComponentType, SVGProps } from 'react';
 
 type StatsCardProps = {
   /**
@@ -15,7 +15,7 @@ type StatsCardProps = {
   /**
    * Optional icon component
    */
-  icon?: LucideIcon;
+  icon?: ComponentType<SVGProps<SVGSVGElement>>;
   /**
    * Optional description/label
    */

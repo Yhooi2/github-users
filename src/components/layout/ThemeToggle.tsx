@@ -6,8 +6,27 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
+    // SSR safety check
+    if (typeof window === 'undefined') return;
+
+    // Read from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+
     setTheme(isDark ? 'dark' : 'light');
+
+    // Sync theme with other tabs
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'theme' && e.newValue) {
+        const newTheme = e.newValue as 'light' | 'dark';
+        setTheme(newTheme);
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const toggleTheme = () => {

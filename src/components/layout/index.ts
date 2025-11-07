@@ -7,6 +7,7 @@
 export { LoadingState } from './LoadingState';
 export { ErrorState } from './ErrorState';
 export { EmptyState } from './EmptyState';
+export { ErrorBoundary } from './ErrorBoundary';
 export { Section } from './Section';
 export { StatsCard } from './StatsCard';
 export { MainTabs } from './MainTabs';

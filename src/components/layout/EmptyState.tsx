@@ -6,8 +6,8 @@ import {
   FolderOpen,
   Database,
   User,
-  LucideIcon,
 } from 'lucide-react';
+import type { ComponentType, SVGProps } from 'react';
 
 type EmptyStateProps = {
   /**
@@ -46,7 +46,7 @@ type EmptyStateProps = {
   secondaryActionText?: string;
 };
 
-const iconMap: Record<NonNullable<EmptyStateProps['icon']>, LucideIcon> = {
+const iconMap: Record<NonNullable<EmptyStateProps['icon']>, ComponentType<SVGProps<SVGSVGElement>>> = {
   search: Search,
   question: FileQuestion,
   inbox: Inbox,

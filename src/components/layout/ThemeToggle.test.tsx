@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeToggle } from './ThemeToggle';
@@ -7,6 +7,21 @@ describe('ThemeToggle', () => {
   beforeEach(() => {
     document.documentElement.classList.remove('dark');
     localStorage.clear();
+
+    // Mock matchMedia
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
   });
 
   afterEach(() => {
@@ -20,6 +35,7 @@ describe('ThemeToggle', () => {
   });
 
   it('should show moon icon in light mode', () => {
+    localStorage.setItem('theme', 'light');
     render(<ThemeToggle />);
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('aria-label', 'Switch to dark mode');
@@ -45,6 +61,7 @@ describe('ThemeToggle', () => {
   });
 
   it('should detect initial dark mode', () => {
+    localStorage.setItem('theme', 'dark');
     document.documentElement.classList.add('dark');
     render(<ThemeToggle />);
 

@@ -355,7 +355,7 @@ describe('RepositoryCard', () => {
       const { container } = render(<RepositoryCard repository={repoUnknownLang} />);
 
       const colorIndicator = container.querySelector('.rounded-full');
-      expect(colorIndicator).toHaveStyle({ backgroundColor: '#8b949e' }); // Default color
+      expect(colorIndicator).toHaveStyle({ backgroundColor: '#64748b' }); // Default color (from constants.ts)
     });
   });
 

@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import type { Repository } from '@/apollo/github-api.types';
 import { Star, GitFork, Eye, AlertCircle, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { formatNumber } from '@/lib/statistics';
 import { LoadingState } from '@/components/layout/LoadingState';
 import { ErrorState } from '@/components/layout/ErrorState';
 import { RepositoryEmpty } from './RepositoryEmpty';
@@ -61,19 +62,6 @@ type Props = {
    */
   emptyDescription?: string;
 };
-
-/**
- * Helper function to format large numbers with K/M suffixes
- */
-function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(1)}M`;
-  }
-  if (num >= 1000) {
-    return `${(num / 1000).toFixed(1)}K`;
-  }
-  return num.toString();
-}
 
 /**
  * Repository table component
