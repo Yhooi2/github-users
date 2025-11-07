@@ -34,7 +34,7 @@ describe('UserProfile', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument()
   })
 
   it('renders error state', () => {
@@ -108,7 +108,11 @@ describe('UserProfile', () => {
         followers: { totalCount: 1000, __typename: 'FollowerConnection' },
         following: { totalCount: 100, __typename: 'FollowingConnection' },
         gists: { totalCount: 8, __typename: 'GistConnection' },
-        repositories: { totalCount: 50, __typename: 'RepositoryConnection' },
+        repositories: {
+          totalCount: 50,
+          nodes: [],
+          __typename: 'RepositoryConnection'
+        },
         year1: { totalCommitContributions: 500, __typename: 'ContributionsCollection' },
         year2: { totalCommitContributions: 750, __typename: 'ContributionsCollection' },
         year3: { totalCommitContributions: 200, __typename: 'ContributionsCollection' },

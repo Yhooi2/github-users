@@ -118,4 +118,79 @@ describe('SearchForm', () => {
     const label = screen.getByLabelText(/search/i)
     expect(label).toBeInTheDocument()
   })
+
+  it('shows error toast for invalid GitHub username format', async () => {
+    const user = userEvent.setup()
+    render(<SearchForm {...defaultProps} />)
+
+    const input = screen.getByPlaceholderText(/Search GitHub User/i)
+    const button = screen.getByRole('button', { name: /search/i })
+
+    // Test username starting with hyphen (invalid)
+    await user.type(input, '-invalid')
+    await user.click(button)
+
+    expect(toast.error).toHaveBeenCalledWith('Invalid GitHub username format')
+    expect(mockSetUserName).not.toHaveBeenCalled()
+  })
+
+  it('shows error toast for username ending with hyphen', async () => {
+    const user = userEvent.setup()
+    render(<SearchForm {...defaultProps} />)
+
+    const input = screen.getByPlaceholderText(/Search GitHub User/i)
+    const button = screen.getByRole('button', { name: /search/i })
+
+    // Test username ending with hyphen (invalid)
+    await user.type(input, 'invalid-')
+    await user.click(button)
+
+    expect(toast.error).toHaveBeenCalledWith('Invalid GitHub username format')
+    expect(mockSetUserName).not.toHaveBeenCalled()
+  })
+
+  it('shows error toast for username with consecutive hyphens', async () => {
+    const user = userEvent.setup()
+    render(<SearchForm {...defaultProps} />)
+
+    const input = screen.getByPlaceholderText(/Search GitHub User/i)
+    const button = screen.getByRole('button', { name: /search/i })
+
+    // Test username with consecutive hyphens (invalid)
+    await user.type(input, 'invalid--name')
+    await user.click(button)
+
+    expect(toast.error).toHaveBeenCalledWith('Invalid GitHub username format')
+    expect(mockSetUserName).not.toHaveBeenCalled()
+  })
+
+  it('shows error toast for username with special characters', async () => {
+    const user = userEvent.setup()
+    render(<SearchForm {...defaultProps} />)
+
+    const input = screen.getByPlaceholderText(/Search GitHub User/i)
+    const button = screen.getByRole('button', { name: /search/i })
+
+    // Test username with special characters (invalid)
+    await user.type(input, 'user@name')
+    await user.click(button)
+
+    expect(toast.error).toHaveBeenCalledWith('Invalid GitHub username format')
+    expect(mockSetUserName).not.toHaveBeenCalled()
+  })
+
+  it('accepts valid username with hyphens in middle', async () => {
+    const user = userEvent.setup()
+    render(<SearchForm {...defaultProps} />)
+
+    const input = screen.getByPlaceholderText(/Search GitHub User/i)
+    const button = screen.getByRole('button', { name: /search/i })
+
+    // Test valid username with hyphens
+    await user.type(input, 'valid-user-name')
+    await user.click(button)
+
+    expect(toast.error).not.toHaveBeenCalled()
+    expect(mockSetUserName).toHaveBeenCalledWith('valid-user-name')
+  })
 })

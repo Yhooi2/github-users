@@ -6,3 +6,10 @@ import { afterEach } from 'vitest'
 afterEach(() => {
   cleanup()
 })
+
+// Mock ResizeObserver for Recharts
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}

@@ -1,0 +1,204 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import type { Repository } from '@/apollo/github-api.types';
+import { Star, GitFork, Eye, AlertCircle } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+
+type Props = {
+  /**
+   * Repository data from GitHub API
+   */
+  repository: Repository;
+  /**
+   * Whether to show the full card or compact version
+   * @default false
+   */
+  compact?: boolean;
+  /**
+   * Click handler when card is clicked
+   */
+  onClick?: (repository: Repository) => void;
+};
+
+/**
+ * Repository card component
+ *
+ * Displays repository information in a card format including:
+ * - Name and description
+ * - Statistics (stars, forks, watchers)
+ * - Primary language
+ * - Fork status
+ * - Last update time
+ *
+ * @example
+ * ```tsx
+ * <RepositoryCard repository={repo} />
+ *
+ * // Compact version
+ * <RepositoryCard repository={repo} compact />
+ *
+ * // With click handler
+ * <RepositoryCard
+ *   repository={repo}
+ *   onClick={(repo) => window.open(repo.url, '_blank')}
+ * />
+ * ```
+ */
+export function RepositoryCard({ repository, compact = false, onClick }: Props) {
+  const handleClick = () => {
+    if (onClick) {
+      onClick(repository);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick(repository);
+    }
+  };
+
+  const updatedAt = repository.updatedAt
+    ? formatDistanceToNow(new Date(repository.updatedAt), { addSuffix: true })
+    : 'Never';
+
+  return (
+    <Card
+      className={onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : undefined}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={onClick ? 0 : undefined}
+      role={onClick ? 'button' : undefined}
+      aria-label={onClick ? `Open ${repository.name} repository` : undefined}
+    >
+      <CardHeader>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <CardTitle className="truncate">
+              <a
+                href={repository.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {repository.name}
+              </a>
+            </CardTitle>
+            {repository.description && !compact && (
+              <CardDescription className="mt-2 line-clamp-2">
+                {repository.description}
+              </CardDescription>
+            )}
+          </div>
+          {repository.isFork && (
+            <Badge variant="outline" aria-label="This repository is a fork">
+              <GitFork className="w-3 h-3" />
+              Fork
+            </Badge>
+          )}
+          {repository.isArchived && (
+            <Badge variant="destructive" aria-label="This repository is archived">
+              <AlertCircle className="w-3 h-3" />
+              Archived
+            </Badge>
+          )}
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          {repository.primaryLanguage && (
+            <div className="flex items-center gap-1">
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: getLanguageColor(repository.primaryLanguage.name) }}
+                aria-hidden="true"
+              />
+              <span>{repository.primaryLanguage.name}</span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1" title={`${repository.stargazerCount} stars`}>
+            <Star className="w-4 h-4" aria-hidden="true" />
+            <span>{formatNumber(repository.stargazerCount)}</span>
+          </div>
+
+          <div className="flex items-center gap-1" title={`${repository.forkCount} forks`}>
+            <GitFork className="w-4 h-4" aria-hidden="true" />
+            <span>{formatNumber(repository.forkCount)}</span>
+          </div>
+
+          {!compact && (
+            <div className="flex items-center gap-1" title={`${repository.watchers.totalCount} watchers`}>
+              <Eye className="w-4 h-4" aria-hidden="true" />
+              <span>{formatNumber(repository.watchers.totalCount)}</span>
+            </div>
+          )}
+
+          <div className="ml-auto text-xs">
+            Updated {updatedAt}
+          </div>
+        </div>
+
+        {!compact && repository.repositoryTopics.nodes.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-4" role="list" aria-label="Repository topics">
+            {repository.repositoryTopics.nodes.slice(0, 5).map((topic) => (
+              <Badge key={topic.topic.name} variant="secondary" role="listitem">
+                {topic.topic.name}
+              </Badge>
+            ))}
+            {repository.repositoryTopics.nodes.length > 5 && (
+              <Badge variant="secondary">
+                +{repository.repositoryTopics.nodes.length - 5}
+              </Badge>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * Format large numbers with K/M suffixes
+ */
+function formatNumber(num: number): string {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  }
+  return num.toString();
+}
+
+/**
+ * Get color for programming language
+ * Basic color mapping for common languages
+ */
+function getLanguageColor(language: string): string {
+  const colors: Record<string, string> = {
+    TypeScript: '#3178c6',
+    JavaScript: '#f1e05a',
+    Python: '#3572A5',
+    Java: '#b07219',
+    Go: '#00ADD8',
+    Rust: '#dea584',
+    Ruby: '#701516',
+    PHP: '#4F5D95',
+    CSS: '#563d7c',
+    HTML: '#e34c26',
+    Swift: '#ffac45',
+    Kotlin: '#A97BFF',
+    Dart: '#00B4AB',
+    C: '#555555',
+    'C++': '#f34b7d',
+    'C#': '#178600',
+    Shell: '#89e051',
+    Vue: '#41b883',
+    React: '#61dafb',
+  };
+
+  return colors[language] || '#8b949e';
+}
