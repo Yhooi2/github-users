@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, AreaChart, Area } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LoadingState } from '@/components/layout/LoadingState';
 import { ErrorState } from '@/components/layout/ErrorState';
@@ -102,7 +102,6 @@ export function CommitChart({
   emptyTitle = 'No Commit Data',
   emptyDescription = 'No commit statistics available for this period.',
   showTrend = true,
-  height = 300,
 }: Props) {
   // Loading state
   if (loading) {
@@ -161,7 +160,7 @@ export function CommitChart({
 
       {/* Chart */}
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
-        {variant === 'line' && (
+        {variant === 'line' ? (
           <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
@@ -191,9 +190,7 @@ export function CommitChart({
               activeDot={{ r: 6 }}
             />
           </LineChart>
-        )}
-
-        {variant === 'bar' && (
+        ) : variant === 'bar' ? (
           <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
@@ -213,9 +210,7 @@ export function CommitChart({
             <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'hsl(var(--muted))' }} />
             <Bar dataKey="commits" fill="var(--color-commits)" radius={[4, 4, 0, 0]} />
           </BarChart>
-        )}
-
-        {variant === 'area' && (
+        ) : (
           <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis

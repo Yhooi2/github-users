@@ -1,5 +1,5 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { PieChart, Pie, Cell, Legend } from 'recharts';
+import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { LoadingState } from '@/components/layout/LoadingState';
 import { ErrorState } from '@/components/layout/ErrorState';
 import { EmptyState } from '@/components/layout/EmptyState';
@@ -114,7 +114,6 @@ export function LanguageChart({
   emptyTitle = 'No Language Data',
   emptyDescription = 'No programming language statistics available.',
   showLegend = true,
-  height = 300,
 }: Props) {
   // Loading state
   if (loading) {
@@ -165,7 +164,6 @@ export function LanguageChart({
   }
 
   const totalLanguages = data.length;
-  const displayedLanguages = chartData.length;
 
   // Prepare chart config
   const chartConfig = chartData.reduce((config, lang, index) => {

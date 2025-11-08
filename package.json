@@ -83,12 +83,14 @@
     "prettier-plugin-organize-imports": "^4.2.0",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "storybook": "^10.0.3",
-    "storybook-mcp": "^0.4.0",
     "tw-animate-css": "^1.3.7",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2",
     "vite-plugin-mcp": "^0.2.5",
     "vitest": "^4.0.6"
+  },
+  "optionalDependencies": {
+    "storybook-mcp": "^0.4.0"
   }
 }

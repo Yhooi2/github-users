@@ -1,5 +1,5 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from 'recharts';
+import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { LoadingState } from '@/components/layout/LoadingState';
 import { ErrorState } from '@/components/layout/ErrorState';
 import { EmptyState } from '@/components/layout/EmptyState';
@@ -101,7 +101,6 @@ export function ActivityChart({
   errorDescription,
   emptyTitle = 'No Activity Data',
   emptyDescription = 'No commit activity statistics available.',
-  height = 300,
   showTotal = true,
 }: Props) {
   // Loading state

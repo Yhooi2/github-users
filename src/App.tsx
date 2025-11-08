@@ -20,7 +20,7 @@ import {
   calculateLanguageStatistics,
   calculateCommitActivity,
 } from './lib/statistics';
-import type { RepositoryFilter } from './types/filters';
+import type { RepositoryFilter, SortBy } from './types/filters';
 
 function App() {
   const [userName, setUserName] = useState('');
