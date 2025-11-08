@@ -71,7 +71,7 @@ export const GET_USER_INFO= gql`query GetUser($login: String!,
         }
       }
     }
-    repositories(first: 100, affiliations: OWNER) {
+    repositories(first: 100, ownerAffiliations: OWNER) {
       totalCount  # Total number of repositories
       pageInfo {
         endCursor  # Cursor for next page

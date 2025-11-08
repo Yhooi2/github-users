@@ -295,6 +295,9 @@ describe('App Integration Tests', () => {
         { timeout: 3000 }
       );
 
+      // Click on Filters header to expand
+      await user.click(screen.getByText('Filters'));
+
       // Verify filters component is rendered by checking for filter label
       await waitFor(
         () => {
@@ -315,6 +318,9 @@ describe('App Integration Tests', () => {
         },
         { timeout: 3000 }
       );
+
+      // Click on Filters header to expand
+      await user.click(screen.getByText('Filters'));
 
       // Verify filter controls exist
       expect(screen.getByLabelText(/minimum stars/i)).toBeInTheDocument();
@@ -491,6 +497,9 @@ describe('App Integration Tests', () => {
         },
         { timeout: 2000 }
       );
+
+      // Click on Filters header to expand
+      await user.click(screen.getByText('Filters'));
 
       // Verify filter inputs exist
       expect(screen.getByLabelText(/minimum stars/i)).toBeInTheDocument();

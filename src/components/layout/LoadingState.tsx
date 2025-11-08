@@ -30,12 +30,12 @@ type LoadingStateProps = {
  */
 export function LoadingState({ variant = 'default', count = 3, message }: LoadingStateProps) {
   return (
-    <div className="space-y-4" role="status" aria-label="Loading">
+    <div className="space-y-4 max-w-full" role="status" aria-label="Loading">
       {variant === 'default' && (
         <>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-full max-w-lg" />
+          <Skeleton className="h-4 w-3/4 max-w-md" />
+          <Skeleton className="h-4 w-5/6 max-w-lg" />
         </>
       )}
 

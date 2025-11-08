@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { RepositoryFilter } from '@/types/filters';
-import { X, Filter } from 'lucide-react';
+import { X, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 type Props = {
@@ -83,6 +84,8 @@ export function RepositoryFilters({
   activeFilterCount = 0,
   compact = false,
 }: Props) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const content = (
     <div className="space-y-4">
       {/* Search Query */}
@@ -228,20 +231,30 @@ export function RepositoryFilters({
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader
+        className="cursor-pointer hover:bg-accent/50 transition-colors"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Filter className="w-5 h-5" />
             Filters
           </span>
-          {activeFilterCount > 0 && (
-            <Badge variant="secondary" aria-label={`${activeFilterCount} active filters`}>
-              {activeFilterCount}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {activeFilterCount > 0 && (
+              <Badge variant="secondary" aria-label={`${activeFilterCount} active filters`}>
+                {activeFilterCount}
+              </Badge>
+            )}
+            {isExpanded ? (
+              <ChevronUp className="w-5 h-5" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>{content}</CardContent>
+      {isExpanded && <CardContent>{content}</CardContent>}
     </Card>
   );
 }

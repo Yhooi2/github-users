@@ -82,6 +82,7 @@ export function calculateCommitsByRepository(
 
 /**
  * Calculates language usage statistics across repositories
+ * Automatically filters out forked repositories to show only original work
  *
  * @param repositories - Array of repositories
  * @returns Array of language statistics sorted by size (descending)
@@ -97,6 +98,13 @@ export function calculateLanguageStatistics(repositories: Repository[]): Languag
     return [];
   }
 
+  // Filter out forked repositories to show only user's original work
+  const originalRepositories = repositories.filter((repo) => !repo.isFork);
+
+  if (originalRepositories.length === 0) {
+    return [];
+  }
+
   // Collect all language usage data
   const languageMap = new Map<
     string,
@@ -105,7 +113,7 @@ export function calculateLanguageStatistics(repositories: Repository[]): Languag
 
   let totalSize = 0;
 
-  repositories.forEach((repo) => {
+  originalRepositories.forEach((repo) => {
     repo.languages.edges.forEach((edge) => {
       const langName = edge.node.name;
       const langSize = edge.size;
@@ -234,6 +242,7 @@ export function calculateCommitActivity(
 
 /**
  * Gets most active repositories by commit count
+ * Automatically filters out forked repositories to show only original work
  *
  * @param repositories - Array of repositories
  * @param limit - Number of top repos to return (default: 5)
@@ -249,7 +258,10 @@ export function getMostActiveRepositories(
   repositories: Repository[],
   limit: number = 5
 ): Array<{ name: string; commits: number }> {
-  const reposWithCommits = repositories
+  // Filter out forked repositories
+  const originalRepositories = repositories.filter((repo) => !repo.isFork);
+
+  const reposWithCommits = originalRepositories
     .map((repo) => ({
       name: repo.name,
       commits: repo.defaultBranchRef?.target?.history?.totalCount || 0,
@@ -262,6 +274,7 @@ export function getMostActiveRepositories(
 
 /**
  * Calculates total commits across all repositories
+ * Automatically filters out forked repositories to show only original work
  *
  * @param repositories - Array of repositories
  * @returns Total commit count
@@ -273,7 +286,10 @@ export function getMostActiveRepositories(
  * ```
  */
 export function getTotalCommits(repositories: Repository[]): number {
-  return repositories.reduce((total, repo) => {
+  // Filter out forked repositories
+  const originalRepositories = repositories.filter((repo) => !repo.isFork);
+
+  return originalRepositories.reduce((total, repo) => {
     const commits = repo.defaultBranchRef?.target?.history?.totalCount || 0;
     return total + commits;
   }, 0);
@@ -310,6 +326,7 @@ export function getRepositoriesByLanguage(
 /**
  * Calculates language diversity score (0-100)
  * Higher score = more diverse language usage
+ * Automatically filters out forked repositories to show only original work
  *
  * @param repositories - Array of repositories
  * @returns Diversity score from 0-100
@@ -325,9 +342,16 @@ export function calculateLanguageDiversity(repositories: Repository[]): number {
     return 0;
   }
 
+  // Filter out forked repositories
+  const originalRepositories = repositories.filter((repo) => !repo.isFork);
+
+  if (originalRepositories.length === 0) {
+    return 0;
+  }
+
   const languages = new Set<string>();
 
-  repositories.forEach((repo) => {
+  originalRepositories.forEach((repo) => {
     if (repo.primaryLanguage?.name) {
       languages.add(repo.primaryLanguage.name);
     }

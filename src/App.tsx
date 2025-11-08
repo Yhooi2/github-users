@@ -20,6 +20,7 @@ import {
   calculateLanguageStatistics,
   calculateCommitActivity,
 } from './lib/statistics';
+import type { RepositoryFilter } from './types/filters';
 
 function App() {
   const [userName, setUserName] = useState('');
@@ -36,7 +37,7 @@ function App() {
   // Apply filters and sorting
   const { filteredRepositories, filters, updateFilter, clearFilters, hasActiveFilters } =
     useRepositoryFilters(repositories);
-  const { sortedRepositories, sorting, setSortBy, toggleDirection } =
+  const { sortedRepositories, sorting, setSortBy, setSortDirection, toggleDirection } =
     useRepositorySorting(filteredRepositories);
 
   // Pagination
@@ -47,12 +48,15 @@ function App() {
   );
 
   // Reset pagination when filters/sorting change
-  const handleFilterChange = (key: string, value: any) => {
+  const handleFilterChange = <K extends keyof RepositoryFilter>(
+    key: K,
+    value: RepositoryFilter[K]
+  ) => {
     updateFilter(key, value);
     setCurrentPage(1);
   };
 
-  const handleSortChange = (field: string) => {
+  const handleSortChange = (field: SortBy) => {
     setSortBy(field);
     setCurrentPage(1);
   };
@@ -65,19 +69,20 @@ function App() {
   // Calculate statistics data
   const yearlyStats = data?.user
     ? calculateYearlyCommitStats({
-        year1: data.user.year1?.totalCommitContributions || 0,
-        year2: data.user.year2?.totalCommitContributions || 0,
-        year3: data.user.year3?.totalCommitContributions || 0,
+        year1: data.user.year1,
+        year2: data.user.year2,
+        year3: data.user.year3,
       })
-    : { years: [], commits: [], totalCommits: 0, trend: 0 };
+    : [];
 
   const languageStats = calculateLanguageStatistics(repositories);
+
   const activityStats = data?.user
     ? calculateCommitActivity(
         data.user.contributionsCollection?.totalCommitContributions || 0,
-        data.user.createdAt
+        365 // Default to 365 days (last year)
       )
-    : { commitsPerDay: 0, commitsPerWeek: 0, commitsPerMonth: 0 };
+    : { total: 0, perDay: 0, perWeek: 0, perMonth: 0 };
 
   const tabs = [
     {
@@ -115,9 +120,10 @@ function App() {
             <div className="flex flex-wrap items-center gap-3">
               <RepositorySorting
                 sortBy={sorting.field}
-                direction={sorting.direction}
-                onSortChange={handleSortChange}
-                onDirectionToggle={toggleDirection}
+                sortDirection={sorting.direction}
+                onSortByChange={handleSortChange}
+                onSortDirectionChange={setSortDirection}
+                onToggleDirection={toggleDirection}
               />
 
               {/* View Mode Toggle */}
@@ -173,9 +179,9 @@ function App() {
       content: (
         <ErrorBoundary>
           <StatsOverview
-            yearlyStats={yearlyStats}
-            languageStats={languageStats}
-            activityStats={activityStats}
+            yearlyCommits={yearlyStats}
+            languages={languageStats}
+            activity={activityStats}
             loading={loading}
           />
         </ErrorBoundary>

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Repository } from '@/apollo/github-api.types';
-import { Star, GitFork, Eye, AlertCircle } from 'lucide-react';
+import { Star, GitFork, Eye, AlertCircle, GitCommit } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { formatNumber } from '@/lib/statistics';
 import { getLanguageColor } from '@/lib/constants';
@@ -135,6 +135,13 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
             <div className="flex items-center gap-1" title={`${repository.watchers.totalCount} watchers`}>
               <Eye className="w-4 h-4" aria-hidden="true" />
               <span>{formatNumber(repository.watchers.totalCount)}</span>
+            </div>
+          )}
+
+          {!compact && repository.defaultBranchRef?.target?.history && (
+            <div className="flex items-center gap-1" title={`${repository.defaultBranchRef.target.history.totalCount} commits`}>
+              <GitCommit className="w-4 h-4" aria-hidden="true" />
+              <span>{formatNumber(repository.defaultBranchRef.target.history.totalCount)}</span>
             </div>
           )}
 
