@@ -637,12 +637,13 @@ describe('getCommitStatsSummary', () => {
 describe('formatNumber', () => {
   it('should format millions', () => {
     expect(formatNumber(1500000)).toBe('1.5M');
-    expect(formatNumber(2000000)).toBe('2.0M');
+    expect(formatNumber(2000000)).toBe('2M'); // Should remove .0
   });
 
   it('should format thousands', () => {
-    expect(formatNumber(1500)).toBe('1.5k');
-    expect(formatNumber(5000)).toBe('5.0k');
+    expect(formatNumber(1500)).toBe('1.5K'); // K is uppercase
+    expect(formatNumber(5000)).toBe('5K'); // Should remove .0
+    expect(formatNumber(1000)).toBe('1K'); // Should remove .0
   });
 
   it('should not format numbers below 1000', () => {

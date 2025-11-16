@@ -247,7 +247,7 @@ describe('RepositoryTable', () => {
       const repos = [createMockRepo(1, { stargazerCount: 5000 })];
       render(<RepositoryTable repositories={repos} />);
 
-      expect(screen.getByText('5.0K')).toBeInTheDocument();
+      expect(screen.getByText('5K')).toBeInTheDocument();
     });
 
     it('should format numbers with M suffix for millions', () => {

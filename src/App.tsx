@@ -1,15 +1,38 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import SearchForm from './components/SearchForm';
 import UserProfile from './components/UserProfile';
 import { MainTabs } from './components/layout/MainTabs';
 import { ThemeToggle } from './components/layout/ThemeToggle';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';
-import { RepositoryList } from './components/repository/RepositoryList';
-import { RepositoryTable } from './components/repository/RepositoryTable';
-import { RepositoryFilters } from './components/repository/RepositoryFilters';
-import { RepositorySorting } from './components/repository/RepositorySorting';
-import { RepositoryPagination } from './components/repository/RepositoryPagination';
-import { StatsOverview } from './components/statistics/StatsOverview';
+import { LoadingState } from './components/layout/LoadingState';
+
+// Lazy load heavy components (Repository components with table/list views)
+const RepositoryList = lazy(() =>
+  import('./components/repository/RepositoryList').then((m) => ({ default: m.RepositoryList }))
+);
+const RepositoryTable = lazy(() =>
+  import('./components/repository/RepositoryTable').then((m) => ({ default: m.RepositoryTable }))
+);
+const RepositoryFilters = lazy(() =>
+  import('./components/repository/RepositoryFilters').then((m) => ({
+    default: m.RepositoryFilters,
+  }))
+);
+const RepositorySorting = lazy(() =>
+  import('./components/repository/RepositorySorting').then((m) => ({
+    default: m.RepositorySorting,
+  }))
+);
+const RepositoryPagination = lazy(() =>
+  import('./components/repository/RepositoryPagination').then((m) => ({
+    default: m.RepositoryPagination,
+  }))
+);
+
+// Lazy load statistics components (heavy with Recharts dependency)
+const StatsOverview = lazy(() =>
+  import('./components/statistics/StatsOverview').then((m) => ({ default: m.StatsOverview }))
+);
 import { useRepositoryFilters } from './hooks/useRepositoryFilters';
 import { useRepositorySorting } from './hooks/useRepositorySorting';
 import useQueryUser from './apollo/useQueryUser';
@@ -96,80 +119,82 @@ function App() {
       label: 'Repositories',
       icon: '📦',
       content: (
-        <div className="space-y-6">
-          {/* Controls Row */}
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            {/* Filters */}
-            <div className="w-full lg:w-96">
-              <RepositoryFilters
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                onClearFilters={handleClearFilters}
-                hasActiveFilters={hasActiveFilters}
-                availableLanguages={Array.from(
-                  new Set(
-                    repositories
-                      .map((r) => r.primaryLanguage?.name)
-                      .filter((lang): lang is string => Boolean(lang))
-                  )
-                ).sort()}
-              />
-            </div>
+        <Suspense fallback={<LoadingState variant="card" count={3} />}>
+          <div className="space-y-6">
+            {/* Controls Row */}
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              {/* Filters */}
+              <div className="w-full lg:w-96">
+                <RepositoryFilters
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onClearFilters={handleClearFilters}
+                  hasActiveFilters={hasActiveFilters}
+                  availableLanguages={Array.from(
+                    new Set(
+                      repositories
+                        .map((r) => r.primaryLanguage?.name)
+                        .filter((lang): lang is string => Boolean(lang))
+                    )
+                  ).sort()}
+                />
+              </div>
 
-            {/* Sorting and View Toggle */}
-            <div className="flex flex-wrap items-center gap-3">
-              <RepositorySorting
-                sortBy={sorting.field}
-                sortDirection={sorting.direction}
-                onSortByChange={handleSortChange}
-                onSortDirectionChange={setSortDirection}
-                onToggleDirection={toggleDirection}
-              />
+              {/* Sorting and View Toggle */}
+              <div className="flex flex-wrap items-center gap-3">
+                <RepositorySorting
+                  sortBy={sorting.field}
+                  sortDirection={sorting.direction}
+                  onSortByChange={handleSortChange}
+                  onSortDirectionChange={setSortDirection}
+                  onToggleDirection={toggleDirection}
+                />
 
-              {/* View Mode Toggle */}
-              <div className="flex gap-1 rounded-lg border bg-background p-1">
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                  aria-label="List view"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  aria-label="Table view"
-                >
-                  <Table2 className="h-4 w-4" />
-                </Button>
+                {/* View Mode Toggle */}
+                <div className="flex gap-1 rounded-lg border bg-background p-1">
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    aria-label="List view"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'table' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('table')}
+                    aria-label="Table view"
+                  >
+                    <Table2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
+
+            {/* Repository Display */}
+            {viewMode === 'list' ? (
+              <RepositoryList repositories={paginatedRepositories} loading={loading} />
+            ) : (
+              <RepositoryTable repositories={paginatedRepositories} loading={loading} />
+            )}
+
+            {/* Pagination */}
+            {sortedRepositories.length > 0 && (
+              <RepositoryPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalItems={sortedRepositories.length}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(newSize) => {
+                  setPageSize(newSize);
+                  setCurrentPage(1);
+                }}
+              />
+            )}
           </div>
-
-          {/* Repository Display */}
-          {viewMode === 'list' ? (
-            <RepositoryList repositories={paginatedRepositories} loading={loading} />
-          ) : (
-            <RepositoryTable repositories={paginatedRepositories} loading={loading} />
-          )}
-
-          {/* Pagination */}
-          {sortedRepositories.length > 0 && (
-            <RepositoryPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              totalItems={sortedRepositories.length}
-              onPageChange={setCurrentPage}
-              onPageSizeChange={(newSize) => {
-                setPageSize(newSize);
-                setCurrentPage(1);
-              }}
-            />
-          )}
-        </div>
+        </Suspense>
       ),
     },
     {
@@ -177,14 +202,16 @@ function App() {
       label: 'Statistics',
       icon: '📊',
       content: (
-        <ErrorBoundary>
-          <StatsOverview
-            yearlyCommits={yearlyStats}
-            languages={languageStats}
-            activity={activityStats}
-            loading={loading}
-          />
-        </ErrorBoundary>
+        <Suspense fallback={<LoadingState variant="card" count={3} />}>
+          <ErrorBoundary>
+            <StatsOverview
+              yearlyCommits={yearlyStats}
+              languages={languageStats}
+              activity={activityStats}
+              loading={loading}
+            />
+          </ErrorBoundary>
+        </Suspense>
       ),
     },
   ];

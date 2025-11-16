@@ -5,16 +5,43 @@
 [![React](https://img.shields.io/badge/React-19.2.0-blue)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.1.2-purple)](https://vitejs.dev/)
-[![Tests](https://img.shields.io/badge/tests-33%20passed-success)](./src)
+[![Tests](https://img.shields.io/badge/tests-1302%20passed-success)](./src)
+[![Coverage](https://img.shields.io/badge/coverage-90.04%25-brightgreen)](./src)
 
 ## ✨ Features
 
+### Core Features
 - 🔍 **Search GitHub Users** - Find any public GitHub user by username
-- 📊 **Detailed Statistics** - View comprehensive profile information
-- 🎨 **Modern UI** - Built with shadcn/ui components (New York style)
-- 🌓 **Theme Support** - Dark and light mode with next-themes
+- 📊 **Comprehensive Statistics** - Detailed profile information with advanced analytics
+- 🎨 **Modern UI** - Built with 17+ shadcn/ui components (New York style)
+- 🌓 **Theme Support** - Dark and light mode with smooth transitions
 - ⚡ **Fast & Responsive** - Powered by Vite 7 and React 19
-- 🧪 **Fully Tested** - 33 unit tests + E2E tests with Playwright
+- 🧪 **Fully Tested** - 1302 tests with 90%+ coverage (Unit + Integration + E2E)
+
+### Advanced Features
+- 🎯 **Authenticity Score** - AI-powered analysis to detect genuine vs. forked/inactive profiles
+  - Original repositories percentage
+  - Activity score (recent contributions)
+  - Engagement metrics (stars, forks, watchers)
+  - Code ownership analysis (languages, commits, project size)
+
+- 🔎 **Advanced Repository Filtering**
+  - Filter by language, stars, fork status, archived status
+  - Search by name/description
+  - Filter by topics and last activity
+  - Smart filters for templates and inactive repos
+
+- 📈 **Visual Statistics & Charts**
+  - Commit activity charts (3-year history)
+  - Language usage breakdown with percentages
+  - Contribution activity timeline
+  - Repository engagement metrics
+
+- 📋 **Repository Management**
+  - Sortable table view (stars, forks, commits, updated, created)
+  - Pagination with configurable page size
+  - Card and table layout options
+  - Detailed repository metadata
 
 ## 🛠 Tech Stack
 
@@ -56,13 +83,25 @@ npm run storybook     # Storybook
 
 ## 🧪 Testing
 
-- ✅ 33 Unit Tests (Vitest + RTL)
-- ✅ E2E Tests (Playwright)
-- ✅ Test Coverage Available
+- ✅ **1302 Unit & Integration Tests** (Vitest + React Testing Library)
+- ✅ **39 E2E Tests** (Playwright - Chrome, Firefox, Safari)
+- ✅ **90.04% Test Coverage** (exceeds 90% goal)
+- ✅ **82+ Storybook Stories** (all UI components documented)
 
 ```bash
-npm run test:all      # Run all tests
+npm run test              # Unit tests (watch mode)
+npm run test:coverage     # Coverage report
+npm run test:e2e          # E2E tests (headless)
+npm run test:e2e:ui       # E2E tests (UI mode)
+npm run test:all          # All tests (unit + E2E)
+npm run storybook         # Component documentation
 ```
+
+**Test Breakdown:**
+- Utilities & Hooks: 95%+ coverage
+- Components: 85%+ coverage
+- Integration Tests: 80%+ coverage
+- E2E: All critical user flows
 
 ## 📚 Documentation
 
@@ -103,26 +142,78 @@ See [docs/mcp-setup.md](./docs/mcp-setup.md)
 
 ```
 src/
-├── apollo/              # Data layer (Apollo Client & GraphQL)
-│   ├── ApolloAppProvider.tsx    # Apollo Client setup
-│   ├── useQueryUser.ts          # Custom data-fetching hook
-│   ├── queriers.ts              # GraphQL queries
-│   ├── date-helpers.ts          # Date utilities
-│   └── github-api.types.ts      # TypeScript types
+├── apollo/                      # Data layer (Apollo Client & GraphQL)
+│   ├── ApolloAppProvider.tsx   # Apollo Client setup with link chain
+│   ├── useQueryUser.ts         # Custom data-fetching hook
+│   ├── queriers.ts             # GraphQL queries (GET_USER_INFO)
+│   ├── date-helpers.ts         # Date range utilities
+│   └── github-api.types.ts     # TypeScript types for GitHub API
 │
-├── components/          # Presentation layer
-│   ├── SearchForm.tsx           # Search input component
-│   ├── UserProfile.tsx          # User data display
-│   └── ui/                      # shadcn/ui components
+├── components/                  # React components (28+ components)
+│   ├── layout/                 # Layout components (7)
+│   │   ├── StatsCard.tsx       # Statistics card wrapper
+│   │   ├── Section.tsx         # Content section wrapper
+│   │   ├── MainTabs.tsx        # Tab navigation
+│   │   ├── EmptyState.tsx      # Empty state placeholder
+│   │   ├── ErrorState.tsx      # Error display
+│   │   ├── LoadingState.tsx    # Loading skeletons
+│   │   └── ThemeToggle.tsx     # Dark/light mode toggle
+│   │
+│   ├── user/                   # User profile components (6)
+│   │   ├── UserHeader.tsx      # Avatar, name, authenticity score
+│   │   ├── UserStats.tsx       # Followers, repos, gists
+│   │   ├── UserAuthenticity.tsx # Score breakdown
+│   │   ├── ContributionHistory.tsx # 3-year commit chart
+│   │   ├── RecentActivity.tsx  # Latest contributions
+│   │   └── UserProfile.tsx     # Main user view container
+│   │
+│   ├── repository/             # Repository components (7)
+│   │   ├── RepositoryCard.tsx  # Card layout view
+│   │   ├── RepositoryList.tsx  # List container
+│   │   ├── RepositoryTable.tsx # Table layout view
+│   │   ├── RepositoryFilters.tsx # Advanced filtering UI
+│   │   ├── RepositorySorting.tsx # Sort controls
+│   │   ├── RepositoryEmpty.tsx # Empty state for repos
+│   │   └── RepositoryPagination.tsx # Pagination controls
+│   │
+│   ├── statistics/             # Charts & analytics (4)
+│   │   ├── CommitChart.tsx     # Commit activity chart
+│   │   ├── LanguageChart.tsx   # Language usage pie chart
+│   │   ├── ActivityChart.tsx   # Contribution timeline
+│   │   └── StatsOverview.tsx   # Summary statistics
+│   │
+│   ├── ui/                     # shadcn/ui components (17+)
+│   │   ├── button.tsx          # Button component
+│   │   ├── card.tsx            # Card component
+│   │   ├── tabs.tsx            # Tabs component
+│   │   ├── table.tsx           # Table component
+│   │   └── ...                 # + 13 more components
+│   │
+│   └── SearchForm.tsx          # Search input component
 │
-├── lib/                 # Utilities
-│   └── utils.ts                 # Helper functions
+├── lib/                        # Utility functions
+│   ├── authenticity.ts         # Authenticity score calculation
+│   ├── repository-filters.ts   # Repository filtering logic
+│   ├── statistics.ts           # Statistical calculations
+│   ├── constants.ts            # Language colors, constants
+│   └── utils.ts                # Helper functions (cn)
 │
-└── test/               # Test setup
-    └── setup.ts
+├── hooks/                      # Custom React hooks
+│   ├── useAuthenticityScore.ts # Calculate authenticity score
+│   ├── useRepositoryFilters.ts # Repository filtering state
+│   └── useRepositorySorting.ts # Repository sorting state
+│
+├── types/                      # TypeScript type definitions
+│   ├── filters.ts              # Filter & sort types
+│   └── metrics.ts              # Statistics types
+│
+└── test/                       # Test utilities
+    ├── setup.ts                # Vitest setup
+    └── mocks/
+        └── github-data.ts      # Centralized mock data
 
-e2e/                    # Playwright E2E tests
-docs/                   # Documentation
+e2e/                            # Playwright E2E tests
+docs/                           # Comprehensive documentation
 ```
 
 ## 🏗️ Architecture

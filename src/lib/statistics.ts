@@ -434,10 +434,14 @@ export function getCommitStatsSummary(
  */
 export function formatNumber(value: number): string {
   if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(1)}M`;
+    const formatted = (value / 1000000).toFixed(1);
+    // Remove .0 if the decimal is .0
+    return formatted.endsWith('.0') ? `${formatted.slice(0, -2)}M` : `${formatted}M`;
   }
   if (value >= 1000) {
-    return `${(value / 1000).toFixed(1)}k`;
+    const formatted = (value / 1000).toFixed(1);
+    // Remove .0 if the decimal is .0
+    return formatted.endsWith('.0') ? `${formatted.slice(0, -2)}K` : `${formatted}K`;
   }
   return value.toString();
 }
