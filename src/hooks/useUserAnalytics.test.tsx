@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { useUserAnalytics } from './useUserAnalytics'
@@ -6,36 +6,16 @@ import { GET_USER_PROFILE } from '@/apollo/queries/userProfile'
 import { GET_YEAR_CONTRIBUTIONS } from '@/apollo/queries/yearContributions'
 import type { ReactNode } from 'react'
 
-// Mock date-utils to control year ranges
-vi.mock('@/lib/date-utils', () => ({
-  generateYearRanges: vi.fn((createdAt: string) => {
-    // Always return 2023-2025 for consistent testing
-    return [
-      {
-        year: 2023,
-        from: '2023-01-01T00:00:00Z',
-        to: '2023-12-31T23:59:59Z',
-        label: '2023',
-      },
-      {
-        year: 2024,
-        from: '2024-01-01T00:00:00Z',
-        to: '2024-12-31T23:59:59Z',
-        label: '2024',
-      },
-      {
-        year: 2025,
-        from: '2025-01-01T00:00:00Z',
-        to: '2025-11-17T12:00:00Z',
-        label: '2025',
-      },
-    ]
-  }),
-}))
-
 describe('useUserAnalytics', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Fix system time to ensure consistent year ranges
+    // This allows us to use REAL date-utils instead of mocking internal modules
+    vi.setSystemTime(new Date('2025-11-17T12:00:00Z'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   const createMockProfileResponse = (login: string): MockedResponse => ({
@@ -145,9 +125,10 @@ describe('useUserAnalytics', () => {
     const username = 'testuser'
     const mocks = [
       createMockProfileResponse(username),
-      createMockYearResponse(username, 2023, '2023-01-01T00:00:00Z', '2023-12-31T23:59:59Z'),
-      createMockYearResponse(username, 2024, '2024-01-01T00:00:00Z', '2024-12-31T23:59:59Z'),
-      createMockYearResponse(username, 2025, '2025-01-01T00:00:00Z', '2025-11-17T12:00:00Z'),
+      // Real generateYearRanges returns dates with .000Z format
+      createMockYearResponse(username, 2023, '2023-01-01T00:00:00.000Z', '2023-12-31T23:59:59.000Z'),
+      createMockYearResponse(username, 2024, '2024-01-01T00:00:00.000Z', '2024-12-31T23:59:59.000Z'),
+      createMockYearResponse(username, 2025, '2025-01-01T00:00:00.000Z', '2025-11-17T12:00:00.000Z'),
     ]
 
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -186,9 +167,9 @@ describe('useUserAnalytics', () => {
     const username = 'testuser'
     const mocks = [
       createMockProfileResponse(username),
-      createMockYearResponse(username, 2023, '2023-01-01T00:00:00Z', '2023-12-31T23:59:59Z'),
-      createMockYearResponse(username, 2024, '2024-01-01T00:00:00Z', '2024-12-31T23:59:59Z'),
-      createMockYearResponse(username, 2025, '2025-01-01T00:00:00Z', '2025-11-17T12:00:00Z'),
+      createMockYearResponse(username, 2023, '2023-01-01T00:00:00.000Z', '2023-12-31T23:59:59.000Z'),
+      createMockYearResponse(username, 2024, '2024-01-01T00:00:00.000Z', '2024-12-31T23:59:59.000Z'),
+      createMockYearResponse(username, 2025, '2025-01-01T00:00:00.000Z', '2025-11-17T12:00:00.000Z'),
     ]
 
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -238,9 +219,9 @@ describe('useUserAnalytics', () => {
     const username = 'testuser'
     const mocks = [
       createMockProfileResponse(username),
-      createMockYearResponse(username, 2023, '2023-01-01T00:00:00Z', '2023-12-31T23:59:59Z'),
-      createMockYearResponse(username, 2024, '2024-01-01T00:00:00Z', '2024-12-31T23:59:59Z'),
-      createMockYearResponse(username, 2025, '2025-01-01T00:00:00Z', '2025-11-17T12:00:00Z'),
+      createMockYearResponse(username, 2023, '2023-01-01T00:00:00.000Z', '2023-12-31T23:59:59.000Z'),
+      createMockYearResponse(username, 2024, '2024-01-01T00:00:00.000Z', '2024-12-31T23:59:59.000Z'),
+      createMockYearResponse(username, 2025, '2025-01-01T00:00:00.000Z', '2025-11-17T12:00:00.000Z'),
     ]
 
     const wrapper = ({ children }: { children: ReactNode }) => (

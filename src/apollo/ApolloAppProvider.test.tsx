@@ -119,9 +119,22 @@ describe('ApolloAppProvider', () => {
       // Mock console.error to avoid noise in test output
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      // Mock a GraphQL error response
-      const mockError = new Error('GraphQL Error: Field not found')
-      mockError.name = 'ApolloError'
+      // Mock fetch to return GraphQL error with proper Response object
+      const responseBody = JSON.stringify({
+        errors: [
+          {
+            message: 'Field not found',
+            extensions: {},
+          },
+        ],
+      })
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: async () => responseBody,
+        json: async () => JSON.parse(responseBody),
+      } as Response)
 
       // Create a component that triggers an error
       function ErrorComponent() {
@@ -145,7 +158,13 @@ describe('ApolloAppProvider', () => {
         expect(screen.getByText(/Error:/)).toBeInTheDocument()
       }, { timeout: 3000 })
 
+      // Verify toast.error was called
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Field not found'))
+      // Verify console.error was called
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Field not found'))
+
       consoleErrorSpy.mockRestore()
+      vi.restoreAllMocks()
     })
 
     it('should clear token on UNAUTHENTICATED GraphQL error', async () => {
@@ -156,38 +175,88 @@ describe('ApolloAppProvider', () => {
       // Mock console.error to avoid noise
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      // Note: We can't easily mock the GraphQL response to include UNAUTHENTICATED code
-      // without using MockedProvider with specific error mocks
-      // This test verifies the localStorage setup
-      expect(localStorage.getItem('github_token')).toBe(testToken)
+      // Mock fetch to return UNAUTHENTICATED error with proper Response object
+      const responseBody = JSON.stringify({
+        errors: [
+          {
+            message: 'Must be authenticated',
+            extensions: { code: 'UNAUTHENTICATED' },
+          },
+        ],
+      })
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: async () => responseBody,
+        json: async () => JSON.parse(responseBody),
+      } as Response)
+
+      // Create component that triggers query
+      function AuthErrorComponent() {
+        const { data, loading, error } = useQuery(TEST_QUERY, {
+          fetchPolicy: 'network-only',
+        })
+
+        if (loading) return <div>Loading...</div>
+        if (error) return <div>Error: {error.message}</div>
+        return <div>Data: {data?.test}</div>
+      }
 
       render(
         <ApolloAppProvider>
-          <TestComponent />
+          <AuthErrorComponent />
         </ApolloAppProvider>
       )
 
-      // Apollo Client is initialized
-      expect(screen.getByText('Loading...')).toBeInTheDocument()
+      // Wait for error and token removal
+      await waitFor(() => {
+        expect(localStorage.getItem('github_token')).toBeNull()
+      }, { timeout: 3000 })
+
+      // Verify toast.error was called
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Must be authenticated'))
 
       consoleErrorSpy.mockRestore()
+      vi.restoreAllMocks()
     })
 
     it('should handle network errors and show toast', async () => {
       // Mock console.error
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
+      // Mock fetch to throw network error
+      const networkError = new Error('Failed to fetch')
+      networkError.name = 'TypeError'
+      global.fetch = vi.fn().mockRejectedValue(networkError)
+
+      // Create component that triggers query
+      function NetworkErrorComponent() {
+        const { data, loading, error } = useQuery(TEST_QUERY, {
+          fetchPolicy: 'network-only',
+        })
+
+        if (loading) return <div>Loading...</div>
+        if (error) return <div>Error: {error.message}</div>
+        return <div>Data: {data?.test}</div>
+      }
+
       render(
         <ApolloAppProvider>
-          <TestComponent />
+          <NetworkErrorComponent />
         </ApolloAppProvider>
       )
 
-      // Network errors would be triggered by actual failed requests
-      // In this test, we verify the component renders
-      expect(screen.getByText('Loading...')).toBeInTheDocument()
+      // Wait for network error to be processed
+      await waitFor(() => {
+        expect(screen.getByText(/Error:/)).toBeInTheDocument()
+      }, { timeout: 3000 })
+
+      // Verify toast.error was called
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Network error'))
 
       consoleErrorSpy.mockRestore()
+      vi.restoreAllMocks()
     })
 
     it('should clear token on 401 network error', async () => {
@@ -198,60 +267,187 @@ describe('ApolloAppProvider', () => {
       // Mock console.error
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      expect(localStorage.getItem('github_token')).toBe(testToken)
+      // Mock fetch to return 401 error
+      const error401 = new Error('Unauthorized')
+      error401.name = 'ServerError'
+      ;(error401 as any).statusCode = 401
+      global.fetch = vi.fn().mockRejectedValue(error401)
+
+      // Create component that triggers query
+      function Unauthorized401Component() {
+        const { data, loading, error } = useQuery(TEST_QUERY, {
+          fetchPolicy: 'network-only',
+        })
+
+        if (loading) return <div>Loading...</div>
+        if (error) return <div>Error: {error.message}</div>
+        return <div>Data: {data?.test}</div>
+      }
 
       render(
         <ApolloAppProvider>
-          <TestComponent />
+          <Unauthorized401Component />
         </ApolloAppProvider>
       )
 
-      // Component should render
-      expect(screen.getByText('Loading...')).toBeInTheDocument()
+      // Wait for error and token removal
+      await waitFor(() => {
+        expect(localStorage.getItem('github_token')).toBeNull()
+      }, { timeout: 3000 })
+
+      // Verify toast.error was called
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Network error'))
 
       consoleErrorSpy.mockRestore()
+      vi.restoreAllMocks()
     })
 
-    it('should call toast.error when GraphQL error occurs', async () => {
+    it('should handle multiple GraphQL errors in single response', async () => {
       // Mock console.error
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
+      // Mock fetch to return multiple GraphQL errors with proper Response object
+      const responseBody = JSON.stringify({
+        errors: [
+          { message: 'First error', extensions: {} },
+          { message: 'Second error', extensions: {} },
+        ],
+      })
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: async () => responseBody,
+        json: async () => JSON.parse(responseBody),
+      } as Response)
+
+      function MultiErrorComponent() {
+        const { data, loading, error } = useQuery(TEST_QUERY, {
+          fetchPolicy: 'network-only',
+        })
+
+        if (loading) return <div>Loading...</div>
+        if (error) return <div>Error: {error.message}</div>
+        return <div>Data: {data?.test}</div>
+      }
+
       render(
         <ApolloAppProvider>
-          <TestComponent />
+          <MultiErrorComponent />
         </ApolloAppProvider>
       )
 
-      // Wait for component to render
+      // Wait for error
       await waitFor(() => {
-        expect(screen.getByText(/Loading...|Error:|Data:/)).toBeInTheDocument()
-      })
+        expect(screen.getByText(/Error:/)).toBeInTheDocument()
+      }, { timeout: 3000 })
 
-      // toast.error would be called if there was an actual error
-      // We verify the mock exists
-      expect(toast.error).toBeDefined()
+      // Verify both errors were logged
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('First error'))
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Second error'))
 
       consoleErrorSpy.mockRestore()
+      vi.restoreAllMocks()
     })
 
-    it('should log errors to console.error', async () => {
+    it('should only clear token once for UNAUTHENTICATED error', async () => {
+      // Set up token in localStorage
+      localStorage.setItem('github_token', 'test-token')
+
+      // Mock console.error
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      // Spy on localStorage.removeItem
+      const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem')
+
+      // Mock fetch to return UNAUTHENTICATED error with proper Response object
+      const responseBody = JSON.stringify({
+        errors: [
+          {
+            message: 'Unauthorized',
+            extensions: { code: 'UNAUTHENTICATED' },
+          },
+        ],
+      })
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: async () => responseBody,
+        json: async () => JSON.parse(responseBody),
+      } as Response)
+
+      function SingleAuthErrorComponent() {
+        const { data, loading, error } = useQuery(TEST_QUERY, {
+          fetchPolicy: 'network-only',
+        })
+
+        if (loading) return <div>Loading...</div>
+        if (error) return <div>Error: {error.message}</div>
+        return <div>Data: {data?.test}</div>
+      }
+
+      render(
+        <ApolloAppProvider>
+          <SingleAuthErrorComponent />
+        </ApolloAppProvider>
+      )
+
+      // Wait for error
+      await waitFor(() => {
+        expect(localStorage.getItem('github_token')).toBeNull()
+      }, { timeout: 3000 })
+
+      // Verify removeItem was called exactly once
+      expect(removeItemSpy).toHaveBeenCalledWith('github_token')
+      expect(removeItemSpy).toHaveBeenCalledTimes(1)
+
+      consoleErrorSpy.mockRestore()
+      removeItemSpy.mockRestore()
+      vi.restoreAllMocks()
+    })
+
+    it('should log console.error for all error types', async () => {
       // Spy on console.error
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
+      // Mock fetch to return GraphQL error with proper Response object
+      const responseBody = JSON.stringify({
+        errors: [{ message: 'Test error', extensions: {} }],
+      })
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: async () => responseBody,
+        json: async () => JSON.parse(responseBody),
+      } as Response)
+
+      function LogErrorComponent() {
+        const { data, loading, error } = useQuery(TEST_QUERY, {
+          fetchPolicy: 'network-only',
+        })
+
+        if (loading) return <div>Loading...</div>
+        if (error) return <div>Error: {error.message}</div>
+        return <div>Data: {data?.test}</div>
+      }
+
       render(
         <ApolloAppProvider>
-          <TestComponent />
+          <LogErrorComponent />
         </ApolloAppProvider>
       )
 
-      // Wait for rendering
+      // Wait for error
       await waitFor(() => {
-        expect(screen.getByText(/Loading...|Error:|Data:/)).toBeInTheDocument()
-      })
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          expect.stringContaining('[GraphQL error]: Test error')
+        )
+      }, { timeout: 3000 })
 
-      // If errors occurred, console.error would be called
-      // Restore the spy
       consoleErrorSpy.mockRestore()
+      vi.restoreAllMocks()
     })
   })
 
