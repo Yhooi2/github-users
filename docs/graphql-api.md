@@ -1,5 +1,10 @@
 # GitHub GraphQL API Documentation
 
+**📚 Related Documentation:**
+- [Apollo Client Guide](./apollo-client-guide.md) - Apollo Client setup, hooks, and error handling
+- [Architecture Overview](./architecture.md) - Data layer architecture
+- [Dependencies Overview](./dependencies.md) - Apollo Client version and configuration
+
 ## Overview
 
 This document describes the GraphQL query used in the git-user-info application to fetch GitHub user data. The application uses a single comprehensive query (`GET_USER_INFO`) that retrieves profile information, contribution statistics, and repository data.
