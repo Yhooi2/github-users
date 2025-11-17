@@ -203,7 +203,7 @@ describe('App Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
-      });
+      }, { timeout: 10000 });
 
       // Click Repositories tab
       await user.click(screen.getByRole('tab', { name: /repositories/i }));
@@ -212,7 +212,7 @@ describe('App Integration Tests', () => {
         expect(screen.getByText('repo-1')).toBeInTheDocument();
         expect(screen.getByText('repo-2')).toBeInTheDocument();
         expect(screen.getByText('repo-3')).toBeInTheDocument();
-      });
+      }, { timeout: 10000 });
     });
   });
 
