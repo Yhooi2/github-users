@@ -6,6 +6,114 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 GitHub User Info - React application for searching GitHub users via GraphQL API with Apollo Client. Built with React 19, TypeScript, Vite 7, and Tailwind CSS v4.
 
+## Development Philosophy & Principles
+
+### Core Workflow: Component → Storybook → Test
+
+**This project follows a strict development order that MUST be maintained:**
+
+1. **Component First** - Write the component with TypeScript types
+2. **Storybook Second** - Create `.stories.tsx` with all states/variants
+3. **Test Last** - Write `.test.tsx` based on Storybook stories
+4. **Build Storybook** - Run `npm run build-storybook` before testing
+5. **Run Tests** - Verify all tests pass with `npm test`
+
+**Why This Order?**
+
+- ✅ Storybook serves as visual documentation AND test specification
+- ✅ Stories define all component states (loading, error, success, edge cases)
+- ✅ Tests verify what Stories demonstrate
+- ✅ Forces thinking about all use cases before writing tests
+- ✅ MCP integration requires built Storybook for component discovery
+
+**Example Workflow:**
+
+```bash
+# 1. Create component
+touch src/components/MyComponent.tsx
+
+# 2. Create story
+touch src/components/MyComponent.stories.tsx
+
+# 3. Build Storybook (required for MCP)
+npm run build-storybook
+
+# 4. Create test based on stories
+touch src/components/MyComponent.test.tsx
+
+# 5. Run tests
+npm test MyComponent.test.tsx
+```
+
+**Never skip Storybook!** Even for simple components. This ensures:
+- Visual regression testing capability
+- Complete documentation
+- All edge cases covered
+- MCP integration works
+
+### Quality Standards
+
+**Test Coverage:**
+- ✅ Minimum 90% coverage for all new code
+- ✅ 100% coverage for calculation functions (metrics, utilities)
+- ✅ Current baseline: 99.85% test pass rate (1302/1304 tests)
+
+**TypeScript:**
+- ✅ Strict mode enabled
+- ✅ No `any` types allowed
+- ✅ Props use capitalized `Props` type
+- ✅ All event handlers properly typed
+
+**Component Standards:**
+- ✅ Use shadcn/ui components (New York style) when possible
+- ✅ Follow existing component patterns (see `UserAuthenticity.tsx` as template)
+- ✅ Include loading, error, and empty states
+- ✅ Accessibility: WCAG 2.1 AA compliance
+
+**Code Reusability:**
+- ✅ Check existing components before creating new ones (`npm run storybook`)
+- ✅ Reuse calculation patterns (see `src/lib/authenticity.ts` as template)
+- ✅ Extend existing helpers instead of duplicating (e.g., date-helpers)
+- ✅ Use existing utility functions from `src/lib/statistics.ts`
+
+### MCP Integration Requirements
+
+**Active MCP Servers:**
+1. **Playwright MCP** - E2E test automation
+2. **Storybook MCP** - Component documentation (requires `npm run build-storybook`)
+3. **shadcn UI MCP** - UI component library docs
+4. **Vite MCP** - Auto-runs with dev server
+5. **Context7 MCP** - Library documentation lookup
+6. **Graphiti Memory MCP** - Project knowledge persistence
+
+**MCP Usage Pattern:**
+- Query shadcn MCP before creating UI components
+- Query Context7 MCP for library API documentation (Apollo, Recharts, etc.)
+- Build Storybook before using Storybook MCP
+- Update Graphiti Memory with important project decisions
+
+### Architectural Decisions
+
+**What NOT to Change:**
+- ✅ Apollo Client 3.14.0 setup (working error handling, auth, cache)
+- ✅ Component → Story → Test workflow (proven with 99.85% pass rate)
+- ✅ shadcn/ui (New York style) consistency
+- ✅ TypeScript strict mode configuration
+- ✅ Existing calculation patterns (`authenticity.ts` as template)
+
+**When Adding New Features:**
+1. Check if similar component exists in Storybook
+2. Reuse existing patterns (see `docs/component-development.md`)
+3. Follow the Component → Story → Test workflow
+4. Update documentation if adding new patterns
+5. Run full test suite before committing
+
+**Migration Strategy:**
+- Incremental over full replacement
+- Keep old code working while adding new
+- Feature flags for gradual rollout
+- Always maintain deployable `alt-main` branch
+
 ## Development Commands
 
 ### Essential Commands
