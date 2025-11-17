@@ -2381,24 +2381,115 @@ export function calculateOverallRank(
 
 ---
 
-## Phase 3: Core Components (P0)
+## Phase 3: UI Components v2.0 (P0)
 
 **Priority:** P0 (Critical)
 
+**Time:** 3 days (increased from 2 days for strict testing)
+
+**Dependencies:** Phase 2 (Metrics v2.0 - all 4 metrics + Overall Rank)
+
+**Goal:** Build 7 components with MANDATORY Component → Story → Test workflow
+
 **Note:** Use `src/components/UserAuthenticity.tsx` as the **UI template**! It already has the exact card layout we need.
 
-### Component Development Workflow
+---
 
-**For EVERY component:**
+### Component Development Protocol (MANDATORY)
 
-1. Check shadcn MCP for similar component
-2. Write component with TypeScript
-3. Write Storybook story (all states)
-4. Build Storybook: `npm run build-storybook`
-5. Write tests (based on stories)
-6. Run tests: `npm test`
-7. MCP Check (optional)
-8. Document learnings
+**⚠️ CRITICAL: For EVERY component in Phase 3, you MUST follow this exact order:**
+
+1. ✅ **Component Implementation** (TypeScript)
+   - Use TypeScript strict mode
+   - Follow existing patterns from `UserAuthenticity.tsx`
+   - Use shadcn/ui components (Card, Progress, Badge, Alert)
+   - Add ARIA labels for accessibility
+   - Time: 1-2 hours per component
+
+2. ✅ **Storybook Stories** (MINIMUM 3 stories per component)
+   - Story 1: Default state
+   - Story 2: Loading state
+   - Story 3: Error/Edge case state
+   - Additional stories for variants
+   - Add controls for props
+   - Time: 30 minutes per component
+
+3. ✅ **Build Storybook** (REQUIRED after every 2 components)
+   ```bash
+   npm run build-storybook
+   # This creates storybook-static/index.json
+   # Required for Storybook MCP to index component
+   ```
+
+4. ✅ **Unit Tests** (MINIMUM 10 tests per component)
+   - Test all stories (if story renders, test should pass)
+   - Test user interactions (clicks, inputs, form submissions)
+   - Test edge cases (empty data, long text, etc.)
+   - Coverage target: **90%+ for UI**, **100% for logic**
+   - Time: 1 hour per component
+
+5. ✅ **Verify Coverage**
+   ```bash
+   npm run test:coverage
+   # Check coverage report for this component
+   # Must meet targets before moving to next component
+   ```
+
+6. ✅ **MCP Verification** (Optional but recommended)
+   - Query Storybook MCP: "Show me [ComponentName] component"
+   - Verify component is indexed
+   - Check documentation completeness
+
+**❌ DO NOT proceed to next component until ALL 6 steps complete!**
+
+This ensures:
+- Quality code (100% logic coverage)
+- No regressions (90%+ UI coverage)
+- Documentation (Storybook stories)
+- Accessibility (ARIA labels tested)
+
+---
+
+### Phase 3 Components (7 total)
+
+**List of components to build:**
+1. **FraudAlert** - Shows fraud detection results (5 stories: Clean, Low, Medium, High, Critical)
+2. **ActivityMetricCard** - Activity Score v2.0 display (5 stories)
+3. **ImpactMetricCard** - Impact Score v2.0 display (5 stories)
+4. **QualityMetricCard** - Quality Score v2.0 display (5 stories)
+5. **GrowthMetricCard** - Growth Score v2.0 display (5 stories, including Declining)
+6. **OverallRankCard** - Developer rank classification (5 stories: Junior to Principal)
+7. **QuickAssessment** - Integration component (3 stories)
+
+---
+
+### Timeline Breakdown (3 days total)
+
+| Day | Components | Hours | Breakdown |
+|-----|------------|-------|-----------|
+| **Day 1** | FraudAlert + ActivityMetricCard | 7h | FraudAlert (2h impl + 0.5h story + 1h test) + ActivityMetricCard (2h impl + 0.5h story + 1h test) |
+| **Day 2** | ImpactMetricCard + QualityMetricCard | 7h | Impact (1.5h + 0.5h + 1h) + Quality (1.5h + 0.5h + 1h) |
+| **Day 3** | GrowthMetricCard + OverallRankCard + QuickAssessment | 8h | Growth (1.5h + 0.5h + 1h) + Rank (2h + 0.5h + 1h) + Quick (1.5h + 0.5h + 1h) |
+| **TOTAL** | 7 components | 22h (~3 days) | Implementation: 12h, Stories: 3.5h, Tests: 7h |
+
+---
+
+### Storybook Build Checkpoints
+
+**After every 2 components, run:**
+```bash
+npm run build-storybook
+# Verify: storybook-static/index.json updated
+# Verify: All stories render without errors
+# Verify: No console errors in Storybook UI
+```
+
+**Checkpoints:**
+1. After FraudAlert + ActivityMetricCard (Day 1)
+2. After ImpactMetricCard + QualityMetricCard (Day 2)
+3. After all 7 components (Day 3 end)
+
+This ensures MCP can index components incrementally.
 
 ---
 
@@ -2674,11 +2765,25 @@ Follow same workflow for:
 
 ---
 
-## Phase 4: Timeline Components (P1)
+## Phase 4: Timeline Components ⏸️ DEFERRED to Phase 7+
 
-**Priority:** P1 (Important)
+**Status:** 🔄 **DEFERRED** (Not critical for MVP)
 
-**Note:** Reuse `RepositoryCard` for project display in expanded year view. Recharts already configured for mini-charts.
+**Priority:** P3 (Optional - Future Enhancement)
+
+**Why Deferred:**
+- **Not MVP Critical**: Quick Assessment (Phases 0-3) provides core value without timeline
+- **Requires Year-by-Year Data**: Needs alternative implementation from `docs/PHASE_1_ALTERNATIVE_YEAR_BY_YEAR.md`
+- **High Development Cost**: 2 days for optional feature
+- **User Feedback Needed**: Validate demand before building
+
+**When to Implement:**
+- ✅ After Phases 0-3, 5-6 complete and deployed
+- ✅ User feedback requests historical timeline view
+- ✅ Year-by-year GraphQL architecture approved (see PHASE_1_ALTERNATIVE_YEAR_BY_YEAR.md)
+- ✅ Rate limit concerns resolved (OAuth or caching strategy)
+
+**Note:** Implementation details preserved below for future reference. Reuses `RepositoryCard` for project display. Recharts already configured for mini-charts.
 
 ### Step 4.1: ActivityTimeline
 
@@ -2792,15 +2897,20 @@ Show:
 - Language distribution
 - Monthly activity (if data available)
 
-**Deliverables:**
+**Deliverables (Future Implementation):**
 - [ ] ActivityTimeline component
 - [ ] TimelineYear (collapsible with CSS transitions)
 - [ ] YearExpandedView (reuses RepositoryCard)
 - [ ] Smooth expand/collapse animation
-- [ ] Stories + Tests
+- [ ] Stories + Tests (following Phase 3 MANDATORY protocol)
 - [ ] Works with all account ages (2-10+ years)
 
-**Estimated Time:** **2 days** (reduced from 2-3 days - RepositoryCard exists, Recharts configured)
+**Estimated Time:** **2 days** (when implemented in Phase 7+)
+
+**Dependencies:**
+- Requires year-by-year GraphQL architecture (see `docs/PHASE_1_ALTERNATIVE_YEAR_BY_YEAR.md`)
+- Requires `useUserAnalytics()` hook implementation
+- Consider rate limit impact before implementing
 
 ---
 
@@ -2960,6 +3070,443 @@ export function ProjectCard({ repo, type }: ProjectCardProps) {
 
 ---
 
+## Phase 5.5: OAuth Migration Strategy ⏸️ FUTURE
+
+**Status:** 🔄 **FUTURE** (Post-MVP Enhancement)
+
+**Priority:** P2 (Important for Production Security)
+
+**Goal:** Migrate from PAT (Personal Access Token) to GitHub OAuth App for secure, scalable authentication
+
+### Why OAuth?
+
+**Current Security Issues (PAT):**
+- ❌ **Token in Bundle**: `VITE_GITHUB_TOKEN` embedded in client JavaScript (evidence: `grep "ghp_" dist/assets/*.js`)
+- ❌ **Rate Limit Shared**: All users share same 5000 req/hour limit
+- ❌ **No User Consent**: Users can't authenticate with their own GitHub account
+- ❌ **Token Rotation**: Manual rotation required, no expiration mechanism
+
+**OAuth Benefits:**
+- ✅ **Secure Flow**: Token never exposed in client bundle
+- ✅ **Per-User Rate Limit**: Each user gets 5000 req/hour (scalability!)
+- ✅ **User Consent**: Users authenticate with GitHub login
+- ✅ **Token Refresh**: Automatic token refresh with refresh tokens
+- ✅ **Scopes Control**: Request only `read:user` scope (minimal permissions)
+
+### Architecture Overview
+
+**Components:**
+1. **GitHub OAuth App** (created in GitHub Settings)
+2. **Backend Proxy** (Vercel Functions - already in Phase 0!)
+3. **OAuth Callback Route** (`/api/auth/callback`)
+4. **Token Storage** (Vercel KV with expiration)
+5. **Frontend OAuth Flow** (`useGitHubAuth` hook)
+
+### Implementation Steps
+
+#### Step 5.5.1: Create GitHub OAuth App
+
+**Location:** https://github.com/settings/developers
+
+**Settings:**
+- **Application name:** "GitHub User Analytics"
+- **Homepage URL:** `https://your-app.vercel.app`
+- **Authorization callback URL:** `https://your-app.vercel.app/api/auth/callback`
+- **Scopes:** `read:user` (read-only access to user profile)
+
+**Outputs:**
+- `GITHUB_CLIENT_ID` (public, safe to expose)
+- `GITHUB_CLIENT_SECRET` (secret, store in Vercel env vars)
+
+---
+
+#### Step 5.5.2: Backend OAuth Endpoints
+
+**File:** `api/auth/login.ts` (Vercel Function)
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const clientId = process.env.GITHUB_CLIENT_ID
+  const redirectUri = `${process.env.VERCEL_URL}/api/auth/callback`
+
+  const githubAuthUrl = new URL('https://github.com/login/oauth/authorize')
+  githubAuthUrl.searchParams.set('client_id', clientId)
+  githubAuthUrl.searchParams.set('redirect_uri', redirectUri)
+  githubAuthUrl.searchParams.set('scope', 'read:user')
+
+  return NextResponse.redirect(githubAuthUrl.toString())
+}
+```
+
+**File:** `api/auth/callback.ts` (Vercel Function)
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+import { kv } from '@vercel/kv'
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const code = searchParams.get('code')
+
+  if (!code) {
+    return NextResponse.json({ error: 'No code provided' }, { status: 400 })
+  }
+
+  // Exchange code for access token
+  const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+    }),
+  })
+
+  const { access_token } = await tokenResponse.json()
+
+  // Generate session ID
+  const sessionId = crypto.randomUUID()
+
+  // Store token in Vercel KV (expires in 7 days)
+  await kv.set(`session:${sessionId}`, access_token, { ex: 604800 })
+
+  // Redirect to frontend with session ID
+  const frontendUrl = new URL('/', process.env.VERCEL_URL!)
+  frontendUrl.searchParams.set('session', sessionId)
+
+  return NextResponse.redirect(frontendUrl.toString())
+}
+```
+
+**File:** `api/auth/logout.ts` (Vercel Function)
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+import { kv } from '@vercel/kv'
+
+export async function POST(request: NextRequest) {
+  const { sessionId } = await request.json()
+
+  if (sessionId) {
+    await kv.del(`session:${sessionId}`)
+  }
+
+  return NextResponse.json({ success: true })
+}
+```
+
+---
+
+#### Step 5.5.3: Update Backend Proxy (from Phase 0)
+
+**File:** `api/graphql.ts` (updated)
+
+```typescript
+import { kv } from '@vercel/kv'
+
+export async function POST(request: Request) {
+  const sessionId = request.headers.get('X-Session-ID')
+
+  if (!sessionId) {
+    return new Response(
+      JSON.stringify({ error: 'No session ID provided' }),
+      { status: 401 }
+    )
+  }
+
+  // Retrieve token from Vercel KV
+  const token = await kv.get<string>(`session:${sessionId}`)
+
+  if (!token) {
+    return new Response(
+      JSON.stringify({ error: 'Invalid or expired session' }),
+      { status: 401 }
+    )
+  }
+
+  const body = await request.json()
+
+  const response = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`, // Use user's OAuth token
+    },
+    body: JSON.stringify(body),
+  })
+
+  // ... rest of proxy logic
+}
+```
+
+---
+
+#### Step 5.5.4: Frontend OAuth Hook
+
+**File:** `src/hooks/useGitHubAuth.ts`
+
+```typescript
+import { useState, useEffect } from 'react'
+
+interface AuthState {
+  isAuthenticated: boolean
+  sessionId: string | null
+  loading: boolean
+}
+
+export function useGitHubAuth() {
+  const [auth, setAuth] = useState<AuthState>({
+    isAuthenticated: false,
+    sessionId: null,
+    loading: true,
+  })
+
+  useEffect(() => {
+    // Check for session ID in URL (from OAuth callback)
+    const urlParams = new URLSearchParams(window.location.search)
+    const sessionId = urlParams.get('session')
+
+    if (sessionId) {
+      // Store session ID in localStorage
+      localStorage.setItem('github_session', sessionId)
+
+      // Remove from URL
+      window.history.replaceState({}, '', window.location.pathname)
+
+      setAuth({ isAuthenticated: true, sessionId, loading: false })
+      return
+    }
+
+    // Check for existing session ID in localStorage
+    const storedSessionId = localStorage.getItem('github_session')
+
+    if (storedSessionId) {
+      setAuth({ isAuthenticated: true, sessionId: storedSessionId, loading: false })
+    } else {
+      setAuth({ isAuthenticated: false, sessionId: null, loading: false })
+    }
+  }, [])
+
+  const login = () => {
+    window.location.href = '/api/auth/login'
+  }
+
+  const logout = async () => {
+    if (auth.sessionId) {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: auth.sessionId }),
+      })
+    }
+
+    localStorage.removeItem('github_session')
+    setAuth({ isAuthenticated: false, sessionId: null, loading: false })
+  }
+
+  return { ...auth, login, logout }
+}
+```
+
+---
+
+#### Step 5.5.5: Update Apollo Client
+
+**File:** `src/apollo/ApolloAppProvider.tsx` (updated)
+
+```typescript
+import { setContext } from '@apollo/client/link/context'
+
+const authLink = setContext((_, { headers }) => {
+  const sessionId = localStorage.getItem('github_session')
+
+  return {
+    headers: {
+      ...headers,
+      'X-Session-ID': sessionId || '', // Send session ID to backend proxy
+    },
+  }
+})
+
+const httpLink = createHttpLink({
+  uri: '/api/graphql', // Use backend proxy (not GitHub API directly!)
+})
+
+const client = new ApolloClient({
+  link: ApolloLink.from([errorLink, authLink, httpLink]),
+  cache: new InMemoryCache(),
+})
+```
+
+---
+
+#### Step 5.5.6: Login/Logout UI
+
+**File:** `src/components/AuthButton.tsx`
+
+```typescript
+import { useGitHubAuth } from '@/hooks/useGitHubAuth'
+import { Button } from '@/components/ui/button'
+import { LogIn, LogOut } from 'lucide-react'
+
+export function AuthButton() {
+  const { isAuthenticated, loading, login, logout } = useGitHubAuth()
+
+  if (loading) {
+    return <Button disabled>Loading...</Button>
+  }
+
+  if (isAuthenticated) {
+    return (
+      <Button variant="outline" onClick={logout}>
+        <LogOut className="mr-2 h-4 w-4" />
+        Sign Out
+      </Button>
+    )
+  }
+
+  return (
+    <Button onClick={login}>
+      <LogIn className="mr-2 h-4 w-4" />
+      Sign in with GitHub
+    </Button>
+  )
+}
+```
+
+---
+
+### Migration Timeline
+
+**Phase 1: Preparation (Before MVP Launch)**
+- ✅ Phase 0 backend proxy already includes infrastructure
+- ✅ Vercel KV configured for token storage
+- ⏸️ OAuth endpoints created but not deployed
+
+**Phase 2: Soft Launch (MVP → First Users)**
+- 🔄 Deploy OAuth endpoints (disabled by feature flag)
+- 🔄 Test OAuth flow with small group of users
+- 🔄 Monitor rate limits, token expiration, security
+
+**Phase 3: Full Migration (After User Validation)**
+- ✅ Enable OAuth by default
+- ✅ Deprecate PAT fallback (remove `VITE_GITHUB_TOKEN`)
+- ✅ Update documentation
+- ✅ Security audit (penetration testing, token leakage checks)
+
+### Rollback Strategy
+
+**If OAuth fails:**
+1. Disable OAuth feature flag → revert to PAT
+2. Keep backend proxy active (still protects token)
+3. Debug OAuth flow in staging environment
+4. Re-enable when fixed
+
+**PAT Fallback (Temporary):**
+```typescript
+const authLink = setContext((_, { headers }) => {
+  const sessionId = localStorage.getItem('github_session')
+  const patFallback = import.meta.env.VITE_GITHUB_TOKEN
+
+  return {
+    headers: {
+      ...headers,
+      'X-Session-ID': sessionId || '',
+      'X-PAT-Fallback': !sessionId ? patFallback : '', // Only if no session
+    },
+  }
+})
+```
+
+### Security Considerations
+
+**OAuth Best Practices:**
+- ✅ Use `state` parameter to prevent CSRF attacks
+- ✅ Validate `redirect_uri` to prevent open redirects
+- ✅ Store tokens server-side (Vercel KV), never in localStorage
+- ✅ Use HTTPS only (Vercel enforces this)
+- ✅ Set short token expiration (7 days)
+- ✅ Implement token refresh flow (GitHub OAuth supports this)
+- ✅ Rate limit callback endpoint to prevent brute force
+
+**Token Storage:**
+- ❌ **DO NOT** store access token in localStorage (XSS vulnerability)
+- ✅ **DO** store session ID in localStorage (low security risk)
+- ✅ **DO** store access token in Vercel KV (server-side, encrypted)
+- ✅ **DO** set expiration on KV entries (auto-cleanup)
+
+### Testing Checklist
+
+**OAuth Flow:**
+- [ ] User clicks "Sign in with GitHub"
+- [ ] Redirects to GitHub authorization page
+- [ ] User grants `read:user` permission
+- [ ] GitHub redirects to `/api/auth/callback` with `code`
+- [ ] Backend exchanges `code` for `access_token`
+- [ ] Backend stores token in Vercel KV
+- [ ] Backend redirects to frontend with `session` param
+- [ ] Frontend stores session ID in localStorage
+- [ ] Frontend makes GraphQL request with session ID
+- [ ] Backend retrieves token from KV using session ID
+- [ ] Backend proxies request to GitHub API with token
+- [ ] User sees their GitHub profile data
+
+**Error Scenarios:**
+- [ ] Invalid `code` (expired, already used)
+- [ ] Session ID not found in KV (expired)
+- [ ] GitHub API returns 401 (token revoked)
+- [ ] Network errors during OAuth flow
+- [ ] User denies permission on GitHub
+
+**Security Tests:**
+- [ ] CSRF attack (invalid `state` parameter)
+- [ ] Open redirect (manipulated `redirect_uri`)
+- [ ] Token leakage (check client bundle for tokens)
+- [ ] XSS attack (inject script to steal session ID)
+- [ ] Rate limit enforcement (brute force callback endpoint)
+
+### Dependencies
+
+**Backend:**
+- Vercel Functions (already in Phase 0)
+- Vercel KV (already in Phase 0)
+- `@vercel/kv` package (already installed)
+
+**Frontend:**
+- React 19 (already installed)
+- Apollo Client 3.14.0 (already installed)
+- No new dependencies required!
+
+### Deliverables (Future Implementation)
+
+- [ ] GitHub OAuth App created
+- [ ] `api/auth/login.ts` endpoint
+- [ ] `api/auth/callback.ts` endpoint
+- [ ] `api/auth/logout.ts` endpoint
+- [ ] `api/graphql.ts` updated (session-based auth)
+- [ ] `useGitHubAuth` hook
+- [ ] `AuthButton` component
+- [ ] Apollo Client updated (X-Session-ID header)
+- [ ] Tests: OAuth flow (E2E), error scenarios, security
+- [ ] Documentation: OAuth setup guide for contributors
+- [ ] Feature flag: `ENABLE_OAUTH` (Vercel env var)
+
+**Estimated Time:** **3 days** (when implemented post-MVP)
+
+**When to Implement:**
+- ✅ After MVP deployed and validated with users
+- ✅ Rate limit issues detected (PAT exhaustion)
+- ✅ Security audit requires OAuth (best practice for production)
+- ✅ User feedback requests "Sign in with GitHub" feature
+
+---
+
 ## Phase 6: Testing & Polish (P2)
 
 **Priority:** P2 (Nice to have)
@@ -3103,6 +3650,435 @@ import { motion, AnimatePresence } from 'framer-motion'
 ```
 
 **Bundle impact:** ~15KB (tree-shaken)
+
+---
+
+## 🔄 Rollback Plan & Safety Mechanisms
+
+**Purpose:** Ensure every phase can be safely reverted without breaking production or losing data.
+
+### General Rollback Principles
+
+**Git Strategy:**
+- ✅ Create feature branch for each phase: `feature/phase-{N}-{name}`
+- ✅ Commit frequently with atomic changes (1 feature = 1 commit)
+- ✅ Tag before merging: `before-phase-{N}` (easy revert point)
+- ✅ Use `git revert` instead of `git reset` (preserves history)
+- ✅ Keep `main` branch always deployable
+
+**Deployment Strategy:**
+- ✅ Use Vercel preview deployments for testing (auto-generated per branch)
+- ✅ Test rollback procedure in preview environment first
+- ✅ Enable Vercel instant rollback (1-click revert to previous deployment)
+- ✅ Monitor production for 24-48h after deployment (error logs, rate limits)
+
+**Feature Flags (Recommended):**
+```typescript
+// src/config/features.ts
+export const FEATURE_FLAGS = {
+  FRAUD_DETECTION: import.meta.env.VITE_ENABLE_FRAUD_DETECTION === 'true',
+  METRICS_V2: import.meta.env.VITE_ENABLE_METRICS_V2 === 'true',
+  OAUTH: import.meta.env.VITE_ENABLE_OAUTH === 'true',
+} as const
+
+// Usage in components
+import { FEATURE_FLAGS } from '@/config/features'
+
+{FEATURE_FLAGS.FRAUD_DETECTION && <FraudAlert data={fraudData} />}
+```
+
+**Benefits:**
+- Toggle features on/off without code deployment
+- A/B testing (show old vs new metrics to different users)
+- Gradual rollout (enable for 10% users, then 50%, then 100%)
+
+---
+
+### Phase-by-Phase Rollback
+
+#### Phase 0: Backend Proxy & Token Security
+
+**What Could Go Wrong:**
+- Backend proxy fails (CORS, authentication errors)
+- Vercel KV connection issues
+- Rate limit exhaustion (backend API limits)
+- Token leakage (environment variable misconfiguration)
+
+**Rollback Steps:**
+1. **Revert to Client-Side GraphQL**
+   ```typescript
+   // Switch Apollo Client back to direct GitHub API
+   const httpLink = createHttpLink({
+     uri: 'https://api.github.com/graphql', // Bypass proxy
+   })
+   ```
+2. **Restore PAT in Environment**
+   - Re-enable `VITE_GITHUB_TOKEN` in `.env.local`
+   - Deploy with token (temporary security compromise)
+3. **Monitor Rate Limits**
+   - Check GitHub API quota: `curl -H "Authorization: token ghp_xxx" https://api.github.com/rate_limit`
+   - If exhausted, wait 1 hour or use different token
+4. **Verify Functionality**
+   - Test user search (e2e/user-search.spec.ts)
+   - Confirm no CORS errors in browser console
+
+**Prevention:**
+- Test backend proxy locally with `vercel dev` before deployment
+- Set up Vercel KV in staging environment first
+- Monitor Vercel logs: `vercel logs --follow`
+
+---
+
+#### Phase 1: GraphQL Extensions
+
+**What Could Go Wrong:**
+- Extended `GET_USER_INFO` query fails (syntax error, field not found)
+- GitHub API rejects new fields (permissions, schema changes)
+- Apollo cache conflicts (new fields not typed)
+
+**Rollback Steps:**
+1. **Revert Query to Original**
+   ```typescript
+   // src/apollo/queriers.ts
+   // Remove new fields: repositories.languages, repositories.latestRelease
+   export const GET_USER_INFO = gql`
+     query GetUserInfo($login: String!) {
+       user(login: $login) {
+         # ... original fields only
+       }
+     }
+   `
+   ```
+2. **Clear Apollo Cache**
+   ```typescript
+   await client.clearStore() // Force refetch with old schema
+   ```
+3. **Update TypeScript Types**
+   - Revert `src/apollo/github-api.types.ts` to original
+   - Run `npm run build` to catch type errors
+4. **Test Existing Components**
+   - Ensure UserProfile still renders (no missing fields)
+   - Check for TypeScript errors: `npm run build`
+
+**Prevention:**
+- Test query in GitHub GraphQL Explorer first: https://docs.github.com/en/graphql/overview/explorer
+- Use Apollo Client DevTools to inspect cache
+- Add fallbacks for new fields: `user.repositories?.languages ?? []`
+
+---
+
+#### Phase 1.5: Fraud Detection System
+
+**What Could Go Wrong:**
+- False positives (legitimate users flagged as fraud)
+- Performance degradation (complex fraud analysis slows down UI)
+- User complaints (feel accused, don't understand scoring)
+
+**Rollback Steps:**
+1. **Disable Feature Flag**
+   ```bash
+   # Vercel environment variables
+   VITE_ENABLE_FRAUD_DETECTION=false
+   ```
+2. **Hide FraudAlert Component**
+   ```typescript
+   // src/components/QuickAssessment.tsx
+   import { FEATURE_FLAGS } from '@/config/features'
+
+   {FEATURE_FLAGS.FRAUD_DETECTION && fraudScore > 30 && (
+     <FraudAlert data={fraudData} />
+   )}
+   ```
+3. **Remove from UI** (if flag not used)
+   - Comment out `<FraudAlert />` in QuickAssessment component
+   - Deploy updated version
+4. **Monitor User Feedback**
+   - Check support tickets, GitHub issues, social media
+   - Adjust thresholds if too many false positives
+
+**Prevention:**
+- Set high threshold (50+ points) for MVP
+- Add "Report False Positive" button in FraudAlert
+- Display fraud detection as "Developer Activity Insights" (softer language)
+- A/B test: show to 10% users first
+
+---
+
+#### Phase 2: Metrics Calculation v2.0
+
+**What Could Go Wrong:**
+- New formulas produce incorrect scores (bugs in calculation logic)
+- Scores drastically different from v1.0 (user confusion)
+- Performance issues (complex calculations slow down rendering)
+- TypeScript errors (missing fields in GraphQL response)
+
+**Rollback Steps:**
+1. **Disable Metrics v2.0 Flag**
+   ```bash
+   VITE_ENABLE_METRICS_V2=false
+   ```
+2. **Restore Old Calculation Logic**
+   ```typescript
+   // src/lib/metrics.ts
+   import { FEATURE_FLAGS } from '@/config/features'
+
+   export function calculateActivityScore(data: UserData) {
+     if (FEATURE_FLAGS.METRICS_V2) {
+       return calculateActivityScoreV2(data) // New formula
+     }
+     return calculateActivityScoreV1(data) // Old formula (fallback)
+   }
+   ```
+3. **Preserve Old Functions**
+   - Keep v1.0 functions in codebase: `calculateActivityScoreV1`, `calculateImpactScoreV1`
+   - Only switch to v2.0 after validation
+4. **Re-run Tests**
+   ```bash
+   npm run test -- src/lib/metrics.test.ts
+   ```
+
+**Prevention:**
+- Create `metrics-v1.ts` and `metrics-v2.ts` (separate files)
+- Add unit tests comparing v1 vs v2 outputs for same user
+- Display both scores side-by-side in dev mode (debugging)
+- Gradual rollout: show v2 to 10% users, collect feedback
+
+---
+
+#### Phase 3: UI Components v2.0
+
+**What Could Go Wrong:**
+- Component crashes (runtime errors, null pointer exceptions)
+- Visual bugs (broken layout, CSS conflicts)
+- Storybook MCP indexing fails (build errors)
+- Test failures (component doesn't match snapshots)
+
+**Rollback Steps:**
+1. **Revert Component Files**
+   ```bash
+   git revert HEAD~1 # Revert last commit (e.g., FraudAlert component)
+   git push origin feature/phase-3-ui
+   ```
+2. **Remove Component Imports**
+   ```typescript
+   // src/components/QuickAssessment.tsx
+   // Comment out new imports
+   // import { FraudAlert } from './FraudAlert'
+   // import { ActivityMetricCard } from './metrics/ActivityMetricCard'
+   ```
+3. **Rebuild Storybook**
+   ```bash
+   npm run build-storybook
+   # Verify no build errors
+   ```
+4. **Re-run Tests**
+   ```bash
+   npm run test
+   npm run test:e2e
+   ```
+
+**Prevention:**
+- Follow MANDATORY Component → Story → Test workflow (Phase 3 protocol)
+- Test component in isolation first (Storybook)
+- Use React Error Boundaries to catch crashes:
+   ```typescript
+   <ErrorBoundary fallback={<div>Component failed to load</div>}>
+     <FraudAlert data={fraudData} />
+   </ErrorBoundary>
+   ```
+- Commit 1 component at a time (atomic commits)
+
+---
+
+#### Phase 5: Layout Refactoring
+
+**What Could Go Wrong:**
+- Tabs removal breaks navigation (users can't find features)
+- Responsive layout broken (mobile view unusable)
+- Performance regression (single-page scroll lags)
+
+**Rollback Steps:**
+1. **Restore Tabs Component**
+   ```typescript
+   // src/App.tsx
+   import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+
+   <Tabs defaultValue="profile">
+     <TabsList>
+       <TabsTrigger value="profile">Profile</TabsTrigger>
+       <TabsTrigger value="stats">Stats</TabsTrigger>
+     </TabsList>
+     <TabsContent value="profile"><UserProfile /></TabsContent>
+     <TabsContent value="stats"><QuickAssessment /></TabsContent>
+   </Tabs>
+   ```
+2. **Revert Layout Changes**
+   - Git checkout previous `App.tsx` version
+   - Deploy with old layout
+3. **Monitor User Behavior**
+   - Check analytics: tab usage, scroll depth
+   - Survey users: prefer tabs or single-page?
+
+**Prevention:**
+- A/B test layout change (50% users see tabs, 50% see single-page)
+- Add "Switch to Tabs View" toggle (user preference)
+- Test on mobile devices (iPhone, Android)
+
+---
+
+#### Phase 6: Testing & Polish
+
+**What Could Go Wrong:**
+- E2E tests fail in CI/CD (flaky tests, timing issues)
+- Test coverage drops below target (90%+)
+- Performance benchmarks fail (bundle size too large)
+
+**Rollback Steps:**
+1. **Disable Failing Tests** (temporary)
+   ```typescript
+   // e2e/user-analytics-flow.spec.ts
+   test.skip('fraud detection appears for suspicious users', async ({ page }) => {
+     // ... temporarily disabled
+   })
+   ```
+2. **Revert Code Changes**
+   - Identify commit that broke tests: `git bisect`
+   - Revert that commit: `git revert <commit-hash>`
+3. **Fix Tests in Separate Branch**
+   - Create `fix/e2e-tests` branch
+   - Debug and fix tests
+   - Merge after validation
+
+**Prevention:**
+- Run tests locally before pushing: `npm run test:all`
+- Use Playwright UI mode for debugging: `npm run test:e2e:ui`
+- Add retry logic for flaky tests: `test.describe.configure({ retries: 2 })`
+
+---
+
+### Emergency Rollback (Production Down)
+
+**Scenario:** Critical bug in production, app completely broken
+
+**Immediate Actions (< 5 minutes):**
+
+1. **Vercel Instant Rollback**
+   - Go to Vercel Dashboard → Deployments
+   - Find last working deployment (green checkmark)
+   - Click "..." → "Promote to Production"
+   - Confirm rollback (instant redeployment)
+
+2. **Git Revert** (if Vercel unavailable)
+   ```bash
+   git revert HEAD # Revert last commit
+   git push origin main --force-with-lease
+   vercel --prod # Deploy previous version
+   ```
+
+3. **Disable Feature Flags** (fastest option)
+   ```bash
+   # Vercel environment variables
+   VITE_ENABLE_FRAUD_DETECTION=false
+   VITE_ENABLE_METRICS_V2=false
+   VITE_ENABLE_OAUTH=false
+   ```
+
+**Post-Rollback Actions (< 1 hour):**
+
+4. **Investigate Root Cause**
+   - Check Vercel logs: `vercel logs --follow`
+   - Check browser console errors (user reports)
+   - Check GitHub API status: https://www.githubstatus.com/
+
+5. **Create Hotfix Branch**
+   ```bash
+   git checkout -b hotfix/critical-bug main
+   # Fix bug
+   npm run test:all
+   git commit -m "fix: resolve critical production bug"
+   git push origin hotfix/critical-bug
+   ```
+
+6. **Deploy Hotfix**
+   ```bash
+   vercel --prod
+   ```
+
+7. **Post-Mortem** (within 24 hours)
+   - Document what went wrong
+   - Add test case to prevent recurrence
+   - Update rollback plan if needed
+
+---
+
+### Monitoring & Alerts
+
+**Set Up Alerts (Recommended):**
+
+**Vercel Alerts:**
+- Error rate > 5% (trigger: rollback)
+- Build failures (trigger: investigate)
+- Function timeout > 10s (trigger: optimize)
+
+**GitHub API Rate Limit:**
+```typescript
+// src/apollo/errorLink.ts
+if (graphQLErrors?.some(err => err.message.includes('rate limit'))) {
+  toast.error('GitHub API rate limit reached. Try again in 1 hour.')
+  // Send alert to Sentry/Slack
+}
+```
+
+**Sentry Integration (Optional):**
+```typescript
+import * as Sentry from '@sentry/react'
+
+Sentry.init({
+  dsn: process.env.VITE_SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+})
+
+// Catch component errors
+<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+  <App />
+</Sentry.ErrorBoundary>
+```
+
+---
+
+### Rollback Testing Checklist
+
+**Before Each Deployment:**
+- [ ] Create git tag: `git tag before-phase-{N}`
+- [ ] Test feature flag toggle (enable/disable works)
+- [ ] Deploy to Vercel preview environment
+- [ ] Test rollback procedure in preview
+- [ ] Verify old version still works (no breaking changes)
+- [ ] Check bundle size: `npm run build` (< 500KB gzip)
+- [ ] Run full test suite: `npm run test:all`
+- [ ] Monitor Vercel logs for 30 minutes after deployment
+
+**Post-Deployment:**
+- [ ] Monitor error logs for 24 hours
+- [ ] Check user feedback (GitHub issues, support tickets)
+- [ ] Verify rate limits not exhausted
+- [ ] Confirm analytics data (user engagement, feature adoption)
+
+---
+
+### Summary
+
+**Key Takeaways:**
+- ✅ **Feature Flags**: Enable instant rollback without redeployment
+- ✅ **Git Strategy**: Atomic commits, tags before merges, never force-push to main
+- ✅ **Vercel Rollback**: 1-click instant revert to previous deployment
+- ✅ **Gradual Rollout**: A/B test new features (10% → 50% → 100%)
+- ✅ **Monitoring**: Set up alerts for errors, rate limits, performance
+
+**Rollback Time Targets:**
+- **Emergency Rollback** (production down): < 5 minutes (Vercel instant rollback)
+- **Feature Rollback** (bugs, bad UX): < 30 minutes (disable feature flag)
+- **Full Revert** (undo phase): < 2 hours (git revert + redeploy)
 
 ---
 
