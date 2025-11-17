@@ -1,10 +1,12 @@
 # GitHub User Analytics Dashboard — Implementation Plan
 
-**Version:** 3.0
-**Date:** 2025-11-16
+**Version:** 5.0
+**Date:** 2025-11-17
 **Status:** Ready for Development
 **Framework:** Vite + React 19 (Current Stack)
 **Backend:** Vercel Serverless Functions + Vercel KV
+
+**⚠️ MAJOR UPDATE v5.0:** Complete metrics system overhaul with Fraud Detection, Collaboration tracking, and Learning Pattern Detection. See [Version History](#version-history) for details.
 
 ---
 
@@ -236,6 +238,57 @@ This document provides a **step-by-step implementation plan** for transforming G
 
 ---
 
+## ⚠️ Current Security Status (BEFORE Phase 0)
+
+### 🔴 CRITICAL: Token Exposure Risk
+
+**Current Implementation:**
+```bash
+# .env.local
+VITE_GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+**Problem:**
+- Token uses `VITE_` prefix → **accessible in client bundle**
+- DevTools → Network → Headers shows: `Authorization: Bearer ghp_...`
+- Anyone inspecting the site can steal the token
+- Risk: Rate limit exhaustion, unauthorized API access
+
+**Verification:**
+```bash
+npm run build
+grep -r "ghp_\|VITE_GITHUB_TOKEN" dist/
+
+# If token found → Phase 0 is CRITICAL!
+# If not found → Check Apollo Client configuration
+```
+
+**Impact:**
+- 🔴 **Security breach:** Token visible to anyone
+- 🔴 **Rate limit risk:** 5000 requests/hour shared across all users
+- 🔴 **Scope escalation:** If token has extra permissions, they're exposed
+
+**Solution:** Phase 0 (Backend Proxy) is **MANDATORY** before production deployment
+
+**Current Apollo Client** (`src/apollo/ApolloAppProvider.tsx`):
+```typescript
+// INSECURE: Token in client code
+const authLink = setContext((_, { headers }) => {
+  const token = import.meta.env.VITE_GITHUB_TOKEN; // ← EXPOSED!
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+});
+```
+
+**Why Phase 0 Exists:**
+Phase 0 moves the token to **server-side only** (Vercel Functions), making it invisible to client code.
+
+---
+
 ## Phase 0: Backend Security Layer
 
 **Priority:** P0 (Critical)
@@ -243,6 +296,65 @@ This document provides a **step-by-step implementation plan** for transforming G
 **Goal:** Secure GitHub token on server, enable caching
 
 **Note:** Apollo Client 3.14.0 is already configured with error handling, auth middleware, and InMemoryCache. We only need to redirect the URI to `/api/github-proxy`.
+
+---
+
+### Prerequisites (30 minutes setup)
+
+**Before Starting Phase 0:**
+
+1. ✅ **Vercel Account** (free tier)
+   - Create: https://vercel.com/signup
+   - Install CLI: `npm i -g vercel`
+   - Login: `vercel login`
+
+2. ✅ **GitHub Token** (Personal Access Token)
+   - Generate: https://github.com/settings/tokens
+   - Scopes: `read:user`, `user:email`, `repo` (read-only)
+   - Format: `ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+   - **NEVER commit to git!**
+   - **DO NOT use `VITE_` prefix** (server-side only)
+
+3. ✅ **Vercel KV Database**
+   - Dashboard → Storage → Create KV
+   - Name: `github-cache`
+   - Region: Auto (closest to users)
+   - Auto-configures environment variables
+
+4. ✅ **Environment Variables**
+   - Vercel Dashboard → Settings → Environment Variables
+   - Add `GITHUB_TOKEN` (production + preview)
+   - Format: **NO `VITE_` prefix!**
+   ```bash
+   GITHUB_TOKEN=ghp_your_token_here
+   ```
+   - KV credentials auto-added by Vercel
+
+5. ✅ **Rate Limit Check** (optional but recommended)
+   ```bash
+   # Check remaining GitHub API quota
+   curl -H "Authorization: Bearer YOUR_GITHUB_TOKEN" \
+     https://api.github.com/rate_limit | grep -A 5 "graphql"
+
+   # Should show: "remaining": ~5000 (full quota)
+   ```
+
+**Verification:**
+```bash
+vercel --version          # Should show v33.0.0+
+vercel env pull .env.local # Should create file with KV credentials
+cat .env.local            # Verify KV_REST_API_URL exists
+```
+
+**Troubleshooting:**
+- `vercel: command not found` → Install CLI globally: `npm i -g vercel`
+- `KV_REST_API_URL not found` → Re-create KV database in Vercel dashboard
+- `401 Unauthorized` → Check `GITHUB_TOKEN` in Vercel dashboard (NOT `.env.local`)
+- `Rate limit exceeded` → Wait 1 hour or use different token
+
+**Time Estimate:** 30 minutes (first time), 5 minutes (if familiar with Vercel)
+
+---
 
 ### Step 0.1: Create Vercel Serverless Function
 
@@ -696,28 +808,50 @@ Choose one approach before starting Phase 1:
 
 **Priority:** P0 (Critical)
 
-**Goal:** Calculate Activity, Impact, Quality, Growth scores
+**Goal:** Calculate Activity, Impact, Quality (Engineering Maturity), Growth (Learning Trajectory) scores + Fraud Detection
+
+**⚠️ UPDATED v5.0:** Complete metrics overhaul! New components: Collaboration (20pts), Project Focus (20pts), Fraud Detection System (0-100), Learning Pattern Detection (30pts).
 
 **Note:** Use `src/lib/authenticity.ts` as the **perfect template**! It already has the exact pattern we need:
 - 100-point scoring system ✅
 - Component breakdown ✅
 - Category/level labels ✅
+- Warning flags array ✅
 - Metadata tracking ✅
 
-### Metric Formulas
+### 🆕 Metric Formulas v5.0
 
-See `docs/metrics-explanation.md` for detailed formulas.
+**📖 Documentation:** See [docs/METRICS_V2_DETAILED.md](./METRICS_V2_DETAILED.md) for complete TypeScript implementations and [docs/metrics-explanation.md](./metrics-explanation.md) for formulas.
 
 **Summary:**
-- **Activity (0-100%)** = Recent commits (40%) + Consistency (30%) + Diversity (30%)
-- **Impact (0-100%)** = Stars (35%) + Forks (20%) + Contributors (15%) + Reach (20%) + Engagement (10%)
-- **Quality (0-100%)** = Originality (30%) + Documentation (25%) + Ownership (20%) + Maturity (15%) + Stack (10%)
-- **Growth (-100% to +100%)** = YoY change in Activity (40%) + Impact (30%) + Skills (30%)
+
+- **Activity (0-100)** = Code Throughput (35) + Consistency & Rhythm (25) + **Collaboration (20)** + **Project Focus (20)**
+  - 🆕 **Code Throughput**: Lines changed in merged PRs (not commit count!)
+  - 🆕 **Temporal Pattern Analysis**: Detect bot patterns via commit time histograms
+  - 🆕 **Collaboration**: PR reviews done, issue participation, discussions
+  - 🆕 **Project Focus**: 2-5 repos = ideal, 20+ repos = suspicious
+
+- **Impact (0-100)** = Adoption Signal (40) + Community Engagement (30) + Social Proof (20) + Package Stats (10)
+  - 🆕 **Active Forks**: Forks with actual commits (not just fork count)
+  - 🆕 **Logarithmic Stars**: `log10(stars + 1) × 3` to prevent gaming
+  - 🆕 **Issue Response Time**: Median hours to first response
+
+- **Quality (0-100)** = **Code Health Practices (35)** + Documentation (25) + **Maintenance Signal (25)** + Architecture (15)
+  - 🆕 **Code Health**: CI/CD detection, testing, linting, branch protection
+  - 🆕 **Maintenance Signal**: Issue response time, resolution rate, longevity
+  - ❌ **Removed**: "Originality" and "Ownership" (impossible to measure accurately)
+
+- **Growth (-100 to +100)** = Skill Expansion (40) + Project Evolution (30) + **Learning Pattern Detection (30)**
+  - 🆕 **Learning Patterns**: Tutorial vs Production project ratio (20% tutorial + 60% production = ideal)
+  - 🆕 **Complexity Growth**: Year-over-year project complexity scoring
+
+- **🆕 Fraud Detection (0-100)** = Empty Commits (30) + Bot Patterns (25) + Temporal Anomalies (20) + Mass Commits (15) + Fork Farming (10)
+  - **Critical Flags**: Backdated commits (before account creation), multiple emails (>10)
 
 ### Reuse from Existing Code
 
 **From `src/lib/statistics.ts`:**
-- ✅ `calculateLanguageStatistics()` - For Quality Stack metric
+- ✅ `calculateLanguageStatistics()` - For Quality Architecture metric
 - ✅ `getMostActiveRepositories()` - For Timeline top projects
 - ✅ `formatNumber()` - Display helper
 
@@ -737,18 +871,109 @@ export interface AuthenticityScore {
   metadata: { /* stats */ };
 }
 
-// Apply same pattern to new metrics:
+// 🆕 Apply same pattern to new metrics:
 export interface ActivityMetric {
   score: number;              // 0-100
-  level: string;              // Low/Moderate/High
+  level: 'Low' | 'Moderate' | 'High' | 'Very High';
   breakdown: {
-    recentCommits: number;    // 0-40
-    consistency: number;      // 0-30
-    diversity: number;        // 0-30
+    codeThroughput: number;   // 0-35 ← UPDATED
+    consistency: number;      // 0-25 ← UPDATED
+    collaboration: number;    // 0-20 ← NEW
+    projectFocus: number;     // 0-20 ← NEW
   };
-  details: { /* stats */ };
+  details: {
+    linesChanged: number;
+    mergedPRs: number;
+    activeWeeks: number;
+    reviewsDone: number;
+    activeRepos: number;
+  };
+  fraudDetection?: FraudDetectionResult; // ← NEW
 }
 ```
+
+---
+
+### Step 2.0: Fraud Detection System (NEW!)
+
+**File:** `src/lib/metrics/fraud-detection.ts`
+
+```typescript
+export interface FraudDetectionResult {
+  score: number; // 0-100, where 100 = 100% suspicion
+  level: 'Clean' | 'Low Risk' | 'Medium Risk' | 'High Risk' | 'Critical';
+  flags: FraudFlag[];
+  breakdown: {
+    emptyCommitsRatio: number;    // 0-30 points
+    perfectPatternScore: number;  // 0-25 points
+    temporalAnomalyScore: number; // 0-20 points
+    massCommitsRatio: number;     // 0-15 points
+    forkFarmingScore: number;     // 0-10 points
+  };
+}
+
+export interface FraudFlag {
+  type: 'empty_commits' | 'backdating' | 'bot_pattern' | 'temporal_anomaly' |
+        'mass_commits' | 'fork_farming' | 'multiple_emails';
+  severity: 'low' | 'medium' | 'high';
+  message: string;
+  count?: number;
+}
+
+export function calculateFraudDetection(commits: Commit[], repos: Repository[]): FraudDetectionResult {
+  const flags: FraudFlag[] = [];
+
+  // 1. Empty commits (30 points)
+  const emptyCommits = commits.filter(c => c.additions === 0 && c.deletions === 0);
+  const emptyRatio = commits.length > 0 ? emptyCommits.length / commits.length : 0;
+  const emptyScore = emptyRatio * 30;
+
+  if (emptyRatio > 0.05) {
+    flags.push({
+      type: 'empty_commits',
+      severity: emptyRatio > 0.15 ? 'high' : 'medium',
+      message: `${(emptyRatio * 100).toFixed(1)}% of commits are empty`,
+      count: emptyCommits.length
+    });
+  }
+
+  // 2. Bot patterns (25 points) - perfect daily commits at same time
+  const commitsByDay = groupByDay(commits);
+  const variance = calculateVariance(Object.values(commitsByDay).map(d => d.length));
+  const perfectPatternScore = variance < 0.1 ? 25 : 0;
+
+  // 3. Temporal anomalies (20 points)
+  const hourHistogram = buildHourHistogram(commits);
+  const workingWindow = findWorkingWindow(hourHistogram, 0.8);
+  const outsideRatio = calculateOutsideWindowRatio(commits, workingWindow);
+  const temporalScore = outsideRatio > 0.3 ? outsideRatio * 20 : 0;
+
+  // 4. Mass commits (15 points)
+  const massCommits = commits.filter(c => (c.additions + c.deletions) > 1000);
+  const massRatio = commits.length > 0 ? massCommits.length / commits.length : 0;
+  const massScore = massRatio * 15;
+
+  // 5. Fork farming (10 points)
+  const unmodifiedForks = repos.filter(r => r.isFork && (r.defaultBranchRef?.ahead || 0) === 0);
+  const forkRatio = repos.length > 0 ? unmodifiedForks.length / repos.length : 0;
+  const forkScore = forkRatio * 10;
+
+  // Total fraud score
+  const totalScore = Math.round(emptyScore + perfectPatternScore + temporalScore + massScore + forkScore);
+
+  // Determine level
+  let level: FraudDetectionResult['level'];
+  if (totalScore < 20) level = 'Clean';
+  else if (totalScore < 40) level = 'Low Risk';
+  else if (totalScore < 60) level = 'Medium Risk';
+  else if (totalScore < 80) level = 'High Risk';
+  else level = 'Critical';
+
+  return { score: totalScore, level, flags, breakdown: { ... } };
+}
+```
+
+**Test:** 100% coverage, test all fraud patterns
 
 ---
 
@@ -759,47 +984,101 @@ export interface ActivityMetric {
 ```typescript
 import { YearData } from '@/hooks/useUserAnalytics'
 
-export function calculateActivityScore(timeline: YearData[]): number {
-  if (!timeline.length) return 0
+export function calculateActivityScore(
+  timeline: YearData[],
+  commits: Commit[], // ← NEW for fraud detection
+  reviews: Review[], // ← NEW for collaboration
+  issueComments: IssueComment[] // ← NEW for collaboration
+): ActivityMetric {
+  if (!timeline.length) return getEmptyActivityMetric();
 
-  const last3Months = getLastNMonths(timeline, 3)
-  const last12Months = getLastNMonths(timeline, 12)
+  const last3Months = getLastNMonths(timeline, 3);
+  const last6Months = getLastNMonths(timeline, 6);
+  const last12Months = getLastNMonths(timeline, 12);
 
-  // A. Recent commits (0-40 points)
-  const recentCommits = last3Months.reduce((sum, d) => sum + d.totalCommits, 0)
-  const recentPoints = Math.min((recentCommits / 200) * 40, 40)
+  // A. Code Throughput (0-35 points) ← UPDATED
+  const mergedPRs = getMergedPRs(last3Months);
+  const linesChanged = mergedPRs.reduce((sum, pr) => sum + pr.additions + pr.deletions, 0);
+  const linesPerMonth = linesChanged / 3;
 
-  // B. Consistency (0-30 points)
-  const activeMonths = countActiveMonths(last12Months)
-  const consistencyPoints = Math.min((activeMonths / 12) * 30, 30)
+  let throughputScore = 0;
+  if (linesPerMonth < 1000) throughputScore = (linesPerMonth / 1000) * 15;
+  else if (linesPerMonth < 5000) throughputScore = 15 + ((linesPerMonth - 1000) / 4000) * 10;
+  else if (linesPerMonth < 15000) throughputScore = 25 + ((linesPerMonth - 5000) / 10000) * 10;
+  else throughputScore = 35;
 
-  // C. Diversity (0-30 points)
-  const uniqueRepos = countUniqueRepos(last3Months)
-  let diversityPoints = 0
-  if (uniqueRepos >= 1 && uniqueRepos <= 3) diversityPoints = 10
-  else if (uniqueRepos >= 4 && uniqueRepos <= 7) diversityPoints = 20
-  else if (uniqueRepos >= 8 && uniqueRepos <= 15) diversityPoints = 30
-  else if (uniqueRepos > 15) diversityPoints = 25 // too scattered
+  // Penalty for mass commits
+  const massCommitRatio = mergedPRs.filter(pr => (pr.additions + pr.deletions) > 1000).length / mergedPRs.length;
+  if (massCommitRatio > 0.5) throughputScore = Math.max(0, throughputScore - 10);
 
-  return Math.round(recentPoints + consistencyPoints + diversityPoints)
-}
+  // B. Consistency & Rhythm (0-25 points) ← UPDATED
+  const activeWeeks = countActiveWeeks(last12Months);
+  const longestStreak = calculateLongestStreak(last12Months);
 
-function getLastNMonths(timeline: YearData[], months: number) {
-  // Implementation
-}
+  let consistencyScore = 0;
+  if (activeWeeks >= 40) consistencyScore = 20 + (activeWeeks - 40) / 12 * 5;
+  else if (activeWeeks >= 20) consistencyScore = 10 + (activeWeeks - 20) / 20 * 10;
+  else consistencyScore = (activeWeeks / 20) * 10;
 
-function countActiveMonths(data: YearData[]) {
-  // Implementation
-}
+  if (longestStreak >= 26) consistencyScore += 5; // Bonus
 
-function countUniqueRepos(data: YearData[]) {
-  // Implementation
+  // Temporal Pattern Analysis (anti-bot)
+  const hourHistogram = buildHourHistogram(commits);
+  const workingWindow = findWorkingWindow(hourHistogram, 0.8);
+  const outsideRatio = calculateOutsideWindowRatio(commits, workingWindow);
+  if (outsideRatio > 0.1) consistencyScore = Math.max(0, consistencyScore - 5);
+
+  // C. Collaboration (0-20 points) ← NEW
+  const substantiveReviews = reviews.filter(r => r.body.length > 10 && !isLGTMOnly(r.body));
+  const issuesParticipated = new Set(issueComments.map(c => c.issue.id)).size;
+  const prDiscussions = calculatePRDiscussions(timeline);
+
+  let collaborationScore = 0;
+  collaborationScore += Math.min((substantiveReviews.length / 20) * 10, 10);
+  collaborationScore += Math.min((issuesParticipated / 10) * 5, 5);
+  collaborationScore += Math.min((prDiscussions / 3) * 5, 5);
+
+  // D. Project Focus (0-20 points) ← NEW
+  const activeRepos = countActiveRepos(last3Months);
+  const forkRatio = calculateUnmodifiedForkRatio(activeRepos);
+  const sameDayRatio = calculateSameDayCreationRatio(activeRepos);
+
+  let focusScore = 0;
+  if (activeRepos >= 2 && activeRepos <= 5) focusScore = 20;
+  else if (activeRepos === 1) focusScore = 15;
+  else if (activeRepos >= 6 && activeRepos <= 10) focusScore = 12;
+  else if (activeRepos >= 11 && activeRepos <= 20) focusScore = 8;
+  else focusScore = 5;
+
+  if (forkRatio > 0.5) focusScore = Math.max(0, focusScore - 5);
+  if (sameDayRatio > 0.7) focusScore = Math.max(0, focusScore - 5);
+
+  const totalScore = Math.round(throughputScore + consistencyScore + collaborationScore + focusScore);
+
+  return {
+    score: totalScore,
+    level: getActivityLabel(totalScore),
+    breakdown: {
+      codeThroughput: Math.round(throughputScore),
+      consistency: Math.round(consistencyScore),
+      collaboration: Math.round(collaborationScore),
+      projectFocus: Math.round(focusScore)
+    },
+    details: {
+      linesChanged,
+      mergedPRs: mergedPRs.length,
+      activeWeeks,
+      reviewsDone: substantiveReviews.length,
+      activeRepos
+    }
+  };
 }
 
 export function getActivityLabel(score: number): string {
-  if (score >= 71) return 'High'
-  if (score >= 41) return 'Moderate'
-  return 'Low'
+  if (score >= 80) return 'Very High';
+  if (score >= 60) return 'High';
+  if (score >= 40) return 'Moderate';
+  return 'Low';
 }
 ```
 
@@ -812,42 +1091,187 @@ export function getActivityLabel(score: number): string {
 **File:** `src/lib/metrics/impact.ts`
 
 ```typescript
-export function calculateImpactScore(timeline: YearData[]): number {
-  const allRepos = timeline.flatMap(y => [...y.ownedRepos, ...y.contributions])
+export function calculateImpactScore(repos: Repository[]): ImpactMetric {
+  // A. Adoption Signal (0-40 points)
+  const activeForks = calculateActiveForks(repos); // Forks with commits ahead
+  const totalWatchers = repos.reduce((sum, r) => sum + r.watchers.totalCount, 0);
+  const totalContributors = repos.reduce((sum, r) => sum + r.mentionableUsers.totalCount, 0);
+  const recentlyActive = repos.filter(r => daysSince(r.pushedAt) <= 30).length;
 
-  // A. Stars (0-35 points)
-  const totalStars = allRepos.reduce((sum, r) => sum + r.repository.stargazerCount, 0)
-  const starPoints = calculateStarPoints(totalStars)
+  const adoptionScore =
+    Math.log10(activeForks + 1) * 5 +
+    Math.log10(totalWatchers + 1) * 3 +
+    Math.min(totalContributors * 0.5, 10) +
+    (recentlyActive > 0 ? 5 : 0);
 
-  // B. Forks (0-20 points)
-  const totalForks = allRepos.reduce((sum, r) => sum + r.repository.forkCount, 0)
-  const forkPoints = calculateForkPoints(totalForks)
+  // B. Community Engagement (0-30 points)
+  const { totalIssues, closedIssues, closureRate } = calculateIssueStats(repos);
+  const externalPRs = calculateExternalPRs(repos);
 
-  // C. Contributors (0-15 points)
-  // D. Reach (0-20 points)
-  // E. Engagement (0-10 points)
+  let issuesScore = 0;
+  if (totalIssues >= 50 && closureRate > 0.5) issuesScore = 15;
+  else if (totalIssues >= 10) issuesScore = 10;
+  else if (totalIssues < 10 && closureRate > 0.8) issuesScore = 8;
+  else issuesScore = 3;
 
-  return Math.round(/* sum of all points */)
+  const prScore = Math.min((externalPRs / 20) * 10, 10);
+  const discussionScore = 5; // Simplified for MVP
+
+  const engagementScore = issuesScore + prScore + discussionScore;
+
+  // C. Social Proof (0-20 points) - LOGARITHMIC
+  const totalStars = repos.reduce((sum, r) => sum + r.stargazerCount, 0);
+  const starsScore = Math.min(Math.log10(totalStars + 1) * 3, 15);
+  const trendingBonus = 0; // Simplified for MVP
+
+  const socialScore = starsScore + trendingBonus;
+
+  // D. Package Registry Stats (0-10 points) - SIMPLIFIED
+  const publishableCount = repos.filter(r => hasPackageFile(r)).length;
+  const packageScore = publishableCount > 0 ? 5 : 0;
+
+  const totalScore = Math.round(adoptionScore + engagementScore + socialScore + packageScore);
+
+  return {
+    score: totalScore,
+    level: getImpactLabel(totalScore),
+    breakdown: {
+      adoptionSignal: Math.round(adoptionScore),
+      communityEngagement: Math.round(engagementScore),
+      socialProof: Math.round(socialScore),
+      packageStats: Math.round(packageScore)
+    }
+  };
 }
 ```
 
 ---
 
-### Step 2.3: Quality & Growth
+### Step 2.3: Quality (Engineering Maturity)
 
-Similar implementations in:
-- `src/lib/metrics/quality.ts`
-- `src/lib/metrics/growth.ts`
-- `src/lib/metrics/benchmark.ts` (ranges)
+**File:** `src/lib/metrics/quality.ts`
 
-**Deliverables:**
-- [ ] All 4 metrics implemented (activity, impact, quality, growth)
+```typescript
+export function calculateQualityScore(repos: Repository[]): QualityMetric {
+  // A. Code Health Practices (0-35 points) ← NEW
+  const cicdCount = repos.filter(r => hasCICD(r)).length;
+  const testCount = repos.filter(r => hasTests(r)).length;
+  const lintCount = repos.filter(r => hasLinting(r)).length;
+  const protectionCount = repos.filter(r => r.branchProtectionRules.totalCount > 0).length;
+
+  const healthScore =
+    (cicdCount / repos.length) * 15 +
+    (testCount / repos.length) * 10 +
+    (lintCount / repos.length) * 5 +
+    (protectionCount / repos.length) * 5;
+
+  // B. Documentation Quality (0-25 points)
+  const docScore = calculateDocumentationScore(repos);
+
+  // C. Maintenance Signal (0-25 points) ← NEW
+  const maintenanceScore = calculateMaintenanceScore(repos);
+
+  // D. Architecture Complexity (0-15 points)
+  const architectureScore = calculateArchitectureScore(repos);
+
+  const totalScore = Math.round(healthScore + docScore + maintenanceScore + architectureScore);
+
+  return {
+    score: totalScore,
+    level: getQualityLabel(totalScore),
+    breakdown: {
+      codeHealthPractices: Math.round(healthScore),
+      documentation: Math.round(docScore),
+      maintenanceSignal: Math.round(maintenanceScore),
+      architectureComplexity: Math.round(architectureScore)
+    }
+  };
+}
+```
+
+---
+
+### Step 2.4: Growth (Learning Trajectory)
+
+**File:** `src/lib/metrics/growth.ts`
+
+```typescript
+export function calculateGrowthScore(repos: Repository[]): GrowthMetric {
+  // A. Skill Expansion (0-40 points)
+  const recentLanguages = getLanguages(repos, 2); // Last 2 years
+  const olderLanguages = getLanguages(repos, 5, 2); // Years 3-5
+  const newLanguages = [...recentLanguages].filter(lang => !olderLanguages.has(lang));
+
+  const skillScore = Math.min(newLanguages.length * 10, 40);
+
+  // B. Project Evolution (- 30 to +30 points)
+  const evolutionScore = calculateProjectEvolution(repos);
+
+  // C. Learning Pattern Detection (0-30 points) ← NEW
+  const tutorialCount = repos.filter(r => isTutorialProject(r)).length;
+  const productionCount = repos.filter(r => isProductionProject(r)).length;
+  const tutorialRatio = repos.length > 0 ? tutorialCount / repos.length : 0;
+  const productionRatio = repos.length > 0 ? productionCount / repos.length : 0;
+
+  let learningScore = 0;
+  if (tutorialRatio >= 0.15 && tutorialRatio <= 0.25 && productionRatio >= 0.50) {
+    learningScore = 30; // Ideal balance
+  } else if (tutorialRatio === 1.0) {
+    learningScore = 0; // Only learning
+  } else if (productionRatio === 1.0 && tutorialRatio === 0) {
+    learningScore = 20; // Shipping, not experimenting
+  } else {
+    learningScore = (productionRatio * 20) + (tutorialRatio * 10);
+  }
+
+  const totalScore = Math.round(skillScore + evolutionScore + learningScore);
+
+  return {
+    score: totalScore,
+    trend: getGrowthTrend(totalScore),
+    breakdown: {
+      skillExpansion: Math.round(skillScore),
+      projectEvolution: Math.round(evolutionScore),
+      learningPattern: Math.round(learningScore)
+    }
+  };
+}
+
+function isTutorialProject(repo: Repository): boolean {
+  const keywords = ['tutorial', 'learning', 'course', 'homework', 'practice'];
+  const nameMatch = keywords.some(k => repo.name.toLowerCase().includes(k));
+  const descMatch = keywords.some(k => repo.description?.toLowerCase().includes(k));
+  const abandoned = repo.stargazerCount === 0 && repo.forkCount === 0 && daysSince(repo.pushedAt) > 14;
+
+  return nameMatch || descMatch || abandoned;
+}
+
+function isProductionProject(repo: Repository): boolean {
+  return (
+    repo.stargazerCount > 10 ||
+    repo.forkCount > 3 ||
+    hasCICD(repo) ||
+    repo.issues.totalCount > 5 ||
+    repo.mentionableUsers.totalCount > 3 ||
+    daysSince(repo.pushedAt) < 90
+  );
+}
+```
+
+---
+
+### Deliverables
+
+- [ ] **Fraud Detection** system implemented with all 5 components
+- [ ] **Activity** metric with 4 components (Throughput, Consistency, Collaboration, Focus)
+- [ ] **Impact** metric with logarithmic stars scaling and active forks
+- [ ] **Quality** metric with Code Health Practices and Maintenance Signal
+- [ ] **Growth** metric with Learning Pattern Detection
 - [ ] 100% test coverage for all calculation functions
-- [ ] Benchmark labels (Low/Moderate/High/etc) working
 - [ ] Each metric follows `authenticity.ts` pattern
-- [ ] Reuses helpers from `statistics.ts` where applicable
+- [ ] Helper functions in `src/lib/metrics/helpers.ts`
 
-**Estimated Time:** **2 days** (reduced from 2-3 days - have perfect template in authenticity.ts)
+**Estimated Time:** **3 days** (increased from 2 days due to new components: Fraud Detection, Collaboration, Learning Patterns)
 
 ---
 
@@ -857,18 +1281,105 @@ Similar implementations in:
 
 **Note:** Use `src/components/UserAuthenticity.tsx` as the **UI template**! It already has the exact card layout we need.
 
-### Component Development Workflow
+### Component Development Protocol (MANDATORY)
 
-**For EVERY component:**
+**STRICT 6-STEP WORKFLOW FOR EVERY COMPONENT:**
 
-1. Check shadcn MCP for similar component
-2. Write component with TypeScript
-3. Write Storybook story (all states)
-4. Build Storybook: `npm run build-storybook`
-5. Write tests (based on stories)
-6. Run tests: `npm test`
-7. MCP Check (optional)
-8. Document learnings
+**DO NOT proceed to next component until all 6 steps complete!**
+
+#### Step 1: ✅ Component Implementation (1-2 hours)
+```typescript
+// Use existing shadcn/ui components
+// Follow accessibility guidelines (ARIA labels, keyboard navigation)
+// Base on UserAuthenticity.tsx template
+```
+
+**Checklist:**
+- [ ] TypeScript component created
+- [ ] Uses shadcn/ui primitives (Card, Progress, Badge, etc.)
+- [ ] Props interface defined
+- [ ] Loading/Error states handled
+- [ ] Responsive design (mobile, tablet, desktop)
+
+#### Step 2: ✅ Storybook Stories (30 minutes)
+```bash
+# Minimum 3 stories per component:
+# - Default (normal state)
+# - Loading (skeleton/spinner)
+# - Error (error message)
+```
+
+**Checklist:**
+- [ ] `.stories.tsx` file created
+- [ ] All variants covered (3+ stories)
+- [ ] Interactive controls for props
+- [ ] Documentation with `tags: ['autodocs']`
+
+#### Step 3: ✅ Build Storybook (REQUIRED)
+```bash
+npm run build-storybook
+# This creates storybook-static/index.json
+# Required for Storybook MCP to index component
+```
+
+**Checklist:**
+- [ ] Build succeeds without errors
+- [ ] `storybook-static/index.json` updated
+- [ ] All stories render in built version
+
+#### Step 4: ✅ Unit Tests (1 hour)
+```bash
+# Test all stories (if story renders, test should pass)
+# Test user interactions (clicks, inputs, form submissions)
+# Test edge cases (empty data, long text, etc.)
+```
+
+**Coverage Targets:**
+- **90%+ for UI components**
+- **100% for logic functions**
+
+**Checklist:**
+- [ ] `.test.tsx` file created
+- [ ] All stories tested
+- [ ] User interactions tested
+- [ ] Edge cases covered
+- [ ] Mock data created
+
+#### Step 5: ✅ Verify Coverage
+```bash
+npm run test:coverage
+# Check coverage report for this component
+# Must meet targets before moving to next component
+```
+
+**Checklist:**
+- [ ] Coverage ≥ 90% for UI
+- [ ] Coverage = 100% for logic
+- [ ] No untested code paths
+
+#### Step 6: ✅ MCP Verification (Optional, 5 minutes)
+```bash
+# Query Storybook MCP: "Show me ComponentName"
+# Verify component is indexed
+# Check documentation completeness
+```
+
+**Checklist:**
+- [ ] Component appears in MCP search
+- [ ] Documentation is complete
+- [ ] Examples are clear
+
+---
+
+**⚠️ IMPORTANT: Only 1 component should be "in progress" at a time!**
+
+Complete all 6 steps for Component A before starting Component B.
+
+**Time Estimate per Component:**
+- Implementation: 1-2 hours
+- Stories: 30 minutes
+- Tests: 1 hour
+- **Total: ~3 hours per component**
 
 ---
 
@@ -1734,16 +2245,144 @@ vercel --prod            # Production deploy
 
 ---
 
-**Last Updated:** 2025-11-16
-**Version:** 4.0 (Updated with current state analysis)
-**Status:** Ready for Implementation
+## Version History
 
-**Key Changes in v4.0:**
-- Added Current State & Reusability Analysis (70% infrastructure ready)
-- Added "What NOT to Change" section (preserve working components)
-- Reduced estimates with reuse consideration (14 days vs 14-19 days)
-- Added Migration Strategy options (Incremental vs Full Replacement)
-- Referenced existing templates (authenticity.ts, UserAuthenticity.tsx)
-- Documented already installed dependencies (no need to reinstall)
+### v5.0 (2025-11-17) - Major Metrics Overhaul
+
+**Breaking Changes:**
+- Complete rewrite of all 4 metrics with new components and formulas
+- Added Fraud Detection System (0-100 score with 5 detection components)
+- Removed "Originality" and "Ownership" metrics from Quality (replaced with Code Health Practices)
+- Changed Activity from 3 components to 4 components
+- Changed Growth to include Learning Pattern Detection
+
+**New Features:**
+
+**Activity Metric (0-100 points):**
+- A. Code Throughput (0-35 points) - Lines changed in merged PRs, not commit count
+- B. Consistency & Rhythm (0-25 points) - Active weeks + Temporal Pattern Analysis
+- C. Collaboration (0-20 points) - PR reviews + issue participation (NEW)
+- D. Project Focus (0-20 points) - Repository scatter detection (NEW)
+
+**Impact Metric (0-100 points):**
+- A. Adoption Signal (0-40 points) - Active forks (forks with commits ahead), watchers, contributors
+- B. Community Engagement (0-30 points) - Issues activity + external PRs
+- C. Social Proof (0-20 points) - Stars with logarithmic scaling (anti-gaming)
+- D. Package Registry Stats (0-10 points) - npm/PyPI downloads (Phase 5+)
+
+**Quality/Engineering Maturity (0-100 points):**
+- A. Code Health Practices (0-35 points) - CI/CD, testing, linting, code review process (NEW)
+- B. Documentation Quality (0-25 points) - README analysis + Wiki + Docs site
+- C. Maintenance Signal (0-25 points) - Issue response time + resolution rate (NEW)
+- D. Architecture Complexity (0-15 points) - Project size + tech stack + infrastructure
+
+**Growth/Learning Trajectory (-100 to +100 points):**
+- A. Skill Expansion (0-40 points) - New languages/frameworks in last 2 years
+- B. Project Evolution (-30 to +30 points) - Complexity growth over time
+- C. Learning Pattern Detection (0-30 points) - Tutorial vs Production ratio (NEW)
+
+**Fraud Detection System (0-100 suspicion score):**
+- Empty commits detection (0-30 points) - `additions + deletions == 0`
+- Perfect pattern/bot detection (0-25 points) - Uniform daily commits
+- Temporal anomalies (0-20 points) - Commits outside working window
+- Mass commits (0-15 points) - Single commits with >1000 lines
+- Fork farming (0-10 points) - Unmodified forks ratio
+
+**Documentation:**
+- Created [docs/METRICS_V2_DETAILED.md](docs/METRICS_V2_DETAILED.md) with complete TypeScript implementations and formulas
+- Updated [docs/metrics-explanation.md](docs/metrics-explanation.md) to v2.0 (925 lines) with fraud detection examples
+
+**GraphQL Query Updates Required:**
+- Added 8+ new fields needed for fraud detection and new metrics
+- PR additions/deletions for Code Throughput
+- PR review comments for Collaboration
+- Issue comments for Collaboration
+- Commit timestamps with `occurredAt` for Temporal Pattern Analysis
+- Commit author email addresses for fraud detection
+- Repository file tree for CI/CD detection
+- Branch protection rules for Code Review Process
+
+**Timeline Impact:**
+- Phase 2 estimate: 2 days → 3 days (due to Fraud Detection complexity and new metric components)
+- Total timeline: 14 days → 15 days
+
+**Overall Rank Classification:**
+```
+Junior:     0-29  (Low activity, little experience)
+Mid:       30-49  (Regular work, some projects)
+Senior:    50-69  (High Maturity >60, Impact >40)
+Staff:     70-84  (Senior + High Impact >70)
+Principal: 85-100 (Staff + Very High Activity >70 + Global Impact >80)
+```
+
+**Overall Score Formula:**
+```typescript
+Overall = Activity × 0.25 + Impact × 0.30 + Maturity × 0.30 + max(0, Learning) × 0.15
+```
+
+**Anti-Fake Protection Patterns:**
+- Logarithmic scaling: `log10(stars + 1) × 3` prevents star farming
+- Active forks only: Count forks with commits ahead, not total forks
+- Temporal pattern analysis: Build 0-23 hour histogram, find working window (80% commits), flag if >10% outside
+- Collaboration filtering: Remove "LGTM" only reviews, "me too" only comments
+- Learning balance: Ideal 20% tutorial + 60% production + 20% abandoned
+- Mass commit penalty: -10 points if >50% of PRs have >1000 lines
+
+---
+
+### v4.0 (2025-11-16) - Current State Analysis
+
+**Added:**
+- Current State & Reusability Analysis section (70% infrastructure ready)
+- "What NOT to Change" section (preserve working components)
+- Migration Strategy options (Incremental vs Full Replacement)
+- Updated Dependencies with "Already Installed" vs "Required (New)"
+- Enhanced Success Criteria with checkpoints per phase
+
+**Changes:**
+- Reduced timeline: 14-19 days → 14 days (with 70% code reuse)
+- Documented 99.85% test pass rate baseline
+- Referenced `authenticity.ts` as template for metric patterns
+- Added reuse notes for `UserAuthenticity.tsx` layout patterns
+
+**Documentation:**
+- Added Quick Reference section with existing component patterns
+- Documented which dependencies NOT to add (use existing instead)
+
+---
+
+### v3.0 (2025-11-16) - Initial Plan
+
+**Original Metrics (Before v5.0 overhaul):**
+
+**Activity:**
+- Recent commits (40%)
+- Consistency (30%)
+- Diversity (30%)
+
+**Impact:**
+- Stars (35%)
+- Forks (20%)
+- Contributors (15%)
+- Engagement (20%)
+- External Usage (10%)
+
+**Quality:**
+- Originality (30%) ← Removed in v5.0
+- Documentation (25%)
+- Ownership (20%) ← Removed in v5.0
+- Maturity (15%)
+- Stack (10%)
+
+**Growth:**
+- Year-over-year changes only
+
+**Timeline:** 14-19 days
+
+---
+
+**Last Updated:** 2025-11-17
+**Version:** 5.0 (Major Metrics Overhaul)
+**Status:** Ready for Implementation
 
 **Next Action:** Begin Phase 0, Step 0.1 — Create Vercel Serverless Function

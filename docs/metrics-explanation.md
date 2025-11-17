@@ -1,669 +1,924 @@
-# Metrics Explanation — GitHub User Analytics
+# Metrics Explanation — GitHub User Analytics V2
 
-**Version:** 1.0
-**Date:** 2025-11-16
+**Version:** 2.0
+**Date:** 2025-11-17
+
+**⚠️ IMPORTANT:** This document provides high-level formulas for all metrics. For detailed implementation with TypeScript code examples, see [METRICS_V2_DETAILED.md](./METRICS_V2_DETAILED.md).
 
 ---
 
 ## 📊 Overview
 
-This document defines all metrics used in the GitHub User Analytics Dashboard, explaining:
-- **What** the metric measures
-- **How** it's calculated (formula)
-- **Why** it matters for evaluating candidates
+This document explains the GitHub User Analytics metrics system:
+- **What** each metric measures
+- **How** it's calculated (formulas)
+- **Why** it matters for evaluating developers
 - **What** the benchmark ranges mean
+- **How** to detect fraud and fake activity
 
 ---
 
-## 🎯 Quick Assessment Metrics
+## 🎯 Main Question
 
-These four metrics provide instant insight for hire/no-hire decisions.
+**"Can this person bring value to our team?"**
+
+This question breaks down into 4 sub-questions:
+
+1. **Do they work regularly?** → **Activity Score**
+2. **Do people use their work?** → **Impact Score**
+3. **Do they write reliable code?** → **Quality Score (Engineering Maturity)**
+4. **Are they growing?** → **Growth Score (Learning Trajectory)**
+
+Plus: **Fraud Detection** to identify fake GitHub activity patterns.
 
 ---
 
-### 1. Activity Score
+## 🛡️ FRAUD DETECTION SYSTEM
 
-**Purpose:** Measures how actively the developer is coding on GitHub
+### Purpose
 
-**Range:** 0-100%
+Detect GitHub farming and fake activity created using tools that manipulate `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE`.
 
-#### Calculation Formula:
+### Fraud Score: 0-100
 
+**Formula:**
 ```
-Activity Score = (Recent Commits × 40%) +
-                 (Consistency × 30%) +
-                 (Diversity × 30%)
-```
-
-#### Component Breakdown:
-
-**A. Recent Commits (0-40 points)**
-```typescript
-// Last 3 months of commit activity
-const recentCommits = getTotalCommits(last3Months)
-const points = Math.min((recentCommits / 200) * 40, 40)
-
-// Scoring:
-// 0-20 commits   → 0-4 points
-// 21-50 commits  → 5-10 points
-// 51-100 commits → 11-20 points
-// 101-200 commits→ 21-40 points
+Fraud Score = (empty_commits_ratio × 30) +
+              (perfect_pattern_score × 25) +
+              (temporal_anomaly × 20) +
+              (mass_commits_ratio × 15) +
+              (fork_without_changes × 10)
 ```
 
-**B. Consistency (0-30 points)**
-```typescript
-// Commit streak and frequency
-const monthsActive = countActiveMonths(last12Months)
-const avgCommitsPerMonth = totalCommits / 12
+**Range:** 0-100 (where 100 = 100% suspicion of fraud)
 
-// Scoring:
-// 0-3 months active      → 0-10 points
-// 4-6 months active      → 11-15 points
-// 7-9 months active      → 16-20 points
-// 10-12 months active    → 21-30 points
+### Detection Signals
 
-// Bonus: +5 points for current streak >30 days
-```
+| Signal | How to Detect | Weight | Criticality |
+|--------|---------------|--------|-------------|
+| **Empty commits** | `additions + deletions == 0` | 30% | 🔴 High |
+| **Backdated commits** | Commits before account creation | Auto-flag | 🔴 Critical |
+| **Bot patterns** | Perfect daily commits at same time | 25% | 🟡 Medium |
+| **Temporal anomalies** | Commits outside usual working hours | 20% | 🟢 Low |
+| **Mass commits** | >1000 lines in single commit | 15% | 🟡 Medium |
+| **Fork farming** | Many forks with no modifications | 10% | 🟡 Medium |
+| **Multiple emails** | >10 different emails in commits | Flag only | 🟡 Medium |
+| **No GPG signing** | All commits unverified | Flag only | 🟢 Low |
 
-**C. Diversity (0-30 points)**
-```typescript
-// Number of different repositories with commits
-const activeRepos = countReposWithCommits(last3Months)
+### Benchmark Ranges
 
-// Scoring:
-// 1-3 repos    → 0-10 points (focused)
-// 4-7 repos    → 11-20 points (balanced)
-// 8-15 repos   → 21-30 points (diverse)
-// 16+ repos    → 25 points (too scattered?)
-```
-
-#### Benchmark Ranges:
-
-| Score | Label | Interpretation | Action |
+| Score | Level | Interpretation | Action |
 |-------|-------|----------------|--------|
-| 0-40% | Low | Inactive or sporadic coder | ⚠️ Concern |
-| 41-70% | Moderate | Regular contributor | ✅ Consider |
-| 71-100% | High | Very active developer | ⭐ Strong |
+| 0-19 | Clean | No suspicious patterns | ✅ Safe to hire |
+| 20-39 | Low Risk | Minor irregularities | ⚠️ Monitor |
+| 40-59 | Medium Risk | Multiple red flags | 🟡 Investigate further |
+| 60-79 | High Risk | Significant fraud indicators | 🔴 Major concern |
+| 80-100 | Critical | Likely fake profile | ❌ Do not hire |
 
-#### Visual Representation:
+### Example Output
 
 ```
-Activity Score: 85%
+⚠️ Fraud Risk: 35% (Medium)
+
+Issues detected:
+• 15% of commits are empty (4.5 points)
+• 30% commits outside working hours (6.0 points)
+• 8 different email addresses used (flag)
+• 3 unmodified forks in profile (3.0 points)
+
+Total Score: 35/100 → Medium Risk
+
+Recommendations:
+✓ Use GPG signing for verified commits
+✓ Clean up inactive forks
+✓ Add meaningful commit messages
+```
+
+---
+
+## 📊 METRIC 1: Activity Score → Productivity Signal
+
+### Purpose
+
+Measures **how productively** the developer works, not just "how many commits". Focuses on real code output and work patterns.
+
+**Range:** 0-100 points
+
+### Formula
+
+```
+Activity = Code Throughput (35) +
+           Consistency & Rhythm (25) +
+           Collaboration (20) +
+           Project Focus (20)
+```
+
+### Components
+
+#### A. Code Throughput (0-35 points)
+
+**What it measures:** Real output via **lines changed** in **merged PRs**.
+
+**Why:** 1 commit can be 1 line or 10,000 lines. Lines changed is a more honest indicator.
+
+**Calculation:**
+```typescript
+linesChanged = sum(mergedPRs.map(pr => pr.additions + pr.deletions))
+linesPerMonth = linesChanged / 3 // Last 3 months
+
+Scoring:
+• 0-1000 lines/month     → 0-15 points (Low)
+• 1000-5000 lines/month  → 15-25 points (Moderate)
+• 5000-15000 lines/month → 25-35 points (High)
+• 15000+ lines/month     → 35 points (Very High)
+
+Penalty: -10 points if >50% of code in mass commits (>1000 lines)
+```
+
+**Anti-fake protection:**
+- Ignore repos with one massive commit (90% code in single PR = likely clone)
+- Flag if average PR size >1000 lines
+
+---
+
+#### B. Consistency & Rhythm (0-25 points)
+
+**What it measures:** Regular work patterns and commit streaks.
+
+**Calculation:**
+```typescript
+activeWeeks = count weeks with ≥1 commit (last 12 months)
+longestStreak = max consecutive active weeks
+
+Base score:
+• 40+ weeks out of 52 → 20-25 points (High)
+• 20-39 weeks → 10-19 points (Moderate)
+• <20 weeks → 0-9 points (Low)
+
+Bonus: +5 points if longestStreak ≥ 26 weeks (half year)
+```
+
+**Temporal Pattern Analysis (Anti-bot):**
+```typescript
+// Build hour histogram (0-23 hours)
+commitTimes = commits.map(c => hour(c.committedDate))
+workingWindow = findWindow(commitTimes, 80%) // Where 80% commits are
+
+Flag if >10% commits outside working window
+Penalty: -5 points for irregular patterns
+```
+
+**Red flags:**
+- ❌ Commits every day at exactly 8:00 AM → bot pattern
+- ✅ Commits scattered 9 AM - 6 PM → normal human pattern
+- ⚠️ Sudden timezone change (was 9-17 UTC, became 2-5 UTC) → suspicious
+
+---
+
+#### C. Collaboration (0-20 points)
+
+**What it measures:** Teamwork through PR reviews, issue participation, discussions.
+
+**Why it matters:** Senior developers spend 30-50% of time on code reviews.
+
+**Calculation:**
+```typescript
+reviewsDone = count substantive PR reviews (last 6 months)
+issuesParticipated = count unique issues with comments
+prDiscussionsAvg = avg comments per own PR
+
+Scoring:
+• Reviews:     20+ reviews → 10 points
+• Issues:      10+ issues participated → 5 points
+• Discussions: 3+ avg comments per PR → 5 points
+```
+
+**Anti-fake protection:**
+- Filter out "LGTM" only reviews (less than 10 characters)
+- Filter out "me too" only comments
+
+**Note:** Solo coders will score 0 here — that's OK for freelancers!
+
+---
+
+#### D. Project Focus (0-20 points)
+
+**What it measures:** Specialization vs scatter across repositories.
+
+**The Paradox:**
+```
+1 repo     = excellent (deep focus)
+2-5 repos  = ideal (perfect balance)
+6-10 repos = good (wide range)
+11-20 repos = suspicious (scattered)
+20+ repos = red flag (likely fake or bot)
+```
+
+**Calculation:**
+```typescript
+activeRepos = count repos with commits in last 3 months
+
+Scoring:
+• 2-5 repos   → 20 points (ideal balance)
+• 1 repo      → 15 points (deep focus)
+• 6-10 repos  → 12 points (wide range)
+• 11-20 repos → 5 points (scattered)
+• 20+ repos   → 0 points (suspicious)
+
+Penalties:
+• -5 points if >50% repos are unmodified forks
+• -5 points if >70% repos created on same day
+```
+
+### Benchmark Ranges
+
+| Score | Level | Interpretation | Hiring Decision |
+|-------|-------|----------------|-----------------|
+| 0-39 | Low | Inactive or inconsistent work | ⚠️ Concern |
+| 40-59 | Moderate | Regular contributor | ✅ Consider |
+| 60-79 | High | Strong consistent productivity | ⭐ Strong candidate |
+| 80-100 | Very High | Elite developer productivity | 🌟 Excellent |
+
+### Example Output
+
+```
+Activity Score: 85/100 (High) ✅
 
 Breakdown:
-Recent commits (last 3m): 156 commits
-████████████████████████████████████ 40/40 points
+├─ Code Throughput:      35/35 (12,500 lines/month)
+├─ Consistency & Rhythm: 25/25 (48 weeks active, 32-week streak)
+├─ Collaboration:        18/20 (25 reviews, 12 issues)
+└─ Project Focus:        20/20 (4 active repos, balanced)
 
-Consistency (12m active):   12 months streak
-██████████████████████████████ 30/30 points
-
-Diversity (8 active repos): Balanced portfolio
-███████████████ 15/30 points
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL: 85/100 points → High Activity
+Fraud Risk: 12% (Low) ✅
 ```
-
-#### Data Sources:
-- GitHub Contributions API (last 12 months)
-- Commit history from all accessible repositories
-- Updated every 5 minutes
 
 ---
 
-### 2. Impact Score
+## 🌟 METRIC 2: Impact Score → Ecosystem Reach
 
-**Purpose:** Measures the reach and influence of the developer's work
+### Purpose
 
-**Range:** 0-100%
+Measures **whether people actually use the developer's work**, not just stars (which can be bought).
 
-#### Calculation Formula:
+**Range:** 0-100 points
+
+### Formula
 
 ```
-Impact Score = (Stars × 35%) +
-               (Forks × 20%) +
-               (Contributors × 15%) +
-               (Contribution Reach × 20%) +
-               (Community Engagement × 10%)
+Impact = Adoption Signal (40) +
+         Community Engagement (30) +
+         Social Proof (20) +
+         Package Registry Stats (10)
 ```
 
-#### Component Breakdown:
+### Components
 
-**A. Repository Stars (0-35 points)**
+#### A. Adoption Signal (0-40 points)
+
+**What it measures:** Real usage indicators.
+
+**Calculation:**
 ```typescript
-// Total stars across all owned repositories
-const totalStars = ownedRepos.reduce((sum, r) => sum + r.stars, 0)
+activeForks = forks with commits ahead of parent (real modifications)
+watchers = people following repo updates
+contributors = developers who committed
+recentActivity = pushed in last 30 days
 
-// Scoring (logarithmic scale):
-// 0-10 stars      → 0-5 points
-// 11-50 stars     → 6-10 points
-// 51-100 stars    → 11-15 points
-// 101-500 stars   → 16-25 points
-// 501-1000 stars  → 26-30 points
-// 1001+ stars     → 31-35 points
+Score =
+  log10(activeForks + 1) × 5 +
+  log10(watchers + 1) × 3 +
+  min(contributors × 0.5, 10) +
+  (recentActivity ? 5 : 0)
 ```
 
-**B. Fork Count (0-20 points)**
+**Anti-fake protection:**
+- Check if forks have actual commits (not just empty forks)
+- Verify issues/PRs exist (sign of live project)
+
+**Why active forks matter:** 100 forks with 0 changes = nobody actually uses it. 10 forks with 50+ commits each = real adoption.
+
+---
+
+#### B. Community Engagement (0-30 points)
+
+**What it measures:** Live community activity.
+
+**Calculation:**
 ```typescript
-// Total forks across owned repos
-const totalForks = ownedRepos.reduce((sum, r) => sum + r.forks, 0)
+totalIssues = sum of all issues across repos
+closedIssues = issues marked as closed
+closureRate = closedIssues / totalIssues
+externalPRs = PRs from contributors (not repo owner)
 
-// Scoring:
-// 0-5 forks       → 0-5 points
-// 6-20 forks      → 6-10 points
-// 21-50 forks     → 11-15 points
-// 51+ forks       → 16-20 points
+Scoring:
+• Issues (0-15 points):
+  - 50+ issues + >50% closed → 15 points
+  - 10-50 issues → 10 points
+  - <10 issues but >80% closed → 8 points (small but responsive)
+  - <10 issues + <50% closed → 3 points
+
+• External PRs (0-10 points):
+  - 20+ external PRs → 10 points
+  - Proportional scaling
+
+• Discussions (0-5 points):
+  - GitHub Discussions/Wiki activity
 ```
 
-**C. Contributors (0-15 points)**
+**Why issues matter:**
+- 0 issues ≠ perfect code
+- 0 issues = either nobody uses it OR maintainer ignores them
+
+---
+
+#### C. Social Proof (0-20 points)
+
+**What it measures:** Stars and visibility (with logarithmic scale to prevent gaming).
+
+**Calculation:**
 ```typescript
-// Number of repos with >1 contributor (community projects)
-const communityRepos = ownedRepos.filter(r => r.contributors > 1)
+starsScore = min(log10(totalStars + 1) × 3, 15)
+trendingBonus = wasInTrending ? 5 : 0
 
-// Scoring:
-// 0-2 repos       → 0-5 points
-// 3-5 repos       → 6-10 points
-// 6+ repos        → 11-15 points
+Total = starsScore + trendingBonus
 ```
 
-**D. Contribution Reach (0-20 points)**
+**Why logarithmic scale:**
+```
+10 stars → 1,000 stars = +2 points
+1,000 stars → 10,000 stars = +2 points (not +9000)
+```
+
+This prevents star farming from having outsized impact.
+
+---
+
+#### D. Package Registry Stats (0-10 points)
+
+**What it measures:** Real package downloads from npm/PyPI/crates.io/Docker Hub.
+
+**MVP Implementation:**
 ```typescript
-// Number of different repos contributed to (not owned)
-const contributedRepos = contributions.length
-
-// Scoring:
-// 0-5 repos       → 0-5 points
-// 6-15 repos      → 6-12 points
-// 16-30 repos     → 13-17 points
-// 31+ repos       → 18-20 points
+hasPackageJson = repo has package.json → 5 points
+hasDownloadStats = can fetch npm/PyPI stats → +5 points
 ```
 
-**E. Community Engagement (0-10 points)**
-```typescript
-// Issues created + PRs opened
-const engagement = totalIssues + totalPRs
+**⚠️ DEFERRED TO PHASE 5+** — Requires external API calls to npm, PyPI, etc.
 
-// Scoring:
-// 0-10 interactions    → 0-3 points
-// 11-50 interactions   → 4-7 points
-// 51+ interactions     → 8-10 points
-```
+### Benchmark Ranges
 
-#### Benchmark Ranges:
+| Score | Level | Interpretation | Hiring Decision |
+|-------|-------|----------------|-----------------|
+| 0-19 | None | No community presence | ⚠️ Junior |
+| 20-39 | Local | Small personal projects | ✅ Mid-level potential |
+| 40-59 | Community | Active in OSS community | ⭐ Mid to Senior |
+| 60-79 | Regional | Recognized in ecosystem | 🌟 Senior |
+| 80-100 | Global | Industry-wide impact | 💎 Staff/Principal |
 
-| Score | Label | Interpretation | Action |
-|-------|-------|----------------|--------|
-| 0-40% | Limited | Few public contributions | ⚠️ Junior level |
-| 41-70% | Moderate | Some community presence | ✅ Mid-level |
-| 71-100% | Strong | Recognized contributor | ⭐ Senior/Lead |
-
-#### Visual Representation:
+### Example Output
 
 ```
-Impact Score: 72%
+Impact Score: 72/100 (Regional) ⭐
+
+Top Projects:
+1. awesome-lib (75 impact points)
+   2,450 stars, 350 active forks
+   120 contributors, 850 issues (70% closed)
+   50K npm downloads/month
+
+2. useful-tool (62 impact points)
+   850 stars, 80 active forks
+   25 contributors, maintained (pushed 3 days ago)
 
 Breakdown:
-Stars (1,234 total):
-█████████████████████████ 28/35 points
-
-Forks (189 total):
-████████████████ 18/20 points
-
-Contributors (8 community repos):
-███████████ 12/15 points
-
-Contribution reach (23 repos):
-███████████ 14/20 points
-
-Community engagement (89 issues + 156 PRs):
-████████ 8/10 points
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL: 72/100 points → Strong Impact
+├─ Adoption Signal:      38/40 (350 active forks, 2.5K watchers)
+├─ Community Engagement: 28/30 (850 issues, 70% closed, 45 ext PRs)
+├─ Social Proof:         18/20 (3,300 total stars, was trending)
+└─ Package Stats:        5/10 (publishable, stats pending)
 ```
-
-#### Top Impactful Repositories:
-1. my-awesome-project: 456 ⭐, 89 🍴
-2. another-repo: 234 ⭐, 34 🍴
-3. open-source-lib: 189 ⭐, 23 🍴
-
-#### Data Sources:
-- Repository stargazers count
-- Fork network size
-- Contributor lists
-- Issue/PR activity
-- Updated every 10 minutes
 
 ---
 
-### 3. Quality Score
+## 🏆 METRIC 3: Quality Score → Engineering Maturity
 
-**Purpose:** Measures code quality indicators and best practices
+### Purpose
 
-**Range:** 0-100%
+Measures **engineering maturity** through code health practices, not "originality" (which is impossible to measure accurately).
 
-#### Calculation Formula:
+**Range:** 0-100 points
+
+### Formula
 
 ```
-Quality Score = (Originality × 30%) +
-                (Documentation × 25%) +
-                (Code Ownership × 20%) +
-                (Project Maturity × 15%) +
-                (Technology Stack × 10%)
+Quality = Code Health Practices (35) +
+          Documentation Quality (25) +
+          Maintenance Signal (25) +
+          Architecture Complexity (15)
 ```
 
-#### Component Breakdown:
+### Components
 
-**A. Originality (0-30 points)**
+#### A. Code Health Practices (0-35 points)
+
+**What it measures:** Modern engineering habits.
+
+**Calculation:**
 ```typescript
-// Percentage of non-forked, original repositories
-const originalRepos = repos.filter(r => !r.isFork)
-const originalityRatio = originalRepos.length / repos.length
+Scoring:
+• CI/CD (0-15 points):
+  - GitHub Actions / CircleCI / Travis exists
+  - Automated tests run in CI
+  - (repos with CI/CD / total repos) × 15
 
-// Scoring:
-// <30% original    → 0-10 points (mostly forks)
-// 30-50% original  → 11-15 points (mixed)
-// 51-70% original  → 16-20 points (good)
-// 71-90% original  → 21-25 points (very good)
-// >90% original    → 26-30 points (excellent)
+• Testing (0-10 points):
+  - Test directory exists (test/, tests/, __tests__)
+  - Test frameworks in dependencies
+  - (repos with tests / total) × 10
+
+• Linting/Formatting (0-5 points):
+  - .eslintrc, .prettierrc, pyproject.toml
+  - Pre-commit hooks
+  - (repos with linting / total) × 5
+
+• Code Review Process (0-5 points):
+  - Branch protection rules enabled
+  - Required reviewers configured
+  - (protected repos / total) × 5
 ```
 
-**B. Documentation (0-25 points)**
+**How to check:** Use GitHub GraphQL `repository.object(expression: "HEAD:")` to get file tree in one request.
+
+---
+
+#### B. Documentation Quality (0-25 points)
+
+**What it measures:** How well projects are documented.
+
+**Calculation:**
 ```typescript
-// Repos with README + LICENSE + docs
-const withReadme = repos.filter(r => hasReadme(r)).length
-const withLicense = repos.filter(r => r.license).length
-const withHomepage = repos.filter(r => r.homepage).length
+Per repository:
 
-const docScore = (
-  (withReadme / repos.length) * 10 +
-  (withLicense / repos.length) * 10 +
-  (withHomepage / repos.length) * 5
-)
+README (0-15 points):
+• Length score (0-8):
+  - >5000 chars → 8 points (comprehensive)
+  - 2000-5000 → 6 points (detailed)
+  - 500-2000 → 4 points (basic)
+  - <500 → 2 points (minimal)
 
-// Scoring:
-// <30% documented   → 0-8 points
-// 30-50% documented → 9-12 points
-// 51-70% documented → 13-18 points
-// 71-90% documented → 19-22 points
-// >90% documented   → 23-25 points
+• Content score (0-7):
+  - Has "Installation" section → 2 points
+  - Has "Usage" section → 2 points
+  - Has "Examples" → 1 point
+  - Has "Contributing" → 1 point
+  - Has "License" → 1 point
+
+Wiki (0-5 points):
+• GitHub Wiki enabled with content → 5 points
+
+Docs Site (0-5 points):
+• GitHub Pages / dedicated docs website → 5 points
 ```
 
-**C. Code Ownership (0-20 points)**
+**Anti-fake protection:**
+- Flag if README >90% copy of another project (fuzzy string matching)
+
+---
+
+#### C. Maintenance Signal (0-25 points)
+
+**What it measures:** Responsiveness and project longevity.
+
+**Calculation:**
 ```typescript
-// Average commit percentage in owned repos
-const avgOwnership = ownedRepos.reduce((sum, r) =>
-  sum + (r.userCommits / r.totalCommits), 0
-) / ownedRepos.length
+• Issue Response Time (0-10 points):
+  medianResponseTime = median hours from issue creation to first response
 
-// Scoring:
-// <20% ownership  → 0-5 points (minor contributor)
-// 20-40% ownership→ 6-10 points (co-maintainer)
-// 41-60% ownership→ 11-15 points (main contributor)
-// >60% ownership  → 16-20 points (primary author)
+  Scoring:
+  - <24h → 10 points
+  - 1-3 days → 7 points
+  - 1 week → 4 points
+  - >1 month → 0 points
+
+• Issue Resolution Rate (0-10 points):
+  closureRate = closed issues / total issues
+
+  Scoring:
+  - >70% → 10 points
+  - 50-70% → 7 points
+  - <50% → 3 points
+
+• Project Longevity (0-5 points):
+  ageInYears = years since repo creation
+  recentActivity = pushed in last 90 days
+
+  Scoring:
+  - Age >2 years + active → 5 points
+  - Old but abandoned → 0 points
 ```
 
-**D. Project Maturity (0-15 points)**
+**Why this matters:** Shows maintainer doesn't abandon projects and is responsive to community.
+
+---
+
+#### D. Architecture Complexity (0-15 points)
+
+**What it measures:** Technical depth and scale.
+
+**Calculation:**
 ```typescript
-// Age and activity of repositories
-const matureRepos = repos.filter(r => {
-  const ageMonths = monthsSince(r.createdAt)
-  const recentActivity = daysSince(r.pushedAt) < 90
-  return ageMonths > 6 && recentActivity
-})
+• Project Size (0-5 points):
+  avgDiskUsage = average disk usage across repos
 
-// Scoring:
-// 0-20% mature     → 0-5 points
-// 21-40% mature    → 6-10 points
-// >40% mature      → 11-15 points
+  Scoring:
+  - >10MB → 5 points (substantial)
+  - 1-10MB → 3 points (moderate)
+  - <1MB → 1 point (small)
+
+• Tech Stack Diversity (0-5 points):
+  uniqueLanguages = count languages with >1% of codebase
+
+  Scoring:
+  - 5+ languages → 5 points (polyglot)
+  - 3-4 languages → 3 points (diverse)
+  - 1-2 languages → 1 point (focused)
+
+• Infrastructure (0-5 points):
+  - Has Dockerfile/docker-compose → 3 points
+  - Has database migrations → 1 point
+  - Has API docs (Swagger/OpenAPI) → 1 point
 ```
 
-**E. Technology Stack (0-10 points)**
-```typescript
-// Diversity of modern technologies
-const modernTechs = ['TypeScript', 'Rust', 'Go', 'Python']
-const usedTechs = new Set(repos.flatMap(r => r.languages))
-const modernUsage = modernTechs.filter(t => usedTechs.has(t))
+**Anti-fake protection:**
+- If many languages but 99% one language → don't count
+- Check for real code vs just config files
 
-// Scoring:
-// 0-1 modern tech  → 0-3 points
-// 2-3 modern tech  → 4-7 points
-// 4+ modern tech   → 8-10 points
-```
+### Benchmark Ranges
 
-#### Benchmark Ranges:
+| Score | Level | Interpretation | Hiring Decision |
+|-------|-------|----------------|-----------------|
+| 0-39 | Beginner | Basic or learning projects | ⚠️ Junior |
+| 40-59 | Intermediate | Decent practices | ✅ Mid-level |
+| 60-74 | Advanced | Strong engineering | ⭐ Senior |
+| 75-89 | Expert | Excellent practices | 🌟 Staff |
+| 90-100 | Master | Industry-leading quality | 💎 Principal |
 
-| Score | Label | Interpretation | Action |
-|-------|-------|----------------|--------|
-| 0-40% | Poor | Low quality indicators | ❌ Red flag |
-| 41-70% | Good | Adequate practices | ✅ Acceptable |
-| 71-100% | Excellent | High standards | ⭐ Impressive |
-
-#### Visual Representation:
+### Example Output
 
 ```
-Quality Score: 68%
+Quality Score: 78/100 (Expert) 🌟
 
 Breakdown:
-Originality (85% original repos):
-█████████████████████████ 25/30 points
-
-Documentation (72% have README+License):
-██████████████████ 18/25 points
-
-Code ownership (avg 58% in owned repos):
-█████████████ 14/20 points
-
-Project maturity (45% mature & active):
-███████████ 11/15 points
-
-Technology stack (TS, Python, Go):
-███████ 7/10 points
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL: 68/100 points → Good Quality
+├─ Code Health:      32/35 (CI/CD: 95%, Tests: 90%, Linting: 85%)
+├─ Documentation:    22/25 (Avg README: 4200 chars, 8 wikis, 3 docs sites)
+├─ Maintenance:      20/25 (Response: 18h median, Resolution: 72%)
+└─ Architecture:     12/15 (Avg: 8.5MB, 4 languages, Docker: 80%)
 ```
-
-#### Data Sources:
-- Repository metadata (fork status, creation date)
-- File analysis (README, LICENSE detection)
-- Commit history analysis
-- Language statistics
-- Updated every 30 minutes
 
 ---
 
-### 4. Growth Score
+## 📈 METRIC 4: Growth Score → Learning Trajectory
 
-**Purpose:** Measures developer growth and improvement over time
+### Purpose
 
-**Range:** -100% to +100%
+Measures **whether the developer is growing as an engineer**, not just whether commit count increases.
 
-#### Calculation Formula:
+**Range:** -100 to +100 points
+
+### Formula
 
 ```
-Growth Score = Year-over-Year Change in:
-  (Activity × 40%) +
-  (Impact × 30%) +
-  (Skill Expansion × 30%)
+Growth = Skill Expansion (40) +
+         Project Evolution (30) +
+         Learning Pattern Detection (30)
 ```
 
-#### Component Breakdown:
+### Components
 
-**A. Activity Growth (0-40 points)**
+#### A. Skill Expansion (0-40 points)
+
+**What it measures:** New technologies learned.
+
+**Calculation:**
 ```typescript
-// Compare commits: current year vs previous year
-const thisYearCommits = yearlyData[currentYear].totalCommits
-const lastYearCommits = yearlyData[currentYear - 1].totalCommits
-const activityGrowth = ((thisYear - lastYear) / lastYear) * 100
+recentLanguages = unique languages in repos created last 2 years
+olderLanguages = unique languages in repos created 3-5 years ago
+newLanguages = recentLanguages - olderLanguages
 
-// Scoring:
-// -50% or less    → -20 points (declining)
-// -49% to -10%    → -10 to 0 points (slight decline)
-// -9% to +9%      → 0 to 10 points (stable)
-// +10% to +50%    → 11 to 30 points (growing)
-// +51% or more    → 31 to 40 points (rapid growth)
+score = min(newLanguages.size × 10, 40)
 ```
 
-**B. Impact Growth (0-30 points)**
+**Examples:**
+- Was only JavaScript, added TypeScript + Rust = +20 points
+- Was Python, added Go + Kubernetes = +20 points
+- Same Java for 10 years = 0 points (stagnation)
+
+---
+
+#### B. Project Evolution (-30 to +30 points)
+
+**What it measures:** Growth in project complexity over time.
+
+**Calculation:**
 ```typescript
-// Compare stars/forks gained this year vs last
-const thisYearStars = calculateNewStars(currentYear)
-const lastYearStars = calculateNewStars(currentYear - 1)
-const impactGrowth = ((thisYear - lastYear) / lastYear) * 100
+recentProjects = repos created in last 2 years
+olderProjects = repos created 3-5 years ago
 
-// Similar scoring to activity growth, scaled to 30 points
+complexityScore(repo) =
+  stars × 2 +
+  forks × 3 +
+  diskUsage / 1000 +
+  languages × 5 +
+  (hasCICD ? 20 : 0)
+
+recentAvg = avg complexity of recent projects
+olderAvg = avg complexity of older projects
+
+growthRate = ((recentAvg - olderAvg) / olderAvg) × 100%
+score = max(-30, min(growthRate / 3, 30))
 ```
 
-**C. Skill Expansion (0-30 points)**
+**Examples:**
+- 2020: tutorial projects, 0 stars → 2024: production apps, 100 stars = +30 points
+- 2020: 500 stars → 2024: 50 stars = -20 points (declining)
+
+---
+
+#### C. Learning Pattern Detection (0-30 points)
+
+**What it measures:** Balance between learning (tutorials) and shipping (production).
+
+**Tutorial Project Detection:**
 ```typescript
-// New languages or technologies learned
-const thisYearLangs = yearlyData[currentYear].languages
-const lastYearLangs = yearlyData[currentYear - 1].languages
-const newLanguages = thisYearLangs.filter(l => !lastYearLangs.includes(l))
-
-// Scoring:
-// 0 new languages    → 0-10 points (stagnant)
-// 1-2 new languages  → 11-20 points (learning)
-// 3+ new languages   → 21-30 points (expanding)
+isTutorial(repo) =
+  name includes 'tutorial', 'learning', 'course', 'homework', 'practice' OR
+  description includes 'learning', 'following tutorial' OR
+  (0 stars AND 0 forks AND abandoned after 2 weeks)
 ```
 
-#### Benchmark Ranges:
+**Production Project Detection:**
+```typescript
+isProduction(repo) =
+  stars > 10 OR
+  forks > 3 OR
+  has CI/CD OR
+  issues > 5 OR
+  contributors > 3 OR
+  pushed in last 90 days
+```
 
-| Score | Label | Interpretation | Action |
-|-------|-------|----------------|--------|
-| <-20% | Declining | Activity decreasing | ⚠️ Concern |
-| -19% to +9% | Stable | Consistent activity | ✅ Steady |
-| +10% to +49% | Growing | Improving developer | ⭐ Good |
-| +50%+ | Rapid | Exponential growth | 🚀 Excellent |
+**Scoring:**
+```typescript
+tutorialRatio = tutorial projects / total
+productionRatio = production projects / total
 
-#### Visual Representation:
+Ideal balance:
+• 20% tutorial (experimenting)
+• 60% production (shipping value)
+• 20% abandoned (normal)
+
+Scoring:
+• 100% tutorials → 0 points (only learning, not shipping)
+• 100% production → 20 points (shipping, but not experimenting)
+• 15-25% tutorials + 50-70% production → 30 points (ideal!)
+```
+
+### Benchmark Ranges
+
+| Score | Trend | Interpretation | Hiring Decision |
+|-------|-------|----------------|-----------------|
+| -100 to -30 | Declining | Skills/projects deteriorating | 🔴 Concern |
+| -30 to +30 | Stable | Maintaining current level | ⚠️ Monitor |
+| +30 to +70 | Growing | Actively learning & improving | ⭐ Strong |
+| +70 to +100 | Accelerating | Rapid skill development | 🌟 Excellent |
+
+### Example Output
 
 ```
-Growth Score: +24%
+Growth Score: +75/100 (Accelerating) 🚀
+
+Timeline:
+2020: JavaScript only, tutorial projects (complexity: 15)
+2021: +TypeScript, first production app (complexity: 45)
+2022: +Rust, contributing to OSS (complexity: 85)
+2023: +Go, maintaining 3 production apps (complexity: 120)
+2024: +Kubernetes, teaching others (complexity: 180)
 
 Breakdown:
-Activity growth (2024 vs 2023):
-2023: 456 commits
-2024: 678 commits → +48.7% growth
-████████████████████████████ 35/40 points
+├─ Skill Expansion:      40/40 (4 new languages in 2 years)
+├─ Project Evolution:    28/30 (+650% complexity growth)
+└─ Learning Pattern:     30/30 (18% tutorials, 65% production)
 
-Impact growth (stars gained):
-2023: +89 stars
-2024: +234 stars → +163% growth
-██████████████████████████ 30/30 points
-
-Skill expansion:
-New in 2024: TypeScript, Rust
-████████████ 15/30 points
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL: +24% YoY growth → Growing
+Balance: Ideal (actively learning while shipping) ✅
 ```
 
-#### Data Sources:
-- Year-over-year commit comparison
-- Repository creation/star timeline
-- Language usage trends
-- Updated daily
-
 ---
 
-## 📊 Timeline Metrics
+## 🎖️ OVERALL RANK
 
-These metrics provide year-by-year breakdown.
+### Overall Score Formula
 
----
-
-### Year Activity Breakdown
-
-For each year, we calculate:
-
-#### Total Contributions:
 ```typescript
-interface YearMetrics {
-  year: number
-  totalCommits: number
-  totalIssues: number
-  totalPRs: number
-  totalReviews: number
+Overall =
+  Activity × 0.25 +
+  Impact × 0.30 +
+  Quality × 0.30 +
+  max(0, Growth) × 0.15
 
-  // Breakdown by type
-  ownedRepos: Repository[]      // User is owner
-  contributions: Repository[]    // Contributed to others
+Note: Growth can be negative, but we use max(0, Growth) so
+declining growth doesn't penalize too harshly.
+```
 
-  // Time distribution
-  peakMonth: string             // Month with most commits
-  activeMonths: number          // Months with >0 commits
-  avgCommitsPerMonth: number
+### Rank Classification
 
-  // Technology
-  languages: LanguageStats[]
-  topLanguage: string
+| Rank | Overall Score | Requirements | Expected Level |
+|------|---------------|--------------|----------------|
+| **Junior** | 0-29 | Low activity, little experience | Entry-level |
+| **Mid** | 30-49 | Regular work, some projects | 2-4 years exp |
+| **Senior** | 50-69 | High Quality (>60), Impact (>40) | 5-8 years exp |
+| **Staff** | 70-84 | Senior + High Impact (>70) | 8-12 years exp |
+| **Principal** | 85-100 | Staff + Very High Activity (>70) + Global Impact (>80) | 12+ years exp |
+
+### Example Rankings
+
+**Example 1: Linus Torvalds**
+```
+Activity:  85 (High, delegates much work)
+Impact:    100 (Linux kernel — billions of devices)
+Quality:   95 (Expert maintainer, 30+ year project)
+Growth:    +40 (Stable, mature)
+
+Overall = 85×0.25 + 100×0.30 + 95×0.30 + 40×0.15
+        = 21.25 + 30 + 28.5 + 6
+        = 85.75
+
+→ Rank: Principal 💎
+```
+
+**Example 2: Growing Junior Developer**
+```
+Activity:  45 (Moderate consistency, learning)
+Impact:    15 (Local projects only, <100 stars)
+Quality:   35 (Basic practices, minimal docs)
+Growth:    +60 (Learning fast! 3 new languages)
+
+Overall = 45×0.25 + 15×0.30 + 35×0.30 + 60×0.15
+        = 11.25 + 4.5 + 10.5 + 9
+        = 35.25
+
+→ Rank: Mid ✅ (but growing rapidly — worth investing in!)
+```
+
+**Example 3: Experienced Mid-Level**
+```
+Activity:  62 (High, consistent contributor)
+Impact:    48 (Active OSS contributor, 1K+ stars)
+Quality:   58 (Good CI/CD, decent docs)
+Growth:    +25 (Stable, slow growth)
+
+Overall = 62×0.25 + 48×0.30 + 58×0.30 + 25×0.15
+        = 15.5 + 14.4 + 17.4 + 3.75
+        = 51.05
+
+→ Rank: Senior ⭐
+```
+
+---
+
+## 📝 What to Include in MVP (Phase 2)
+
+### ✅ Include (Core Features):
+
+**Activity (35 points):**
+- ✅ Code throughput (lines changed in merged PRs)
+- ✅ Consistency (3mo, 12mo, 3yr windows)
+- ✅ Collaboration (PR reviews, issue participation)
+- ✅ Project focus (active repos count)
+- ✅ Fraud detection: empty commits, backdating, multiple emails
+
+**Impact (30 points):**
+- ✅ Stars + Forks (logarithmic scale)
+- ✅ Watchers
+- ✅ Contributors count
+- ✅ Issues activity (total, closure rate)
+- ⚠️ Package stats (if package.json exists) — simplified
+
+**Quality (30 points):**
+- ✅ CI/CD presence (GitHub Actions detection)
+- ✅ Test directory detection
+- ✅ README quality scoring (length + content)
+- ✅ Issue response time (median hours)
+
+**Growth (5 points, bonus):**
+- ✅ New languages (last 2 years vs 3-5 years ago)
+- ✅ Tutorial vs production detection (weighted)
+- ✅ Project complexity growth (year-over-year)
+
+---
+
+## ❌ Defer to Phase 5+ (Advanced Features):
+
+- ❌ **Active forks analysis** — Requires fetching each fork's commit history (complex, slow)
+- ❌ **Bot pattern detection** — Diminishing returns, temporal analysis covers most cases
+- ❌ **Dependency Graph API** — Unstable GitHub API endpoint
+- ❌ **Code similarity detection** — Overkill for MVP, computationally expensive
+- ❌ **Full package registry stats** — Requires external API calls to npm, PyPI, cargo, Docker Hub
+
+---
+
+## 🔧 GraphQL Data Requirements
+
+### New Fields Needed (vs Current Implementation)
+
+Current `GET_USER_INFO` query **does NOT include:**
+
+❌ **For Activity:**
+- PR additions/deletions (for Code Throughput)
+- PR review comments (for Collaboration)
+- Issue comments by user (for Collaboration)
+- Commit timestamps with `occurredAt` (for Temporal Pattern Analysis)
+
+❌ **For Fraud Detection:**
+- Commit `additions` and `deletions` (for Empty Commits detection)
+- Commit `authoredDate` vs `committedDate` (for Backdating)
+- Commit author email addresses (for Multiple Emails)
+
+❌ **For Quality:**
+- Repository file tree (for CI/CD, test detection)
+- Issue timeline events (for Response Time)
+- Branch protection rules (for Code Review Process)
+
+### Required GraphQL Updates (Phase 1.5)
+
+**New query:** `GET_USER_ANALYTICS` with:
+
+```graphql
+pullRequests(first: 100) {
+  nodes {
+    additions    # NEW
+    deletions    # NEW
+    merged       # NEW
+    reviews {    # NEW
+      nodes {
+        body
+        author { login }
+      }
+    }
+  }
+}
+
+commitContributions {
+  nodes {
+    occurredAt          # NEW (for temporal analysis)
+    commitCount
+    repository {
+      defaultBranchRef {
+        target {
+          ... on Commit {
+            additions   # NEW
+            deletions   # NEW
+            author {
+              email     # NEW
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+repositories {
+  nodes {
+    object(expression: "HEAD:") {  # NEW (file tree)
+      ... on Tree {
+        entries {
+          name
+          type
+        }
+      }
+    }
+    branchProtectionRules {  # NEW
+      totalCount
+    }
+    issues {
+      nodes {
+        timelineItems(first: 1, itemTypes: [ISSUE_COMMENT]) {  # NEW
+          nodes {
+            ... on IssueComment {
+              createdAt
+            }
+          }
+        }
+      }
+    }
+  }
 }
 ```
 
-#### Visual Representation:
-
-```
-2024 Activity: 678 commits
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 CONTRIBUTION TYPES:
-• Commits:      678 ████████████████████
-• Issues:        45 ██
-• Pull Requests: 89 ████
-• Code Reviews:  34 ██
-
-📦 PROJECT BREAKDOWN:
-Your Projects (15 repos):
-• my-awesome-project: 234 commits
-• another-repo:        89 commits
-• third-project:       45 commits
-
-Open Source (8 repos):
-• facebook/react:      89 commits
-• vercel/next.js:      23 commits
-
-📅 MONTHLY DISTRIBUTION:
-Peak: July (89 commits)
-Active: 12/12 months
-Avg: 56.5 commits/month
-
-💻 LANGUAGES:
-TypeScript  ████████████████ 65%
-JavaScript  ████         25%
-CSS         ██            10%
-```
-
 ---
 
-## 🏆 Project-Level Metrics
+**Last Updated:** 2025-11-17
+**Version:** 2.0
+**Status:** Ready for Implementation
 
-For individual repositories:
-
-### Contribution Percentage
-
-```typescript
-interface ContributionMetric {
-  userCommits: number
-  totalCommits: number
-  percentage: number
-  role: 'Primary' | 'Co-Maintainer' | 'Contributor' | 'Minor'
-}
-
-// Role determination:
-// >60% → Primary Author
-// 40-60% → Co-Maintainer
-// 10-40% → Contributor
-// <10% → Minor Contributor
-```
-
-### Repository Health
-
-```typescript
-interface RepositoryHealth {
-  stars: number
-  forks: number
-  watchers: number
-  openIssues: number
-
-  // Activity indicators
-  lastCommit: Date
-  ageMonths: number
-  isActive: boolean  // Commit in last 90 days
-  isArchived: boolean
-
-  // Quality indicators
-  hasReadme: boolean
-  hasLicense: boolean
-  hasHomepage: boolean
-  hasTopics: boolean
-}
-```
-
----
-
-## 📈 Comparative Metrics
-
-### Benchmarks
-
-All scores are compared against:
-
-1. **GitHub Average** — Median of all GitHub users
-2. **Language-Specific** — Developers using same primary language
-3. **Experience Level** — Based on account age
-
-Example:
-```
-Your Activity Score: 85%
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-GitHub Average:      54% ───── (You: +31%)
-TypeScript Devs:     67% ───── (You: +18%)
-2-3 Year Experience: 71% ───── (You: +14%)
-
-Percentile: Top 15% of all users
-```
-
----
-
-## 🔄 Update Frequency
-
-| Metric | Update Frequency | Cache Duration |
-|--------|-----------------|----------------|
-| Activity Score | 5 minutes | 5 minutes |
-| Impact Score | 10 minutes | 10 minutes |
-| Quality Score | 30 minutes | 30 minutes |
-| Growth Score | 24 hours | 24 hours |
-| Timeline Data | 1 hour | 1 hour |
-
----
-
-## 📚 Data Sources
-
-All metrics derive from:
-
-1. **GitHub GraphQL API**
-   - Contributions Collection
-   - Repository metadata
-   - Commit history
-
-2. **Computed Analytics**
-   - Language distribution (GitHub Linguist)
-   - Contributor counts (Git log analysis)
-   - Activity trends (Time series analysis)
-
-3. **Third-Party Benchmarks** (optional future)
-   - GitHub Archive data
-   - OSS Insight statistics
-
----
-
-## 🎯 Usage Examples
-
-### For Recruiters:
-
-**Screening:**
-- Activity >70% → Active coder ✅
-- Impact >60% → Has influence ✅
-- Quality >50% → Good practices ✅
-- Growth >0% → Improving ✅
-
-**Red Flags:**
-- Activity <40% → Inactive ⚠️
-- Quality <40% → Poor practices ❌
-- Growth <-20% → Declining ⚠️
-
-### For Developers (Self-Assessment):
-
-**Improvement Areas:**
-- Low Activity → Commit more regularly
-- Low Impact → Focus on quality over quantity
-- Low Quality → Add documentation, licenses
-- Negative Growth → Learn new technologies
-
----
-
-**Last Updated:** 2025-11-16
-**Version:** 1.0
-**Next Review:** After Phase 3 implementation
+For detailed TypeScript implementations, see [METRICS_V2_DETAILED.md](./METRICS_V2_DETAILED.md).
