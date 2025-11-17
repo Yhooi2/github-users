@@ -2,8 +2,18 @@
 
 **Version:** 2.0
 **Date:** 2025-11-17
+**Status:** Conceptual - See [VERIFICATION_REPORT.md](./VERIFICATION_REPORT.md) for API limitations
 
-**⚠️ IMPORTANT:** This document provides high-level formulas for all metrics. For detailed implementation with TypeScript code examples, see [METRICS_V2_DETAILED.md](./METRICS_V2_DETAILED.md).
+**⚠️ API LIMITATIONS WARNING:**
+
+This document describes metrics v2.0 concepts. However, some GitHub GraphQL API limitations affect implementation:
+
+- ❌ **commit.additions/deletions** - NOT available in GitHub GraphQL API
+- ✅ **pullRequest.additions/deletions** - Available (but requires fetching all PRs = slow + rate limit)
+- ❌ **commit.author.email** - NOT available (privacy reasons)
+- ✅ **commit.author.user** - Available (null if email not linked to GitHub account)
+
+**Recommendation:** Use metrics v1.0 (based on `src/lib/authenticity.ts`) which uses only available API fields.
 
 ---
 
