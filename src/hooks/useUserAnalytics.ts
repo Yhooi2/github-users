@@ -8,7 +8,6 @@ import {
 } from '@/apollo/queries/userProfile'
 import {
   GET_YEAR_CONTRIBUTIONS,
-  type Repository,
   type RepositoryContribution,
   type GetYearContributionsResponse,
   type GetYearContributionsVariables,
