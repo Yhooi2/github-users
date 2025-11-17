@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { StatsCard } from './StatsCard';
 import { Users, GitFork, Star, FolderGit2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

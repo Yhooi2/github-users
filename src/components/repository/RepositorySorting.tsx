@@ -90,8 +90,8 @@ export function RepositorySorting({
   };
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-sm text-muted-foreground">Sort by:</span>
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-muted-foreground text-sm">Sort by:</span>
 
       <Select value={sortBy} onValueChange={(value) => onSortByChange(value as SortBy)}>
         <SelectTrigger size={compact ? 'sm' : 'default'} className="w-[160px]">
@@ -114,7 +114,7 @@ export function RepositorySorting({
           aria-label="Sort ascending"
           aria-pressed={sortDirection === 'asc'}
         >
-          <ArrowUp className="w-4 h-4" />
+          <ArrowUp className="h-4 w-4" />
           {!compact && <span className="ml-1">Asc</span>}
         </Button>
 
@@ -125,7 +125,7 @@ export function RepositorySorting({
           aria-label="Sort descending"
           aria-pressed={sortDirection === 'desc'}
         >
-          <ArrowDown className="w-4 h-4" />
+          <ArrowDown className="h-4 w-4" />
           {!compact && <span className="ml-1">Desc</span>}
         </Button>
 
@@ -136,7 +136,7 @@ export function RepositorySorting({
           aria-label="Toggle sort direction"
           title="Toggle sort direction"
         >
-          <ArrowUpDown className="w-4 h-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RepositoryFilters } from './RepositoryFilters';
 import type { RepositoryFilter } from '@/types/filters';
 import { useState } from 'react';
@@ -17,7 +17,8 @@ function RepositoryFiltersWrapper(props: {
   ) => {
     setFilters((prev) => {
       if (value === undefined) {
-        const { [key]: _, ...rest } = prev;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [key]: _removed, ...rest } = prev;
         return rest;
       }
       return { ...prev, [key]: value };

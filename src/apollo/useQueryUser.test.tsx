@@ -11,6 +11,7 @@ import type { GitHubGraphQLResponse } from './github-api.types'
 
 // Mock date helpers
 vi.mock('./date-helpers', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getQueryDates: vi.fn((daysBack: number) => ({
     from: `2024-01-01T00:00:00.000Z`,
     to: `2024-12-31T23:59:59.999Z`,

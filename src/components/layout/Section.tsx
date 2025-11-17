@@ -48,7 +48,7 @@ export function Section({
       {hasHeader && (
         <div className="space-y-1">
           {title && <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>}
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          {description && <p className="text-muted-foreground text-sm">{description}</p>}
           {showSeparator && <Separator className="mt-2" />}
         </div>
       )}

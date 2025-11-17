@@ -135,7 +135,7 @@ export function RepositoryPagination({
     >
       {/* Items info */}
       {!compact && (
-        <div className="text-sm text-muted-foreground">
+        <div className="text-muted-foreground text-sm">
           Showing <span className="font-medium">{startItem}</span> to{' '}
           <span className="font-medium">{endItem}</span> of{' '}
           <span className="font-medium">{totalItems}</span> repositories
@@ -152,7 +152,7 @@ export function RepositoryPagination({
           aria-label="Go to first page"
           title="First page"
         >
-          <ChevronsLeft className="w-4 h-4" />
+          <ChevronsLeft className="h-4 w-4" />
           {!compact && <span className="ml-1">First</span>}
         </Button>
 
@@ -164,7 +164,7 @@ export function RepositoryPagination({
           aria-label="Go to previous page"
           title="Previous page"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="h-4 w-4" />
           {!compact && <span className="ml-1">Previous</span>}
         </Button>
 
@@ -184,7 +184,7 @@ export function RepositoryPagination({
           title="Next page"
         >
           {!compact && <span className="mr-1">Next</span>}
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="h-4 w-4" />
         </Button>
 
         <Button
@@ -196,14 +196,14 @@ export function RepositoryPagination({
           title="Last page"
         >
           {!compact && <span className="mr-1">Last</span>}
-          <ChevronsRight className="w-4 h-4" />
+          <ChevronsRight className="h-4 w-4" />
         </Button>
       </div>
 
       {/* Page size selector */}
       {onPageSizeChange && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Items per page:</span>
+          <span className="text-muted-foreground text-sm">Items per page:</span>
           <Select
             value={pageSize.toString()}
             onValueChange={handlePageSizeChange}

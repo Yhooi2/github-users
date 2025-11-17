@@ -90,7 +90,7 @@ export function ErrorState({
           <AlertDescription>{message}</AlertDescription>
 
           {(onRetry || onDismiss) && (
-            <div className="flex gap-2 mt-4">
+            <div className="mt-4 flex gap-2">
               {onRetry && (
                 <Button
                   variant="outline"

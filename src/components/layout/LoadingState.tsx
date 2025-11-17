@@ -30,7 +30,7 @@ type LoadingStateProps = {
  */
 export function LoadingState({ variant = 'default', count = 3, message }: LoadingStateProps) {
   return (
-    <div className="space-y-4 max-w-full" role="status" aria-label="Loading">
+    <div className="max-w-full space-y-4" role="status" aria-label="Loading">
       {variant === 'default' && (
         <>
           <Skeleton className="h-4 w-full max-w-lg" />
@@ -40,7 +40,7 @@ export function LoadingState({ variant = 'default', count = 3, message }: Loadin
       )}
 
       {variant === 'card' && (
-        <div className="rounded-lg border p-6 space-y-3">
+        <div className="space-y-3 rounded-lg border p-6">
           <Skeleton className="h-6 w-1/3" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
@@ -71,7 +71,7 @@ export function LoadingState({ variant = 'default', count = 3, message }: Loadin
       {variant === 'list' && (
         <div className="space-y-3">
           {Array.from({ length: count }).map((_, index) => (
-            <div key={index} className="flex gap-4 p-4 rounded-lg border">
+            <div key={index} className="flex gap-4 rounded-lg border p-4">
               <Skeleton className="h-12 w-12 rounded" />
               <div className="flex-1 space-y-2">
                 <Skeleton className="h-5 w-1/3" />
@@ -84,7 +84,7 @@ export function LoadingState({ variant = 'default', count = 3, message }: Loadin
       )}
 
       {message && (
-        <p className="text-center text-sm text-muted-foreground mt-4">{message}</p>
+        <p className="text-muted-foreground mt-4 text-center text-sm">{message}</p>
       )}
       <span className="sr-only">Loading content...</span>
     </div>

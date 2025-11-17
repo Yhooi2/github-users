@@ -9,6 +9,7 @@ const isKVConfigured = Boolean(
 )
 
 // Lazy load KV only if configured
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let kv: any = null
 if (isKVConfigured) {
   const kvModule = await import('@vercel/kv')

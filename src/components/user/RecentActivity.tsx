@@ -31,10 +31,10 @@ export function RecentActivity({ repositories, maxItems = 5 }: RecentActivityPro
           {displayedRepos.map((repo, index) => (
             <div
               key={`${repo.repository.name}-${index}`}
-              className="flex items-center justify-between rounded-lg border bg-card p-3 transition-colors hover:bg-accent"
+              className="bg-card hover:bg-accent flex items-center justify-between rounded-lg border p-3 transition-colors"
             >
               <span className="font-medium">{repo.repository.name}</span>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 {repo.contributions.totalCount.toLocaleString()} commits
               </span>
             </div>

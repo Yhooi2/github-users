@@ -66,7 +66,7 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
 
   return (
     <Card
-      className={onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : undefined}
+      className={onClick ? 'cursor-pointer transition-shadow hover:shadow-md' : undefined}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       tabIndex={onClick ? 0 : undefined}
@@ -75,7 +75,7 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
     >
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <CardTitle className="truncate">
               <a
                 href={repository.url}
@@ -95,13 +95,13 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
           </div>
           {repository.isFork && (
             <Badge variant="outline" aria-label="This repository is a fork">
-              <GitFork className="w-3 h-3" />
+              <GitFork className="h-3 w-3" />
               Fork
             </Badge>
           )}
           {repository.isArchived && (
             <Badge variant="destructive" aria-label="This repository is archived">
-              <AlertCircle className="w-3 h-3" />
+              <AlertCircle className="h-3 w-3" />
               Archived
             </Badge>
           )}
@@ -109,11 +109,11 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
       </CardHeader>
 
       <CardContent>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
           {repository.primaryLanguage && (
             <div className="flex items-center gap-1">
               <span
-                className="w-3 h-3 rounded-full"
+                className="h-3 w-3 rounded-full"
                 style={{ backgroundColor: getLanguageColor(repository.primaryLanguage.name) }}
                 aria-hidden="true"
               />
@@ -122,25 +122,25 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
           )}
 
           <div className="flex items-center gap-1" title={`${repository.stargazerCount} stars`}>
-            <Star className="w-4 h-4" aria-hidden="true" />
+            <Star className="h-4 w-4" aria-hidden="true" />
             <span>{formatNumber(repository.stargazerCount)}</span>
           </div>
 
           <div className="flex items-center gap-1" title={`${repository.forkCount} forks`}>
-            <GitFork className="w-4 h-4" aria-hidden="true" />
+            <GitFork className="h-4 w-4" aria-hidden="true" />
             <span>{formatNumber(repository.forkCount)}</span>
           </div>
 
           {!compact && (
             <div className="flex items-center gap-1" title={`${repository.watchers.totalCount} watchers`}>
-              <Eye className="w-4 h-4" aria-hidden="true" />
+              <Eye className="h-4 w-4" aria-hidden="true" />
               <span>{formatNumber(repository.watchers.totalCount)}</span>
             </div>
           )}
 
           {!compact && repository.defaultBranchRef?.target?.history && (
             <div className="flex items-center gap-1" title={`${repository.defaultBranchRef.target.history.totalCount} commits`}>
-              <GitCommit className="w-4 h-4" aria-hidden="true" />
+              <GitCommit className="h-4 w-4" aria-hidden="true" />
               <span>{formatNumber(repository.defaultBranchRef.target.history.totalCount)}</span>
             </div>
           )}
@@ -151,7 +151,7 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
         </div>
 
         {!compact && repository.repositoryTopics.nodes.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4" role="list" aria-label="Repository topics">
+          <div className="mt-4 flex flex-wrap gap-2" role="list" aria-label="Repository topics">
             {repository.repositoryTopics.nodes.slice(0, 5).map((topic) => (
               <Badge key={topic.topic.name} variant="secondary" role="listitem">
                 {topic.topic.name}

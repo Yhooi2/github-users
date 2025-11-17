@@ -131,20 +131,20 @@ export function RepositoryTable({
             {!compact && <TableHead className="w-[40%]">Description</TableHead>}
             <TableHead className="text-center">
               <span className="flex items-center justify-center gap-1">
-                <Star className="w-3 h-3" />
+                <Star className="h-3 w-3" />
                 Stars
               </span>
             </TableHead>
             <TableHead className="text-center">
               <span className="flex items-center justify-center gap-1">
-                <GitFork className="w-3 h-3" />
+                <GitFork className="h-3 w-3" />
                 Forks
               </span>
             </TableHead>
             {!compact && (
               <TableHead className="text-center">
                 <span className="flex items-center justify-center gap-1">
-                  <Eye className="w-3 h-3" />
+                  <Eye className="h-3 w-3" />
                   Watchers
                 </span>
               </TableHead>
@@ -188,11 +188,11 @@ export function RepositoryTable({
                       href={repository.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline flex items-center gap-1"
+                      className="flex items-center gap-1 text-blue-600 hover:underline"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {repository.name}
-                      <ExternalLink className="w-3 h-3" />
+                      <ExternalLink className="h-3 w-3" />
                     </a>
                     {repository.isFork && (
                       <Badge variant="secondary" className="text-xs">
@@ -201,7 +201,7 @@ export function RepositoryTable({
                     )}
                     {repository.isArchived && (
                       <Badge variant="destructive" className="text-xs">
-                        <AlertCircle className="w-3 h-3 mr-1" />
+                        <AlertCircle className="mr-1 h-3 w-3" />
                         Archived
                       </Badge>
                     )}
@@ -209,7 +209,7 @@ export function RepositoryTable({
                 </TableCell>
 
                 {!compact && (
-                  <TableCell className="text-muted-foreground text-sm max-w-md truncate">
+                  <TableCell className="text-muted-foreground max-w-md truncate text-sm">
                     {repository.description || 'No description'}
                   </TableCell>
                 )}
@@ -241,7 +241,7 @@ export function RepositoryTable({
                   </TableCell>
                 )}
 
-                <TableCell className="text-right text-sm text-muted-foreground">
+                <TableCell className="text-muted-foreground text-right text-sm">
                   {updatedAt}
                 </TableCell>
               </TableRow>

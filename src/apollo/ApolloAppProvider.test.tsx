@@ -270,6 +270,7 @@ describe('ApolloAppProvider', () => {
       // Mock fetch to return 401 error
       const error401 = new Error('Unauthorized')
       error401.name = 'ServerError'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(error401 as any).statusCode = 401
       global.fetch = vi.fn().mockRejectedValue(error401)
 

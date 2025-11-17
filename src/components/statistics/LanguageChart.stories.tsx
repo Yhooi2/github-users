@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { LanguageChart } from './LanguageChart';
 import type { LanguageStats } from '@/lib/statistics';
 

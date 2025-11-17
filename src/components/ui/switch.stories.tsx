@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Switch } from './switch';
 import * as React from 'react';
 
@@ -39,7 +39,7 @@ export const WithLabel: Story = {
   render: () => (
     <div className="flex items-center space-x-2">
       <Switch id="airplane" />
-      <label htmlFor="airplane" className="text-sm font-medium cursor-pointer">
+      <label htmlFor="airplane" className="cursor-pointer text-sm font-medium">
         Airplane Mode
       </label>
     </div>
@@ -53,11 +53,11 @@ export const Controlled: Story = {
       <div className="space-y-2">
         <div className="flex items-center space-x-2">
           <Switch id="controlled" checked={checked} onCheckedChange={setChecked} />
-          <label htmlFor="controlled" className="text-sm font-medium cursor-pointer">
+          <label htmlFor="controlled" className="cursor-pointer text-sm font-medium">
             Enable notifications
           </label>
         </div>
-        <p className="text-xs text-muted-foreground">Status: {checked ? 'On' : 'Off'}</p>
+        <p className="text-muted-foreground text-xs">Status: {checked ? 'On' : 'Off'}</p>
       </div>
     );
   },
@@ -65,23 +65,23 @@ export const Controlled: Story = {
 
 export const RepositorySettings: Story = {
   render: () => (
-    <div className="space-y-4 w-[400px] rounded-lg border p-4">
-      <div className="font-semibold text-sm">Repository Settings</div>
+    <div className="w-[400px] space-y-4 rounded-lg border p-4">
+      <div className="text-sm font-semibold">Repository Settings</div>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label htmlFor="private" className="text-sm font-medium cursor-pointer">
+          <label htmlFor="private" className="cursor-pointer text-sm font-medium">
             Private repository
           </label>
           <Switch id="private" defaultChecked />
         </div>
         <div className="flex items-center justify-between">
-          <label htmlFor="issues" className="text-sm font-medium cursor-pointer">
+          <label htmlFor="issues" className="cursor-pointer text-sm font-medium">
             Issues
           </label>
           <Switch id="issues" defaultChecked />
         </div>
         <div className="flex items-center justify-between">
-          <label htmlFor="wiki" className="text-sm font-medium cursor-pointer">
+          <label htmlFor="wiki" className="cursor-pointer text-sm font-medium">
             Wiki
           </label>
           <Switch id="wiki" />

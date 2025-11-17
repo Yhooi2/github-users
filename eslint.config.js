@@ -11,7 +11,7 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 
-export default tseslint.config([
+export default tseslint.config(
   globalIgnores(['dist', 'storybook-static']),
   {
     files: ['**/*.{ts,tsx}'],
@@ -30,5 +30,15 @@ export default tseslint.config([
     },
   },
   ...tailwind.configs["flat/recommended"],
+  {
+    settings: {
+      tailwindcss: {
+        // Tailwind v4 doesn't use config file - configuration is in CSS
+        config: null,
+        cssFiles: ['src/index.css'],
+      },
+    },
+  },
+  ...storybook.configs["flat/recommended"],
   prettier
-], storybook.configs["flat/recommended"]);
+);

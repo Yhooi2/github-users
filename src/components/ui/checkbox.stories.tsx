@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Checkbox } from './checkbox';
 
 const meta: Meta<typeof Checkbox> = {
@@ -46,7 +46,7 @@ export const WithLabel: Story = {
       <Checkbox id="terms" />
       <label
         htmlFor="terms"
-        className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         Accept terms and conditions
       </label>
@@ -65,11 +65,11 @@ export const RepositorySettings: Story = {
           <div className="grid gap-1">
             <label
               htmlFor="issues"
-              className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Issues
             </label>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Track and manage project issues and bugs
             </p>
           </div>
@@ -79,11 +79,11 @@ export const RepositorySettings: Story = {
           <div className="grid gap-1">
             <label
               htmlFor="wiki"
-              className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Wiki
             </label>
-            <p className="text-xs text-muted-foreground">Document your project with wiki pages</p>
+            <p className="text-muted-foreground text-xs">Document your project with wiki pages</p>
           </div>
         </div>
         <div className="flex items-start space-x-3">
@@ -91,11 +91,11 @@ export const RepositorySettings: Story = {
           <div className="grid gap-1">
             <label
               htmlFor="projects"
-              className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Projects
             </label>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Organize and prioritize your work with project boards
             </p>
           </div>
@@ -105,11 +105,11 @@ export const RepositorySettings: Story = {
           <div className="grid gap-1">
             <label
               htmlFor="discussions"
-              className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Discussions
             </label>
-            <p className="text-xs text-muted-foreground">Enable community discussions</p>
+            <p className="text-muted-foreground text-xs">Enable community discussions</p>
           </div>
         </div>
       </div>
@@ -127,7 +127,7 @@ export const NotificationPreferences: Story = {
           <Checkbox id="email-notify" defaultChecked />
           <label
             htmlFor="email-notify"
-            className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Email notifications
           </label>
@@ -136,7 +136,7 @@ export const NotificationPreferences: Story = {
           <Checkbox id="push-notify" defaultChecked />
           <label
             htmlFor="push-notify"
-            className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Push notifications
           </label>
@@ -145,7 +145,7 @@ export const NotificationPreferences: Story = {
           <Checkbox id="mention-notify" />
           <label
             htmlFor="mention-notify"
-            className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Mention notifications
           </label>
@@ -154,7 +154,7 @@ export const NotificationPreferences: Story = {
           <Checkbox id="watch-notify" disabled />
           <label
             htmlFor="watch-notify"
-            className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Watch notifications (unavailable)
           </label>
@@ -184,11 +184,11 @@ export const WithDescription: Story = {
       <div className="grid gap-1.5">
         <label
           htmlFor="privacy"
-          className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           Make repository private
         </label>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           Only you and collaborators you explicitly grant access to will be able to see this
           repository. You can change this setting later.
         </p>
@@ -208,12 +208,12 @@ export const Controlled: Story = {
           <Checkbox id="controlled" checked={checked} onCheckedChange={setChecked} />
           <label
             htmlFor="controlled"
-            className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Controlled checkbox
           </label>
         </div>
-        <div className="text-xs text-muted-foreground">Status: {checked ? 'Checked' : 'Unchecked'}</div>
+        <div className="text-muted-foreground text-xs">Status: {checked ? 'Checked' : 'Unchecked'}</div>
       </div>
     );
   },

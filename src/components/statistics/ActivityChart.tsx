@@ -148,12 +148,12 @@ export function ActivityChart({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Commit Activity</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Average commits per time period
             {showTotal && ` (${data.total.toLocaleString()} total)`}
           </p>
         </div>
-        <Activity className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+        <Activity className="text-muted-foreground h-5 w-5" aria-hidden="true" />
       </div>
 
       {/* Chart */}
@@ -180,10 +180,10 @@ export function ActivityChart({
 
               const data = payload[0].payload;
               return (
-                <div className="rounded-lg border bg-background p-2 shadow-sm">
+                <div className="bg-background rounded-lg border p-2 shadow-sm">
                   <div className="flex flex-col gap-1">
                     <span className="font-semibold">{data.period}</span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       {data.commits.toFixed(1)} commits per {data.period.toLowerCase()}
                     </span>
                   </div>
@@ -209,10 +209,10 @@ export function ActivityChart({
               style={{ backgroundColor: PERIOD_COLORS.daily }}
               aria-hidden="true"
             />
-            <p className="text-sm font-medium text-muted-foreground">Per Day</p>
+            <p className="text-muted-foreground text-sm font-medium">Per Day</p>
           </div>
           <p className="mt-2 text-2xl font-bold">{data.perDay.toFixed(1)}</p>
-          <p className="text-xs text-muted-foreground">avg commits/day</p>
+          <p className="text-muted-foreground text-xs">avg commits/day</p>
         </div>
 
         <div className="rounded-lg border p-4">
@@ -222,10 +222,10 @@ export function ActivityChart({
               style={{ backgroundColor: PERIOD_COLORS.weekly }}
               aria-hidden="true"
             />
-            <p className="text-sm font-medium text-muted-foreground">Per Week</p>
+            <p className="text-muted-foreground text-sm font-medium">Per Week</p>
           </div>
           <p className="mt-2 text-2xl font-bold">{data.perWeek.toFixed(1)}</p>
-          <p className="text-xs text-muted-foreground">avg commits/week</p>
+          <p className="text-muted-foreground text-xs">avg commits/week</p>
         </div>
 
         <div className="rounded-lg border p-4">
@@ -235,22 +235,22 @@ export function ActivityChart({
               style={{ backgroundColor: PERIOD_COLORS.monthly }}
               aria-hidden="true"
             />
-            <p className="text-sm font-medium text-muted-foreground">Per Month</p>
+            <p className="text-muted-foreground text-sm font-medium">Per Month</p>
           </div>
           <p className="mt-2 text-2xl font-bold">{data.perMonth.toFixed(1)}</p>
-          <p className="text-xs text-muted-foreground">avg commits/month</p>
+          <p className="text-muted-foreground text-xs">avg commits/month</p>
         </div>
       </div>
 
       {/* Total commits (if shown) */}
       {showTotal && (
-        <div className="rounded-lg border bg-muted/50 p-4">
+        <div className="bg-muted/50 rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Commits</p>
+              <p className="text-muted-foreground text-sm font-medium">Total Commits</p>
               <p className="mt-1 text-3xl font-bold">{data.total.toLocaleString()}</p>
             </div>
-            <Activity className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+            <Activity className="text-muted-foreground h-8 w-8" aria-hidden="true" />
           </div>
         </div>
       )}

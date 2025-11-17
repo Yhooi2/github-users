@@ -95,7 +95,7 @@ describe('Separator', () => {
     });
 
     it('should merge custom className with defaults', () => {
-      const { container } = render(<Separator className="bg-blue-500 h-1" />);
+      const { container } = render(<Separator className="h-1 bg-blue-500" />);
 
       const separator = container.querySelector('[data-slot="separator"]');
       expect(separator).toHaveClass('bg-blue-500');

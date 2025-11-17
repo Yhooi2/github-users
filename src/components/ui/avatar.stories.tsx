@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Avatar, AvatarImage, AvatarFallback } from './avatar';
 
 const meta: Meta<typeof Avatar> = {
@@ -86,7 +86,7 @@ export const GitHubUser: Story = {
       </Avatar>
       <div>
         <div className="text-sm font-semibold">Linus Torvalds</div>
-        <div className="text-xs text-muted-foreground">@torvalds</div>
+        <div className="text-muted-foreground text-xs">@torvalds</div>
       </div>
     </div>
   ),
@@ -109,7 +109,7 @@ export const UserList: Story = {
           </Avatar>
           <div>
             <div className="text-sm font-medium">{user.name}</div>
-            <div className="text-xs text-muted-foreground">@{user.username}</div>
+            <div className="text-muted-foreground text-xs">@{user.username}</div>
           </div>
         </div>
       ))}
@@ -144,21 +144,21 @@ export const CustomBackground: Story = {
 export const AvatarGroup: Story = {
   render: () => (
     <div className="flex -space-x-2">
-      <Avatar className="border-2 border-background">
+      <Avatar className="border-background border-2">
         <AvatarImage src="https://github.com/shadcn.png" alt="User 1" />
         <AvatarFallback>U1</AvatarFallback>
       </Avatar>
-      <Avatar className="border-2 border-background">
+      <Avatar className="border-background border-2">
         <AvatarImage src="https://github.com/vercel.png" alt="User 2" />
         <AvatarFallback>U2</AvatarFallback>
       </Avatar>
-      <Avatar className="border-2 border-background">
+      <Avatar className="border-background border-2">
         <AvatarFallback>U3</AvatarFallback>
       </Avatar>
-      <Avatar className="border-2 border-background">
+      <Avatar className="border-background border-2">
         <AvatarFallback>U4</AvatarFallback>
       </Avatar>
-      <Avatar className="border-2 border-background">
+      <Avatar className="border-background border-2">
         <AvatarFallback className="bg-muted text-muted-foreground">+5</AvatarFallback>
       </Avatar>
     </div>
@@ -208,10 +208,10 @@ export const RepositoryOwner: Story = {
       </Avatar>
       <div className="space-y-1">
         <div className="text-lg font-bold">facebook/react</div>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-muted-foreground text-sm">
           The library for web and native user interfaces
         </div>
-        <div className="flex gap-3 text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex gap-3 text-xs">
           <span>⭐ 234k</span>
           <span>🍴 48k</span>
         </div>

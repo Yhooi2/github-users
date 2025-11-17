@@ -54,7 +54,8 @@ export function useRepositoryFilters(repositories: Repository[]) {
     setFilters((prev) => {
       if (value === undefined || value === '' || value === false) {
         // Remove filter if value is undefined, empty string, or false
-        const { [key]: _, ...rest } = prev;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [key]: _removed, ...rest } = prev;
         return rest;
       }
       return { ...prev, [key]: value };

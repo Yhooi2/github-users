@@ -260,6 +260,7 @@ describe('UserAuthenticity', () => {
       // Create a mock with an unknown category to test default case
       const mockUnknownScore: AuthenticityScore = {
         score: 50,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         category: 'Unknown' as any, // Force an unknown category
         breakdown: {
           originalityScore: 12,

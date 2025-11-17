@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RepositorySorting } from './RepositorySorting';
 import type { SortBy, SortDirection } from '@/types/filters';
 import { useState } from 'react';

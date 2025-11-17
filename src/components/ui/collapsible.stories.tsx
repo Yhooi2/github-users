@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsible';
 import { Button } from './button';
 import { ChevronDown } from 'lucide-react';
@@ -39,9 +39,9 @@ export const Default: Story = {
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent className="space-y-2 px-4 py-2">
-          <div className="rounded-md border px-4 py-2 text-sm font-mono">@radix-ui/primitives</div>
-          <div className="rounded-md border px-4 py-2 text-sm font-mono">@radix-ui/colors</div>
-          <div className="rounded-md border px-4 py-2 text-sm font-mono">@stitches/react</div>
+          <div className="rounded-md border px-4 py-2 font-mono text-sm">@radix-ui/primitives</div>
+          <div className="rounded-md border px-4 py-2 font-mono text-sm">@radix-ui/colors</div>
+          <div className="rounded-md border px-4 py-2 font-mono text-sm">@stitches/react</div>
         </CollapsibleContent>
       </Collapsible>
     );
@@ -79,7 +79,7 @@ export const RepositoryDetails: Story = {
           <div className="flex items-center justify-between p-4">
             <div>
               <h4 className="text-sm font-semibold">facebook/react</h4>
-              <p className="text-xs text-muted-foreground">A declarative JavaScript library</p>
+              <p className="text-muted-foreground text-xs">A declarative JavaScript library</p>
             </div>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm">

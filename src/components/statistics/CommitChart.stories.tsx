@@ -1,21 +1,22 @@
-import type { Meta, StoryObj } from '@storybook/react';
+/* eslint-disable react-refresh/only-export-components */
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CommitChart } from './CommitChart';
 import type { YearlyCommitStats } from '@/lib/statistics';
 
-// Mock data generators
-const createMockYearlyStats = (years: number = 3): YearlyCommitStats[] => {
-  const currentYear = new Date().getFullYear();
-  const stats: YearlyCommitStats[] = [];
-
-  for (let i = 0; i < years; i++) {
-    stats.push({
-      year: currentYear - i,
-      commits: Math.floor(Math.random() * 1000) + 200,
-    });
-  }
-
-  return stats.reverse(); // Oldest to newest
-};
+// Mock data generators - kept for potential future use
+// const createMockYearlyStats = (years: number = 3): YearlyCommitStats[] => {
+//   const currentYear = new Date().getFullYear();
+//   const stats: YearlyCommitStats[] = [];
+//
+//   for (let i = 0; i < years; i++) {
+//     stats.push({
+//       year: currentYear - i,
+//       commits: Math.floor(Math.random() * 1000) + 200,
+//     });
+//   }
+//
+//   return stats.reverse(); // Oldest to newest
+// };
 
 const threeYearsData: YearlyCommitStats[] = [
   { year: 2023, commits: 450 },
