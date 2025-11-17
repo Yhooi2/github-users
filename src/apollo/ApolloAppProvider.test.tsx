@@ -65,10 +65,13 @@ describe('ApolloAppProvider', () => {
   })
 
   describe('Authentication', () => {
-    it('should use token from environment variable if available', async () => {
-      // This test verifies that VITE_GITHUB_TOKEN is picked up
-      // Note: In actual runtime, import.meta.env.VITE_GITHUB_TOKEN would be set
-      // In tests, we verify the behavior through the authLink logic
+    // NOTE (Phase 0): These tests verify Apollo Client initialization.
+    // Token authentication is now handled server-side via /api/github-proxy.
+    // Client-side authLink was removed for security (token no longer exposed in bundle).
+
+    it('should initialize Apollo Client without client-side token', async () => {
+      // Phase 0 Update: Token is now added by backend proxy, not client
+      // This test verifies Apollo Client initializes correctly with new architecture
 
       render(
         <ApolloAppProvider>
@@ -80,7 +83,9 @@ describe('ApolloAppProvider', () => {
       expect(screen.getByText('Loading...')).toBeInTheDocument()
     })
 
-    it('should use token from localStorage if env token not available', () => {
+    it('should initialize with localStorage token (legacy test)', () => {
+      // Legacy test: localStorage token logic removed in Phase 0
+      // Kept for regression testing - verifies Apollo Client still initializes
       const testToken = 'test-local-storage-token'
       localStorage.setItem('github_token', testToken)
 
@@ -90,13 +95,12 @@ describe('ApolloAppProvider', () => {
         </ApolloAppProvider>
       )
 
-      // Verify localStorage was accessed
-      expect(localStorage.getItem('github_token')).toBe(testToken)
+      // Verify Apollo Client initializes (token handling now server-side)
       expect(screen.getByText('Loading...')).toBeInTheDocument()
     })
 
-    it('should handle missing token gracefully', () => {
-      // No token in env or localStorage
+    it('should initialize without client-side token', () => {
+      // Phase 0: Client no longer needs token - handled by backend proxy
       localStorage.removeItem('github_token')
 
       render(
@@ -105,7 +109,7 @@ describe('ApolloAppProvider', () => {
         </ApolloAppProvider>
       )
 
-      // Should still render and allow queries (though they may fail)
+      // Apollo Client should initialize successfully (token added server-side)
       expect(screen.getByText('Loading...')).toBeInTheDocument()
     })
   })
@@ -252,8 +256,9 @@ describe('ApolloAppProvider', () => {
   })
 
   describe('Link Chain', () => {
-    it('should execute links in correct order: errorLink -> authLink -> httpLink', () => {
+    it('should execute links in correct order: errorLink -> httpLink (proxy)', () => {
       // This test verifies the link chain structure
+      // Note: authLink removed in Phase 0 - token now handled by backend proxy
       render(
         <ApolloAppProvider>
           <TestComponent />
