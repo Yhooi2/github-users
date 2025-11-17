@@ -27,87 +27,121 @@
 
 ---
 
-## Current State & Reusability Analysis
+## 📦 Current State Analysis
 
-### ✅ What Already Exists (70% Infrastructure Ready)
+### ✅ What is Already Implemented (v1.0)
 
-**Architecture:**
-- ✅ Apollo Client 3.14.0 fully configured with error handling
-- ✅ React 19 + Vite 7 + TypeScript 5.8.3
-- ✅ shadcn/ui (New York style) - 28+ components documented
-- ✅ Recharts 2.15.4 for visualizations
-- ✅ 99.85% test pass rate (1302/1304 tests passing)
-- ✅ Storybook workflow established (Component → Story → Test)
+**Infrastructure (70% Ready):**
+- ✅ Apollo Client 3.14.0 - **⚠️ INSECURE** (token in bundle, needs Phase 0 migration)
+- ✅ React 19 + Vite 7 + TypeScript 5.8.3 - Production ready
+- ✅ shadcn/ui (New York style) - **28+ components** documented in Storybook
+- ✅ Recharts 2.15.4 - Chart infrastructure ready
+- ✅ Testing infrastructure - **99.85% pass rate** (1302/1304 tests)
+- ✅ Storybook workflow - **Component → Story → Test** pattern established
 
-**Existing Metrics System:**
-- ✅ **Authenticity Score** (`src/lib/authenticity.ts`) - **Perfect template for new metrics!**
-  - 100-point scoring system
-  - Component breakdown (4 parts × 25 points)
-  - Category labels (High/Medium/Low/Suspicious)
-  - Warning flags array
-  - Metadata tracking
-- ✅ **UserAuthenticity Component** - **Perfect UI template!**
-  - Card with Shield icon
-  - Score badge with color coding
-  - Progress bars for breakdown
-  - Alert for warning flags
+**Existing Metrics System (v1.0):**
+- ✅ **Authenticity Score** (`src/lib/authenticity.ts`) - **✨ PERFECT TEMPLATE for new metrics!**
+  - 100-point scoring system ✅
+  - Component breakdown (4 parts × 25 points) ✅
+  - Category labels (High/Medium/Low/Suspicious) ✅
+  - Warning flags array ✅
+  - Metadata tracking ✅
+- ✅ **UserAuthenticity Component** (`src/components/UserAuthenticity.tsx`) - **✨ UI template!**
+  - Card layout with icon ✅
+  - Score badge with color coding ✅
+  - Progress bars for breakdown ✅
+  - Alert for warning flags ✅
 
 **Reusable Components:**
-- ✅ `RepositoryCard` - Can be enhanced with Owner/Contributor badges
-- ✅ `Card, Progress, Badge, Button, Tooltip` (shadcn/ui)
-- ✅ `ChartContainer` (Recharts wrapper)
-- ✅ `LoadingState, ErrorState, EmptyState`
-- ✅ `StatsCard` (icon + title + value pattern)
+- ✅ `RepositoryCard` - Enhance with Owner/Contributor badges
+- ✅ `Card, Progress, Badge, Button, Tooltip` - 28+ shadcn/ui components
+- ✅ `ChartContainer` - Recharts wrapper ready
+- ✅ `LoadingState, ErrorState, EmptyState` - UI states handled
+- ✅ `StatsCard` - Icon + title + value pattern
 
 **Reusable Functions:**
 - ✅ `calculateLanguageStatistics()` - For Quality/Stack metric
-- ✅ `getMostActiveRepositories()` - For Timeline top projects
+- ✅ `getMostActiveRepositories()` - For top projects
 - ✅ `formatNumber()`, `formatBytes()` - Display helpers
-- ✅ Date helpers (`getThreeYearRanges()`) - Can extend to `generateYearRanges()`
+- ✅ `useQueryUser()` - **Works perfectly**, no need to replace!
+- ✅ Date helpers (`getThreeYearRanges()`) - Extend with new ranges
 
-**Testing Infrastructure:**
-- ✅ Vitest setup with mocking patterns
-- ✅ React Testing Library utilities
-- ✅ Playwright E2E configuration
-- ✅ Apollo MockedProvider patterns
-- ✅ Storybook MCP integration
+### ❌ What Needs to Be Built (v2.0)
 
-### 🎯 What Needs to Be Built (30% New Code)
+**Phase 0 - Security Fix (P0 - Critical):**
+- 🆕 Backend Proxy (`/api/github-proxy`) - **Fixes token exposure vulnerability**
+- 🆕 Vercel KV caching - 30-minute TTL for performance
+- 🆕 Apollo Client migration - Point to proxy, remove authLink
 
-**New Calculation Functions:**
-- 🆕 `src/lib/metrics/activity.ts` (use authenticity.ts as template)
-- 🆕 `src/lib/metrics/impact.ts` (use authenticity.ts as template)
-- 🆕 `src/lib/metrics/quality.ts` (use authenticity.ts as template)
-- 🆕 `src/lib/metrics/growth.ts` (use authenticity.ts as template)
+**Phase 1 - GraphQL Enhancements (P0 - Critical):**
+- 🆕 Extend `GET_USER_INFO` - Add fields for fraud detection, collaboration, code health
+- 🆕 Update TypeScript types - New fields in `github-api.types.ts`
+- ✅ Keep `useQueryUser()` - **No new hook needed!** (simplification from original plan)
 
-**New UI Components:**
-- 🆕 `MetricCard` (based on UserAuthenticity.tsx layout)
-- 🆕 `QuickAssessment` (4-metric grid)
-- 🆕 `ActivityTimeline` (year-by-year visualization)
-- 🆕 `TimelineYear` (collapsible row)
-- 🆕 `YearExpandedView` (detailed breakdown)
+**Phase 1.5 - Fraud Detection System (P0 - Critical) - 🆕 NEW PHASE!**
+- 🆕 `fraud-detection.ts` - Multi-factor fraud scoring (0-100%)
+- 🆕 Backdating detection - **Critical for GitHub farming**
+- 🆕 Empty commits ratio - 30 points max
+- 🆕 Temporal anomaly detection - 20 points max
+- 🆕 Mass commits detection - 15 points max
+- 🆕 Fork farming detection - 10 points max
+- 🆕 `FraudAlert` component - Visual warning system
+- 🆕 `useFraudDetection` hook - Integration with metrics
 
-**New Data Fetching:**
-- 🆕 `useUserAnalytics()` hook (multi-query orchestration)
-- 🆕 `GET_USER_PROFILE` query (basic profile only)
-- 🆕 `GET_YEAR_CONTRIBUTIONS` query (single year data)
+**Phase 2 - New Metrics v2.0 (P0 - Critical):**
+- 🆕 **Activity Score v2.0** - Code Throughput (35) + Consistency (25) + Collaboration (20) + Project Focus (20)
+- 🆕 **Impact Score v2.0** - Logarithmic stars (anti-fraud) + Community (30) + Social Proof (20)
+- 🆕 **Quality Score v2.0** - Code Health (35) + Docs (25) + Maintenance (25) + Architecture (15)
+- 🆕 **Growth Score v2.0** - Skill Expansion (40) + Project Evolution (30) + Learning Patterns (30)
+- 🆕 **Overall Rank** - Junior/Mid/Senior/Staff/Principal classification
 
-**Backend (Phase 0):**
-- 🆕 Vercel Serverless Function (`/api/github-proxy`)
-- 🆕 Vercel KV caching setup
+**Phase 3 - UI Components (P0 - Critical):**
+- 🆕 `FraudAlert` - 5 stories (Clean, Low, Medium, High, Critical)
+- 🆕 `ActivityMetricCard` - 5 stories + 12+ tests
+- 🆕 `ImpactMetricCard` - 5 stories + 10+ tests
+- 🆕 `QualityMetricCard` - 5 stories + 10+ tests
+- 🆕 `GrowthMetricCard` - 5 stories (including Declining trend)
+- 🆕 `OverallRankCard` - 5 stories (Junior to Principal)
+- 🆕 `QuickAssessment` - Integration component
 
-### 📊 Reusability Impact on Timeline
+**Phase 4 - Timeline (P1 - Important) - ⚠️ DEFERRED to Phase 7+:**
+- ⏸️ `ActivityTimeline` - Optional feature, not critical for MVP
+- ⏸️ `TimelineYear` - Deferred based on user feedback
+- ⏸️ `YearExpandedView` - Can add later without breaking changes
 
-| Phase | Original Estimate | With Reuse | Savings |
-|-------|-------------------|------------|---------|
-| Phase 0 | 2-3 days | **2 days** | Apollo Client setup exists |
-| Phase 1 | 3-5 days | **3 days** | Date helpers exist, extend them |
-| Phase 2 | 2-3 days | **2 days** | authenticity.ts = perfect template |
-| Phase 3 | 2-3 days | **2 days** | shadcn/ui patterns established |
-| Phase 4 | 2-3 days | **2 days** | RepositoryCard + Recharts ready |
+**Phase 5.5 - OAuth Migration (P3 - Future):**
+- 📝 Documentation only - Migration strategy when traffic > 1000 users/day
+- 📝 Backward compatibility plan - Keep proxy as fallback
+- 📝 Rollback criteria - Conversion rate, error rate monitoring
+
+### 📊 Reusability Impact
+
+**Infrastructure Ready:**
+- 70% of codebase infrastructure ready (Apollo, shadcn/ui, testing, Storybook)
+- Authenticity Score = **perfect template** for 4 new metrics (saves ~3 days)
+- UserAuthenticity Component = **perfect UI template** (saves ~2 days)
+- 28+ shadcn/ui components = **no new UI library needed** (saves ~1 day)
+
+**Updated Timeline:**
+| Phase | Original Estimate | Updated (with Fraud Detection) | Notes |
+|-------|-------------------|-------------------------------|-------|
+| Phase 0 | 2-3 days | **2 days** | Apollo setup exists |
+| Phase 1 | 3-5 days | **2 days** | Simplified (no year-by-year, use existing useQueryUser) |
+| Phase 1.5 | N/A | **2 days** | **🆕 NEW** - Fraud Detection (critical feature) |
+| Phase 2 | 2-3 days | **5 days** | New metrics v2.0 (more complex formulas) |
+| Phase 3 | 2-3 days | **3 days** | 7 components with strict Component → Story → Test |
+| Phase 4 | 2-3 days | **Deferred** | Timeline moved to Phase 7+ (optional) |
 | Phase 5 | 1-2 days | **1 day** | Simple layout refactor |
 | Phase 6 | 2-3 days | **2 days** | Test patterns known |
-| **TOTAL** | **14-19 days** | **14 days** | **~30% faster** |
+| **TOTAL** | **14-19 days** | **17 days** | **+3 days for Fraud Detection (critical value)** |
+
+**Key Changes from Original Plan:**
+- ✅ Simplified Phase 1 (no useUserAnalytics, reuse useQueryUser) → **-1 day**
+- 🆕 Added Phase 1.5 (Fraud Detection) → **+2 days**
+- ✅ More realistic Phase 2 estimate (new formulas) → **+3 days**
+- ✅ Strict testing in Phase 3 → **+1 day**
+- ✅ Deferred Phase 4 (Timeline) → **-2 days**
+- **Net:** 17 days (more realistic, includes critical Fraud Detection)
 
 ---
 
@@ -236,6 +270,55 @@ This document provides a **step-by-step implementation plan** for transforming G
 
 ---
 
+## ⚠️ Current Security Status (CRITICAL)
+
+### 🔴 CRITICAL: Token Exposure in Client Bundle
+
+**Current Implementation (INSECURE):**
+```typescript
+// src/apollo/ApolloAppProvider.tsx - CURRENT STATE
+const authLink = setContext((_, { headers }) => {
+  const token = import.meta.env.VITE_GITHUB_TOKEN || // ← EXPOSED IN BUNDLE!
+                localStorage.getItem('github_token');
+  // ...
+});
+```
+
+**Evidence of Security Risk:**
+```bash
+npm run build
+grep -r "ghp_" dist/assets/*.js  # ← Token found in plain text!
+
+# DevTools → Network → Headers
+# Authorization: Bearer ghp_xxxxxxxxxxxxxxxxxxxx  ← Visible to anyone!
+```
+
+**Impact:**
+- ❌ **Anyone can steal token from bundle** (View Source → Search "ghp_")
+- ❌ **Rate limit exhaustion risk** (5000 requests/hour shared across all users)
+- ❌ **Security breach if token has extra scopes** (repo access, write permissions)
+- ❌ **Cannot deploy to production** (major security vulnerability)
+
+**Why This Happened:**
+- Vite environment variables with `VITE_` prefix are bundled into client code
+- This is by design for client-side config, but NOT for secrets
+- Current implementation was acceptable for local development only
+
+**Solution: Phase 0 (Backend Proxy) - MUST DO before production**
+- Move token to server-side Vercel Function
+- Client sends requests to `/api/github-proxy` (no token)
+- Server adds token to GitHub API requests
+- Token never leaves server environment
+
+**Timeline:**
+- Priority: **P0 (Critical)** - Blocks production deployment
+- Time: 2 days
+- Must complete before any production deploy
+
+**Current Status:** ⚠️ Development only - DO NOT deploy to production
+
+---
+
 ## Phase 0: Backend Security Layer
 
 **Priority:** P0 (Critical)
@@ -243,6 +326,97 @@ This document provides a **step-by-step implementation plan** for transforming G
 **Goal:** Secure GitHub token on server, enable caching
 
 **Note:** Apollo Client 3.14.0 is already configured with error handling, auth middleware, and InMemoryCache. We only need to redirect the URI to `/api/github-proxy`.
+
+---
+
+### Prerequisites (30 minutes setup)
+
+**Before Starting Phase 0, you MUST have:**
+
+**1. ✅ Vercel Account (Free Tier)**
+- Create: https://vercel.com/signup
+- Install CLI: `npm i -g vercel`
+- Login: `vercel login`
+- Verify: `vercel --version` (should show v33.0.0+)
+
+**2. ✅ GitHub Personal Access Token**
+- Generate: https://github.com/settings/tokens (classic token)
+- Scopes required:
+  - `read:user` - Read user profile data
+  - `user:email` - Read user email addresses
+  - `repo` (optional) - If you need private repo data
+- Format: `ghp_xxxxxxxxxxxxxxxxxxxx` (40 characters)
+- **⚠️ CRITICAL:** Never commit this token to git!
+
+**3. ✅ Vercel KV Database**
+- Dashboard → Storage → Create KV Database
+- Name: `github-cache` (or any name you prefer)
+- Region: Choose closest to your users
+- Auto-configuration: Vercel adds environment variables automatically
+- Variables added:
+  - `KV_REST_API_URL`
+  - `KV_REST_API_TOKEN`
+  - `KV_REST_API_READ_ONLY_TOKEN`
+
+**4. ✅ Environment Variables in Vercel**
+- Dashboard → Your Project → Settings → Environment Variables
+- Add `GITHUB_TOKEN`:
+  - Name: `GITHUB_TOKEN`
+  - Value: `ghp_your_token_here` (paste your PAT)
+  - Environments: Production + Preview
+  - **NOT** Development (use `.env.local` for local dev)
+- KV credentials: Auto-added by Vercel KV (don't manually add)
+
+**5. ✅ Local Environment Setup**
+- Create `.env.local` (for local development):
+  ```bash
+  GITHUB_TOKEN=ghp_your_token_here
+
+  # Pull from Vercel (after KV setup):
+  vercel env pull .env.local
+  # This adds KV_* variables for local testing
+  ```
+- Add to `.gitignore`:
+  ```bash
+  .env
+  .env.local
+  .env.*.local
+  .vercel
+  ```
+
+**Verification Checklist:**
+
+```bash
+# 1. Vercel CLI installed
+vercel --version  # v33.0.0+
+
+# 2. Logged in
+vercel whoami  # Shows your username
+
+# 3. Environment variables pulled
+cat .env.local  # Should show GITHUB_TOKEN and KV_* variables
+
+# 4. GitHub token works
+curl -H "Authorization: Bearer ghp_your_token" https://api.github.com/user
+# Should return your GitHub user data
+
+# 5. Vercel KV accessible
+# (Will test in Step 0.1)
+```
+
+**Common Issues:**
+
+| Issue | Solution |
+|-------|----------|
+| `vercel: command not found` | Install globally: `npm i -g vercel` |
+| `KV_REST_API_URL not found` | Dashboard → Storage → Re-create KV, ensure auto-config enabled |
+| `401 Unauthorized` (GitHub API) | Check `GITHUB_TOKEN` in Vercel Dashboard → Settings → Environment Variables |
+| `Token in bundle warning` | Make sure token is in Vercel environment variables, NOT in `.env` with `VITE_` prefix |
+| `vercel env pull` fails | Login first: `vercel login`, then link project: `vercel link` |
+
+**Time Estimate:** 30 minutes (first time), 10 minutes (if Vercel account exists)
+
+---
 
 ### Step 0.1: Create Vercel Serverless Function
 
@@ -689,6 +863,802 @@ Choose one approach before starting Phase 1:
 - Better long-term architecture
 
 **Recommendation:** Start with Option A for Phase 1-4, migrate to Option B in Phase 6 (optional).
+
+---
+
+## Phase 1.5: Fraud Detection System (🆕 NEW PHASE!)
+
+**Priority:** P0 (Critical)
+
+**Time:** 2 days
+
+**Dependencies:** Phase 1 (GraphQL enhancements)
+
+**Goal:** Detect GitHub farming, backdating, empty commits, and bot patterns
+
+---
+
+### Why This is Critical
+
+**GitHub Farming Problem:**
+- Tools exist to generate fake commits (backdating tools, `git commit --date`)
+- Farmers manipulate `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE`
+- Tutorial cloning creates fake activity without real learning
+- Bot patterns (perfect daily commits at same time) mislead metrics
+- Empty commits (`git commit --allow-empty`) inflate contribution graphs
+
+**Our Solution:** Multi-factor fraud detection (0-100% fraud score)
+
+**Detection Methods:**
+1. **Backdating Score (25 points)** - **CRITICAL!**
+   - Commits before account creation date
+   - Future-dated commits
+   - Timestamp manipulation patterns
+
+2. **Empty Commits Ratio (30 points)**
+   - Commits with 0 additions + 0 deletions
+   - Threshold: >50% empty = suspicious
+
+3. **Temporal Anomaly (20 points)**
+   - Perfect daily patterns (bot-like behavior)
+   - Commits at exactly same time every day
+   - Sudden activity spikes (100+ commits in 1 hour)
+
+4. **Mass Commits (15 points)**
+   - >50 commits in single day multiple times
+   - Farming pattern detection
+
+5. **Fork Farming (10 points)**
+   - Tutorial repos cloned >10 times
+   - No original commits in forks
+   - Fork-only activity
+
+---
+
+### Step 1.5.1: Type Definitions
+
+**File:** `src/types/metrics.ts`
+
+```typescript
+export interface FraudDetectionResult {
+  score: number; // 0-100, где 100 = 100% fraud suspicion
+  level: 'Clean' | 'Low Risk' | 'Medium Risk' | 'High Risk' | 'Critical';
+  flags: FraudFlag[];
+  breakdown: {
+    emptyCommitsRatio: number;      // 0-30 points
+    backdatingScore: number;         // 0-25 points (CRITICAL!)
+    temporalAnomalyScore: number;    // 0-20 points
+    massCommitsRatio: number;        // 0-15 points
+    forkFarmingScore: number;        // 0-10 points
+  };
+  metadata: {
+    totalCommits: number;
+    emptyCommits: number;
+    backdatedCommits: number;
+    massCommitDays: number;
+    tutorialForks: number;
+    accountCreatedAt: string;
+    oldestCommitDate: string;
+    newestCommitDate: string;
+  };
+}
+
+export interface FraudFlag {
+  type: 'empty_commits' | 'backdating' | 'temporal_anomaly' | 'mass_commits' | 'fork_farming';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  count?: number;
+  details?: string;
+}
+
+export interface CommitData {
+  authoredDate: string;
+  committedDate: string;
+  additions: number;
+  deletions: number;
+  repository: {
+    name: string;
+    isFork: boolean;
+    owner: { login: string };
+  };
+}
+```
+
+---
+
+### Step 1.5.2: Detection Logic
+
+**File:** `src/lib/metrics/fraud-detection.ts`
+
+```typescript
+import { CommitData, FraudDetectionResult, FraudFlag } from '@/types/metrics';
+
+export function detectFraudPatterns(
+  accountCreatedAt: string,
+  commits: CommitData[]
+): FraudDetectionResult {
+  if (!commits.length) {
+    return createCleanResult();
+  }
+
+  const flags: FraudFlag[] = [];
+  let fraudScore = 0;
+
+  // 1. Empty Commits (0-30 points)
+  const emptyCommits = commits.filter(c => c.additions === 0 && c.deletions === 0);
+  const emptyRatio = emptyCommits.length / commits.length;
+  const emptyScore = Math.min(emptyRatio * 30, 30);
+  fraudScore += emptyScore;
+
+  if (emptyRatio > 0.5) {
+    flags.push({
+      type: 'empty_commits',
+      severity: emptyRatio > 0.8 ? 'critical' : 'high',
+      message: `${(emptyRatio * 100).toFixed(0)}% of commits are empty (${emptyCommits.length}/${commits.length})`,
+      count: emptyCommits.length,
+    });
+  }
+
+  // 2. Backdating (0-25 points) - CRITICAL!
+  const accountDate = new Date(accountCreatedAt);
+  const backdatedCommits = commits.filter(c => {
+    const commitDate = new Date(c.authoredDate);
+    return commitDate < accountDate;
+  });
+
+  const backdatingScore = Math.min((backdatedCommits.length / commits.length) * 25, 25);
+  fraudScore += backdatingScore;
+
+  if (backdatedCommits.length > 0) {
+    flags.push({
+      type: 'backdating',
+      severity: 'critical',
+      message: `${backdatedCommits.length} commits dated before account creation (${accountDate.toISOString().split('T')[0]})`,
+      count: backdatedCommits.length,
+      details: `Oldest commit: ${new Date(Math.min(...backdatedCommits.map(c => new Date(c.authoredDate).getTime()))).toISOString().split('T')[0]}`,
+    });
+  }
+
+  // 3. Temporal Anomaly (0-20 points)
+  const hourMap = new Map<number, number>();
+  commits.forEach(c => {
+    const hour = new Date(c.committedDate).getHours();
+    hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
+  });
+
+  const maxHourCount = Math.max(...hourMap.values());
+  const hourConcentration = maxHourCount / commits.length;
+
+  let temporalScore = 0;
+  if (hourConcentration > 0.7) {
+    temporalScore = 20;
+    flags.push({
+      type: 'temporal_anomaly',
+      severity: 'high',
+      message: `${(hourConcentration * 100).toFixed(0)}% of commits at same hour (bot-like pattern)`,
+    });
+  } else if (hourConcentration > 0.5) {
+    temporalScore = 10;
+    flags.push({
+      type: 'temporal_anomaly',
+      severity: 'medium',
+      message: `${(hourConcentration * 100).toFixed(0)}% of commits concentrated in one hour`,
+    });
+  }
+
+  fraudScore += temporalScore;
+
+  // 4. Mass Commits (0-15 points)
+  const commitsByDay = new Map<string, number>();
+  commits.forEach(c => {
+    const day = c.committedDate.split('T')[0];
+    commitsByDay.set(day, (commitsByDay.get(day) || 0) + 1);
+  });
+
+  const massCommitDays = Array.from(commitsByDay.values()).filter(count => count > 50).length;
+  const massRatio = massCommitDays / commitsByDay.size;
+  const massScore = Math.min(massRatio * 15, 15);
+  fraudScore += massScore;
+
+  if (massCommitDays > 0) {
+    flags.push({
+      type: 'mass_commits',
+      severity: massCommitDays > 5 ? 'high' : 'medium',
+      message: `${massCommitDays} days with >50 commits (farming pattern)`,
+      count: massCommitDays,
+    });
+  }
+
+  // 5. Fork Farming (0-10 points)
+  const forkCommits = commits.filter(c => c.repository.isFork);
+  const tutorialPatterns = ['tutorial', 'learning', 'course', 'practice', 'exercise'];
+  const tutorialForks = forkCommits.filter(c =>
+    tutorialPatterns.some(pattern => c.repository.name.toLowerCase().includes(pattern))
+  );
+
+  const forkRatio = forkCommits.length / commits.length;
+  const forkScore = Math.min(forkRatio * 10, 10);
+  fraudScore += forkScore;
+
+  if (tutorialForks.length > 10) {
+    flags.push({
+      type: 'fork_farming',
+      severity: tutorialForks.length > 50 ? 'high' : 'medium',
+      message: `${tutorialForks.length} commits to tutorial/learning forks (low originality)`,
+      count: tutorialForks.length,
+    });
+  }
+
+  // Determine level
+  const level = getFraudLevel(fraudScore);
+
+  return {
+    score: Math.round(fraudScore),
+    level,
+    flags,
+    breakdown: {
+      emptyCommitsRatio: Math.round(emptyScore),
+      backdatingScore: Math.round(backdatingScore),
+      temporalAnomalyScore: Math.round(temporalScore),
+      massCommitsRatio: Math.round(massScore),
+      forkFarmingScore: Math.round(forkScore),
+    },
+    metadata: {
+      totalCommits: commits.length,
+      emptyCommits: emptyCommits.length,
+      backdatedCommits: backdatedCommits.length,
+      massCommitDays,
+      tutorialForks: tutorialForks.length,
+      accountCreatedAt,
+      oldestCommitDate: new Date(Math.min(...commits.map(c => new Date(c.authoredDate).getTime()))).toISOString(),
+      newestCommitDate: new Date(Math.max(...commits.map(c => new Date(c.authoredDate).getTime()))).toISOString(),
+    },
+  };
+}
+
+function getFraudLevel(score: number): FraudDetectionResult['level'] {
+  if (score >= 80) return 'Critical';
+  if (score >= 60) return 'High Risk';
+  if (score >= 40) return 'Medium Risk';
+  if (score >= 20) return 'Low Risk';
+  return 'Clean';
+}
+
+function createCleanResult(): FraudDetectionResult {
+  return {
+    score: 0,
+    level: 'Clean',
+    flags: [],
+    breakdown: {
+      emptyCommitsRatio: 0,
+      backdatingScore: 0,
+      temporalAnomalyScore: 0,
+      massCommitsRatio: 0,
+      forkFarmingScore: 0,
+    },
+    metadata: {
+      totalCommits: 0,
+      emptyCommits: 0,
+      backdatedCommits: 0,
+      massCommitDays: 0,
+      tutorialForks: 0,
+      accountCreatedAt: '',
+      oldestCommitDate: '',
+      newestCommitDate: '',
+    },
+  };
+}
+```
+
+---
+
+### Step 1.5.3: Component → Story → Test Workflow
+
+**1. Component First**
+
+**File:** `src/components/metrics/FraudAlert.tsx`
+
+```typescript
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle, CheckCircle, ShieldAlert } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { FraudDetectionResult } from '@/types/metrics';
+
+interface FraudAlertProps {
+  fraud: FraudDetectionResult;
+}
+
+export function FraudAlert({ fraud }: FraudAlertProps) {
+  if (fraud.level === 'Clean') {
+    return (
+      <Alert variant="default" className="border-green-500 bg-green-50">
+        <CheckCircle className="h-4 w-4 text-green-600" />
+        <AlertTitle className="text-green-800">Clean Profile</AlertTitle>
+        <AlertDescription className="text-green-700">
+          No suspicious activity detected. This appears to be authentic GitHub activity.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  const variant = fraud.level === 'Critical' || fraud.level === 'High Risk' ? 'destructive' : 'default';
+  const icon = fraud.level === 'Critical' ? <ShieldAlert /> : <AlertCircle />;
+
+  return (
+    <Alert variant={variant}>
+      {icon}
+      <AlertTitle className="flex items-center gap-2">
+        <span>⚠️ Suspicious Activity Detected</span>
+        <Badge variant={variant}>{fraud.score}% fraud risk</Badge>
+      </AlertTitle>
+      <AlertDescription>
+        <ul className="mt-2 space-y-1 text-sm">
+          {fraud.flags.map((flag, i) => (
+            <li key={i} className="flex items-start gap-2">
+              <span className="text-red-500">•</span>
+              <span>
+                <strong>{flag.severity.toUpperCase()}:</strong> {flag.message}
+                {flag.details && <span className="text-muted-foreground"> ({flag.details})</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </AlertDescription>
+    </Alert>
+  );
+}
+```
+
+**2. Storybook Story Second**
+
+**File:** `src/components/metrics/FraudAlert.stories.tsx`
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import { FraudAlert } from './FraudAlert';
+
+const meta: Meta<typeof FraudAlert> = {
+  title: 'Metrics/FraudAlert',
+  component: FraudAlert,
+  tags: ['autodocs'],
+};
+
+export default meta;
+type Story = StoryObj<typeof FraudAlert>;
+
+export const Clean: Story = {
+  args: {
+    fraud: {
+      score: 5,
+      level: 'Clean',
+      flags: [],
+      breakdown: {
+        emptyCommitsRatio: 2,
+        backdatingScore: 0,
+        temporalAnomalyScore: 3,
+        massCommitsRatio: 0,
+        forkFarmingScore: 0,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 10,
+        backdatedCommits: 0,
+        massCommitDays: 0,
+        tutorialForks: 5,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2020-02-01',
+        newestCommitDate: '2025-01-01',
+      },
+    },
+  },
+};
+
+export const LowRisk: Story = {
+  args: {
+    fraud: {
+      score: 25,
+      level: 'Low Risk',
+      flags: [
+        {
+          type: 'empty_commits',
+          severity: 'low',
+          message: '20% of commits are empty (200/1000)',
+          count: 200,
+        },
+      ],
+      breakdown: {
+        emptyCommitsRatio: 20,
+        backdatingScore: 0,
+        temporalAnomalyScore: 5,
+        massCommitsRatio: 0,
+        forkFarmingScore: 0,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 200,
+        backdatedCommits: 0,
+        massCommitDays: 0,
+        tutorialForks: 10,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2020-02-01',
+        newestCommitDate: '2025-01-01',
+      },
+    },
+  },
+};
+
+export const MediumRisk: Story = {
+  args: {
+    fraud: {
+      score: 50,
+      level: 'Medium Risk',
+      flags: [
+        {
+          type: 'empty_commits',
+          severity: 'medium',
+          message: '50% of commits are empty (500/1000)',
+          count: 500,
+        },
+        {
+          type: 'temporal_anomaly',
+          severity: 'medium',
+          message: '60% of commits concentrated in one hour',
+        },
+      ],
+      breakdown: {
+        emptyCommitsRatio: 30,
+        backdatingScore: 0,
+        temporalAnomalyScore: 10,
+        massCommitsRatio: 10,
+        forkFarmingScore: 0,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 500,
+        backdatedCommits: 0,
+        massCommitDays: 3,
+        tutorialForks: 15,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2020-02-01',
+        newestCommitDate: '2025-01-01',
+      },
+    },
+  },
+};
+
+export const HighRisk: Story = {
+  args: {
+    fraud: {
+      score: 70,
+      level: 'High Risk',
+      flags: [
+        {
+          type: 'empty_commits',
+          severity: 'high',
+          message: '80% of commits are empty (800/1000)',
+          count: 800,
+        },
+        {
+          type: 'temporal_anomaly',
+          severity: 'high',
+          message: '75% of commits at same hour (bot-like pattern)',
+        },
+        {
+          type: 'mass_commits',
+          severity: 'high',
+          message: '8 days with >50 commits (farming pattern)',
+          count: 8,
+        },
+      ],
+      breakdown: {
+        emptyCommitsRatio: 30,
+        backdatingScore: 15,
+        temporalAnomalyScore: 20,
+        massCommitsRatio: 5,
+        forkFarmingScore: 0,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 800,
+        backdatedCommits: 50,
+        massCommitDays: 8,
+        tutorialForks: 20,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2019-06-01',
+        newestCommitDate: '2025-01-01',
+      },
+    },
+  },
+};
+
+export const Critical: Story = {
+  args: {
+    fraud: {
+      score: 95,
+      level: 'Critical',
+      flags: [
+        {
+          type: 'backdating',
+          severity: 'critical',
+          message: '200 commits dated before account creation (2020-01-01)',
+          count: 200,
+          details: 'Oldest commit: 2015-01-01',
+        },
+        {
+          type: 'empty_commits',
+          severity: 'critical',
+          message: '90% of commits are empty (900/1000)',
+          count: 900,
+        },
+        {
+          type: 'temporal_anomaly',
+          severity: 'high',
+          message: '85% of commits at same hour (bot-like pattern)',
+        },
+        {
+          type: 'mass_commits',
+          severity: 'high',
+          message: '15 days with >50 commits (farming pattern)',
+          count: 15,
+        },
+        {
+          type: 'fork_farming',
+          severity: 'high',
+          message: '100 commits to tutorial/learning forks (low originality)',
+          count: 100,
+        },
+      ],
+      breakdown: {
+        emptyCommitsRatio: 30,
+        backdatingScore: 25,
+        temporalAnomalyScore: 20,
+        massCommitsRatio: 15,
+        forkFarmingScore: 5,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 900,
+        backdatedCommits: 200,
+        massCommitDays: 15,
+        tutorialForks: 100,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2015-01-01',
+        newestCommitDate: '2025-01-01',
+      },
+    },
+  },
+};
+```
+
+**3. Tests Third**
+
+**File:** `src/components/metrics/FraudAlert.test.tsx`
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { FraudAlert } from './FraudAlert';
+import type { FraudDetectionResult } from '@/types/metrics';
+
+describe('FraudAlert', () => {
+  it('shows green checkmark for clean profile', () => {
+    const fraud: FraudDetectionResult = {
+      score: 5,
+      level: 'Clean',
+      flags: [],
+      breakdown: {
+        emptyCommitsRatio: 0,
+        backdatingScore: 0,
+        temporalAnomalyScore: 5,
+        massCommitsRatio: 0,
+        forkFarmingScore: 0,
+      },
+      metadata: {
+        totalCommits: 100,
+        emptyCommits: 0,
+        backdatedCommits: 0,
+        massCommitDays: 0,
+        tutorialForks: 0,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2020-02-01',
+        newestCommitDate: '2025-01-01',
+      },
+    };
+
+    render(<FraudAlert fraud={fraud} />);
+    expect(screen.getByText(/Clean Profile/i)).toBeInTheDocument();
+    expect(screen.getByText(/No suspicious activity/i)).toBeInTheDocument();
+  });
+
+  it('shows critical alert for high fraud score', () => {
+    const fraud: FraudDetectionResult = {
+      score: 95,
+      level: 'Critical',
+      flags: [
+        {
+          type: 'backdating',
+          severity: 'critical',
+          message: 'Commits before account creation',
+          count: 100,
+        },
+      ],
+      breakdown: {
+        emptyCommitsRatio: 30,
+        backdatingScore: 25,
+        temporalAnomalyScore: 20,
+        massCommitsRatio: 15,
+        forkFarmingScore: 5,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 900,
+        backdatedCommits: 100,
+        massCommitDays: 10,
+        tutorialForks: 50,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2015-01-01',
+        newestCommitDate: '2025-01-01',
+      },
+    };
+
+    render(<FraudAlert fraud={fraud} />);
+    expect(screen.getByText(/95% fraud risk/i)).toBeInTheDocument();
+    expect(screen.getByText(/Commits before account creation/i)).toBeInTheDocument();
+  });
+
+  it('displays all fraud flags', () => {
+    const fraud: FraudDetectionResult = {
+      score: 70,
+      level: 'High Risk',
+      flags: [
+        { type: 'empty_commits', severity: 'high', message: 'Flag 1' },
+        { type: 'backdating', severity: 'critical', message: 'Flag 2' },
+        { type: 'temporal_anomaly', severity: 'medium', message: 'Flag 3' },
+      ],
+      breakdown: {
+        emptyCommitsRatio: 30,
+        backdatingScore: 20,
+        temporalAnomalyScore: 10,
+        massCommitsRatio: 10,
+        forkFarmingScore: 0,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 500,
+        backdatedCommits: 50,
+        massCommitDays: 5,
+        tutorialForks: 10,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2019-01-01',
+        newestCommitDate: '2025-01-01',
+      },
+    };
+
+    render(<FraudAlert fraud={fraud} />);
+    expect(screen.getByText(/Flag 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Flag 2/i)).toBeInTheDocument();
+    expect(screen.getByText(/Flag 3/i)).toBeInTheDocument();
+  });
+
+  it('uses destructive variant for critical level', () => {
+    const fraud: FraudDetectionResult = {
+      score: 90,
+      level: 'Critical',
+      flags: [],
+      breakdown: {
+        emptyCommitsRatio: 30,
+        backdatingScore: 25,
+        temporalAnomalyScore: 20,
+        massCommitsRatio: 15,
+        forkFarmingScore: 0,
+      },
+      metadata: {
+        totalCommits: 1000,
+        emptyCommits: 800,
+        backdatedCommits: 100,
+        massCommitDays: 10,
+        tutorialForks: 20,
+        accountCreatedAt: '2020-01-01',
+        oldestCommitDate: '2015-01-01',
+        newestCommitDate: '2025-01-01',
+      },
+    };
+
+    const { container } = render(<FraudAlert fraud={fraud} />);
+    // Check for destructive variant class or styling
+    expect(container.querySelector('[role="alert"]')).toBeInTheDocument();
+  });
+});
+```
+
+**4. Build Storybook:**
+
+```bash
+npm run build-storybook  # Creates storybook-static/
+# Storybook MCP can now index this component
+```
+
+**5. Coverage Target:**
+- `fraud-detection.ts`: **100% coverage** (pure logic functions)
+- `FraudAlert.tsx`: **90%+ coverage** (UI component)
+- `useFraudDetection.ts`: **100% coverage** (hook logic)
+
+---
+
+### Step 1.5.4: Integration Hook
+
+**File:** `src/hooks/useFraudDetection.ts`
+
+```typescript
+import { useMemo } from 'react';
+import { detectFraudPatterns } from '@/lib/metrics/fraud-detection';
+import type { FraudDetectionResult, CommitData } from '@/types/metrics';
+
+interface UseFraudDetectionProps {
+  accountCreatedAt: string;
+  commits: CommitData[];
+}
+
+export function useFraudDetection({
+  accountCreatedAt,
+  commits,
+}: UseFraudDetectionProps): FraudDetectionResult {
+  return useMemo(() => {
+    if (!accountCreatedAt || !commits.length) {
+      return {
+        score: 0,
+        level: 'Clean',
+        flags: [],
+        breakdown: {
+          emptyCommitsRatio: 0,
+          backdatingScore: 0,
+          temporalAnomalyScore: 0,
+          massCommitsRatio: 0,
+          forkFarmingScore: 0,
+        },
+        metadata: {
+          totalCommits: 0,
+          emptyCommits: 0,
+          backdatedCommits: 0,
+          massCommitDays: 0,
+          tutorialForks: 0,
+          accountCreatedAt: '',
+          oldestCommitDate: '',
+          newestCommitDate: '',
+        },
+      };
+    }
+
+    return detectFraudPatterns(accountCreatedAt, commits);
+  }, [accountCreatedAt, commits]);
+}
+```
+
+---
+
+### Deliverables
+
+**Phase 1.5 Checklist:**
+- [ ] `src/types/metrics.ts` - Fraud types defined
+- [ ] `src/lib/metrics/fraud-detection.ts` - Detection logic (100% test coverage)
+- [ ] `src/lib/metrics/fraud-detection.test.ts` - 15+ test cases
+- [ ] `src/components/metrics/FraudAlert.tsx` - UI component
+- [ ] `src/components/metrics/FraudAlert.stories.tsx` - 5 stories (Clean, Low, Medium, High, Critical)
+- [ ] `src/components/metrics/FraudAlert.test.tsx` - 10+ tests
+- [ ] `src/hooks/useFraudDetection.ts` - Integration hook
+- [ ] `src/hooks/useFraudDetection.test.ts` - Hook tests
+- [ ] `npm run build-storybook` - Storybook indexed
+- [ ] Coverage ≥90% for all files
+- [ ] MCP verification (optional): "Show me FraudAlert component"
+
+**Time:** 2 days
+
+**Success Criteria:**
+- All 5 fraud detection methods working (backdating, empty commits, temporal anomaly, mass commits, fork farming)
+- FraudAlert renders correctly for all 5 levels (Clean to Critical)
+- 100% test coverage for `fraud-detection.ts`
+- All Storybook stories render without errors
+- Integration with UserProfile component works
 
 ---
 
