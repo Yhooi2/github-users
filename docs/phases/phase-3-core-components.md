@@ -50,18 +50,22 @@ Build UI components for displaying metrics and assessments.
 
 ## 🏗️ Component Development Workflow
 
-**For EVERY component:**
+**⚠️ CRITICAL:** Follow **Component → Storybook → Test** strict order!
 
-1. Check shadcn MCP for similar component
-2. Write component with TypeScript
-3. Write Storybook story (all states)
-4. Build Storybook: `npm run build-storybook`
-5. Write tests (based on stories)
-6. Run tests: `npm test`
-7. MCP Check (optional)
-8. Document learnings
+See [REFACTORING_MASTER_PLAN.md](../REFACTORING_MASTER_PLAN.md#-development-philosophy-critical) for full philosophy.
 
-**Template:** Use `src/components/user/UserAuthenticity.tsx` as UI pattern!
+**For EVERY component (MANDATORY ORDER):**
+
+1. **Component First** — Write TypeScript component
+   - Check shadcn MCP for similar component
+   - Use `src/components/user/UserAuthenticity.tsx` as template
+2. **Storybook Second** — Create `.stories.tsx` with ALL states (loading, error, success)
+3. **Build Storybook** — `npm run build-storybook` (REQUIRED for MCP!)
+4. **Test Last** — Write `.test.tsx` based on Storybook stories
+5. **Run Tests** — `npm test`
+6. **Code Review** — Optional: use code-review-specialist agent
+
+**Why This Order?** Proven 99.85% test pass rate. Stories = test specification.
 
 ---
 
