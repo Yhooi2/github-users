@@ -34,6 +34,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 // 2. HTTP link to GraphQL endpoint (via backend proxy)
 const httpLink = createHttpLink({
   uri: '/api/github-proxy', // Proxy to GitHub API (token secured on server)
+  includeExtensions: true, // ← CRITICAL: Include extensions in request body
   fetch: (uri, options) => {
     // Extract cacheKey from extensions and add to body
     const body = JSON.parse(options?.body as string || '{}');

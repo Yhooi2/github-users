@@ -30,6 +30,7 @@ describe('Apollo Client cacheKey Integration', () => {
     // Import real cacheKeyLink from ApolloAppProvider
     const cacheKeyLink = new ApolloLink((operation, forward) => {
       const { cacheKey } = operation.getContext()
+
       if (cacheKey) {
         operation.extensions = { ...operation.extensions, cacheKey }
       }
@@ -38,6 +39,7 @@ describe('Apollo Client cacheKey Integration', () => {
 
     const httpLink = createHttpLink({
       uri: '/api/github-proxy',
+      includeExtensions: true, // ← Include extensions in request body
       fetch: (uri, options) => {
         const body = JSON.parse(options?.body as string || '{}')
         const extensions = body.extensions || {}
