@@ -130,7 +130,7 @@
 - `api-reference.md` (966 строк) - GitHub GraphQL API reference
 - `api-strategy.md` (846 строк) - querying strategy
 - `apollo-client-guide.md` (1,189 строк) - Apollo Client setup
-- `graphql-api.md` (504 строки) - GraphQL basics
+- `api-reference.md` (504 строки) - GraphQL basics
 
 **Дублирование (~40%):**
 - GraphQL query examples
@@ -141,7 +141,7 @@
 **Рекомендация:** 🟡 **ОБЪЕДИНИТЬ в 2 файла:**
 1. `api-guide.md` (reference + strategy) ← объединить api-reference.md + api-strategy.md
 2. Оставить `apollo-client-guide.md` (детальный setup)
-3. **УДАЛИТЬ** `graphql-api.md` (базовая инфо, дублируется в apollo-client-guide.md)
+3. **УДАЛИТЬ** `api-reference.md` (базовая инфо, дублируется в apollo-client-guide.md)
 
 ---
 
@@ -268,8 +268,8 @@ git rm /CLAUDE.md
 # 2. Удалить METRICS_V2_DETAILED.md (нереализуемый + дублирует metrics-explanation.md)
 git rm docs/METRICS_V2_DETAILED.md
 
-# 3. Удалить graphql-api.md (дублирует apollo-client-guide.md)
-git rm docs/graphql-api.md
+# 3. Удалить api-reference.md (дублирует apollo-client-guide.md)
+git rm docs/api-reference.md
 ```
 
 **Экономия:** ~2,300 строк (-11% документации)
@@ -452,7 +452,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 5. `PLAN_COMPARISON.md` ← больше не нужен
 6. `api-reference.md` ← объединен в github-api-guide.md
 7. `api-strategy.md` ← объединен в github-api-guide.md
-8. `graphql-api.md` ← дублирует apollo-client-guide.md
+8. `api-reference.md` ← дублирует apollo-client-guide.md
 
 ### Новые файлы (2):
 1. `REFACTORING_PLAN.md` ← единый гибридный план
@@ -647,8 +647,8 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 2. **✅ Added Cross-References:**
    - **component-development.md** → links to components-guide.md, testing-guide.md, typescript-guide.md
    - **components-guide.md** → links to component-development.md, testing-guide.md, architecture.md
-   - **apollo-client-guide.md** → links to graphql-api.md, architecture.md, testing-guide.md
-   - **graphql-api.md** → links to apollo-client-guide.md, architecture.md, dependencies.md
+   - **apollo-client-guide.md** → links to api-reference.md, architecture.md, testing-guide.md
+   - **api-reference.md** → links to apollo-client-guide.md, architecture.md, dependencies.md
 
 3. **✅ Benefits:**
    - Clear navigation between related docs
@@ -670,7 +670,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 - ✅ component-development.md (workflow guide with references)
 - ✅ components-guide.md (component catalog with references)
 - ✅ apollo-client-guide.md (Apollo setup with references)
-- ✅ graphql-api.md (GitHub API structure with references)
+- ✅ api-reference.md (GitHub API structure with references)
 - ✅ All phase files (modular, focused)
 
 **Quality Metrics:**

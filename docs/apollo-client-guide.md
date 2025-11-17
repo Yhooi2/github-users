@@ -3,7 +3,7 @@
 > Полное руководство по Apollo Client 3.14 в проекте git-user-info
 
 **📚 Related Documentation:**
-- [GraphQL API Documentation](./graphql-api.md) - GitHub GraphQL API structure and queries
+- [API Reference](./api-reference.md) - GitHub GraphQL API reference
 - [Architecture Overview](./architecture.md) - Data layer architecture
 - [Testing Guide](./testing-guide.md) - Testing Apollo Client with MockedProvider
 
@@ -1183,7 +1183,7 @@ useQueryUser(debouncedSearch)
 
 ### Project Documentation
 
-- [GraphQL API Documentation](./graphql-api.md) - Подробное описание GitHub GraphQL query
+- [GraphQL API Documentation](./api-reference.md) - Подробное описание GitHub GraphQL query
 - [Testing Guide](./testing-guide.md) - Тестирование с MockedProvider
 - [Dependencies Overview](./dependencies.md) - Все зависимости проекта
 

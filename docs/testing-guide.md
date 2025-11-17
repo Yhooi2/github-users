@@ -1201,7 +1201,7 @@ npm test -- --bail              # Остановить при первой ош�
 - [Dependencies Overview](./dependencies.md) - Все зависимости проекта
 - [Tailwind v4 Migration](./tailwind-v4-migration.md) - Миграция Tailwind CSS
 - [Architecture](./architecture.md) - Архитектура проекта
-- [GraphQL API](./graphql-api.md) - GraphQL интеграция
+- [GraphQL API](./api-reference.md) - GraphQL интеграция
 
 ---
 

@@ -426,7 +426,7 @@ See [Testing Guide](./testing-guide.md) for complete testing philosophy
 - component-development.md (cross-references added)
 - components-guide.md (cross-references added)
 - apollo-client-guide.md (cross-references added)
-- graphql-api.md (cross-references added)
+- api-reference.md (cross-references added)
 - DOCUMENTATION_CLEANUP_REPORT.md (created)
 
 ### Next Steps

@@ -466,7 +466,7 @@ export default defineConfig({
 ## Дополнительная документация
 
 - [Architecture Overview](./architecture.md) - Общая архитектура приложения
-- [GraphQL API Reference](./graphql-api.md) - Работа с GitHub API
+- [GraphQL API Reference](./api-reference.md) - Работа с GitHub API
 - [Tailwind v4 Migration](./tailwind-v4-migration.md) - Миграция на Tailwind v4
 - [Testing Guide](./testing-guide.md) - Стратегия тестирования
 - [React 19 Features](./react-19-features.md) - Новые фичи React 19
