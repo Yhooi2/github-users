@@ -6,6 +6,31 @@
 
 ---
 
+## 🤖 Recommended Agents
+
+**Before starting:**
+- **Explore agent:** "Study src/components/user/UserAuthenticity.tsx as UI template"
+- **Plan agent:** "Create component implementation checklist for Phase 3"
+
+**During implementation:**
+- **general-purpose agent:** "Implement Step 3.1 - MetricCard component"
+- **general-purpose agent:** "Create MetricCard.stories.tsx"
+- **test-runner-fixer agent:** "Run tests for MetricCard.test.tsx"
+- **general-purpose agent:** "Implement Step 3.2 - QuickAssessment component"
+- **test-runner-fixer agent:** "Run all component tests"
+
+**After each component:**
+```bash
+npm run build-storybook  # Build Storybook for MCP
+code-review-specialist agent: "Review component against shadcn/ui patterns"
+```
+
+**Final verification:**
+- **code-review-specialist agent:** "Verify >90% test coverage for all components"
+- **Explore agent:** "Check Storybook has stories for all components"
+
+---
+
 ## 🎯 Goal
 
 Build UI components for displaying metrics and assessments.

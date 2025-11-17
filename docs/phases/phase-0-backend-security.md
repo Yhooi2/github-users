@@ -6,6 +6,28 @@
 
 ---
 
+## 🤖 Recommended Agents
+
+**Before starting:**
+- **Explore agent:** "Find all uses of VITE_GITHUB_TOKEN in the codebase"
+- **Plan agent:** "Create step-by-step checklist for Phase 0"
+
+**During implementation:**
+- **general-purpose agent:** "Implement Step 0.1 - create api/github-proxy.ts"
+- **general-purpose agent:** "Implement Step 0.2 - setup environment variables"
+- **general-purpose agent:** "Implement Step 0.3 - update Apollo Client"
+
+**After implementation:**
+- **debug-specialist agent:** "Fix any errors from Vercel deployment"
+- **code-review-specialist agent:** "Verify token is not exposed in bundle"
+
+**Testing:**
+```bash
+Explore agent: "Verify grep -r 'ghp_' dist/assets/*.js returns nothing"
+```
+
+---
+
 ## 🔴 Critical Security Issue
 
 ### Current Problem

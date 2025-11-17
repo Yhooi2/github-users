@@ -6,6 +6,30 @@
 
 ---
 
+## 🤖 Recommended Agents
+
+**Before starting:**
+- **Explore agent:** "Find all uses of date-helpers.ts and getThreeYearRanges()"
+- **Plan agent:** "Create implementation checklist for Phase 1"
+
+**During implementation:**
+- **general-purpose agent:** "Implement Step 1.1 - create date-utils.ts with generateYearRanges()"
+- **test-runner-fixer agent:** "Run tests for date-utils.test.ts"
+- **general-purpose agent:** "Implement Step 1.2 - create GraphQL queries"
+- **general-purpose agent:** "Implement Step 1.3 - create useUserAnalytics hook"
+- **test-runner-fixer agent:** "Run tests for useUserAnalytics.test.ts"
+
+**After implementation:**
+- **code-review-specialist agent:** "Review against Phase 1 deliverables"
+- **debug-specialist agent:** "Fix any query errors or type mismatches"
+
+**Testing parallel queries:**
+```bash
+Explore agent: "Verify Promise.all is used for parallel year queries"
+```
+
+---
+
 ## 🎯 Goal
 
 Fetch year-by-year data from account creation to present (instead of fixed 3 years).

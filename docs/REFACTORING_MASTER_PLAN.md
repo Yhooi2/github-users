@@ -149,6 +149,83 @@ NOT a greenfield implementation!
 
 ---
 
+## 🤖 Agent-Driven Development Workflow
+
+### Available Agents
+
+**Built-in Agents:**
+- **Explore** (haiku) - Fast codebase exploration, file search, understanding
+- **Plan** (sonnet) - Create detailed implementation plans and checklists
+- **general-purpose** (sonnet) - Multi-step implementation tasks
+- **debug-specialist** (sonnet) - Error investigation and fixing
+- **test-runner-fixer** (sonnet) - Run tests and fix failures
+- **code-review-specialist** (sonnet) - Code quality and security review
+- **teaching-mentor** (sonnet) - Learning and guidance
+
+### Recommended Workflow Per Phase
+
+**1. Before Starting Phase:**
+```bash
+Explore agent:
+"Study docs/phases/phase-N-name.md and find all files that need changes"
+```
+
+**2. Create Implementation Plan:**
+```bash
+Plan agent:
+"Create detailed checklist for Phase N from docs/phases/phase-N-name.md"
+```
+
+**3. Implement Each Step:**
+```bash
+general-purpose agent:
+"Implement Step N.X from docs/phases/phase-N-name.md"
+```
+
+**4. After Each Implementation:**
+```bash
+test-runner-fixer agent:
+"Run tests for newly created code"
+
+code-review-specialist agent:
+"Review code against deliverables in docs/phases/phase-N-name.md"
+```
+
+**5. If Errors Occur:**
+```bash
+debug-specialist agent:
+"Fix errors from test output"
+```
+
+### Example: Phase 1 Workflow
+
+```bash
+# Step 1: Explore
+Explore agent → "Study phase-1-graphql-multi-query.md, find date-helpers.ts usage"
+
+# Step 2: Plan
+Plan agent → "Create checklist for Phase 1"
+
+# Step 3: Implement
+general-purpose agent → "Implement generateYearRanges() from Step 1.1"
+
+# Step 4: Test
+test-runner-fixer agent → "Run tests for date-utils.test.ts"
+
+# Step 5: Review
+code-review-specialist agent → "Review against Phase 1 deliverables"
+```
+
+### Benefits of Modular Structure for Agents
+
+✅ **Small Context:** Each agent sees only one phase file (200-400 lines vs 2000+ lines)
+✅ **Focused Task:** No distraction from other phases
+✅ **Parallel Work:** Different agents can work on different phases simultaneously
+✅ **Faster:** Less context = fewer tokens = faster responses
+✅ **Cheaper:** Smaller context = lower API costs
+
+---
+
 ## 📦 Dependencies
 
 ### Already Installed (Reuse)

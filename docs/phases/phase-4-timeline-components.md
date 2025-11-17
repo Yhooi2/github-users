@@ -6,6 +6,30 @@
 
 ---
 
+## 🤖 Recommended Agents
+
+**Before starting:**
+- **Explore agent:** "Find RepositoryCard component and understand its props"
+- **Plan agent:** "Create timeline components implementation plan"
+
+**During implementation:**
+- **general-purpose agent:** "Implement Step 4.1 - ActivityTimeline component"
+- **general-purpose agent:** "Implement Step 4.2 - TimelineYear with collapse"
+- **general-purpose agent:** "Implement Step 4.3 - YearExpandedView"
+- **general-purpose agent:** "Enhance RepositoryCard with type and commits props"
+- **test-runner-fixer agent:** "Run tests for all timeline components"
+
+**After implementation:**
+- **code-review-specialist agent:** "Verify smooth collapse animations (<200ms)"
+- **debug-specialist agent:** "Fix any rendering issues with year expansion"
+
+**Testing:**
+```bash
+Explore agent: "Verify timeline works with 2-10+ year old accounts"
+```
+
+---
+
 ## 🎯 Goal
 
 Build year-by-year activity timeline with collapsible years and project details.

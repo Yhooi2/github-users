@@ -6,6 +6,32 @@
 
 ---
 
+## 🤖 Recommended Agents
+
+**Before starting:**
+- **Explore agent:** "Review all E2E test files in e2e/ directory"
+- **Plan agent:** "Create testing and polish checklist"
+
+**During implementation:**
+- **general-purpose agent:** "Implement Step 6.1 - create user-analytics-flow.spec.ts"
+- **general-purpose agent:** "Implement Step 6.2 - accessibility tests"
+- **test-runner-fixer agent:** "Run all E2E tests (chromium, firefox, webkit)"
+- **general-purpose agent:** "Implement Step 6.3 - performance tests"
+- **test-runner-fixer agent:** "Run test coverage report"
+
+**After implementation:**
+- **debug-specialist agent:** "Fix any E2E test failures"
+- **code-review-specialist agent:** "Verify all deliverables complete"
+- **code-review-specialist agent:** "Final production readiness check"
+
+**Final verification:**
+```bash
+test-runner-fixer agent: "Run npm run test:all and verify >95% coverage"
+Explore agent: "Check Lighthouse score >90"
+```
+
+---
+
 ## 🎯 Goal
 
 Ensure production readiness through comprehensive testing and optimization.

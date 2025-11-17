@@ -6,6 +6,31 @@
 
 ---
 
+## 🤖 Recommended Agents
+
+**Before starting:**
+- **Explore agent:** "Study src/lib/authenticity.ts pattern for metric calculations"
+- **Plan agent:** "Create checklist for all 4 metrics implementation"
+
+**During implementation:**
+- **general-purpose agent:** "Implement Step 2.1 - create activity.ts following authenticity.ts pattern"
+- **test-runner-fixer agent:** "Run tests for activity.test.ts"
+- **general-purpose agent:** "Implement Step 2.2 - create impact.ts"
+- **test-runner-fixer agent:** "Run tests for impact.test.ts"
+- **general-purpose agent:** "Implement quality.ts and growth.ts"
+- **test-runner-fixer agent:** "Run all metrics tests"
+
+**After implementation:**
+- **code-review-specialist agent:** "Verify 100% test coverage for all metrics"
+- **code-review-specialist agent:** "Check all metrics follow authenticity.ts pattern"
+
+**Verification:**
+```bash
+Explore agent: "Confirm all 4 metrics return score 0-100 with breakdown"
+```
+
+---
+
 ## 🎯 Goal
 
 Calculate 4 key metrics: Activity, Impact, Quality, and Growth.

@@ -6,6 +6,29 @@
 
 ---
 
+## 🤖 Recommended Agents
+
+**Before starting:**
+- **Explore agent:** "Find MainTabs usage in App.tsx"
+- **Plan agent:** "Create layout refactoring checklist"
+
+**During implementation:**
+- **general-purpose agent:** "Implement Step 5.1 - remove MainTabs from App.tsx"
+- **general-purpose agent:** "Implement Step 5.2 - create ProjectSection component"
+- **general-purpose agent:** "Implement Step 5.3 - enhance ProjectCard with badges"
+- **test-runner-fixer agent:** "Run E2E tests for new layout"
+
+**After implementation:**
+- **code-review-specialist agent:** "Verify responsive layout (mobile/desktop)"
+- **code-review-specialist agent:** "Check no layout shifts (CLS < 0.1)"
+
+**Testing:**
+```bash
+Explore agent: "Confirm MainTabs component is no longer imported in App.tsx"
+```
+
+---
+
 ## 🎯 Goal
 
 Remove tabs, create single-page progressive disclosure layout.
