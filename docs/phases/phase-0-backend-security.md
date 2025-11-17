@@ -199,16 +199,87 @@ KV_REST_API_READ_ONLY_TOKEN=
 
 **File:** `src/apollo/ApolloAppProvider.tsx`
 
-**Change:**
-```typescript
-import { HttpLink } from '@apollo/client'
+**CRITICAL:** Apollo Client requires custom link chain to pass `cacheKey` to backend.
 
-const httpLink = new HttpLink({
-  uri: '/api/github-proxy', // ← Changed from GitHub API
+#### Step 0.3.1: Create cacheKey extraction link
+
+```typescript
+import { ApolloLink } from '@apollo/client'
+
+// Extract cacheKey from operation.context and add to extensions
+const cacheKeyLink = new ApolloLink((operation, forward) => {
+  const { cacheKey } = operation.getContext()
+
+  if (cacheKey) {
+    operation.extensions = {
+      ...operation.extensions,
+      cacheKey,
+    }
+  }
+
+  return forward(operation)
 })
 ```
 
-**Update queries to include cacheKey:**
+**Why needed:** Apollo Client doesn't automatically pass `context` to HTTP layer. We extract `cacheKey` from context and add to `extensions`, which CAN be sent in request body.
+
+#### Step 0.3.2: Create HTTP link with includeExtensions
+
+```typescript
+import { createHttpLink } from '@apollo/client'
+
+const httpLink = createHttpLink({
+  uri: '/api/github-proxy',
+  includeExtensions: true, // ← CRITICAL! Without this, extensions are NOT sent!
+  fetch: (uri, options) => {
+    // Extract cacheKey from extensions and add to top-level body
+    const body = JSON.parse(options?.body as string || '{}')
+    const extensions = body.extensions || {}
+    const cacheKey = extensions.cacheKey
+
+    // Create new body with cacheKey at top level (for backend proxy)
+    const newBody = {
+      query: body.query,
+      variables: body.variables,
+      ...(cacheKey && { cacheKey }),
+    }
+
+    return fetch(uri, {
+      ...options,
+      body: JSON.stringify(newBody),
+    })
+  },
+})
+```
+
+**Why custom fetch:** Backend proxy expects `cacheKey` at top-level of body, not nested in `extensions`.
+
+#### Step 0.3.3: Combine links
+
+```typescript
+import { ApolloLink } from '@apollo/client'
+import { onError } from '@apollo/client/link/error'
+
+// Error handling link (existing)
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  // ... error handling
+})
+
+// Combine: cacheKeyLink → errorLink → httpLink
+const link = ApolloLink.from([cacheKeyLink, errorLink, httpLink])
+
+const client = new ApolloClient({
+  link,
+  cache: new InMemoryCache(),
+})
+```
+
+**Link chain order matters:**
+1. `cacheKeyLink` - extracts cacheKey from context
+2. `errorLink` - handles errors
+3. `httpLink` - sends HTTP request with cacheKey
+
+#### Step 0.3.4: Update queries to include cacheKey
 
 ```typescript
 // src/apollo/useQueryUser.ts (example)
@@ -223,6 +294,13 @@ const { data } = useQuery(GET_USER_INFO, {
 })
 ```
 
+**Cache key format:** `user:{username}:{dataType}`
+
+**Examples:**
+- `user:octocat:profile` - user profile data
+- `user:octocat:year:2023` - contributions for 2023
+- `user:torvalds:year:2024` - contributions for 2024
+
 **Test:**
 ```bash
 npm run dev
@@ -232,6 +310,47 @@ npm run dev
 
 **MCP Check After:**
 - Query Context7: "Apollo Client context caching patterns"
+
+---
+
+### Step 0.3.5: Add Integration Tests (CRITICAL)
+
+**File:** `src/apollo/cacheKey.integration.test.tsx`
+
+**Why integration tests:**
+- ❌ Unit tests with MockedProvider DON'T test HTTP layer
+- ❌ Unit tests DON'T catch `includeExtensions: true` missing
+- ❌ Unit tests DON'T verify request body structure
+- ✅ Integration tests catch real Apollo Client behavior
+
+**Required test cases:**
+
+```typescript
+describe('Apollo Client cacheKey Integration', () => {
+  it('should pass cacheKey from context to request body', async () => {
+    // CRITICAL: Verify cacheKey is in top-level body
+    expect(requestBody).toHaveProperty('cacheKey', 'user:testuser:profile')
+  })
+
+  it('should NOT include cacheKey if not provided in context', async () => {
+    // Verify optional cacheKey handling
+    expect(requestBody).not.toHaveProperty('cacheKey')
+  })
+
+  it('should NOT cause circular structure error with context objects', async () => {
+    // Verify no JSON serialization errors
+    await expect(query()).resolves.not.toThrow()
+  })
+})
+```
+
+**Key requirements:**
+- ✅ Mock `global.fetch` to intercept HTTP requests
+- ✅ Parse request body to verify structure
+- ✅ Test with AND without cacheKey in context
+- ✅ Verify no circular reference errors
+
+**See:** `src/apollo/cacheKey.integration.test.tsx` for full implementation
 
 ---
 
@@ -254,12 +373,32 @@ curl -X POST https://your-app.vercel.app/api/github-proxy \
 
 ## ✅ Deliverables
 
-- [ ] `api/github-proxy.ts` created
-- [ ] `.env` configured (server-side)
-- [ ] Apollo Client `HttpLink` URI updated to `/api/github-proxy`
-- [ ] Token NOT visible in DevTools
-- [ ] Caching functional (check logs)
-- [ ] Deployed to Vercel Free tier
+**Backend:**
+- [x] `api/github-proxy.ts` created with Vercel KV caching
+- [x] `.env` configured (server-side `GITHUB_TOKEN`)
+- [x] Request validation (POST only, error handling)
+
+**Apollo Client:**
+- [x] Custom `cacheKeyLink` for context extraction
+- [x] `HttpLink` with `includeExtensions: true` (**CRITICAL**)
+- [x] Custom `fetch` to move cacheKey to top-level body
+- [x] Link chain: `cacheKeyLink → errorLink → httpLink`
+
+**Testing:**
+- [x] Integration tests: `src/apollo/cacheKey.integration.test.tsx` (3/3 passing)
+- [x] Unit tests: `src/apollo/ApolloAppProvider.test.tsx` (13/13 passing)
+- [x] Verify cacheKey in request body structure
+- [x] Verify no circular structure errors
+
+**Security:**
+- [x] Token NOT visible in DevTools → Sources
+- [x] Token NOT in client bundle (`grep -r "ghp_" dist/`)
+- [x] All requests go through `/api/github-proxy`
+
+**Deployment:**
+- [ ] Deployed to Vercel (with `GITHUB_TOKEN` env var)
+- [ ] Vercel KV configured (optional, for caching)
+- [ ] Tested in production with real GitHub token
 
 ---
 
