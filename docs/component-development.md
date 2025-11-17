@@ -2,6 +2,11 @@
 
 > Полное руководство по разработке React компонентов с shadcn/ui, Storybook и TypeScript
 
+**📚 Related Documentation:**
+- [Components Guide](./components-guide.md) - Complete reference for all existing components
+- [Testing Guide](./testing-guide.md) - Testing strategy and best practices
+- [TypeScript Guide](./typescript-guide.md) - TypeScript patterns and configuration
+
 ## Содержание
 
 - [Обзор](#обзор)

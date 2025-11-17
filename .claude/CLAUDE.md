@@ -61,7 +61,7 @@ npm test MyComponent.test.tsx
 **TypeScript:**
 - ✅ Strict mode enabled
 - ✅ No `any` types allowed
-- ✅ Props use capitalized `Props` type
+- ✅ Props use descriptive, component-specific type names
 - ✅ All event handlers properly typed
 
 **Component Standards:**
@@ -154,19 +154,20 @@ npx vitest -t "renders search input and button"
 
 **Location:** `src/apollo/ApolloAppProvider.tsx`
 
-**Link Chain:** `errorLink → authLink → httpLink`
+**Link Chain:** `errorLink → httpLink`
 
 1. **errorLink**: Global error handler with `onError`
    - GraphQL errors: logged, displayed via toast, checks for `UNAUTHENTICATED` code
-   - Network errors: logged, displayed via toast, handles 401 status (clears token)
+   - Network errors: logged, displayed via toast, handles 401 status (clears token from localStorage)
 
-2. **authLink**: Authentication middleware using `setContext`
-   - Token sources (priority): `import.meta.env.VITE_GITHUB_TOKEN` → `localStorage.getItem('github_token')`
-   - Adds `Authorization: Bearer <token>` header
-
-3. **httpLink**: Points to `https://api.github.com/graphql`
+2. **httpLink**: Points to `/api/github-proxy` (backend proxy endpoint)
+   - **Security Architecture**: Authentication handled server-side by the proxy
+   - GitHub token stored on backend to prevent exposure in client bundle
+   - No `authLink` needed (removed for security)
 
 **Cache:** `InMemoryCache` (no custom config)
+
+**Migration Note**: Previously used direct GitHub API access with client-side token (`https://api.github.com/graphql`). Now uses backend proxy for enhanced security.
 
 ### Data Fetching Pattern
 
@@ -195,12 +196,15 @@ npx vitest -t "renders search input and button"
   - Controlled input with local state
   - Validates non-empty before calling `setUserName`
   - Error toast via `sonner`
-  - Type: `Props` (capitalized, not `props`)
 
 - `UserProfile` (`src/components/UserProfile.tsx`)
   - Consumes `useQueryUser` hook
   - Renders: loading state, error state, "User Not Found", or user data
-  - Type: `Props` (capitalized)
+
+- `UserAuthenticity` (`src/components/user/UserAuthenticity.tsx`)
+  - Displays authenticity score with breakdown metrics
+  - Uses `useAuthenticityScore` hook for calculations
+  - Shows warning flags and repository metadata
 
 **UI Components:** `src/components/ui/`
 - shadcn/ui library (New York style)
@@ -219,14 +223,20 @@ Resolves to `./src/`
 
 ### Environment Variables
 
-**Required:** `VITE_GITHUB_TOKEN` (GitHub Personal Access Token)
+**Backend Configuration:**
+- GitHub token is now stored server-side for security
+- Token handled by `/api/github-proxy` endpoint
+- Prevents token exposure in client bundle
 
-**Setup:**
-1. Copy `.env.example` to `.env.local`
-2. Get token: https://github.com/settings/tokens
-3. Scopes: `read:user`, `user:email`
+**Previous Setup (Deprecated):**
+- Previously used `VITE_GITHUB_TOKEN` environment variable
+- Token was accessible in client code via `import.meta.env.VITE_GITHUB_TOKEN`
+- Migrated to server-side authentication for enhanced security
 
-**Access in code:** `import.meta.env.VITE_GITHUB_TOKEN`
+**Migration Path:**
+1. ~~Copy `.env.example` to `.env.local`~~ (no longer needed for client)
+2. Configure token on backend/proxy server
+3. Scopes still required: `read:user`, `user:email`
 
 ## Testing Strategy
 
@@ -234,10 +244,27 @@ Resolves to `./src/`
 
 **Setup:** `src/test/setup.ts` - imports `@testing-library/jest-dom`, auto-cleanup after each test
 
-**Test Files:**
-- `src/apollo/date-helpers.test.ts` (16 tests) - date utility functions
-- `src/components/SearchForm.test.tsx` (9 tests) - form interactions, validation
-- `src/components/UserProfile.test.tsx` (6 tests) - loading/error/data states
+**Test Coverage:**
+- 58+ test files across the codebase
+- **Apollo Layer**:
+  - `date-helpers.test.ts` - date utility functions
+  - `queriers.test.ts` - GraphQL query validation
+  - `useQueryUser.test.tsx` - custom hook logic
+  - `ApolloAppProvider.test.tsx` - client setup
+- **Components**: Full coverage of UI, layout, user, statistics, and repository components
+- **Hooks**:
+  - `useAuthenticityScore.test.ts` - authenticity calculations
+  - `useRepositoryFilters.test.ts` - filter logic
+  - `useRepositorySorting.test.ts` - sorting logic
+  - `useUserAnalytics.test.tsx` - analytics tracking
+- **Utilities**:
+  - `statistics.test.ts` - statistical calculations
+  - `authenticity.test.ts` - authenticity metrics
+  - `repository-filters.test.ts` - repository filtering
+  - `date-utils.test.ts` - date manipulation
+- **Types**:
+  - `metrics.test.ts` - type validation
+  - `filters.test.ts` - filter type guards
 
 **Mocking:**
 - Apollo: Use `vi.mock('@/apollo/useQueryUser')` to mock hook return values
@@ -289,7 +316,11 @@ E2E tests use `.spec.ts` extension, unit tests use `.test.tsx`/`.test.ts`
 
 ### Type Conventions
 
-- Component props: Use capitalized `Props` type (not `props`)
+- Component props: Use descriptive, component-specific type names
+  - **Preferred**: `UserAuthenticityProps`, `SearchFormProps`, `StatsCardProps`
+  - **Rationale**: Specific naming improves code clarity and IDE autocomplete
+  - Always capitalize prop type names
+  - Avoid generic `Props` - be descriptive
 - Handler functions: Use `handler` prefix (e.g., `handlerOnSubmit`, not `hundler`)
 
 ## Storybook
@@ -299,30 +330,54 @@ E2E tests use `.spec.ts` extension, unit tests use `.test.tsx`/`.test.ts`
 **Port:** 6006
 
 **Addons:**
-- `@storybook/addon-docs` - auto-generated docs
-- `@storybook/addon-a11y` - accessibility checks
-- `@storybook/addon-vitest` - test integration
-- `@storybook/addon-mcp` - MCP server integration
+- `@chromatic-com/storybook` - visual regression testing platform
+- `@storybook/addon-docs` - auto-generated component documentation
+- `@storybook/addon-onboarding` - first-time user guidance
+- `@storybook/addon-themes` - theme switching support (dark/light mode)
+- `@storybook/addon-a11y` - accessibility checks and WCAG compliance
+- `@storybook/addon-vitest` - test integration with Vitest
+- `@storybook/addon-mcp` - MCP server integration for AI assistance
 
-**Stories:**
-- `src/components/ui/button.stories.tsx` - shadcn Button variants
-- `src/components/SearchForm.stories.tsx` - SearchForm states
+**Stories Coverage:**
+- 47+ story files across all components
+- **UI Components** (`src/components/ui/*.stories.tsx`):
+  - shadcn UI component variants (button, card, badge, table, select, etc.)
+- **Layout Components**:
+  - `EmptyState.stories.tsx`, `LoadingState.stories.tsx`, `ErrorState.stories.tsx`
+  - `ThemeToggle.stories.tsx`, `StatsCard.stories.tsx`, `MainTabs.stories.tsx`
+- **User Components**:
+  - `UserHeader.stories.tsx`, `UserStats.stories.tsx`, `UserAuthenticity.stories.tsx`
+  - `RecentActivity.stories.tsx`, `ContributionHistory.stories.tsx`
+- **Statistics Components**:
+  - `StatsOverview.stories.tsx`, `ActivityChart.stories.tsx`, `CommitChart.stories.tsx`
+  - `LanguageChart.stories.tsx`
+- **Repository Components**:
+  - `RepositoryCard.stories.tsx`, `RepositoryList.stories.tsx`, `RepositoryTable.stories.tsx`
+  - `RepositoryFilters.stories.tsx`, `RepositorySorting.stories.tsx`, `RepositoryPagination.stories.tsx`
+  - `RepositoryEmpty.stories.tsx`
+- **Form Components**:
+  - `SearchForm.stories.tsx`
 
 **Important:** Run `npm run build-storybook` to generate `storybook-static/index.json` (required for Storybook MCP server)
 
 ## MCP Servers
 
-Project supports 4 MCP servers for AI-assisted development:
+Project supports 6 MCP servers for AI-assisted development:
 
-1. **Playwright MCP** - E2E test automation
+1. **Playwright MCP** - E2E test automation and browser testing
 2. **Storybook MCP** - Component documentation (requires `npm run build-storybook` first)
-3. **shadcn UI MCP** - UI component library docs
+3. **shadcn UI MCP** - UI component library docs and API reference
 4. **Vite MCP** - Built-in via `vite-plugin-mcp@0.2.5` (auto-runs with dev server)
+5. **Context7 MCP** - Library documentation lookup (Apollo, Recharts, date-fns, etc.)
+6. **Graphiti Memory MCP** - Project knowledge persistence and decision tracking
 
 **Setup Guide:** `docs/mcp-setup.md`
 **Verification:** `docs/mcp-verification-checklist.md`
 
-**Storybook MCP Note:** Must build Storybook before MCP can index components
+**Important Notes:**
+- Storybook MCP requires `npm run build-storybook` before component indexing
+- Context7 MCP helps query external library documentation without web search
+- Graphiti Memory MCP maintains conversation context across sessions
 
 ## Build Configuration
 
@@ -350,10 +405,14 @@ Project supports 4 MCP servers for AI-assisted development:
 ## Git Workflow
 
 **Main Branches:**
-- `alt-main` - main branch for PRs
-- `ui-main` - current working branch
+- `alt-main` - main branch for PRs and active development
 
 **Commit Convention:** Standard descriptive commits (no strict convention enforced)
+
+**Previous Branch Structure (Deprecated):**
+- ~~`alt-main`~~ - previous main branch
+- ~~`ui-main`~~ - previous working branch
+- Now consolidated to `main` for simplicity
 
 ## Common Patterns
 
@@ -417,10 +476,39 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 ## Documentation
 
 **Project Docs:** `docs/` directory
+
+**Core Documentation:**
 - `mcp-setup.md` - MCP server installation guide
 - `mcp-verification-checklist.md` - MCP testing procedures
+- `architecture.md` - System architecture overview
+- `component-development.md` - Component development patterns
+- `testing-guide.md` - Testing strategy and best practices
 
-**Inline Docs:** Minimal JSDoc (0% coverage currently)
+**Technical Guides:**
+- `apollo-client-guide.md` - Apollo Client setup and usage
+- `graphql-api.md` - GraphQL API integration
+- `typescript-guide.md` - TypeScript patterns and conventions
+- `components-guide.md` - Component library overview
+- `hooks-documentation.md` - Custom hooks reference
+
+**Technology-Specific:**
+- `react-19-features.md` - React 19 feature usage
+- `tailwind-v4-migration.md` - Tailwind CSS v4 migration guide
+- `dependencies.md` - Dependency management
+
+**Strategy & Planning:**
+- `api-strategy.md` - API integration strategy
+- `api-reference.md` - API endpoint documentation
+- `metrics-explanation.md` - Authenticity metrics calculation
+- `IMPLEMENTATION_PLAN_HYBRID.md` - Feature implementation roadmap
+- `REFACTORING_MASTER_PLAN.md` - Code refactoring strategy
+- `DEPLOYMENT_STRATEGY.md` - Deployment and release process
+- `ROLLBACK_PLAN.md` - Emergency rollback procedures
+- `PERFORMANCE_BENCHMARKS.md` - Performance metrics
+- `DOCUMENTATION_CLEANUP_REPORT.md` - Documentation maintenance log
+- `baggs.md` - Bug tracking
+
+**Inline Docs:** JSDoc comments in Apollo provider, hooks, and utility functions
 
 **Storybook:** Interactive component documentation at http://localhost:6006
 
