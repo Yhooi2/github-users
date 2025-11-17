@@ -105,6 +105,13 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
     }
 
     async function fetchYears() {
+      // Null guard: Ensure user exists and has valid createdAt
+      if (!profileData?.user?.createdAt) {
+        console.error('No user found or invalid createdAt')
+        setYearLoading(false)
+        return
+      }
+
       try {
         setYearLoading(true)
 
