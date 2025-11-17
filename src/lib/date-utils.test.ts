@@ -74,8 +74,8 @@ describe('date-utils', () => {
 
       ranges.forEach((range) => {
         const fromDate = new Date(range.from)
-        expect(fromDate.getMonth()).toBe(0) // January
-        expect(fromDate.getDate()).toBe(1)
+        expect(fromDate.getUTCMonth()).toBe(0) // January
+        expect(fromDate.getUTCDate()).toBe(1)
       })
     })
 
@@ -85,8 +85,8 @@ describe('date-utils', () => {
 
       pastYears.forEach((range) => {
         const toDate = new Date(range.to)
-        expect(toDate.getMonth()).toBe(11) // December
-        expect(toDate.getDate()).toBe(31)
+        expect(toDate.getUTCMonth()).toBe(11) // December
+        expect(toDate.getUTCDate()).toBe(31)
       })
     })
 
@@ -96,7 +96,7 @@ describe('date-utils', () => {
       // Should still start from Jan 1 of creation year
       const firstYear = ranges[0]
       expect(firstYear.year).toBe(2022)
-      expect(new Date(firstYear.from).getMonth()).toBe(0) // January
+      expect(new Date(firstYear.from).getUTCMonth()).toBe(0) // January
     })
 
     it('returns empty array for invalid date', () => {
@@ -111,8 +111,8 @@ describe('date-utils', () => {
       expect(year2024).toBeDefined()
       // 2024 is a leap year, but our logic uses Dec 31 regardless
       const toDate = new Date(year2024!.to)
-      expect(toDate.getDate()).toBe(31)
-      expect(toDate.getMonth()).toBe(11)
+      expect(toDate.getUTCDate()).toBe(31)
+      expect(toDate.getUTCMonth()).toBe(11)
     })
   })
 
