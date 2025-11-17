@@ -423,8 +423,10 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 **Inline Docs:** Minimal JSDoc (0% coverage currently)
 
 **Storybook:** Interactive component documentation at http://localhost:6006
-- При поиске информации о проекте для ее получения используй мсп графити мемори при выявлении несоответсвия всегда обновляй графити мемори!
-- При поиске информации о проекте для ее получения используй мсп графити мемори при выявлении несоответсвия всегда обновляй графити мемори!
-- Всегда сначала проверяй память перед ответом на вопросы о проекте.
-- У меня подключен Graphiti memory MCP. Пожалуйста, всегда проверяй 
-существующую память перед ответом и сохраняй важную информацию о проекте.
+
+## Graphiti Memory Integration
+
+This project uses Graphiti Memory MCP for knowledge management:
+- Always check existing memory before responding to project questions
+- Save important project information to memory
+- Update memory when inconsistencies are detected
