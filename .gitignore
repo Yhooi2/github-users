@@ -30,3 +30,9 @@ dist-ssr
 
 *storybook.log
 storybook-static
+
+# Testing artifacts
+coverage
+test-results
+playwright-report
+.nyc_output
