@@ -13,27 +13,16 @@
 import React from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { setContext } from '@apollo/client/link/context';
 import { toast } from 'sonner';
 
-// 1. HTTP link to GraphQL endpoint
+// 1. HTTP link to GraphQL endpoint (via backend proxy)
 const httpLink = createHttpLink({
-  uri: 'https://api.github.com/graphql', // replace with your GraphQL server
+  uri: '/api/github-proxy', // Proxy to GitHub API (token secured on server)
 });
 
-// 2. Auth middleware: adds Authorization header with token
-const authLink = setContext((_, { headers }) => {
-  const envToken = import.meta.env.VITE_GITHUB_TOKEN;
-  const storedToken = localStorage.getItem('github_token');
-  const token = envToken || storedToken;
-  return {
-    headers: {
-      ...headers,
-      // Attach token if available
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
-});
+// 2. Auth middleware: NO LONGER NEEDED (token handled by backend proxy)
+// Token is now securely stored on server and added by /api/github-proxy
+// This prevents token exposure in client bundle
 
 // 3. Global error handler with onError
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -61,8 +50,8 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// 4. Combine links: errorLink -> authLink -> httpLink
-const link = ApolloLink.from([errorLink, authLink, httpLink]);
+// 4. Combine links: errorLink -> httpLink (authLink removed for security)
+const link = ApolloLink.from([errorLink, httpLink]);
 
 // 5. Instantiate ApolloClient with cache and link chain
 const client = new ApolloClient({
