@@ -404,13 +404,8 @@ Project supports 6 MCP servers for AI-assisted development:
 
 ## Git Workflow
 
-**Main Branch:**
-- `main` - default branch for PRs and production deployments
-
-**Feature Branches:**
-- Use descriptive branch names (e.g., `claude/feature-name-sessionId`)
-- Create feature branches from `main`
-- Merge back to `main` via pull requests
+**Main Branches:**
+- `alt-main` - main branch for PRs and active development
 
 **Commit Convention:** Standard descriptive commits (no strict convention enforced)
 
