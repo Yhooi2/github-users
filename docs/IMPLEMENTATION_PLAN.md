@@ -592,100 +592,77 @@ curl -X POST https://your-app.vercel.app/api/github-proxy \
 
 ---
 
-## Phase 1: GraphQL Multi-Query Architecture
+## Phase 1: GraphQL Enhancements for New Metrics
 
 **Priority:** P0 (Critical)
 
-**Goal:** Fetch year-by-year data from account creation to now (instead of fixed 3 years)
+**Time:** 2 days (simplified from original 3 days)
 
-**Note:** Current `date-helpers.ts` has `getThreeYearRanges()` - we'll extend it to `generateYearRanges(createdAt)` for dynamic year calculation.
+**Goal:** Extend existing `GET_USER_INFO` query with fields needed for Fraud Detection, Collaboration metrics, and Code Health
 
-### Step 1.1: Date Utilities
-
-**File:** `src/lib/date-utils.ts`
-
-```typescript
-export interface YearRange {
-  year: number
-  from: string
-  to: string
-  label: string
-}
-
-/**
- * Generate year ranges from account creation to now
- */
-export function generateYearRanges(createdAt: string): YearRange[] {
-  const created = new Date(createdAt)
-  const now = new Date()
-
-  const startYear = created.getFullYear()
-  const currentYear = now.getFullYear()
-
-  const ranges: YearRange[] = []
-
-  for (let year = startYear; year <= currentYear; year++) {
-    const from = new Date(year, 0, 1)
-    const to = year === currentYear
-      ? now
-      : new Date(year, 11, 31, 23, 59, 59)
-
-    ranges.push({
-      year,
-      from: from.toISOString(),
-      to: to.toISOString(),
-      label: year.toString(),
-    })
-  }
-
-  return ranges
-}
-
-export function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
-```
-
-**Test:** `src/lib/date-utils.test.ts`
-
-```typescript
-import { describe, it, expect } from 'vitest'
-import { generateYearRanges } from './date-utils'
-
-describe('generateYearRanges', () => {
-  it('generates ranges from creation to now', () => {
-    const ranges = generateYearRanges('2022-01-15T00:00:00Z')
-
-    expect(ranges.length).toBeGreaterThan(2)
-    expect(ranges[0].year).toBe(2022)
-    expect(ranges[ranges.length - 1].year).toBe(new Date().getFullYear())
-  })
-
-  it('handles current year correctly', () => {
-    const ranges = generateYearRanges('2025-01-01T00:00:00Z')
-    const currentYear = ranges.find(r => r.year === 2025)
-
-    expect(currentYear).toBeDefined()
-    expect(new Date(currentYear!.to).getFullYear()).toBe(2025)
-  })
-})
-```
+**Note:** ✅ **No new hook needed!** Current `useQueryUser()` already works perfectly. Just extend the GraphQL query with new fields.
 
 ---
 
-### Step 1.2: GraphQL Queries
+### What NOT to Do (Simplification from Original Plan)
 
-**File:** `src/apollo/queries/userProfile.ts`
+**❌ DO NOT create year-by-year queries** - Overkill for metrics, rate limit risk
+**❌ DO NOT create useUserAnalytics hook** - Duplicates existing useQueryUser
+**❌ DO NOT use Promise.all for parallel queries** - Can hit GitHub rate limits
+**❌ DO NOT create generateYearRanges()** - Not needed for current metrics
 
+**✅ DO use existing useQueryUser()** - Already fetches user, repos, contributions
+**✅ DO extend GET_USER_INFO** - Add new fields to existing query
+**✅ DO reuse date-helpers.ts** - getThreeYearRanges() is sufficient
+
+---
+
+### Step 1.1: Extend GET_USER_INFO Query
+
+**Goal:** Add fields needed for Fraud Detection, Collaboration metrics, and Code Health
+
+**File:** `src/apollo/queriers.ts` (existing file)
+
+**Current query** (already exists):
 ```typescript
-import { gql } from '@apollo/client'
+export const GET_USER_INFO = gql`
+  query GetUser($login: String!, $from: DateTime!, $to: DateTime!, ...) {
+    user(login: $login) {
+      # Basic profile fields ✅ already fetched
 
-export const GET_USER_PROFILE = gql`
-  query GetUserProfile($login: String!) {
+      contributionsCollection(from: $from, to: $to) {
+        totalCommitContributions ✅
+        commitContributionsByRepository(maxRepositories: 100) {
+          contributions {
+            totalCount ✅
++           # 🆕 ADD for Fraud Detection:
++           occurredAt  # ← Commit timestamps for backdating detection
+          }
+          repository {
+            name ✅
+            # ...existing fields
+          }
+        }
+      }
+
+      repositories(first: 100, ownerAffiliations: OWNER) {
+        nodes {
+          # ...existing fields ✅
+        }
+      }
+    }
+  }
+`;
+```
+
+**Extended query** (add these fields):
+
+```diff
+export const GET_USER_INFO = gql`
+  query GetUser($login: String!, $from: DateTime!, $to: DateTime!,
+                $year1From: DateTime!, $year1To: DateTime!,
+                $year2From: DateTime!, $year2To: DateTime!,
+                $year3From: DateTime!, $year3To: DateTime!) {
     user(login: $login) {
       id
       login
@@ -694,38 +671,45 @@ export const GET_USER_PROFILE = gql`
       bio
       url
       location
-      createdAt
++     createdAt  # 🆕 For backdating detection (commits before account creation)
       followers { totalCount }
       following { totalCount }
-      gists { totalCount }
-      repositories(first: 1, ownerAffiliations: OWNER) {
-        totalCount
-      }
-    }
-  }
-`
-```
 
-**File:** `src/apollo/queries/yearContributions.ts`
-
-```typescript
-import { gql } from '@apollo/client'
-
-export const GET_YEAR_CONTRIBUTIONS = gql`
-  query GetYearContributions(
-    $login: String!
-    $from: DateTime!
-    $to: DateTime!
-  ) {
-    user(login: $login) {
       contributionsCollection(from: $from, to: $to) {
         totalCommitContributions
         totalIssueContributions
         totalPullRequestContributions
-        totalPullRequestReviewContributions
+
++       # 🆕 ADD for Collaboration metrics:
++       pullRequestReviewContributions(first: 100) {
++         totalCount
++         nodes {
++           pullRequest {
++             title
++             repository { nameWithOwner }
++           }
++           occurredAt
++         }
++       }
++
++       issueContributions(first: 100) {
++         totalCount
++         nodes {
++           issue {
++             title
++             repository { nameWithOwner }
++             comments { totalCount }
++           }
++           occurredAt
++         }
++       }
 
         commitContributionsByRepository(maxRepositories: 100) {
-          contributions { totalCount }
+          contributions {
+            totalCount
++           # 🆕 ADD for Fraud Detection (backdating, temporal anomaly):
++           occurredAt  # Commit timestamps
+          }
           repository {
             name
             owner { login }
@@ -738,131 +722,249 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
             pushedAt
             isFork
             isArchived
+
++           # 🆕 ADD for Code Throughput (Fraud Detection):
++           defaultBranchRef {
++             target {
++               ... on Commit {
++                 history(first: 100) {
++                   edges {
++                     node {
++                       additions       # Lines added
++                       deletions       # Lines deleted
++                       committedDate   # Commit timestamp
++                       authoredDate    # Author timestamp (can differ!)
++                       author {
++                         email
++                         user { login }
++                       }
++                     }
++                   }
++                 }
++               }
++             }
++           }
           }
+        }
+      }
+
+      repositories(first: 100, ownerAffiliations: OWNER) {
+        totalCount
+        nodes {
+          name
+          owner { login }
+          stargazerCount
+          forkCount
+          primaryLanguage { name }
+          url
+          description
+          createdAt
+          updatedAt
+          pushedAt
+          isFork
+          isArchived
+          isPrivate
+          diskUsage
+
++         # 🆕 ADD for Code Health Detection:
++         object(expression: "HEAD:") {
++           ... on Tree {
++             entries {
++               name   # Check for .github/, test/, .eslintrc, etc.
++               type   # blob or tree
++             }
++           }
++         }
+
+          # ...existing language stats
         }
       }
     }
   }
-`
+`;
+```
+
+**Key Fields Added:**
+
+1. **For Fraud Detection (Phase 1.5):**
+   - `user.createdAt` - Account creation date (detect backdating)
+   - `contributions.occurredAt` - Commit timestamps
+   - `commit.authoredDate` vs `commit.committedDate` - Detect timestamp manipulation
+   - `commit.additions` / `commit.deletions` - Detect empty commits (0/0)
+   - `repository.isFork` - Detect fork farming
+   - `author.email` - Detect commit author patterns
+
+2. **For Collaboration Metrics (Phase 2 - Activity v2.0):**
+   - `pullRequestReviewContributions` - PR review activity
+   - `issueContributions` - Issue discussions, comments
+
+3. **For Code Health (Phase 2 - Quality v2.0):**
+   - `object(expression: "HEAD:")` - Repository file tree
+   - Check for: `.github/`, `test/`, `.eslintrc`, `tsconfig.json`, `README.md`, etc.
+
+---
+
+### Step 1.2: Update TypeScript Types
+
+**File:** `src/apollo/github-api.types.ts` (existing file)
+
+**Add new types:**
+
+```typescript
+export interface CommitNode {
+  additions: number;
+  deletions: number;
+  committedDate: string;
+  authoredDate: string;
+  author: {
+    email: string;
+    user: {
+      login: string;
+    } | null;
+  };
+}
+
+export interface PullRequestReviewContribution {
+  pullRequest: {
+    title: string;
+    repository: {
+      nameWithOwner: string;
+    };
+  };
+  occurredAt: string;
+}
+
+export interface IssueContribution {
+  issue: {
+    title: string;
+    repository: {
+      nameWithOwner: string;
+    };
+    comments: {
+      totalCount: number;
+    };
+  };
+  occurredAt: string;
+}
+
+export interface RepositoryTreeEntry {
+  name: string;
+  type: 'blob' | 'tree';
+}
+
+// Extend existing User type:
+export interface User {
+  // ...existing fields
+  createdAt: string; // 🆕 Add this
+}
+
+// Extend existing Repository type:
+export interface Repository {
+  // ...existing fields
+  object?: {  // 🆕 Add this (optional because some repos might be empty)
+    entries: RepositoryTreeEntry[];
+  };
+  defaultBranchRef?: {  // 🆕 Add this
+    target: {
+      history: {
+        edges: Array<{
+          node: CommitNode;
+        }>;
+      };
+    };
+  };
+}
+
+// Extend existing ContributionsCollection type:
+export interface ContributionsCollection {
+  // ...existing fields
+  pullRequestReviewContributions: {  // 🆕 Add this
+    totalCount: number;
+    nodes: PullRequestReviewContribution[];
+  };
+  issueContributions: {  // 🆕 Add this
+    totalCount: number;
+    nodes: IssueContribution[];
+  };
+}
 ```
 
 ---
 
-### Step 1.3: Orchestration Hook
+### Step 1.3: Verify useQueryUser() Compatibility
 
-**File:** `src/hooks/useUserAnalytics.ts`
+**Current hook:** `src/apollo/useQueryUser.ts` (already exists)
+
+**Good news:** ✅ **No changes needed!** The hook already:
+- Fetches user, repositories, contributions ✅
+- Uses variables from `useMemo` ✅
+- Has 3 time ranges (year1, year2, year3) ✅
+- Works with Apollo cache ✅
+
+**How new fields will work:**
 
 ```typescript
-import { useState, useEffect } from 'react'
-import { useQuery, useApolloClient } from '@apollo/client'
-import { GET_USER_PROFILE } from '@/apollo/queries/userProfile'
-import { GET_YEAR_CONTRIBUTIONS } from '@/apollo/queries/yearContributions'
-import { generateYearRanges } from '@/lib/date-utils'
+// Existing useQueryUser hook:
+const { data, loading } = useQueryUser(username);
 
-export interface YearData {
-  year: number
-  totalCommits: number
-  totalIssues: number
-  totalPRs: number
-  ownedRepos: Repository[]
-  contributions: Repository[]
-}
+// New fields automatically available:
+const fraud = detectFraudPatterns(
+  data.user.createdAt,  // 🆕 New field
+  data.commits  // Extract from defaultBranchRef.target.history
+);
 
-export function useUserAnalytics(username: string) {
-  const client = useApolloClient()
-  const [timeline, setTimeline] = useState<YearData[]>([])
-  const [yearLoading, setYearLoading] = useState(true)
+const activity = calculateActivityScore({
+  codeChanges: data.commits,  // 🆕 additions + deletions
+  prReviews: data.contributionsCollection.pullRequestReviewContributions,  // 🆕
+  issues: data.contributionsCollection.issueContributions,  // 🆕
+  // ...existing data
+});
 
-  // Step 1: Get user profile
-  const {
-    data: profileData,
-    loading: profileLoading,
-    error: profileError
-  } = useQuery(GET_USER_PROFILE, {
-    variables: { login: username },
-    skip: !username,
-    context: { cacheKey: `user:${username}:profile` }
-  })
-
-  // Step 2: Fetch yearly data
-  useEffect(() => {
-    if (!profileData || profileLoading) return
-
-    async function fetchYears() {
-      try {
-        const createdAt = profileData.user.createdAt
-        const yearRanges = generateYearRanges(createdAt)
-
-        // Parallel queries
-        const yearPromises = yearRanges.map(async ({ year, from, to }) => {
-          const result = await client.query({
-            query: GET_YEAR_CONTRIBUTIONS,
-            variables: { login: username, from, to },
-            context: { cacheKey: `user:${username}:year:${year}` }
-          })
-
-          const collection = result.data.user.contributionsCollection
-          const repos = collection.commitContributionsByRepository
-
-          return {
-            year,
-            totalCommits: collection.totalCommitContributions,
-            totalIssues: collection.totalIssueContributions,
-            totalPRs: collection.totalPullRequestContributions,
-            ownedRepos: repos.filter(r => r.repository.owner.login === username),
-            contributions: repos.filter(r => r.repository.owner.login !== username),
-          }
-        })
-
-        const years = await Promise.all(yearPromises)
-        setTimeline(years.sort((a, b) => b.year - a.year))
-        setYearLoading(false)
-      } catch (error) {
-        console.error('Year data fetch error:', error)
-        setYearLoading(false)
-      }
-    }
-
-    fetchYears()
-  }, [profileData, profileLoading, username, client])
-
-  return {
-    profile: profileData?.user,
-    timeline,
-    loading: profileLoading || yearLoading,
-    error: profileError,
-  }
-}
+const quality = calculateQualityScore({
+  hasCI: data.repositories.some(r => r.object?.entries.some(e => e.name === '.github')),  // 🆕
+  hasTests: data.repositories.some(r => r.object?.entries.some(e => e.name === 'test')),  // 🆕
+  // ...existing data
+});
 ```
 
-**Deliverables:**
-- [ ] Date utils created + tested
-- [ ] GraphQL queries defined
-- [ ] `useUserAnalytics` hook working (parallel queries with Promise.all)
-- [ ] Cache keys for each year (`user:{username}:year:{year}`)
-- [ ] Works with accounts of all ages (2 years old to 10+ years old)
-- [ ] `useQueryUser` still works (if using Migration Option A)
+**Test compatibility:**
 
-**Estimated Time:** **3 days** (reduced from 3-5 days - date helpers exist, Apollo Client configured)
+```bash
+# 1. Update query in queriers.ts (add new fields)
+# 2. Update types in github-api.types.ts
+# 3. Run existing tests:
+npm test src/apollo/useQueryUser.test.ts
+# Should pass! Hook doesn't need changes, just returns more data now.
 
-### Migration Strategy Decision Point
+# 4. Test query manually (GraphiQL):
+# Use GitHub GraphQL Explorer: https://docs.github.com/en/graphql/overview/explorer
+# Paste updated GET_USER_INFO query
+# Verify all new fields return data
+```
 
-Choose one approach before starting Phase 1:
+---
 
-**Option A: Incremental (Lower Risk)** ✅ Recommended
-- Keep existing `useQueryUser()` hook
-- Add new `useUserAnalytics()` hook
-- Use `useQueryUser` for existing components (UserProfile, etc.)
-- Use `useUserAnalytics` for new components (QuickAssessment, Timeline)
-- Gradual migration over time
+### Deliverables
 
-**Option B: Full Replacement (Cleaner Architecture)**
-- Replace `useQueryUser()` entirely with `useUserAnalytics()`
-- All components use new hook
-- More testing required
-- Better long-term architecture
+**Phase 1 Checklist:**
+- [ ] `GET_USER_INFO` extended with new fields (see diff above)
+- [ ] Types updated in `github-api.types.ts`
+- [ ] Query tested manually in GraphiQL (https://docs.github.com/en/graphql/overview/explorer)
+- [ ] Existing `useQueryUser` tests still pass ✅
+- [ ] New fields accessible in components (verify with console.log)
+- [ ] No breaking changes to existing functionality
+- [ ] Documentation: Comment in code explaining why each field is added
 
-**Recommendation:** Start with Option A for Phase 1-4, migrate to Option B in Phase 6 (optional).
+**Time:** **2 days** (simplified from 3 days - no new hook, no year-by-year complexity)
+
+**Success Criteria:**
+- All new fields return valid data for test users (torvalds, tj, sindresorhus)
+- `user.createdAt` exists and is ISO date string
+- `pullRequestReviewContributions.totalCount` is number
+- `commit.additions` and `commit.deletions` are numbers
+- `repository.object.entries` contains file/folder names
+- Existing tests pass (99.85% pass rate maintained)
+- Query response time < 2s (same as current query)
 
 ---
 
