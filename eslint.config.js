@@ -1,3 +1,6 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
 import js from '@eslint/js'
 import prettier from 'eslint-config-prettier'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -9,7 +12,7 @@ import tseslint from 'typescript-eslint'
 
 
 export default tseslint.config([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'storybook-static']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -22,7 +25,10 @@ export default tseslint.config([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+    },
   },
   ...tailwind.configs["flat/recommended"],
-  prettier.configs.recommended
-])
+  prettier
+], storybook.configs["flat/recommended"]);

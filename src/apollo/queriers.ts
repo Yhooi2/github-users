@@ -1,5 +1,28 @@
 import { gql } from "@apollo/client";
 
+/**
+ * GraphQL query for fetching comprehensive GitHub user information
+ *
+ * This query retrieves:
+ * - User profile (name, bio, avatar, location, etc.)
+ * - Connection counts (followers, following, gists)
+ * - Yearly contribution statistics (last 3 years)
+ * - Contribution details for a specified date range
+ * - Repository list with metadata (max 100 repos per query)
+ *
+ * @remarks
+ * The query uses 9 date-time variables to support multiple time ranges:
+ * - $from, $to: Main contribution period
+ * - $year1From, $year1To: Year 1 (current-2 years)
+ * - $year2From, $year2To: Year 2 (current-1 year)
+ * - $year3From, $year3To: Year 3 (current year)
+ *
+ * Year aliases (year1, year2, year3) use generic names for future compatibility.
+ * Years are calculated dynamically by date-helpers.ts.
+ *
+ * @see {@link GitHubGraphQLResponse} for the response type definition
+ * @see {@link useQueryUser} for the hook that uses this query
+ */
 export const GET_USER_INFO= gql`query GetUser($login: String!, 
     $from: DateTime!, 
     $to: DateTime!,
@@ -27,13 +50,13 @@ export const GET_USER_INFO= gql`query GetUser($login: String!,
       gists {
         totalCount
       }
-      contrib2023: contributionsCollection(from: $year1From, to: $year1To) {
+      year1: contributionsCollection(from: $year1From, to: $year1To) {
         totalCommitContributions
       }
-      contrib2024: contributionsCollection(from: $year2From, to: $year2To) {
+      year2: contributionsCollection(from: $year2From, to: $year2To) {
         totalCommitContributions
       }
-      contrib2025: contributionsCollection(from: $year3From, to: $year3To) {
+      year3: contributionsCollection(from: $year3From, to: $year3To) {
         totalCommitContributions
       }
       createdAt
@@ -48,7 +71,7 @@ export const GET_USER_INFO= gql`query GetUser($login: String!,
         }
       }
     }
-    repositories(first: 100, affiliations: OWNER) {
+    repositories(first: 100, ownerAffiliations: OWNER) {
       totalCount  # Total number of repositories
       pageInfo {
         endCursor  # Cursor for next page
@@ -61,6 +84,51 @@ export const GET_USER_INFO= gql`query GetUser($login: String!,
         forkCount
         stargazerCount
         url  # For cloning (if precise LOC is needed)
+
+        # Authenticity detection fields
+        isFork  # Is this a forked repository?
+        isTemplate  # Is this a template repository?
+        parent {
+          # Parent repository info for forks
+          name
+          owner {
+            login
+          }
+          url
+        }
+
+        # Activity timestamps
+        createdAt  # Repository creation date
+        updatedAt  # Last update time
+        pushedAt  # Last push time (null if no pushes)
+
+        # Additional statistics
+        diskUsage  # Repository size in KB
+        isArchived  # Is archived/read-only?
+        homepageUrl  # Project homepage
+
+        # Engagement metrics
+        watchers {
+          totalCount  # Number of watchers
+        }
+        issues {
+          totalCount  # Total issue count
+        }
+
+        # Topics/tags
+        repositoryTopics(first: 20) {
+          nodes {
+            topic {
+              name  # Topic name (e.g., "react", "typescript")
+            }
+          }
+        }
+
+        # License information
+        licenseInfo {
+          name  # License name (e.g., "MIT License")
+        }
+
         defaultBranchRef {
           target {
             ... on Commit {

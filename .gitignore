@@ -27,3 +27,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+*storybook.log
+storybook-static
+
+# Testing artifacts
+coverage
+test-results
+playwright-report
+.nyc_output

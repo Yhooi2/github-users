@@ -1,58 +1,97 @@
-import { UserBasicInfo } from "./UserBasicInfo"
-import { UserStats } from "./UserStats"
-import { ContributionsChart } from "./ContributionsChart"
-import { TopRepositories } from "./TopRepositories"
-import { LanguageStats } from "./LanguageStats"
-import useQueryUser from "@/apollo/useQueryUser"
+import useQueryUser from '@/apollo/useQueryUser';
+import { getYearLabels } from '@/apollo/date-helpers';
+import { LoadingState, ErrorState, EmptyState } from '@/components/layout';
+import { UserHeader } from '@/components/user/UserHeader';
+import { UserStats } from '@/components/user/UserStats';
+import { ContributionHistory } from '@/components/user/ContributionHistory';
+import { RecentActivity } from '@/components/user/RecentActivity';
+import { UserAuthenticity } from '@/components/user/UserAuthenticity';
 
-type UserProfileProps = {
-    userName: string
+type Props = {
+  userName: string;
+};
+
+/**
+ * User profile component that displays comprehensive GitHub user information
+ *
+ * Fetches and displays user data from GitHub GraphQL API using Apollo Client.
+ * Handles loading, error, and not-found states automatically.
+ *
+ * Displays:
+ * - User header with avatar, name, bio, location
+ * - Stats grid (repositories, followers, following, gists)
+ * - Authenticity score with detailed breakdown (NEW FEATURE)
+ * - 3-year contribution history
+ * - Recent activity by repository
+ *
+ * @param props - Component props
+ * @param props.userName - GitHub username to fetch and display
+ * @returns User profile component with loading/error/data states
+ *
+ * @example
+ * ```typescript
+ * function App() {
+ *   const [userName, setUserName] = useState('octocat')
+ *
+ *   return <UserProfile userName={userName} />
+ * }
+ * ```
+ */
+function UserProfile({ userName }: Props) {
+  const { data, loading, error, refetch } = useQueryUser(userName);
+  const yearLabels = getYearLabels();
+
+  if (loading) {
+    return <LoadingState variant="profile" message="Loading user profile..." />;
+  }
+
+  if (error) {
+    return <ErrorState message={error.message} onRetry={refetch} />;
+  }
+
+  if (!data || !data.user) {
+    return <EmptyState title="User Not Found" description="The requested GitHub user could not be found." icon="user" />;
+  }
+
+  const user = data.user;
+
+  return (
+    <div className="mx-auto w-full max-w-4xl space-y-6 p-6">
+      <UserHeader
+        user={{
+          avatarUrl: user.avatarUrl,
+          name: user.name,
+          login: user.login,
+          bio: user.bio,
+          location: user.location,
+          url: user.url,
+          createdAt: user.createdAt,
+        }}
+      />
+
+      <UserStats
+        stats={{
+          repositories: user.repositories.totalCount,
+          followers: user.followers.totalCount,
+          following: user.following.totalCount,
+          gists: user.gists.totalCount,
+        }}
+      />
+
+      <UserAuthenticity repositories={user.repositories.nodes} />
+
+      <ContributionHistory
+        contributions={{
+          year1: user.year1,
+          year2: user.year2,
+          year3: user.year3,
+        }}
+        yearLabels={yearLabels}
+      />
+
+      <RecentActivity repositories={user.contributionsCollection.commitContributionsByRepository} />
+    </div>
+  );
 }
 
-export function UserProfile({ userName }: UserProfileProps) {
-    const { data, loading, error } = useQueryUser(userName)
-    
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-64">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading user profile...</p>
-                </div>
-            </div>
-        )
-    }
-    
-    if (error) {
-        console.log(error)
-        return (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                <div className="text-red-600 text-2xl mb-2">⚠️</div>
-                <p className="text-red-800 font-medium">Error loading profile</p>
-                <p className="text-red-600 text-sm mt-1">{error?.message}</p>
-            </div>
-        )
-    }
-    
-    if (!data || !data.user) {
-        return (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-                <div className="text-yellow-600 text-2xl mb-2">🔍</div>
-                <p className="text-yellow-800 font-medium">User Not Found</p>
-                <p className="text-yellow-600 text-sm mt-1">The user "{userName}" could not be found on GitHub</p>
-            </div>
-        )
-    }
-
-    return (
-        <div className="max-w-6xl mx-auto p-6 space-y-6">
-            <UserBasicInfo user={data.user} />
-            <UserStats user={data.user} />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <ContributionsChart user={data.user} />
-                <TopRepositories user={data.user} />
-            </div>
-            <LanguageStats user={data.user} />
-        </div>
-    )
-}
+export default UserProfile;

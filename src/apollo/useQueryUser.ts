@@ -4,11 +4,40 @@ import { getQueryDates, getThreeYearRanges } from "./date-helpers";
 import { GET_USER_INFO } from "./queriers";
 import type { GitHubGraphQLResponse } from "./github-api.types";
 
+/**
+ * Custom React hook for fetching GitHub user data via GraphQL
+ *
+ * Fetches comprehensive user profile including:
+ * - Basic profile information (name, bio, avatar, location)
+ * - Connection counts (followers, following, gists)
+ * - Contribution statistics over the last 3 years
+ * - Repository list with metadata (max 100 repos)
+ *
+ * The hook automatically computes date range variables and skips the query
+ * when the login parameter is empty.
+ *
+ * @param login - GitHub username to query
+ * @param daysBack - Number of days to fetch contribution data (default: 365)
+ * @returns Apollo useQuery result with data, loading, and error states
+ *
+ * @example
+ * ```typescript
+ * function UserProfile({ userName }: { userName: string }) {
+ *   const { data, loading, error } = useQueryUser(userName)
+ *
+ *   if (loading) return <p>Loading...</p>
+ *   if (error) return <p>Error: {error.message}</p>
+ *   if (!data?.user) return <p>User not found</p>
+ *
+ *   return <h1>{data.user.name}</h1>
+ * }
+ * ```
+ */
 function useQueryUser(login: string, daysBack: number = 365) {
   const variables = useMemo(() => {
     const queryDates = getQueryDates(daysBack);
     const yearRanges = getThreeYearRanges();
-    
+
     return {
       login,
       from: queryDates.from,
@@ -20,7 +49,7 @@ function useQueryUser(login: string, daysBack: number = 365) {
       year3From: yearRanges.year3.from,
       year3To: yearRanges.year3.to,
     };
-  }, [login]);
+  }, [login, daysBack]);
   
     return useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
       variables,
