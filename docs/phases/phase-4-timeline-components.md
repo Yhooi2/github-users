@@ -185,7 +185,7 @@ export function TimelineYear({ year, maxCommits }: TimelineYearProps) {
 
 ```typescript
 import { YearData } from '@/hooks/useUserAnalytics'
-import { RepositoryCard } from '@/components/RepositoryCard'
+import { RepositoryCard } from '@/components/repository'
 import { Badge } from '@/components/ui/badge'
 
 interface YearExpandedViewProps {
@@ -272,7 +272,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 **Enhance RepositoryCard:**
 
-Update `src/components/RepositoryCard.tsx` to accept `type` and `commits` props:
+Update `src/components/repository/RepositoryCard.tsx` to accept `type` and `commits` props:
 
 ```typescript
 interface RepositoryCardProps {

@@ -154,8 +154,8 @@ NOT a greenfield implementation!
 ### Already Installed (Reuse)
 ```json
 {
-  "react": "19.0.0",
-  "vite": "7.0.0",
+  "react": "19.2.0",
+  "vite": "7.1.2",
   "@apollo/client": "3.14.0",
   "recharts": "2.15.4",
   "shadcn/ui": "latest"

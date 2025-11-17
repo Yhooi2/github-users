@@ -36,7 +36,7 @@ Build UI components for displaying metrics and assessments.
 7. MCP Check (optional)
 8. Document learnings
 
-**Template:** Use `src/components/UserAuthenticity.tsx` as UI pattern!
+**Template:** Use `src/components/user/UserAuthenticity.tsx` as UI pattern!
 
 ---
 
