@@ -24,6 +24,139 @@
 - [Deployment Strategy](./DEPLOYMENT_STRATEGY.md)
 - [Metrics Explanation](./metrics-explanation.md)
 
+**Test Documentation:**
+- [Phase 0 Test Results](./PHASE_0_TEST_RESULTS.md) — Backend proxy security validation
+- [Testing Philosophy](./REFACTORING_MASTER_PLAN.md#-testing-philosophy--principles) — Kent C. Dodds principles & Testing Trophy
+- [Component Tests](../src/apollo/ApolloAppProvider.test.tsx) — Apollo Client error handling (13 tests)
+- [Hook Tests](../src/hooks/useUserAnalytics.test.tsx) — Integration tests (5 tests)
+- [Utility Tests](../src/lib/date-utils.test.ts) — Date utilities (21 tests)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ installed
+- GitHub Personal Access Token (see below)
+- Vercel CLI (for local development): `npm i -g vercel`
+
+### 1️⃣ GitHub Token Setup
+
+**⚠️ IMPORTANT:** The token is stored server-side only. It will NEVER be exposed in the client bundle.
+
+#### Step A: Create GitHub Personal Access Token
+
+1. Go to [GitHub Settings → Developer Settings → Personal Access Tokens → Tokens (classic)](https://github.com/settings/tokens)
+2. Click **"Generate new token (classic)"**
+3. Set token name: `GitHub User Analytics`
+4. Set expiration: **No expiration** (or custom)
+5. Select scopes:
+   - ✅ `read:user` - Read user profile data
+   - ✅ `user:email` - Read email addresses (optional but recommended)
+6. Click **"Generate token"**
+7. **COPY THE TOKEN IMMEDIATELY** - you won't see it again!
+
+#### Step B: Configure Token Locally
+
+**Quick Setup:**
+```bash
+# Copy example file
+cp .env.example .env.local
+
+# Edit .env.local and add your token
+# See .env.example for detailed instructions
+```
+
+**Option 1: For Vercel Dev (Recommended)**
+```bash
+# Create .env.local in project root
+echo "GITHUB_TOKEN=ghp_your_token_here" > .env.local
+
+# Start Vercel development server
+vercel dev
+
+# Open http://localhost:3000
+```
+
+**Option 2: For Vite Dev (Client-side only, not recommended for production)**
+```bash
+# Create .env.local in project root
+echo "VITE_GITHUB_TOKEN=ghp_your_token_here" > .env.local
+
+# Start Vite dev server
+npm run dev
+
+# Open http://localhost:5173
+```
+
+**⚠️ Security Note:**
+- `GITHUB_TOKEN` = Backend only (secure, production-ready)
+- `VITE_GITHUB_TOKEN` = Exposed in client bundle (dev only)
+
+For production deployment, use backend token only!
+
+### 2️⃣ Install Dependencies
+
+```bash
+npm install
+```
+
+### 3️⃣ Run Tests
+
+```bash
+# Unit & Integration tests
+npm test
+
+# Watch mode
+npm run test:ui
+
+# Coverage report
+npm run test:coverage
+
+# E2E tests (Playwright)
+npm run test:e2e
+
+# Storybook
+npm run storybook
+```
+
+### 4️⃣ Verify Phase 0 Security
+
+```bash
+# Run backend proxy tests
+npm test -- ApolloAppProvider.test.tsx
+
+# Expected: 13/13 tests passing ✅
+```
+
+### 5️⃣ Deploy to Vercel
+
+```bash
+# Login to Vercel
+vercel login
+
+# Deploy to production
+vercel --prod
+
+# Add GITHUB_TOKEN in Vercel Dashboard:
+# 1. Go to your project → Settings → Environment Variables
+# 2. Add variable:
+#    Name: GITHUB_TOKEN
+#    Value: ghp_your_token_here
+#    Environments: Production, Preview, Development
+# 3. Redeploy to apply changes
+```
+
+### 6️⃣ Verify Production Deployment
+
+1. Open deployed app URL
+2. Search for any GitHub username
+3. Open DevTools → Network tab
+4. Verify request goes to `/api/github-proxy` (NOT `api.github.com`)
+5. Open DevTools → Sources tab
+6. Search for your token → Should find **0 results** ✅
+
 ---
 
 ## ⚠️ Critical Information
