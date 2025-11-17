@@ -350,8 +350,7 @@ Project supports 4 MCP servers for AI-assisted development:
 ## Git Workflow
 
 **Main Branches:**
-- `alt-main` - main branch for PRs
-- `ui-main` - current working branch
+- `alt-main` - main branch for PRs and active development
 
 **Commit Convention:** Standard descriptive commits (no strict convention enforced)
 
