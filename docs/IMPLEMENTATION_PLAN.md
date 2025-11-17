@@ -1764,11 +1764,15 @@ export function useFraudDetection({
 
 ---
 
-## Phase 2: Metrics Calculation System
+## Phase 2: Metrics Calculation System v2.0
 
 **Priority:** P0 (Critical)
 
-**Goal:** Calculate Activity, Impact, Quality, Growth scores
+**Time:** 5 days (increased from 2 days - more complex formulas)
+
+**Dependencies:** Phase 1 (GraphQL enhancements), Phase 1.5 (Fraud Detection)
+
+**Goal:** Implement 4 new metrics with v2.0 formulas + Overall Rank classification
 
 **Note:** Use `src/lib/authenticity.ts` as the **perfect template**! It already has the exact pattern we need:
 - 100-point scoring system ✅
@@ -1776,150 +1780,604 @@ export function useFraudDetection({
 - Category/level labels ✅
 - Metadata tracking ✅
 
-### Metric Formulas
+---
 
-See `docs/metrics-explanation.md` for detailed formulas.
+### Metrics Overview (v1.0 vs v2.0)
 
-**Summary:**
-- **Activity (0-100%)** = Recent commits (40%) + Consistency (30%) + Diversity (30%)
-- **Impact (0-100%)** = Stars (35%) + Forks (20%) + Contributors (15%) + Reach (20%) + Engagement (10%)
-- **Quality (0-100%)** = Originality (30%) + Documentation (25%) + Ownership (20%) + Maturity (15%) + Stack (10%)
-- **Growth (-100% to +100%)** = YoY change in Activity (40%) + Impact (30%) + Skills (30%)
-
-### Reuse from Existing Code
-
-**From `src/lib/statistics.ts`:**
-- ✅ `calculateLanguageStatistics()` - For Quality Stack metric
-- ✅ `getMostActiveRepositories()` - For Timeline top projects
-- ✅ `formatNumber()` - Display helper
-
-**Pattern to Follow (`src/lib/authenticity.ts`):**
-```typescript
-// Existing pattern (COPY THIS!)
-export interface AuthenticityScore {
-  score: number;              // 0-100
-  category: string;           // High/Medium/Low/Suspicious
-  breakdown: {
-    originality: number;      // 0-25
-    activity: number;         // 0-25
-    engagement: number;       // 0-25
-    codeOwnership: number;    // 0-25
-  };
-  flags: string[];
-  metadata: { /* stats */ };
-}
-
-// Apply same pattern to new metrics:
-export interface ActivityMetric {
-  score: number;              // 0-100
-  level: string;              // Low/Moderate/High
-  breakdown: {
-    recentCommits: number;    // 0-40
-    consistency: number;      // 0-30
-    diversity: number;        // 0-30
-  };
-  details: { /* stats */ };
-}
-```
+| Metric | v1.0 Formula (OLD) | v2.0 Formula (NEW) | Key Changes |
+|--------|-------------------|-------------------|-------------|
+| **Activity** | Recent Commits (40) + Consistency (30) + Diversity (30) | **Code Throughput (35)** + Consistency & Rhythm (25) + **Collaboration (20)** + **Project Focus (20)** | ✅ Lines changed instead of commits<br>✅ PR reviews, issues<br>✅ Optimal repos: 2-5 |
+| **Impact** | Stars (35) + Forks (20) + Contributors (15) + Reach (20) + Engagement (10) | Adoption Signal (40) + Community (30) + **Social Proof (log scale) (20)** + Package Stats (10) | ✅ Logarithmic stars (anti-fraud)<br>⚠️ Package stats deferred |
+| **Quality** | **Originality (30)** + Docs (25) + **Ownership (20)** + Maturity (15) + Stack (10) | **Code Health (35)** + Docs (25) + **Maintenance (25)** + Architecture (15) | ✅ CI/CD, testing, linting detection<br>✅ Issue response time |
+| **Growth** | YoY Activity (40) + Impact (30) + Skills (30) | Skill Expansion (40) + Project Evolution (30) + **Learning Patterns (30)** | ✅ Tutorial vs Production detection |
 
 ---
 
-### Step 2.1: Activity Score
+### Step 2.1: Activity Score v2.0 (2 days)
 
 **File:** `src/lib/metrics/activity.ts`
 
+**Formula:**
+```
+Activity Score (0-100) = Code Throughput (35) + Consistency & Rhythm (25) +
+                         Collaboration (20) + Project Focus (20)
+```
+
+**Implementation:**
+
 ```typescript
-import { YearData } from '@/hooks/useUserAnalytics'
+import type { User, Repository, ContributionsCollection, CommitNode } from '@/apollo/github-api.types';
 
-export function calculateActivityScore(timeline: YearData[]): number {
-  if (!timeline.length) return 0
-
-  const last3Months = getLastNMonths(timeline, 3)
-  const last12Months = getLastNMonths(timeline, 12)
-
-  // A. Recent commits (0-40 points)
-  const recentCommits = last3Months.reduce((sum, d) => sum + d.totalCommits, 0)
-  const recentPoints = Math.min((recentCommits / 200) * 40, 40)
-
-  // B. Consistency (0-30 points)
-  const activeMonths = countActiveMonths(last12Months)
-  const consistencyPoints = Math.min((activeMonths / 12) * 30, 30)
-
-  // C. Diversity (0-30 points)
-  const uniqueRepos = countUniqueRepos(last3Months)
-  let diversityPoints = 0
-  if (uniqueRepos >= 1 && uniqueRepos <= 3) diversityPoints = 10
-  else if (uniqueRepos >= 4 && uniqueRepos <= 7) diversityPoints = 20
-  else if (uniqueRepos >= 8 && uniqueRepos <= 15) diversityPoints = 30
-  else if (uniqueRepos > 15) diversityPoints = 25 // too scattered
-
-  return Math.round(recentPoints + consistencyPoints + diversityPoints)
+export interface ActivityScore {
+  score: number; // 0-100
+  level: 'Very Low' | 'Low' | 'Moderate' | 'High' | 'Very High';
+  breakdown: {
+    codeThroughput: number;      // 0-35 points
+    consistencyRhythm: number;   // 0-25 points
+    collaboration: number;       // 0-20 points
+    projectFocus: number;        // 0-20 points
+  };
+  details: {
+    linesChanged: number;        // additions + deletions
+    activeWeeks: number;         // weeks with commits
+    prReviewsCount: number;      // PR reviews
+    issuesCount: number;         // Issue contributions
+    focusedReposCount: number;   // 2-5 = ideal
+    totalRepos: number;          // all repos contributed to
+  };
 }
 
-function getLastNMonths(timeline: YearData[], months: number) {
-  // Implementation
+export function calculateActivityScore(
+  user: User,
+  repos: Repository[],
+  contributions: ContributionsCollection,
+  commits: CommitNode[]
+): ActivityScore {
+  // A. Code Throughput (0-35 points) - Lines changed, not commits!
+  const linesChanged = commits.reduce((sum, c) => sum + c.additions + c.deletions, 0);
+  const codeThroughput = Math.min((linesChanged / 10000) * 35, 35);
+  // Benchmark: 10K+ lines = max points
+
+  // B. Consistency & Rhythm (0-25 points)
+  const activeWeeks = calculateActiveWeeks(commits);
+  const consistencyRhythm = Math.min((activeWeeks / 52) * 25, 25);
+  // Benchmark: 52 weeks (full year) = max points
+
+  // C. Collaboration (0-20 points) - NEW!
+  const prReviews = contributions.pullRequestReviewContributions.totalCount;
+  const issues = contributions.issueContributions.totalCount;
+  const collaborationCount = prReviews + issues;
+  const collaboration = Math.min((collaborationCount / 50) * 20, 20);
+  // Benchmark: 50+ contributions (reviews + issues) = max points
+
+  // D. Project Focus (0-20 points) - NEW!
+  const focusedRepos = repos.filter(r => !r.isFork).length;
+  let projectFocus = 0;
+  if (focusedRepos >= 2 && focusedRepos <= 5) projectFocus = 20; // Ideal: 2-5 repos
+  else if (focusedRepos === 1) projectFocus = 15;                 // Single project
+  else if (focusedRepos >= 6 && focusedRepos <= 10) projectFocus = 15; // Moderate
+  else if (focusedRepos > 10) projectFocus = 10;                  // Too scattered
+  // Benchmark: 2-5 original repos = optimal focus
+
+  const totalScore = Math.round(codeThroughput + consistencyRhythm + collaboration + projectFocus);
+
+  return {
+    score: totalScore,
+    level: getActivityLevel(totalScore),
+    breakdown: {
+      codeThroughput: Math.round(codeThroughput),
+      consistencyRhythm: Math.round(consistencyRhythm),
+      collaboration: Math.round(collaboration),
+      projectFocus: Math.round(projectFocus),
+    },
+    details: {
+      linesChanged,
+      activeWeeks,
+      prReviewsCount: prReviews,
+      issuesCount: issues,
+      focusedReposCount: focusedRepos,
+      totalRepos: repos.length,
+    },
+  };
 }
 
-function countActiveMonths(data: YearData[]) {
-  // Implementation
+function calculateActiveWeeks(commits: CommitNode[]): number {
+  const weekSet = new Set<string>();
+  commits.forEach(c => {
+    const date = new Date(c.committedDate);
+    const weekKey = `${date.getFullYear()}-W${getWeekNumber(date)}`;
+    weekSet.add(weekKey);
+  });
+  return weekSet.size;
 }
 
-function countUniqueRepos(data: YearData[]) {
-  // Implementation
+function getWeekNumber(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
-export function getActivityLabel(score: number): string {
-  if (score >= 71) return 'High'
-  if (score >= 41) return 'Moderate'
-  return 'Low'
+function getActivityLevel(score: number): ActivityScore['level'] {
+  if (score >= 80) return 'Very High';
+  if (score >= 60) return 'High';
+  if (score >= 40) return 'Moderate';
+  if (score >= 20) return 'Low';
+  return 'Very Low';
 }
 ```
 
-**Test:** 100% coverage required
+**Tests:** `src/lib/metrics/activity.test.ts`
+- 15+ test cases covering all breakdowns
+- Edge cases: 0 commits, 100K+ lines, 1 repo, 50+ repos
+- Coverage target: **100%**
 
 ---
 
-### Step 2.2: Impact Score
+### Step 2.2: Impact Score v2.0 (1 day)
 
 **File:** `src/lib/metrics/impact.ts`
 
+**Formula:**
+```
+Impact Score (0-100) = Adoption Signal (40) + Community Engagement (30) +
+                       Social Proof (20, log scale) + Package Stats (10, deferred)
+```
+
+**Implementation:**
+
 ```typescript
-export function calculateImpactScore(timeline: YearData[]): number {
-  const allRepos = timeline.flatMap(y => [...y.ownedRepos, ...y.contributions])
+export interface ImpactScore {
+  score: number; // 0-100
+  level: 'Minimal' | 'Low' | 'Moderate' | 'Strong' | 'Significant';
+  breakdown: {
+    adoptionSignal: number;      // 0-40 points (forks)
+    communityEngagement: number; // 0-30 points (external PRs, issues)
+    socialProof: number;         // 0-20 points (stars, logarithmic)
+    packageStats: number;        // 0-10 points (DEFERRED to Phase 7+)
+  };
+  details: {
+    totalStars: number;
+    totalForks: number;
+    externalPRs: number;         // PRs from others
+    externalIssues: number;      // Issues from others
+    npmDownloads?: number;       // Phase 7+
+  };
+}
 
-  // A. Stars (0-35 points)
-  const totalStars = allRepos.reduce((sum, r) => sum + r.repository.stargazerCount, 0)
-  const starPoints = calculateStarPoints(totalStars)
+export function calculateImpactScore(
+  repos: Repository[]
+): ImpactScore {
+  // A. Adoption Signal (0-40 points) - Forks matter more than stars!
+  const totalForks = repos.reduce((sum, r) => sum + r.forkCount, 0);
+  const adoptionSignal = Math.min((totalForks / 100) * 40, 40);
+  // Benchmark: 100+ forks = max points
 
-  // B. Forks (0-20 points)
-  const totalForks = allRepos.reduce((sum, r) => sum + r.repository.forkCount, 0)
-  const forkPoints = calculateForkPoints(totalForks)
+  // B. Community Engagement (0-30 points)
+  // TODO: Need to fetch external PRs and issues from Phase 1 GraphQL data
+  const communityEngagement = 0; // Placeholder
 
-  // C. Contributors (0-15 points)
-  // D. Reach (0-20 points)
-  // E. Engagement (0-10 points)
+  // C. Social Proof (0-20 points) - LOGARITHMIC SCALE (anti-fraud)
+  const totalStars = repos.reduce((sum, r) => sum + r.stargazerCount, 0);
+  const socialProof = Math.min(Math.log10(totalStars + 1) * 3, 20);
+  // Benchmark: 10K stars = log10(10000) * 3 = 12 points (not max!)
+  // Benchmark: 100K stars = log10(100000) * 3 = 15 points
+  // This penalizes star farming!
 
-  return Math.round(/* sum of all points */)
+  // D. Package Stats (0-10 points) - DEFERRED to Phase 7+
+  const packageStats = 0;
+
+  const totalScore = Math.round(adoptionSignal + communityEngagement + socialProof + packageStats);
+
+  return {
+    score: totalScore,
+    level: getImpactLevel(totalScore),
+    breakdown: {
+      adoptionSignal: Math.round(adoptionSignal),
+      communityEngagement: Math.round(communityEngagement),
+      socialProof: Math.round(socialProof),
+      packageStats: Math.round(packageStats),
+    },
+    details: {
+      totalStars,
+      totalForks,
+      externalPRs: 0, // TODO: Phase 7+
+      externalIssues: 0, // TODO: Phase 7+
+    },
+  };
+}
+
+function getImpactLevel(score: number): ImpactScore['level'] {
+  if (score >= 70) return 'Significant';
+  if (score >= 50) return 'Strong';
+  if (score >= 30) return 'Moderate';
+  if (score >= 10) return 'Low';
+  return 'Minimal';
+}
+```
+
+**Why logarithmic stars?**
+- Prevents gaming: 10K stars = 12 points, 100K stars = only 15 points
+- Fraud detection: Star farms can't boost score linearly
+- Focus on forks: Forks = real adoption (40 points max)
+
+---
+
+### Step 2.3: Quality Score v2.0 (2 days)
+
+**File:** `src/lib/metrics/quality.ts`
+
+**Formula:**
+```
+Quality Score (0-100) = Code Health Practices (35) + Documentation (25) +
+                        Maintenance Signal (25) + Architecture (15)
+```
+
+**Implementation:**
+
+```typescript
+export interface QualityScore {
+  score: number; // 0-100
+  level: 'Poor' | 'Fair' | 'Good' | 'High' | 'Excellent';
+  breakdown: {
+    codeHealthPractices: number; // 0-35 points
+    documentation: number;       // 0-25 points
+    maintenanceSignal: number;   // 0-25 points
+    architecture: number;        // 0-15 points
+  };
+  details: {
+    hasCI: boolean;              // .github/workflows
+    hasTesting: boolean;         // test/, __tests__
+    hasLinting: boolean;         // .eslintrc, tsconfig.json
+    readmeLength: number;        // chars
+    hasContributing: boolean;    // CONTRIBUTING.md
+    avgIssueResponseTime: number;// hours (Phase 7+)
+    hasTypeScript: boolean;      // tsconfig.json
+    hasModularStructure: boolean;// src/ folder structure
+  };
+}
+
+export function calculateQualityScore(
+  repos: Repository[]
+): QualityScore {
+  // A. Code Health Practices (0-35 points) - NEW!
+  const healthScore = repos.reduce((sum, repo) => {
+    let repoHealth = 0;
+    const entries = repo.object?.entries || [];
+
+    // CI/CD (12 points)
+    if (entries.some(e => e.name === '.github')) repoHealth += 12;
+
+    // Testing (12 points)
+    if (entries.some(e => ['test', '__tests__', 'tests', 'spec'].includes(e.name))) {
+      repoHealth += 12;
+    }
+
+    // Linting/TypeScript (11 points)
+    if (entries.some(e => ['.eslintrc', '.eslintrc.js', 'tsconfig.json'].includes(e.name))) {
+      repoHealth += 11;
+    }
+
+    return sum + repoHealth;
+  }, 0);
+  const codeHealthPractices = Math.min((healthScore / repos.length / 35) * 35, 35);
+
+  // B. Documentation (0-25 points)
+  const docsScore = repos.reduce((sum, repo) => {
+    let repoDocsScore = 0;
+    const entries = repo.object?.entries || [];
+
+    // README.md (15 points)
+    const hasReadme = entries.some(e => e.name.toLowerCase() === 'readme.md');
+    if (hasReadme) {
+      // TODO: Check README length from file content (Phase 7+)
+      repoDocsScore += 15;
+    }
+
+    // CONTRIBUTING.md, docs/ (10 points)
+    if (entries.some(e => ['CONTRIBUTING.md', 'docs', 'documentation'].includes(e.name))) {
+      repoDocsScore += 10;
+    }
+
+    return sum + repoDocsScore;
+  }, 0);
+  const documentation = Math.min((docsScore / repos.length / 25) * 25, 25);
+
+  // C. Maintenance Signal (0-25 points) - NEW!
+  const recentlyUpdated = repos.filter(r => {
+    const daysSinceUpdate = (Date.now() - new Date(r.pushedAt).getTime()) / (1000 * 60 * 60 * 24);
+    return daysSinceUpdate < 90; // Updated in last 90 days
+  }).length;
+  const maintenanceSignal = Math.min((recentlyUpdated / repos.length) * 25, 25);
+
+  // D. Architecture (0-15 points)
+  const architectureScore = repos.reduce((sum, repo) => {
+    let repoArchScore = 0;
+    const entries = repo.object?.entries || [];
+
+    // Modular structure (src/ folder) (8 points)
+    if (entries.some(e => e.name === 'src')) repoArchScore += 8;
+
+    // TypeScript (7 points)
+    if (entries.some(e => e.name === 'tsconfig.json')) repoArchScore += 7;
+
+    return sum + repoArchScore;
+  }, 0);
+  const architecture = Math.min((architectureScore / repos.length / 15) * 15, 15);
+
+  const totalScore = Math.round(codeHealthPractices + documentation + maintenanceSignal + architecture);
+
+  return {
+    score: totalScore,
+    level: getQualityLevel(totalScore),
+    breakdown: {
+      codeHealthPractices: Math.round(codeHealthPractices),
+      documentation: Math.round(documentation),
+      maintenanceSignal: Math.round(maintenanceSignal),
+      architecture: Math.round(architecture),
+    },
+    details: {
+      hasCI: repos.some(r => r.object?.entries.some(e => e.name === '.github')),
+      hasTesting: repos.some(r => r.object?.entries.some(e => e.name === 'test')),
+      hasLinting: repos.some(r => r.object?.entries.some(e => e.name === '.eslintrc')),
+      readmeLength: 0, // TODO: Phase 7+
+      hasContributing: repos.some(r => r.object?.entries.some(e => e.name === 'CONTRIBUTING.md')),
+      avgIssueResponseTime: 0, // TODO: Phase 7+
+      hasTypeScript: repos.some(r => r.object?.entries.some(e => e.name === 'tsconfig.json')),
+      hasModularStructure: repos.some(r => r.object?.entries.some(e => e.name === 'src')),
+    },
+  };
+}
+
+function getQualityLevel(score: number): QualityScore['level'] {
+  if (score >= 80) return 'Excellent';
+  if (score >= 60) return 'High';
+  if (score >= 40) return 'Good';
+  if (score >= 20) return 'Fair';
+  return 'Poor';
 }
 ```
 
 ---
 
-### Step 2.3: Quality & Growth
+### Step 2.4: Growth Score v2.0 (1 day)
 
-Similar implementations in:
-- `src/lib/metrics/quality.ts`
-- `src/lib/metrics/growth.ts`
-- `src/lib/metrics/benchmark.ts` (ranges)
+**File:** `src/lib/metrics/growth.ts`
 
-**Deliverables:**
-- [ ] All 4 metrics implemented (activity, impact, quality, growth)
-- [ ] 100% test coverage for all calculation functions
-- [ ] Benchmark labels (Low/Moderate/High/etc) working
-- [ ] Each metric follows `authenticity.ts` pattern
-- [ ] Reuses helpers from `statistics.ts` where applicable
+**Formula:**
+```
+Growth Score (-100 to +100) = Skill Expansion (40) + Project Evolution (30) +
+                              Learning Patterns (30)
+```
 
-**Estimated Time:** **2 days** (reduced from 2-3 days - have perfect template in authenticity.ts)
+**Implementation:**
+
+```typescript
+export interface GrowthScore {
+  score: number; // -100 to +100
+  trend: 'Declining' | 'Stagnant' | 'Steady' | 'Growing' | 'Accelerating';
+  breakdown: {
+    skillExpansion: number;      // -40 to +40 points
+    projectEvolution: number;    // -30 to +30 points
+    learningPatterns: number;    // -30 to +30 points
+  };
+  details: {
+    newLanguagesCount: number;   // Last year vs previous
+    projectMaturityGrowth: number; // Stars/forks growth
+    tutorialRatio: number;       // Tutorial repos vs production (0-1)
+    productionRatio: number;     // Production repos (0-1)
+  };
+}
+
+export function calculateGrowthScore(
+  currentYearRepos: Repository[],
+  previousYearRepos: Repository[]
+): GrowthScore {
+  // A. Skill Expansion (−40 to +40 points)
+  const currentLanguages = new Set(currentYearRepos.map(r => r.primaryLanguage?.name).filter(Boolean));
+  const previousLanguages = new Set(previousYearRepos.map(r => r.primaryLanguage?.name).filter(Boolean));
+  const newLanguages = [...currentLanguages].filter(l => !previousLanguages.has(l));
+  const skillExpansion = Math.min(newLanguages.length * 10, 40);
+  // Benchmark: 4+ new languages in a year = max points
+
+  // B. Project Evolution (−30 to +30 points)
+  const currentStars = currentYearRepos.reduce((sum, r) => sum + r.stargazerCount, 0);
+  const previousStars = previousYearRepos.reduce((sum, r) => sum + r.stargazerCount, 0);
+  const starGrowth = currentStars - previousStars;
+  const projectEvolution = Math.min((starGrowth / 100) * 30, 30);
+  // Benchmark: +100 stars in a year = max points
+
+  // C. Learning Patterns (−30 to +30 points) - NEW!
+  const tutorialPatterns = ['tutorial', 'learning', 'course', 'practice', 'example', 'clone'];
+  const tutorialRepos = currentYearRepos.filter(r =>
+    tutorialPatterns.some(p => r.name.toLowerCase().includes(p))
+  ).length;
+  const productionRepos = currentYearRepos.length - tutorialRepos;
+
+  const tutorialRatio = tutorialRepos / currentYearRepos.length;
+  const productionRatio = productionRepos / currentYearRepos.length;
+
+  let learningPatterns = 0;
+  if (tutorialRatio <= 0.2 && productionRatio >= 0.6) {
+    learningPatterns = 30; // Ideal: 20% tutorials, 60%+ production
+  } else if (tutorialRatio <= 0.4 && productionRatio >= 0.4) {
+    learningPatterns = 20; // Good balance
+  } else if (tutorialRatio > 0.6) {
+    learningPatterns = -20; // Too many tutorials, not enough production
+  }
+
+  const totalScore = Math.round(skillExpansion + projectEvolution + learningPatterns);
+
+  return {
+    score: Math.max(-100, Math.min(100, totalScore)),
+    trend: getGrowthTrend(totalScore),
+    breakdown: {
+      skillExpansion: Math.round(skillExpansion),
+      projectEvolution: Math.round(projectEvolution),
+      learningPatterns: Math.round(learningPatterns),
+    },
+    details: {
+      newLanguagesCount: newLanguages.length,
+      projectMaturityGrowth: starGrowth,
+      tutorialRatio,
+      productionRatio,
+    },
+  };
+}
+
+function getGrowthTrend(score: number): GrowthScore['trend'] {
+  if (score >= 60) return 'Accelerating';
+  if (score >= 30) return 'Growing';
+  if (score >= 0) return 'Steady';
+  if (score >= -30) return 'Stagnant';
+  return 'Declining';
+}
+```
+
+---
+
+### Step 2.5: Overall Rank Classification (0.5 day) - NEW!
+
+**File:** `src/lib/metrics/overall-rank.ts`
+
+**Goal:** Classify developer based on all 4 metrics
+
+**Ranks:**
+- **Junior** (<30) - Entry level
+- **Mid** (30-50) - Competent
+- **Senior** (50-70) - High Quality (>60) + Impact (>40)
+- **Staff** (70-85) - High Impact (>70)
+- **Principal** (>85) - Very High Activity (>70) + Global Impact (>80)
+
+**Implementation:**
+
+```typescript
+export type DeveloperRank = 'Junior' | 'Mid' | 'Senior' | 'Staff' | 'Principal';
+
+export interface OverallRankResult {
+  rank: DeveloperRank;
+  overallScore: number; // 0-100 (weighted average)
+  requirements: {
+    met: string[];       // Requirements satisfied
+    missing: string[];   // Requirements not met
+  };
+  nextRank?: {
+    rank: DeveloperRank;
+    requirements: string[];
+  };
+}
+
+export function calculateOverallRank(
+  activity: number,
+  impact: number,
+  quality: number,
+  growth: number
+): OverallRankResult {
+  // Weighted average: Activity 30%, Impact 30%, Quality 25%, Growth 15%
+  const overallScore = Math.round(
+    activity * 0.30 +
+    impact * 0.30 +
+    quality * 0.25 +
+    growth * 0.15
+  );
+
+  const met: string[] = [];
+  const missing: string[] = [];
+
+  // Principal (>85)
+  if (overallScore > 85) {
+    if (activity > 70) met.push('Very High Activity (>70)');
+    else missing.push('Very High Activity (>70)');
+
+    if (impact > 80) met.push('Global Impact (>80)');
+    else missing.push('Global Impact (>80)');
+
+    if (met.length === 2) {
+      return { rank: 'Principal', overallScore, requirements: { met, missing } };
+    }
+  }
+
+  // Staff (70-85)
+  if (overallScore >= 70) {
+    if (impact > 70) met.push('High Impact (>70)');
+    else missing.push('High Impact (>70)');
+
+    if (met.length >= 1) {
+      return {
+        rank: 'Staff',
+        overallScore,
+        requirements: { met, missing },
+        nextRank: { rank: 'Principal', requirements: ['Very High Activity (>70)', 'Global Impact (>80)'] },
+      };
+    }
+  }
+
+  // Senior (50-70)
+  if (overallScore >= 50) {
+    if (quality > 60) met.push('High Quality (>60)');
+    else missing.push('High Quality (>60)');
+
+    if (impact > 40) met.push('Moderate Impact (>40)');
+    else missing.push('Moderate Impact (>40)');
+
+    return {
+      rank: 'Senior',
+      overallScore,
+      requirements: { met, missing },
+      nextRank: { rank: 'Staff', requirements: ['High Impact (>70)'] },
+    };
+  }
+
+  // Mid (30-50)
+  if (overallScore >= 30) {
+    return {
+      rank: 'Mid',
+      overallScore,
+      requirements: { met: [], missing: ['High Quality (>60)', 'Moderate Impact (>40)'] },
+      nextRank: { rank: 'Senior', requirements: ['High Quality (>60)', 'Moderate Impact (>40)'] },
+    };
+  }
+
+  // Junior (<30)
+  return {
+    rank: 'Junior',
+    overallScore,
+    requirements: { met: [], missing: ['Consistent Activity', 'Quality Code Practices'] },
+    nextRank: { rank: 'Mid', requirements: ['Activity >40', 'Quality >30'] },
+  };
+}
+```
+
+---
+
+### Deliverables
+
+**Phase 2 Checklist:**
+- [ ] `src/lib/metrics/activity.ts` - Activity Score v2.0 (100% coverage)
+- [ ] `src/lib/metrics/impact.ts` - Impact Score v2.0 (100% coverage)
+- [ ] `src/lib/metrics/quality.ts` - Quality Score v2.0 (100% coverage)
+- [ ] `src/lib/metrics/growth.ts` - Growth Score v2.0 (100% coverage)
+- [ ] `src/lib/metrics/overall-rank.ts` - Rank classification (100% coverage)
+- [ ] `src/lib/metrics/activity.test.ts` - 15+ tests
+- [ ] `src/lib/metrics/impact.test.ts` - 12+ tests
+- [ ] `src/lib/metrics/quality.test.ts` - 18+ tests
+- [ ] `src/lib/metrics/growth.test.ts` - 10+ tests
+- [ ] `src/lib/metrics/overall-rank.test.ts` - 8+ tests
+- [ ] Each metric follows `authenticity.ts` pattern ✅
+- [ ] Reuses helpers from `statistics.ts` where applicable ✅
+- [ ] Performance: each calculation <100ms ✅
+
+**Time:** **5 days** (breakdown: 2 + 1 + 2 + 1 + 0.5 days)
+
+**Success Criteria:**
+- All 4 metrics calculate correctly for test users (torvalds, tj, sindresorhus)
+- Logarithmic stars work: 10K stars ≠ 100K stars (anti-fraud)
+- Code Health detection works: finds .github/, test/, .eslintrc
+- Learning Patterns detection: identifies tutorial vs production repos
+- Overall Rank classification accurate (Junior to Principal)
+- 100% test coverage for all metrics
+- Performance: <100ms per metric calculation
 
 ---
 
