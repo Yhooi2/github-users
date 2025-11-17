@@ -15,16 +15,50 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink
 import { onError } from '@apollo/client/link/error';
 import { toast } from 'sonner';
 
-// 1. HTTP link to GraphQL endpoint (via backend proxy)
-const httpLink = createHttpLink({
-  uri: '/api/github-proxy', // Proxy to GitHub API (token secured on server)
+// 1. Custom link to extract cacheKey from context and add to request body
+const cacheKeyLink = new ApolloLink((operation, forward) => {
+  // Extract cacheKey from operation context
+  const { cacheKey } = operation.getContext();
+
+  // Add cacheKey to the request body if it exists
+  if (cacheKey) {
+    operation.extensions = {
+      ...operation.extensions,
+      cacheKey,
+    };
+  }
+
+  return forward(operation);
 });
 
-// 2. Auth middleware: NO LONGER NEEDED (token handled by backend proxy)
+// 2. HTTP link to GraphQL endpoint (via backend proxy)
+const httpLink = createHttpLink({
+  uri: '/api/github-proxy', // Proxy to GitHub API (token secured on server)
+  fetch: (uri, options) => {
+    // Extract cacheKey from extensions and add to body
+    const body = JSON.parse(options?.body as string || '{}');
+    const extensions = body.extensions || {};
+    const cacheKey = extensions.cacheKey;
+
+    // Create new body with cacheKey at top level
+    const newBody = {
+      query: body.query,
+      variables: body.variables,
+      ...(cacheKey && { cacheKey }),
+    };
+
+    return fetch(uri, {
+      ...options,
+      body: JSON.stringify(newBody),
+    });
+  },
+});
+
+// 3. Auth middleware: NO LONGER NEEDED (token handled by backend proxy)
 // Token is now securely stored on server and added by /api/github-proxy
 // This prevents token exposure in client bundle
 
-// 3. Global error handler with onError
+// 4. Global error handler with onError
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   // Handle GraphQL errors
   if (graphQLErrors) {
@@ -50,10 +84,10 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// 4. Combine links: errorLink -> httpLink (authLink removed for security)
-const link = ApolloLink.from([errorLink, httpLink]);
+// 5. Combine links: cacheKeyLink -> errorLink -> httpLink
+const link = ApolloLink.from([cacheKeyLink, errorLink, httpLink]);
 
-// 5. Instantiate ApolloClient with cache and link chain
+// 6. Instantiate ApolloClient with cache and link chain
 const client = new ApolloClient({
   link,
   cache: new InMemoryCache(),
