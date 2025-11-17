@@ -13,13 +13,14 @@
 - [Phase -1: Documentation Review & Planning](#phase--1-documentation-review--planning) — 1 day, P0 (Critical)
 
 **Implementation Phases:**
-- [Phase 0: Backend Security Layer](./phases/phase-0-backend-security.md) — 2 days, P0 (Critical)
+- [Phase 0: Backend Security Layer](./phases/phase-0-backend-security.md) — 2 days, P0 (Critical) - **Includes Demo Mode + Rate Limit Monitoring**
 - [Phase 1: GraphQL Multi-Query Architecture](./phases/phase-1-graphql-multi-query.md) — 3 days, P0 (Critical)
 - [Phase 2: Metrics Calculation System](./phases/phase-2-metrics-calculation.md) — 2 days, P0 (Critical)
 - [Phase 3: Core Components](./phases/phase-3-core-components.md) — 2 days, P0 (Critical)
 - [Phase 4: Timeline Components](./phases/phase-4-timeline-components.md) — 2 days, P1 (Important)
 - [Phase 5: Layout Refactoring](./phases/phase-5-layout-refactoring.md) — 1 day, P1 (Important)
 - [Phase 6: Testing & Polish](./phases/phase-6-testing-polish.md) — 2 days, P2 (Polish)
+- [Phase 7: OAuth Integration (Optional)](./phases/phase-7-oauth-integration.md) — 3 days, P3 (Optional)
 
 **Supporting Documents:**
 - [Rollback Plan](./ROLLBACK_PLAN.md)
@@ -293,14 +294,16 @@ See [Testing Guide](./testing-guide.md) for:
 | Phase | Duration | Priority | Description |
 |-------|----------|----------|-------------|
 | **Phase -1** | 1 day | P0 🔴 | Documentation review & planning (BEFORE ALL PHASES) |
-| **Phase 0** | 2 days | P0 🔴 | Backend proxy + token security (BLOCKS PRODUCTION) |
+| **Phase 0** | 2 days | P0 🔴 | Backend proxy + token security + rate limit monitoring (BLOCKS PRODUCTION) |
 | **Phase 1** | 3 days | P0 🔴 | Year-by-year GraphQL queries |
 | **Phase 2** | 2 days | P0 🔴 | Calculate 4 metrics |
 | **Phase 3** | 2 days | P0 🔴 | MetricCard + QuickAssessment UI |
 | **Phase 4** | 2 days | P1 🟡 | Timeline components |
 | **Phase 5** | 1 day | P1 🟡 | Remove tabs, single-page layout |
 | **Phase 6** | 2 days | P2 🟢 | E2E tests, accessibility, production |
-| **TOTAL** | **15 days** | | |
+| **Phase 7** | 3 days | P3 ⚪ | OAuth integration (OPTIONAL - can be deferred) |
+| **TOTAL (P0-P2)** | **15 days** | | Core features complete |
+| **TOTAL (with P3)** | **18 days** | | Including OAuth |
 
 **P0 = Critical** (must have), **P1 = Important** (should have), **P2 = Polish** (nice to have)
 
@@ -426,7 +429,7 @@ See [Testing Guide](./testing-guide.md) for complete testing philosophy
 - component-development.md (cross-references added)
 - components-guide.md (cross-references added)
 - apollo-client-guide.md (cross-references added)
-- graphql-api.md (cross-references added)
+- api-reference.md (cross-references added)
 - DOCUMENTATION_CLEANUP_REPORT.md (created)
 
 ### Next Steps
@@ -616,10 +619,20 @@ code-review-specialist agent → "Review against Phase 1 deliverables"
 - [x] Token NOT visible in DevTools (verified via grep)
 - [x] Vercel KV caching logic implemented
 - [x] Apollo Client updated to use proxy
+- [x] Rate limit extraction from GitHub API headers
+- [x] Rate limit included in all responses
+- [x] Warning log when rate limit < 10%
 - [x] All unit tests passing (12/12)
+- [ ] **🔴 REQUIRED:** Rate limit UI components created and tested
+  - [ ] `RateLimitBanner` component (warning at <10%)
+  - [ ] `AuthRequiredModal` component (shown at 0 remaining)
+  - [ ] Integration in App.tsx with state management
+  - [ ] Storybook stories for both components
+  - [ ] Tests for both components (5 + 4 = 9 tests total)
 - [ ] **🔴 REQUIRED:** Test with real token via `vercel dev`
 - [ ] **🔴 REQUIRED:** Deploy to Vercel and validate production
 - [ ] Verify caching works with real Vercel KV
+- [ ] Verify rate limit monitoring in production
 
 ### Phase 1 (Data) - ✅ Implementation Complete
 - [x] Year-by-year data loads (account creation to now)

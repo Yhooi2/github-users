@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ActivityChart } from './ActivityChart';
 import type { CommitActivity } from '@/lib/statistics';
 

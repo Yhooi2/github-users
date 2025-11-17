@@ -130,7 +130,7 @@ describe('Section', () => {
 
     it('should merge custom className with default', () => {
       const { container } = render(
-        <Section className="p-6 bg-accent">
+        <Section className="bg-accent p-6">
           <div>Content</div>
         </Section>
       );

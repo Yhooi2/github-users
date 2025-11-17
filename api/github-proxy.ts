@@ -1,8 +1,19 @@
-import { kv } from '@vercel/kv'
-
 interface GraphQLRequest {
   query: string
   variables?: Record<string, unknown>
+}
+
+// Check if Vercel KV is configured
+const isKVConfigured = Boolean(
+  process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
+)
+
+// Lazy load KV only if configured
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let kv: any = null
+if (isKVConfigured) {
+  const kvModule = await import('@vercel/kv')
+  kv = kvModule.kv
 }
 
 export default async function handler(req, res) {
@@ -13,12 +24,17 @@ export default async function handler(req, res) {
 
   const { query, variables, cacheKey } = req.body as GraphQLRequest & { cacheKey?: string }
 
-  // Check cache if key provided
-  if (cacheKey) {
-    const cached = await kv.get(cacheKey)
-    if (cached) {
-      console.log(`Cache HIT: ${cacheKey}`)
-      return res.status(200).json(cached)
+  // Check cache if key provided and KV is configured
+  if (cacheKey && kv) {
+    try {
+      const cached = await kv.get(cacheKey)
+      if (cached) {
+        console.log(`Cache HIT: ${cacheKey}`)
+        return res.status(200).json(cached)
+      }
+    } catch (error) {
+      console.warn('KV cache read failed:', error.message)
+      // Continue without cache
     }
   }
 
@@ -49,10 +65,15 @@ export default async function handler(req, res) {
       return res.status(400).json(data)
     }
 
-    // Cache result for 30 minutes
-    if (cacheKey) {
-      await kv.set(cacheKey, data, { ex: 1800 })
-      console.log(`Cache SET: ${cacheKey}`)
+    // Cache result for 30 minutes (if KV is configured)
+    if (cacheKey && kv) {
+      try {
+        await kv.set(cacheKey, data, { ex: 1800 })
+        console.log(`Cache SET: ${cacheKey}`)
+      } catch (error) {
+        console.warn('KV cache write failed:', error.message)
+        // Continue without caching
+      }
     }
 
     return res.status(200).json(data)

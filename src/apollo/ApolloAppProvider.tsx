@@ -10,10 +10,16 @@
  * @module ApolloAppProvider
  */
 
-import React from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink } from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
-import { toast } from 'sonner';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  createHttpLink,
+  InMemoryCache,
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import React from "react";
+import { toast } from "sonner";
 
 // 1. Custom link to extract cacheKey from context and add to request body
 const cacheKeyLink = new ApolloLink((operation, forward) => {
@@ -33,11 +39,11 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 
 // 2. HTTP link to GraphQL endpoint (via backend proxy)
 const httpLink = createHttpLink({
-  uri: '/api/github-proxy', // Proxy to GitHub API (token secured on server)
+  uri: "/api/github-proxy", // Proxy to GitHub API (token secured on server)
   includeExtensions: true, // ← CRITICAL: Include extensions in request body
   fetch: (uri, options) => {
     // Extract cacheKey from extensions and add to body
-    const body = JSON.parse(options?.body as string || '{}');
+    const body = JSON.parse((options?.body as string) || "{}");
     const extensions = body.extensions || {};
     const cacheKey = extensions.cacheKey;
 
@@ -64,24 +70,24 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   // Handle GraphQL errors
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, extensions }) => {
-        const errorMessage = `[GraphQL error]: ${message}`;
+      const errorMessage = `[GraphQL error]: ${message}`;
       console.error(errorMessage); // Log the error message [oai_citation:0‡apollographql.com](https://www.apollographql.com/docs/react/data/error-handling#:~:text=4%20const%20errorLink%20%3D%20onError%28%28,networkError)
-      toast.error(errorMessage)
+      toast.error(errorMessage);
       // If unauthenticated error, clear token
-      if (extensions?.code === 'UNAUTHENTICATED') {
-        localStorage.removeItem('github_token'); // Apollo Server uses code 'UNAUTHENTICATED' for auth issues [oai_citation:1‡apollographql.com](https://www.apollographql.com/docs/react/data/error-handling#:~:text=3%20%20%20%20for,UNAUTHENTICATED)
+      if (extensions?.code === "UNAUTHENTICATED") {
+        localStorage.removeItem("github_token"); // Apollo Server uses code 'UNAUTHENTICATED' for auth issues [oai_citation:1‡apollographql.com](https://www.apollographql.com/docs/react/data/error-handling#:~:text=3%20%20%20%20for,UNAUTHENTICATED)
       }
     });
   }
   // Handle Network errors (e.g., HTTP errors)
   if (networkError) {
     // If status 401 Unauthorized, remove token
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
-      localStorage.removeItem('github_token');
+    if ("statusCode" in networkError && networkError.statusCode === 401) {
+      localStorage.removeItem("github_token");
     }
     const errorMessage = `[Network error]: ${networkError}`;
     console.error(errorMessage); // Log network errors [oai_citation:2‡apollographql.com](https://www.apollographql.com/docs/react/data/error-handling#:~:text=4%20const%20errorLink%20%3D%20onError%28%28,networkError)
-    toast.error(errorMessage)
+    toast.error(errorMessage);
   }
 });
 
@@ -92,6 +98,7 @@ const link = ApolloLink.from([cacheKeyLink, errorLink, httpLink]);
 const client = new ApolloClient({
   link,
   cache: new InMemoryCache(),
+  connectToDevTools: true, // Enable Apollo Client DevTools in development
 });
 
 /**

@@ -118,7 +118,7 @@ export function RepositoryList({
   // List of repositories
   return (
     <div
-      className="grid gap-4 grid-cols-1"
+      className="grid grid-cols-1 gap-4"
       role="list"
       aria-label="Repository list"
     >

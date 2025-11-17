@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
 
 const meta: Meta<typeof Accordion> = {
@@ -52,7 +52,7 @@ export const Multiple: Story = {
       <AccordionItem value="item-1">
         <AccordionTrigger>Features</AccordionTrigger>
         <AccordionContent>
-          <ul className="list-disc pl-4 space-y-1">
+          <ul className="list-disc space-y-1 pl-4">
             <li>Fully accessible with keyboard navigation</li>
             <li>Smooth animations</li>
             <li>Customizable styling</li>
@@ -62,7 +62,7 @@ export const Multiple: Story = {
       <AccordionItem value="item-2">
         <AccordionTrigger>Technologies</AccordionTrigger>
         <AccordionContent>
-          <ul className="list-disc pl-4 space-y-1">
+          <ul className="list-disc space-y-1 pl-4">
             <li>React 19</li>
             <li>TypeScript</li>
             <li>Radix UI</li>
@@ -87,7 +87,7 @@ export const RepositoryFAQ: Story = {
         <AccordionTrigger>How do I contribute?</AccordionTrigger>
         <AccordionContent>
           <p className="mb-2">To contribute to this project:</p>
-          <ol className="list-decimal pl-4 space-y-1">
+          <ol className="list-decimal space-y-1 pl-4">
             <li>Fork the repository</li>
             <li>Create a feature branch</li>
             <li>Make your changes</li>
@@ -148,7 +148,7 @@ export const RichContent: Story = {
       <AccordionItem value="code">
         <AccordionTrigger>Code Example</AccordionTrigger>
         <AccordionContent>
-          <pre className="rounded bg-muted p-3 text-xs">
+          <pre className="bg-muted rounded p-3 text-xs">
             <code>{`import { Accordion } from '@/components/ui/accordion'
 
 <Accordion type="single" collapsible>
@@ -166,8 +166,8 @@ export const RichContent: Story = {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="text-left py-2">Property</th>
-                <th className="text-left py-2">Type</th>
+                <th className="py-2 text-left">Property</th>
+                <th className="py-2 text-left">Type</th>
               </tr>
             </thead>
             <tbody>
@@ -196,16 +196,16 @@ export const APIDocumentation: Story = {
         <AccordionContent>
           <div className="space-y-2">
             <div>
-              <code className="rounded bg-muted px-2 py-1 text-xs">GET /api/users</code>
-              <p className="mt-1 text-xs text-muted-foreground">Fetch all users</p>
+              <code className="bg-muted rounded px-2 py-1 text-xs">GET /api/users</code>
+              <p className="text-muted-foreground mt-1 text-xs">Fetch all users</p>
             </div>
             <div>
-              <code className="rounded bg-muted px-2 py-1 text-xs">GET /api/users/:id</code>
-              <p className="mt-1 text-xs text-muted-foreground">Fetch user by ID</p>
+              <code className="bg-muted rounded px-2 py-1 text-xs">GET /api/users/:id</code>
+              <p className="text-muted-foreground mt-1 text-xs">Fetch user by ID</p>
             </div>
             <div>
-              <code className="rounded bg-muted px-2 py-1 text-xs">POST /api/users</code>
-              <p className="mt-1 text-xs text-muted-foreground">Create new user</p>
+              <code className="bg-muted rounded px-2 py-1 text-xs">POST /api/users</code>
+              <p className="text-muted-foreground mt-1 text-xs">Create new user</p>
             </div>
           </div>
         </AccordionContent>
@@ -219,7 +219,7 @@ export const APIDocumentation: Story = {
       <AccordionItem value="rate-limits">
         <AccordionTrigger>Rate Limits</AccordionTrigger>
         <AccordionContent>
-          <ul className="list-disc pl-4 space-y-1 text-sm">
+          <ul className="list-disc space-y-1 pl-4 text-sm">
             <li>Unauthenticated: 60 requests per hour</li>
             <li>Authenticated: 5000 requests per hour</li>
             <li>GraphQL: 5000 points per hour</li>

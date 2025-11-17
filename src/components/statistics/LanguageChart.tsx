@@ -182,12 +182,12 @@ export function LanguageChart({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Language Distribution</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {totalLanguages} language{totalLanguages !== 1 ? 's' : ''} across repositories
             {totalLanguages > maxLanguages && ` (showing top ${maxLanguages})`}
           </p>
         </div>
-        <Code2 className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+        <Code2 className="text-muted-foreground h-5 w-5" aria-hidden="true" />
       </div>
 
       {/* Chart */}
@@ -217,13 +217,13 @@ export function LanguageChart({
 
               const data = payload[0].payload as LanguageStats;
               return (
-                <div className="rounded-lg border bg-background p-2 shadow-sm">
+                <div className="bg-background rounded-lg border p-2 shadow-sm">
                   <div className="flex flex-col gap-1">
                     <span className="font-semibold">{data.name}</span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       {data.percentage.toFixed(2)}% • {formatBytes(data.size)}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       {data.repositoryCount} repositor{data.repositoryCount !== 1 ? 'ies' : 'y'}
                     </span>
                   </div>
@@ -259,7 +259,7 @@ export function LanguageChart({
               />
               <span className="font-medium">{lang.name}</span>
             </div>
-            <div className="flex gap-4 text-muted-foreground">
+            <div className="text-muted-foreground flex gap-4">
               <span>{lang.percentage.toFixed(1)}%</span>
               <span>{formatBytes(lang.size)}</span>
               <span>
@@ -272,7 +272,7 @@ export function LanguageChart({
 
       {/* Other languages note */}
       {otherLanguages.length > 0 && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           * "Other" includes {otherLanguages.length} additional language
           {otherLanguages.length !== 1 ? 's' : ''}: {otherLanguages.map((l) => l.name).join(', ')}
         </p>

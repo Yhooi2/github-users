@@ -179,7 +179,7 @@ describe('Tabs', () => {
 
   describe('data attributes', () => {
     it('should have correct data-slot attributes', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
@@ -195,7 +195,7 @@ describe('Tabs', () => {
     });
 
     it('should have data-state attribute on active trigger', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
@@ -216,7 +216,7 @@ describe('Tabs', () => {
 
   describe('styling', () => {
     it('should apply custom className to Tabs', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1" className="custom-tabs">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
@@ -230,7 +230,7 @@ describe('Tabs', () => {
     });
 
     it('should apply custom className to TabsList', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1">
           <TabsList className="custom-list">
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
@@ -244,7 +244,7 @@ describe('Tabs', () => {
     });
 
     it('should apply custom className to TabsTrigger', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1">
           <TabsList>
             <TabsTrigger value="tab1" className="custom-trigger">
@@ -260,7 +260,7 @@ describe('Tabs', () => {
     });
 
     it('should apply custom className to TabsContent', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
@@ -300,7 +300,7 @@ describe('Tabs', () => {
 
   describe('accessibility', () => {
     it('should have correct ARIA roles', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>

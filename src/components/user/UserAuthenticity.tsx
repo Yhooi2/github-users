@@ -58,7 +58,7 @@ export function UserAuthenticity({ repositories }: UserAuthenticityProps) {
         <div className="flex items-center gap-4">
           <div className="text-center">
             <div className="text-4xl font-bold">{authenticity.score}</div>
-            <div className="text-sm text-muted-foreground">out of 100</div>
+            <div className="text-muted-foreground text-sm">out of 100</div>
           </div>
           <Badge className={`${getCategoryColor(authenticity.category)} flex items-center gap-1`}>
             {getCategoryIcon(authenticity.category)}
@@ -120,7 +120,7 @@ export function UserAuthenticity({ repositories }: UserAuthenticityProps) {
         )}
 
         {/* Metadata */}
-        <div className="rounded-lg border bg-muted/50 p-4">
+        <div className="bg-muted/50 rounded-lg border p-4">
           <h3 className="mb-3 text-sm font-semibold">Repository Breakdown</h3>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="flex justify-between">

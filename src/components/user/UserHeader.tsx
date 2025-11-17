@@ -31,7 +31,7 @@ export function UserHeader({ user }: UserHeaderProps) {
   return (
     <div className="flex flex-col items-start gap-6 md:flex-row">
       {/* Avatar */}
-      <Avatar className="h-32 w-32 border-4 border-border">
+      <Avatar className="border-border h-32 w-32 border-4">
         <AvatarImage src={user.avatarUrl} alt={`${displayName}'s avatar`} />
         <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
       </Avatar>
@@ -39,11 +39,11 @@ export function UserHeader({ user }: UserHeaderProps) {
       {/* User Info */}
       <div className="flex-1 space-y-2">
         <h1 className="text-3xl font-bold">{displayName}</h1>
-        <p className="text-xl text-muted-foreground">@{user.login}</p>
+        <p className="text-muted-foreground text-xl">@{user.login}</p>
 
         {user.bio && <p className="text-base">{user.bio}</p>}
 
-        <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex flex-col gap-2 text-sm">
           {user.location && (
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4" aria-hidden="true" />
@@ -61,7 +61,7 @@ export function UserHeader({ user }: UserHeaderProps) {
           href={user.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+          className="text-primary inline-flex items-center gap-2 text-sm hover:underline"
         >
           View on GitHub
           <ExternalLink className="h-4 w-4" aria-hidden="true" />

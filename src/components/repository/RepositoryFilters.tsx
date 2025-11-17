@@ -218,7 +218,7 @@ export function RepositoryFilters({
           className="w-full"
           aria-label="Clear all filters"
         >
-          <X className="w-4 h-4 mr-2" />
+          <X className="mr-2 h-4 w-4" />
           Clear Filters
         </Button>
       )}
@@ -232,12 +232,12 @@ export function RepositoryFilters({
   return (
     <Card>
       <CardHeader
-        className="cursor-pointer hover:bg-accent/50 transition-colors"
+        className="hover:bg-accent/50 cursor-pointer transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <Filter className="w-5 h-5" />
+            <Filter className="h-5 w-5" />
             Filters
           </span>
           <div className="flex items-center gap-2">
@@ -247,9 +247,9 @@ export function RepositoryFilters({
               </Badge>
             )}
             {isExpanded ? (
-              <ChevronUp className="w-5 h-5" />
+              <ChevronUp className="h-5 w-5" />
             ) : (
-              <ChevronDown className="w-5 h-5" />
+              <ChevronDown className="h-5 w-5" />
             )}
           </div>
         </CardTitle>

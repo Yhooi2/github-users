@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ScrollArea } from './scroll-area';
 
 const meta: Meta<typeof ScrollArea> = {
@@ -35,7 +35,7 @@ export const Default: Story = {
 export const RepositoryList: Story = {
   render: () => (
     <ScrollArea className="h-[300px] w-[400px] rounded-md border">
-      <div className="p-4 space-y-3">
+      <div className="space-y-3 p-4">
         {[
           'facebook/react',
           'vercel/next.js',
@@ -51,9 +51,9 @@ export const RepositoryList: Story = {
           'nestjs/nest',
           'spring-projects/spring-boot',
         ].map((repo) => (
-          <div key={repo} className="flex items-center justify-between py-2 border-b last:border-b-0">
+          <div key={repo} className="flex items-center justify-between border-b py-2 last:border-b-0">
             <span className="text-sm font-medium">{repo}</span>
-            <span className="text-xs text-muted-foreground">★ 234k</span>
+            <span className="text-muted-foreground text-xs">★ 234k</span>
           </div>
         ))}
       </div>
@@ -64,7 +64,7 @@ export const RepositoryList: Story = {
 export const LongText: Story = {
   render: () => (
     <ScrollArea className="h-[250px] w-[450px] rounded-md border p-4">
-      <div className="text-sm space-y-4">
+      <div className="space-y-4 text-sm">
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation

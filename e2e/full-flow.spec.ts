@@ -88,7 +88,8 @@ test.describe('Full Application Flow', () => {
     await expect(page.locator('[data-testid="repository-card"]').first()).toBeVisible();
 
     // Get first repository name with default sort (stars descending)
-    const firstRepoDefault = await page
+    // Note: Variable not used in test, but kept for potential future use
+    await page
       .locator('[data-testid="repository-card"]')
       .first()
       .locator('h3')
@@ -100,7 +101,8 @@ test.describe('Full Application Flow', () => {
     await page.waitForTimeout(500);
 
     // Get first repository name after sorting by name
-    const firstRepoByName = await page
+    // Note: Variable not used in test, but kept for potential future use
+    await page
       .locator('[data-testid="repository-card"]')
       .first()
       .locator('h3')

@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** 2025-11-17
-**Based on:** IMPLEMENTATION_PLAN_HYBRID.md v4.0
+**Based on:** [REFACTORING_MASTER_PLAN.md](./REFACTORING_MASTER_PLAN.md)
 **Status:** Ready for Execution
 
 ---

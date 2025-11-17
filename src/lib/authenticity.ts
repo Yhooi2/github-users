@@ -62,7 +62,7 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
   // 1. ORIGINALITY SCORE (25 points)
   // Measures the ratio of original work vs forked/cloned projects
   const originalRatio = totalRepos > 0 ? originalRepos / totalRepos : 0;
-  let originalityScore = originalRatio * 25;
+  const originalityScore = originalRatio * 25;
 
   if (originalRatio <= 0.35) {
     flags.push('Less than 30% original repositories');

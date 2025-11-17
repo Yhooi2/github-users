@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { StatsOverview } from './StatsOverview';
 import type { YearlyCommitStats, LanguageStats, CommitActivity } from '@/lib/statistics';
 

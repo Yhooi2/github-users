@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Section } from './Section';
 
 const meta: Meta<typeof Section> = {
@@ -44,7 +44,7 @@ export const Default: Story = {
   args: {
     title: 'Section Title',
     children: (
-      <div className="p-4 bg-muted rounded-lg">
+      <div className="bg-muted rounded-lg p-4">
         <p>This is the section content. It can contain any React components or elements.</p>
       </div>
     ),
@@ -60,9 +60,9 @@ export const WithDescription: Story = {
     description: 'Overview of user activity and contributions over time',
     children: (
       <div className="grid grid-cols-3 gap-4">
-        <div className="p-4 bg-muted rounded-lg">Stat 1</div>
-        <div className="p-4 bg-muted rounded-lg">Stat 2</div>
-        <div className="p-4 bg-muted rounded-lg">Stat 3</div>
+        <div className="bg-muted rounded-lg p-4">Stat 1</div>
+        <div className="bg-muted rounded-lg p-4">Stat 2</div>
+        <div className="bg-muted rounded-lg p-4">Stat 3</div>
       </div>
     ),
   },
@@ -77,7 +77,7 @@ export const WithoutSeparator: Story = {
     description: 'This section has no separator line',
     showSeparator: false,
     children: (
-      <div className="p-4 bg-muted rounded-lg">
+      <div className="bg-muted rounded-lg p-4">
         <p>Content without separator above</p>
       </div>
     ),
@@ -90,7 +90,7 @@ export const WithoutSeparator: Story = {
 export const ContentOnly: Story = {
   args: {
     children: (
-      <div className="p-4 bg-muted rounded-lg">
+      <div className="bg-muted rounded-lg p-4">
         <p>This section has no title or description, just content.</p>
       </div>
     ),
@@ -107,10 +107,10 @@ export const LongText: Story = {
       'Comprehensive overview of repository statistics including commit history, language distribution, contribution patterns, and community engagement metrics over the selected time period',
     children: (
       <div className="space-y-4">
-        <div className="p-4 bg-muted rounded-lg">Chart placeholder</div>
+        <div className="bg-muted rounded-lg p-4">Chart placeholder</div>
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-muted rounded-lg">Metric 1</div>
-          <div className="p-4 bg-muted rounded-lg">Metric 2</div>
+          <div className="bg-muted rounded-lg p-4">Metric 1</div>
+          <div className="bg-muted rounded-lg p-4">Metric 2</div>
         </div>
       </div>
     ),
@@ -126,7 +126,7 @@ export const CustomClassName: Story = {
     description: 'This section has custom padding and background',
     className: 'p-6 bg-accent rounded-lg',
     children: (
-      <div className="p-4 bg-background rounded-lg">
+      <div className="bg-background rounded-lg p-4">
         <p>Content with custom section styling</p>
       </div>
     ),
@@ -140,13 +140,13 @@ export const MultipleSections: Story = {
   render: () => (
     <div className="space-y-8">
       <Section title="Repositories" description="Public repositories and their statistics">
-        <div className="p-4 bg-muted rounded-lg">Repository list</div>
+        <div className="bg-muted rounded-lg p-4">Repository list</div>
       </Section>
       <Section title="Activity" description="Contribution activity over time">
-        <div className="p-4 bg-muted rounded-lg">Activity chart</div>
+        <div className="bg-muted rounded-lg p-4">Activity chart</div>
       </Section>
       <Section title="Languages" description="Programming languages used">
-        <div className="p-4 bg-muted rounded-lg">Language breakdown</div>
+        <div className="bg-muted rounded-lg p-4">Language breakdown</div>
       </Section>
     </div>
   ),
@@ -162,18 +162,18 @@ export const ComplexContent: Story = {
     children: (
       <div className="space-y-4">
         <div className="flex gap-4">
-          <div className="h-24 w-24 bg-muted rounded-full"></div>
+          <div className="bg-muted h-24 w-24 rounded-full"></div>
           <div className="flex-1 space-y-2">
-            <div className="h-6 bg-muted rounded w-1/3"></div>
-            <div className="h-4 bg-muted rounded w-1/4"></div>
-            <div className="h-4 bg-muted rounded w-2/3"></div>
+            <div className="bg-muted h-6 w-1/3 rounded"></div>
+            <div className="bg-muted h-4 w-1/4 rounded"></div>
+            <div className="bg-muted h-4 w-2/3 rounded"></div>
           </div>
         </div>
         <div className="grid grid-cols-4 gap-4">
-          <div className="p-4 bg-muted rounded-lg">Followers</div>
-          <div className="p-4 bg-muted rounded-lg">Following</div>
-          <div className="p-4 bg-muted rounded-lg">Repos</div>
-          <div className="p-4 bg-muted rounded-lg">Gists</div>
+          <div className="bg-muted rounded-lg p-4">Followers</div>
+          <div className="bg-muted rounded-lg p-4">Following</div>
+          <div className="bg-muted rounded-lg p-4">Repos</div>
+          <div className="bg-muted rounded-lg p-4">Gists</div>
         </div>
       </div>
     ),
@@ -187,7 +187,7 @@ export const TitleOnly: Story = {
   args: {
     title: 'Simple Title',
     children: (
-      <div className="p-4 bg-muted rounded-lg">
+      <div className="bg-muted rounded-lg p-4">
         <p>Section with title but no description</p>
       </div>
     ),

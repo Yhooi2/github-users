@@ -5,9 +5,6 @@ import {
   getUniqueLanguages,
   groupRepositories,
   getRepositoryStats,
-  type SortBy,
-  type SortDirection,
-  type RepositoryFilter,
 } from './repository-filters';
 import type { Repository } from '@/apollo/github-api.types';
 

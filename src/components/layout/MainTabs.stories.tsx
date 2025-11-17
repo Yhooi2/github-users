@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MainTabs } from './MainTabs';
 
 const meta: Meta<typeof MainTabs> = {

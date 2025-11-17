@@ -143,13 +143,33 @@ export default async function handler(req, res) {
       return res.status(400).json(data)
     }
 
+    // Extract rate limit information from GitHub API response headers
+    const rateLimit = {
+      remaining: parseInt(response.headers.get('X-RateLimit-Remaining') || '0', 10),
+      limit: parseInt(response.headers.get('X-RateLimit-Limit') || '5000', 10),
+      reset: parseInt(response.headers.get('X-RateLimit-Reset') || '0', 10),
+      used: parseInt(response.headers.get('X-RateLimit-Used') || '0', 10),
+    }
+
+    // Log warning if rate limit is low (< 10% remaining)
+    const percentRemaining = (rateLimit.remaining / rateLimit.limit) * 100
+    if (percentRemaining < 10) {
+      console.warn(`⚠️ Rate limit low: ${rateLimit.remaining}/${rateLimit.limit} (${percentRemaining.toFixed(1)}%)`)
+    }
+
+    // Prepare response with rate limit information
+    const responseData = {
+      ...data,
+      rateLimit, // Include rate limit info in response
+    }
+
     // Cache result for 30 minutes
     if (cacheKey) {
-      await kv.set(cacheKey, data, { ex: 1800 })
+      await kv.set(cacheKey, responseData, { ex: 1800 })
       console.log(`Cache SET: ${cacheKey}`)
     }
 
-    return res.status(200).json(data)
+    return res.status(200).json(responseData)
   } catch (error) {
     console.error('GitHub proxy error:', error)
     return res.status(500).json({
@@ -354,7 +374,446 @@ describe('Apollo Client cacheKey Integration', () => {
 
 ---
 
-### Step 0.4: Deploy to Vercel
+### Step 0.4: Create Rate Limit Monitoring UI
+
+**Goal:** Display rate limit warnings and auth prompts to users when demo limits are reached.
+
+**Strategy:** Demo mode uses server-side token (5000 req/hour). Show warning at <10% remaining, block at 0.
+
+---
+
+#### Step 0.4.1: RateLimitBanner Component
+
+**File:** `src/components/layout/RateLimitBanner.tsx`
+
+```typescript
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { AlertTriangle, Info } from 'lucide-react'
+
+export interface RateLimitBannerProps {
+  remaining: number
+  limit: number
+  reset: number // Unix timestamp
+  onAuthClick?: () => void
+}
+
+export function RateLimitBanner({
+  remaining,
+  limit,
+  reset,
+  onAuthClick,
+}: RateLimitBannerProps) {
+  const percentage = (remaining / limit) * 100
+  const resetDate = new Date(reset * 1000)
+  const timeUntilReset = Math.ceil((resetDate.getTime() - Date.now()) / 1000 / 60)
+
+  // Only show if < 10% remaining
+  if (percentage >= 10) return null
+
+  const variant = percentage < 5 ? 'destructive' : 'default'
+  const Icon = percentage < 5 ? AlertTriangle : Info
+
+  return (
+    <Alert variant={variant} className="mb-4">
+      <Icon className="h-4 w-4" />
+      <AlertTitle>
+        {percentage < 5
+          ? '⚠️ Demo limit almost exhausted'
+          : '📊 Demo mode active'}
+      </AlertTitle>
+      <AlertDescription className="mt-2 space-y-2">
+        <p>
+          {remaining} of {limit} requests remaining
+          ({percentage.toFixed(1)}% left).
+          {timeUntilReset > 0 && ` Resets in ${timeUntilReset} minutes.`}
+        </p>
+
+        {onAuthClick && (
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <p className="text-sm">
+              Sign in with GitHub for your personal rate limit (5000 req/hour).
+            </p>
+            <Button
+              onClick={onAuthClick}
+              variant={percentage < 5 ? 'default' : 'outline'}
+              size="sm"
+            >
+              Sign in with GitHub
+            </Button>
+          </div>
+        )}
+      </AlertDescription>
+    </Alert>
+  )
+}
+```
+
+**Storybook:** `src/components/layout/RateLimitBanner.stories.tsx`
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react'
+import { RateLimitBanner } from './RateLimitBanner'
+
+const meta: Meta<typeof RateLimitBanner> = {
+  title: 'Layout/RateLimitBanner',
+  component: RateLimitBanner,
+  tags: ['autodocs'],
+}
+
+export default meta
+type Story = StoryObj<typeof RateLimitBanner>
+
+const oneHourFromNow = Math.floor(Date.now() / 1000) + 3600
+
+export const WarningState: Story = {
+  args: {
+    remaining: 450,
+    limit: 5000,
+    reset: oneHourFromNow,
+    onAuthClick: () => console.log('Auth clicked'),
+  },
+}
+
+export const CriticalState: Story = {
+  args: {
+    remaining: 100,
+    limit: 5000,
+    reset: oneHourFromNow,
+    onAuthClick: () => console.log('Auth clicked'),
+  },
+}
+
+export const Hidden: Story = {
+  args: {
+    remaining: 4500,
+    limit: 5000,
+    reset: oneHourFromNow,
+  },
+}
+```
+
+**Tests:** `src/components/layout/RateLimitBanner.test.tsx`
+
+```typescript
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { RateLimitBanner } from './RateLimitBanner'
+
+describe('RateLimitBanner', () => {
+  const oneHourFromNow = Math.floor(Date.now() / 1000) + 3600
+
+  it('does not render when remaining > 10%', () => {
+    const { container } = render(
+      <RateLimitBanner remaining={4500} limit={5000} reset={oneHourFromNow} />
+    )
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('renders warning state when remaining < 10%', () => {
+    render(
+      <RateLimitBanner remaining={450} limit={5000} reset={oneHourFromNow} />
+    )
+    expect(screen.getByText(/Demo mode active/i)).toBeInTheDocument()
+    expect(screen.getByText(/450 of 5000 requests remaining/i)).toBeInTheDocument()
+  })
+
+  it('renders critical state when remaining < 5%', () => {
+    render(
+      <RateLimitBanner remaining={100} limit={5000} reset={oneHourFromNow} />
+    )
+    expect(screen.getByText(/Demo limit almost exhausted/i)).toBeInTheDocument()
+  })
+
+  it('calls onAuthClick when sign in button clicked', () => {
+    const handleAuth = vi.fn()
+    render(
+      <RateLimitBanner
+        remaining={450}
+        limit={5000}
+        reset={oneHourFromNow}
+        onAuthClick={handleAuth}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /sign in with github/i }))
+    expect(handleAuth).toHaveBeenCalledTimes(1)
+  })
+
+  it('displays time until reset', () => {
+    render(
+      <RateLimitBanner remaining={450} limit={5000} reset={oneHourFromNow} />
+    )
+    expect(screen.getByText(/Resets in \d+ minutes/i)).toBeInTheDocument()
+  })
+})
+```
+
+---
+
+#### Step 0.4.2: AuthRequiredModal Component
+
+**File:** `src/components/auth/AuthRequiredModal.tsx`
+
+```typescript
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Github, Zap, Shield, Star } from 'lucide-react'
+
+export interface AuthRequiredModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onGitHubAuth: () => void
+  remaining: number
+  limit: number
+}
+
+export function AuthRequiredModal({
+  open,
+  onOpenChange,
+  onGitHubAuth,
+  remaining,
+  limit,
+}: AuthRequiredModalProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">
+            ⚠️ Demo limit reached
+          </DialogTitle>
+          <DialogDescription className="text-base">
+            You've used {limit - remaining} of {limit} demo requests.
+            Sign in with your GitHub account to continue with higher limits.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          {/* Benefits */}
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <h4 className="mb-3 font-semibold">Why sign in with GitHub?</h4>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <Zap className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                <span>
+                  <strong>5,000 requests/hour</strong> with your personal rate limit
+                  (vs 5,000/hour shared in demo)
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                <span>
+                  <strong>Secure</strong> - We only request read-only access to your public profile
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Star className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                <span>
+                  <strong>Future features</strong> - Save favorites, compare users, and more
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Auth Button */}
+          <Button
+            onClick={onGitHubAuth}
+            className="w-full"
+            size="lg"
+          >
+            <Github className="mr-2 h-5 w-5" />
+            Continue with GitHub
+          </Button>
+
+          {/* Privacy Note */}
+          <p className="text-center text-xs text-muted-foreground">
+            By signing in, you agree to our terms.
+            We'll never post on your behalf or access private data.
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+```
+
+**Storybook:** `src/components/auth/AuthRequiredModal.stories.tsx`
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react'
+import { AuthRequiredModal } from './AuthRequiredModal'
+
+const meta: Meta<typeof AuthRequiredModal> = {
+  title: 'Auth/AuthRequiredModal',
+  component: AuthRequiredModal,
+  tags: ['autodocs'],
+}
+
+export default meta
+type Story = StoryObj<typeof AuthRequiredModal>
+
+export const Default: Story = {
+  args: {
+    open: true,
+    onOpenChange: (open) => console.log('Modal open changed:', open),
+    onGitHubAuth: () => console.log('GitHub auth clicked'),
+    remaining: 0,
+    limit: 5000,
+  },
+}
+
+export const PartiallyUsed: Story = {
+  args: {
+    ...Default.args,
+    remaining: 50,
+  },
+}
+```
+
+**Tests:** `src/components/auth/AuthRequiredModal.test.tsx`
+
+```typescript
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { AuthRequiredModal } from './AuthRequiredModal'
+
+describe('AuthRequiredModal', () => {
+  it('renders when open is true', () => {
+    render(
+      <AuthRequiredModal
+        open={true}
+        onOpenChange={() => {}}
+        onGitHubAuth={() => {}}
+        remaining={0}
+        limit={5000}
+      />
+    )
+
+    expect(screen.getByText(/Demo limit reached/i)).toBeInTheDocument()
+    expect(screen.getByText(/5,000 requests\/hour/i)).toBeInTheDocument()
+  })
+
+  it('calls onGitHubAuth when auth button clicked', () => {
+    const handleAuth = vi.fn()
+    render(
+      <AuthRequiredModal
+        open={true}
+        onOpenChange={() => {}}
+        onGitHubAuth={handleAuth}
+        remaining={0}
+        limit={5000}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /continue with github/i }))
+    expect(handleAuth).toHaveBeenCalledTimes(1)
+  })
+
+  it('displays used requests correctly', () => {
+    render(
+      <AuthRequiredModal
+        open={true}
+        onOpenChange={() => {}}
+        onGitHubAuth={() => {}}
+        remaining={100}
+        limit={5000}
+      />
+    )
+
+    expect(screen.getByText(/used 4900 of 5000 demo requests/i)).toBeInTheDocument()
+  })
+
+  it('shows privacy note', () => {
+    render(
+      <AuthRequiredModal
+        open={true}
+        onOpenChange={() => {}}
+        onGitHubAuth={() => {}}
+        remaining={0}
+        limit={5000}
+      />
+    )
+
+    expect(screen.getByText(/never post on your behalf/i)).toBeInTheDocument()
+  })
+})
+```
+
+---
+
+#### Step 0.4.3: Integrate Rate Limit Display
+
+**File:** `src/App.tsx`
+
+```typescript
+import { RateLimitBanner } from '@/components/layout/RateLimitBanner'
+import { AuthRequiredModal } from '@/components/auth/AuthRequiredModal'
+import { useState } from 'react'
+
+export function App() {
+  const [rateLimit, setRateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 })
+  const [showAuthModal, setShowAuthModal] = useState(false)
+
+  // Extract rate limit from Apollo Client response
+  const handleQueryCompleted = (data: any) => {
+    if (data.rateLimit) {
+      setRateLimit(data.rateLimit)
+
+      // Show modal if exhausted
+      if (data.rateLimit.remaining === 0) {
+        setShowAuthModal(true)
+      }
+    }
+  }
+
+  const handleGitHubAuth = () => {
+    // TODO: Implement OAuth flow in Phase 7
+    console.log('GitHub OAuth not yet implemented')
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold">GitHub User Analytics</h1>
+
+        {/* Rate Limit Banner */}
+        <RateLimitBanner
+          remaining={rateLimit.remaining}
+          limit={rateLimit.limit}
+          reset={rateLimit.reset}
+          onAuthClick={() => setShowAuthModal(true)}
+        />
+      </header>
+
+      {/* Main content */}
+      <main className="container mx-auto px-4">
+        {/* ... existing app content ... */}
+      </main>
+
+      {/* Auth Required Modal */}
+      <AuthRequiredModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        onGitHubAuth={handleGitHubAuth}
+        remaining={rateLimit.remaining}
+        limit={rateLimit.limit}
+      />
+    </div>
+  )
+}
+```
+
+**Note:** Full OAuth implementation will be in Phase 7. For now, components are ready with placeholder handler.
+
+---
+
+### Step 0.5: Deploy to Vercel
 
 ```bash
 # Install Vercel CLI
@@ -375,6 +834,9 @@ curl -X POST https://your-app.vercel.app/api/github-proxy \
 
 **Backend:**
 - [x] `api/github-proxy.ts` created with Vercel KV caching
+- [x] Rate limit extraction from GitHub API headers
+- [x] Rate limit included in all responses
+- [x] Warning log when rate limit < 10%
 - [x] `.env` configured (server-side `GITHUB_TOKEN`)
 - [x] Request validation (POST only, error handling)
 
@@ -384,11 +846,23 @@ curl -X POST https://your-app.vercel.app/api/github-proxy \
 - [x] Custom `fetch` to move cacheKey to top-level body
 - [x] Link chain: `cacheKeyLink → errorLink → httpLink`
 
+**UI Components (Rate Limit Monitoring):**
+- [ ] `RateLimitBanner` component with Storybook stories
+- [ ] `RateLimitBanner` tests (5 test cases)
+- [ ] `AuthRequiredModal` component with Storybook stories
+- [ ] `AuthRequiredModal` tests (4 test cases)
+- [ ] Integration in `App.tsx` with rate limit state management
+- [ ] Banner shows warning at <10% remaining
+- [ ] Modal appears when rate limit exhausted (0 remaining)
+- [ ] Placeholder OAuth handler (implementation in Phase 7)
+
 **Testing:**
 - [x] Integration tests: `src/apollo/cacheKey.integration.test.tsx` (3/3 passing)
 - [x] Unit tests: `src/apollo/ApolloAppProvider.test.tsx` (13/13 passing)
 - [x] Verify cacheKey in request body structure
 - [x] Verify no circular structure errors
+- [ ] `RateLimitBanner` tests passing (5/5)
+- [ ] `AuthRequiredModal` tests passing (4/4)
 
 **Security:**
 - [x] Token NOT visible in DevTools → Sources
@@ -399,6 +873,7 @@ curl -X POST https://your-app.vercel.app/api/github-proxy \
 - [ ] Deployed to Vercel (with `GITHUB_TOKEN` env var)
 - [ ] Vercel KV configured (optional, for caching)
 - [ ] Tested in production with real GitHub token
+- [ ] Rate limit monitoring verified in production
 
 ---
 
@@ -541,6 +1016,7 @@ vercel --prod
 
 Before moving to Phase 1, confirm:
 
+**Backend & Security:**
 - [ ] Real GitHub token added to environment
 - [ ] Application tested locally OR deployed to Vercel
 - [ ] User search functionality works
@@ -548,6 +1024,15 @@ Before moving to Phase 1, confirm:
 - [ ] Token NOT visible in browser DevTools
 - [ ] No errors in console or Vercel logs
 - [ ] (Optional) Caching works (see HIT/SET in logs)
+
+**Rate Limit Monitoring:**
+- [ ] Rate limit data returned in all API responses
+- [ ] `RateLimitBanner` component created and tested
+- [ ] `AuthRequiredModal` component created and tested
+- [ ] Banner appears when rate limit <10% (test with mock data)
+- [ ] Modal appears when rate limit exhausted
+- [ ] Rate limit reset time displayed correctly
+- [ ] OAuth placeholder button present (implementation in Phase 7)
 
 ### 🚨 If Testing Fails
 

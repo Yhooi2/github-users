@@ -296,7 +296,7 @@ describe('ActivityChart', () => {
 
   describe('Chart Data Transformation', () => {
     it('should create three data points (daily, weekly, monthly)', () => {
-      const { container } = render(<ActivityChart data={mockData} />);
+      render(<ActivityChart data={mockData} />);
 
       expect(screen.getByText('Per Day')).toBeInTheDocument();
       expect(screen.getByText('Per Week')).toBeInTheDocument();

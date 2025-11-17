@@ -33,11 +33,11 @@ export function ContributionHistory({ contributions, yearLabels }: ContributionH
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {years.map((year) => (
             <div key={year.label} className="space-y-2 text-center">
-              <div className="text-sm text-muted-foreground">{year.label}</div>
+              <div className="text-muted-foreground text-sm">{year.label}</div>
               <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {year.commits.toLocaleString()}
               </div>
-              <div className="text-xs text-muted-foreground">commits</div>
+              <div className="text-muted-foreground text-xs">commits</div>
             </div>
           ))}
         </div>

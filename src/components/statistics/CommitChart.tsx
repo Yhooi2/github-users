@@ -139,14 +139,14 @@ export function CommitChart({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Commit Activity</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {totalCommits.toLocaleString()} total commits across {data.length} years
           </p>
         </div>
         {showTrend && data.length >= 2 && (
           <div className="flex items-center gap-2 text-sm">
             <TrendingUp
-              className={`h-4 w-4 ${trendUp ? 'text-green-500' : 'text-red-500 rotate-180'}`}
+              className={`h-4 w-4 ${trendUp ? 'text-green-500' : 'rotate-180 text-red-500'}`}
               aria-hidden="true"
             />
             <span className={trendUp ? 'text-green-600' : 'text-red-600'}>

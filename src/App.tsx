@@ -151,7 +151,7 @@ function App() {
                 />
 
                 {/* View Mode Toggle */}
-                <div className="flex gap-1 rounded-lg border bg-background p-1">
+                <div className="bg-background flex gap-1 rounded-lg border p-1">
                   <Button
                     variant={viewMode === 'list' ? 'default' : 'ghost'}
                     size="sm"
@@ -219,7 +219,7 @@ function App() {
   return (
     <main className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Theme Toggle */}
-      <div className="absolute right-4 top-4 sm:right-6 lg:right-8">
+      <div className="absolute top-4 right-4 sm:right-6 lg:right-8">
         <ThemeToggle />
       </div>
 

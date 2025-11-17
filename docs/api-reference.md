@@ -956,7 +956,7 @@ type CommitSummary = {
 
 ## Additional Resources
 
-- [GraphQL API Documentation](./graphql-api.md)
+- [GraphQL API Documentation](./api-reference.md)
 - [Apollo Client Guide](./apollo-client-guide.md)
 - [TypeScript Guide](./typescript-guide.md)
 - [Testing Guide](./testing-guide.md)

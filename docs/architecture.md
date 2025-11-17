@@ -505,7 +505,7 @@ git-user-info/
 │
 ├── docs/                        # Documentation
 │   ├── architecture.md
-│   ├── graphql-api.md
+│   ├── api-reference.md
 │   └── mcp-setup.md
 │
 └── .storybook/                  # Storybook config

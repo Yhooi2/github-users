@@ -97,7 +97,7 @@ export function StatsCard({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {Icon && <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
+        {Icon && <Icon className="text-muted-foreground h-4 w-4" aria-hidden="true" />}
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline gap-2">
@@ -106,7 +106,7 @@ export function StatsCard({
         </div>
 
         {(description || trend) && (
-          <div className="flex items-center gap-2 mt-1">
+          <div className="mt-1 flex items-center gap-2">
             {trend && TrendIcon && (
               <div className={`flex items-center gap-1 text-xs ${getTrendColor()}`}>
                 <TrendIcon className="h-3 w-3" aria-hidden="true" />
@@ -114,7 +114,7 @@ export function StatsCard({
               </div>
             )}
             {description && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 {description}
               </p>
             )}
