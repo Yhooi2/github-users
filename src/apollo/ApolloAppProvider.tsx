@@ -66,9 +66,10 @@ const client = new ApolloClient({
  * Apollo hooks like `useQuery`, `useMutation`, etc.
  *
  * The client is configured with:
- * - Link chain: errorLink → authLink → httpLink
+ * - Link chain: errorLink → httpLink (proxy to backend)
  * - InMemoryCache for automatic query result caching
  * - Global error handling with toast notifications
+ * - Backend proxy handles GitHub token authentication
  *
  * @param props - Component props
  * @param props.children - React children to wrap with Apollo context
