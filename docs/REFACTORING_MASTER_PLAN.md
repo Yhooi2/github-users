@@ -654,7 +654,7 @@ expect(mockHandler).toHaveBeenCalled()
 - ✅ UserHeader, UserStats (basic profile display)
 
 ### Keep These Patterns:
-- ✅ Component → Story → Test workflow
+- ✅ **Component → Storybook → Test workflow** (STRICT ORDER - see below)
 - ✅ Storybook MCP integration
 - ✅ TypeScript strict mode
 - ✅ Test coverage >90% standard
@@ -681,6 +681,31 @@ expect(mockHandler).toHaveBeenCalled()
 | **TOTAL** | **14 days** | | |
 
 **P0 = Critical** (must have), **P1 = Important** (should have), **P2 = Polish** (nice to have)
+
+---
+
+## 🎨 Development Philosophy (CRITICAL!)
+
+### Component → Storybook → Test (STRICT ORDER)
+
+**This project follows a MANDATORY development order:**
+
+1. **Component First** — Write TypeScript component
+2. **Storybook Second** — Create `.stories.tsx` with ALL states (loading, error, success, edge cases)
+3. **Build Storybook** — Run `npm run build-storybook` (REQUIRED for MCP!)
+4. **Test Last** — Write `.test.tsx` based on Storybook stories
+5. **Run Tests** — Verify with `npm test`
+
+**Why This Order?**
+- ✅ Storybook serves as visual documentation AND test specification
+- ✅ Stories define all component states before writing tests
+- ✅ Forces thinking about edge cases upfront
+- ✅ MCP integration requires built Storybook
+- ✅ **Proven 99.85% test pass rate** (1302/1304 tests)
+
+**NEVER skip Storybook!** Even for simple components.
+
+**Details:** See [.claude/CLAUDE.md](../.claude/CLAUDE.md) for complete philosophy.
 
 ---
 
