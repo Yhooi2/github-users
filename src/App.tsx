@@ -5,6 +5,8 @@ import { MainTabs } from './components/layout/MainTabs';
 import { ThemeToggle } from './components/layout/ThemeToggle';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import { LoadingState } from './components/layout/LoadingState';
+import { RateLimitBanner } from './components/layout/RateLimitBanner';
+import { AuthRequiredModal } from './components/auth/AuthRequiredModal';
 
 // Lazy load heavy components (Repository components with table/list views)
 const RepositoryList = lazy(() =>
@@ -50,6 +52,8 @@ function App() {
   const [viewMode, setViewMode] = useState<'list' | 'table'>('list');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const [rateLimit, setRateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 });
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Fetch user data
   const { data, loading, error } = useQueryUser(userName);
@@ -87,6 +91,11 @@ function App() {
   const handleClearFilters = () => {
     clearFilters();
     setCurrentPage(1);
+  };
+
+  const handleGitHubAuth = () => {
+    // TODO: Implement OAuth flow in Phase 7
+    console.log('GitHub OAuth not yet implemented');
   };
 
   // Calculate statistics data
@@ -228,6 +237,14 @@ function App() {
         <SearchForm userName={userName} setUserName={setUserName} />
       </div>
 
+      {/* Rate Limit Banner */}
+      <RateLimitBanner
+        remaining={rateLimit.remaining}
+        limit={rateLimit.limit}
+        reset={rateLimit.reset}
+        onAuthClick={() => setShowAuthModal(true)}
+      />
+
       {/* Main Content - Show tabs only when user is loaded */}
       {userName && data && !loading && !error && (
         <MainTabs tabs={tabs} defaultValue="profile" />
@@ -235,6 +252,15 @@ function App() {
 
       {/* Show UserProfile directly when loading or error (maintains existing behavior) */}
       {userName && (loading || error) && <UserProfile userName={userName} />}
+
+      {/* Auth Required Modal */}
+      <AuthRequiredModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        onGitHubAuth={handleGitHubAuth}
+        remaining={rateLimit.remaining}
+        limit={rateLimit.limit}
+      />
     </main>
   );
 }
