@@ -614,7 +614,7 @@ code-review-specialist agent → "Review against Phase 1 deliverables"
 - [x] Zero duplication between docs
 - [x] Clear navigation via cross-references
 
-### Phase 0 (Backend) - ✅ Implementation Complete, ⏳ Testing Required
+### Phase 0 (Backend) - ✅ Implementation Complete, ⏳ Production Testing Required
 - [x] GitHub token secured on server (`api/github-proxy.ts`)
 - [x] Token NOT visible in DevTools (verified via grep)
 - [x] Vercel KV caching logic implemented
@@ -622,17 +622,19 @@ code-review-specialist agent → "Review against Phase 1 deliverables"
 - [x] Rate limit extraction from GitHub API headers
 - [x] Rate limit included in all responses
 - [x] Warning log when rate limit < 10%
-- [x] All unit tests passing (12/12)
-- [ ] **🔴 REQUIRED:** Rate limit UI components created and tested
-  - [ ] `RateLimitBanner` component (warning at <10%)
-  - [ ] `AuthRequiredModal` component (shown at 0 remaining)
-  - [ ] Integration in App.tsx with state management
-  - [ ] Storybook stories for both components
-  - [ ] Tests for both components (5 + 4 = 9 tests total)
+- [x] All backend tests passing (12/12)
+- [x] ✅ **Rate limit UI components created and tested**
+  - [x] `RateLimitBanner` component (warning at <10%) ✅
+  - [x] `AuthRequiredModal` component (shown at 0 remaining) ✅
+  - [x] Integration in App.tsx with state management ✅
+  - [x] Storybook stories for both components (8 stories) ✅
+  - [x] Tests for both components (5 + 4 = 9 tests, all passing) ✅
+  - [x] Dialog UI component added (@radix-ui/react-dialog) ✅
 - [ ] **🔴 REQUIRED:** Test with real token via `vercel dev`
 - [ ] **🔴 REQUIRED:** Deploy to Vercel and validate production
 - [ ] Verify caching works with real Vercel KV
 - [ ] Verify rate limit monitoring in production
+- **📚 Documentation:** [Production Testing Guide](./PHASE_0_PRODUCTION_TESTING.md) | [Completion Summary](./PHASE_0_COMPLETION_SUMMARY.md)
 
 ### Phase 1 (Data) - ✅ Implementation Complete
 - [x] Year-by-year data loads (account creation to now)
