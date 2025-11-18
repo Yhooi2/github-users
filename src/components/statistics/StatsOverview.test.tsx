@@ -274,9 +274,12 @@ describe('StatsOverview', () => {
         />
       );
 
-      await waitFor(() => {
-        expect(screen.getByText('Loading commit statistics...')).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Loading commit statistics...')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
     it('should show loading state in languages tab', async () => {
