@@ -47,8 +47,11 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
             stargazerCount
             forkCount
             isFork
+            isTemplate
             isArchived
             isPrivate
+            diskUsage
+            homepageUrl
             primaryLanguage {
               name
               color
@@ -57,12 +60,48 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
               login
               avatarUrl
             }
+            parent {
+              name
+              url
+              owner {
+                login
+              }
+            }
+            watchers {
+              totalCount
+            }
+            issues {
+              totalCount
+            }
+            repositoryTopics(first: 10) {
+              nodes {
+                topic {
+                  name
+                }
+              }
+            }
+            languages(first: 5) {
+              totalSize
+              edges {
+                size
+                node {
+                  name
+                }
+              }
+            }
             licenseInfo {
               name
               spdxId
             }
             defaultBranchRef {
               name
+              target {
+                ... on Commit {
+                  history {
+                    totalCount
+                  }
+                }
+              }
             }
           }
         }
@@ -86,8 +125,11 @@ export interface Repository {
   stargazerCount: number
   forkCount: number
   isFork: boolean
+  isTemplate: boolean
   isArchived: boolean
   isPrivate: boolean
+  diskUsage: number | null
+  homepageUrl: string | null
   primaryLanguage: {
     name: string
     color: string
@@ -96,12 +138,46 @@ export interface Repository {
     login: string
     avatarUrl: string
   }
+  parent: {
+    name: string
+    url: string
+    owner: {
+      login: string
+    }
+  } | null
+  watchers: {
+    totalCount: number
+  }
+  issues: {
+    totalCount: number
+  }
+  repositoryTopics: {
+    nodes: Array<{
+      topic: {
+        name: string
+      }
+    }>
+  }
+  languages: {
+    totalSize: number
+    edges: Array<{
+      size: number
+      node: {
+        name: string
+      }
+    }>
+  }
   licenseInfo: {
     name: string
     spdxId: string
   } | null
   defaultBranchRef: {
     name: string
+    target: {
+      history: {
+        totalCount: number
+      }
+    } | null
   } | null
 }
 

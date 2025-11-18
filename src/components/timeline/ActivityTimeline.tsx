@@ -1,4 +1,4 @@
-import { YearData } from '@/hooks/useUserAnalytics'
+import type { YearData } from '@/hooks/useUserAnalytics'
 import { TimelineYear } from './TimelineYear'
 
 export interface ActivityTimelineProps {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { YearData } from '@/hooks/useUserAnalytics'
+import type { YearData } from '@/hooks/useUserAnalytics'
 import { YearExpandedView } from './YearExpandedView'
 
 export interface TimelineYearProps {

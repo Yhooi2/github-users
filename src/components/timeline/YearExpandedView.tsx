@@ -1,6 +1,7 @@
-import { YearData } from '@/hooks/useUserAnalytics'
+import type { YearData } from '@/hooks/useUserAnalytics'
 import { RepositoryCard } from '@/components/repository/RepositoryCard'
 import { Badge } from '@/components/ui/badge'
+import type { Repository as RepositoryCardType } from '@/apollo/github-api.types'
 
 export interface YearExpandedViewProps {
   year: YearData
@@ -52,7 +53,7 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
             {topOwnedRepos.map((repo) => (
               <RepositoryCard
                 key={repo.repository.url}
-                repository={repo.repository}
+                repository={repo.repository as unknown as RepositoryCardType}
                 compact
               />
             ))}
@@ -71,7 +72,7 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
             {topContributions.map((repo) => (
               <RepositoryCard
                 key={repo.repository.url}
-                repository={repo.repository}
+                repository={repo.repository as unknown as RepositoryCardType}
                 compact
               />
             ))}
