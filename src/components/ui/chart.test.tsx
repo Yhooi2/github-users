@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from './chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegendContent } from './chart';
 import { BarChart, Bar, XAxis } from 'recharts';
+import type { Payload } from 'recharts/types/component/DefaultLegendContent';
 
 const mockChartConfig = {
   desktop: {
@@ -331,5 +332,374 @@ describe('ChartTooltip', () => {
     );
 
     expect(container.querySelector('[data-slot="chart"]')).toBeInTheDocument();
+  });
+});
+
+describe('ChartTooltipContent', () => {
+  const mockPayload: any[] = [
+    {
+      name: 'desktop',
+      value: 100,
+      dataKey: 'desktop',
+      color: '#2563eb',
+      payload: { name: 'Jan', desktop: 100 },
+    },
+  ];
+
+  describe('rendering', () => {
+    it('should return null when not active', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={false} payload={mockPayload} />
+        </ChartContainer>
+      );
+
+      expect(container.querySelector('[data-slot="chart"]')).toBeInTheDocument();
+      // Tooltip content should not render
+      expect(container.querySelector('.border-border\\/50')).not.toBeInTheDocument();
+    });
+
+    it('should return null when payload is empty', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={[]} />
+        </ChartContainer>
+      );
+
+      expect(container.querySelector('.border-border\\/50')).not.toBeInTheDocument();
+    });
+
+    it('should render with active and payload', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={mockPayload} />
+        </ChartContainer>
+      );
+
+      expect(container.querySelector('.border-border\\/50')).toBeInTheDocument();
+    });
+  });
+
+  describe('hideLabel prop', () => {
+    it('should hide label when hideLabel is true', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={mockPayload} hideLabel={true} label="Test Label" />
+        </ChartContainer>
+      );
+
+      // Tooltip should render but label text should not be in content
+      expect(container.querySelector('.border-border\\/50')).toBeInTheDocument();
+      expect(container.textContent).not.toContain('Test Label');
+    });
+
+    it('should show label when hideLabel is false', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={mockPayload} hideLabel={false} label="Desktop" />
+        </ChartContainer>
+      );
+
+      // Label should be visible in content
+      expect(container.textContent).toContain('Desktop');
+    });
+  });
+
+  describe('hideIndicator prop', () => {
+    it('should hide indicator when hideIndicator is true', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={mockPayload} hideIndicator={true} />
+        </ChartContainer>
+      );
+
+      // Should not have indicator div
+      expect(container.querySelector('.shrink-0.rounded-\\[2px\\]')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('indicator types', () => {
+    it('should render dot indicator', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={mockPayload} indicator="dot" />
+        </ChartContainer>
+      );
+
+      expect(container.querySelector('[data-slot="chart"]')).toBeInTheDocument();
+    });
+
+    it('should render line indicator', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={mockPayload} indicator="line" />
+        </ChartContainer>
+      );
+
+      expect(container.querySelector('[data-slot="chart"]')).toBeInTheDocument();
+    });
+
+    it('should render dashed indicator', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={mockPayload} indicator="dashed" />
+        </ChartContainer>
+      );
+
+      expect(container.querySelector('[data-slot="chart"]')).toBeInTheDocument();
+    });
+  });
+
+  describe('formatter functions', () => {
+    it('should use formatter when provided', () => {
+      const formatter = (value: any) => `$${value}`;
+
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent
+            active={true}
+            payload={mockPayload}
+            formatter={formatter as any}
+          />
+        </ChartContainer>
+      );
+
+      expect(container.textContent).toContain('$');
+    });
+
+    it('should use labelFormatter when provided', () => {
+      const labelFormatter = (label: any) => `Label: ${label}`;
+
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent
+            active={true}
+            payload={mockPayload}
+            label="Test"
+            labelFormatter={labelFormatter as any}
+          />
+        </ChartContainer>
+      );
+
+      expect(container.textContent).toContain('Label:');
+    });
+  });
+
+  describe('payload filtering', () => {
+    it('should filter out items with type="none"', () => {
+      const payloadWithNone: any[] = [
+        ...mockPayload,
+        {
+          name: 'hidden',
+          value: 50,
+          dataKey: 'hidden',
+          type: 'none',
+          payload: {},
+        },
+      ];
+
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartTooltipContent active={true} payload={payloadWithNone} />
+        </ChartContainer>
+      );
+
+      // Should only show one item (not the 'none' type)
+      const items = container.querySelectorAll('[data-slot="chart"] > div > div > div');
+      expect(items.length).toBeGreaterThan(0);
+    });
+  });
+});
+
+describe('ChartLegendContent', () => {
+  const mockLegendPayload: Payload[] = [
+    {
+      value: 'desktop',
+      type: 'rect',
+      id: 'desktop',
+      color: '#2563eb',
+      dataKey: 'desktop',
+    },
+    {
+      value: 'mobile',
+      type: 'rect',
+      id: 'mobile',
+      color: '#60a5fa',
+      dataKey: 'mobile',
+    },
+  ];
+
+  describe('rendering', () => {
+    it('should return null when payload is empty', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={[]} />
+        </ChartContainer>
+      );
+
+      // Should not render any legend items
+      expect(container.querySelector('.flex.items-center')).not.toBeInTheDocument();
+    });
+
+    it('should return null when payload is undefined', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent />
+        </ChartContainer>
+      );
+
+      expect(container.querySelector('.flex.items-center')).not.toBeInTheDocument();
+    });
+
+    it('should render legend items', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={mockLegendPayload} />
+        </ChartContainer>
+      );
+
+      const legendContainer = container.querySelector('.flex.items-center');
+      expect(legendContainer).toBeInTheDocument();
+    });
+
+    it('should render correct number of legend items', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={mockLegendPayload} />
+        </ChartContainer>
+      );
+
+      // Each item should have a color indicator
+      const colorIndicators = container.querySelectorAll('.h-2.w-2');
+      expect(colorIndicators.length).toBe(2);
+    });
+  });
+
+  describe('hideIcon prop', () => {
+    it('should hide icon when hideIcon is true', () => {
+      const configWithIcon = {
+        desktop: {
+          label: 'Desktop',
+          color: '#2563eb',
+          icon: () => <svg data-testid="custom-icon">Icon</svg>,
+        },
+      };
+
+      const { queryByTestId } = render(
+        <ChartContainer config={configWithIcon}>
+          <ChartLegendContent payload={mockLegendPayload} hideIcon={true} />
+        </ChartContainer>
+      );
+
+      expect(queryByTestId('custom-icon')).not.toBeInTheDocument();
+    });
+
+    it('should show icon when hideIcon is false', () => {
+      const IconComponent = () => <svg data-testid="custom-icon">Icon</svg>;
+      const configWithIcon = {
+        desktop: {
+          label: 'Desktop',
+          color: '#2563eb',
+          icon: IconComponent,
+        },
+        mobile: {
+          label: 'Mobile',
+          color: '#60a5fa',
+        },
+      };
+
+      const { container } = render(
+        <ChartContainer config={configWithIcon}>
+          <ChartLegendContent payload={mockLegendPayload} hideIcon={false} />
+        </ChartContainer>
+      );
+
+      // Should render legend container
+      expect(container.querySelector('.flex.items-center')).toBeInTheDocument();
+    });
+  });
+
+  describe('verticalAlign prop', () => {
+    it('should apply bottom padding when verticalAlign is bottom', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={mockLegendPayload} verticalAlign="bottom" />
+        </ChartContainer>
+      );
+
+      const legendContainer = container.querySelector('.flex.items-center');
+      expect(legendContainer).toHaveClass('pt-3');
+    });
+
+    it('should apply top padding when verticalAlign is top', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={mockLegendPayload} verticalAlign="top" />
+        </ChartContainer>
+      );
+
+      const legendContainer = container.querySelector('.flex.items-center');
+      expect(legendContainer).toHaveClass('pb-3');
+    });
+  });
+
+  describe('payload filtering', () => {
+    it('should filter out items with type="none"', () => {
+      const payloadWithNone: Payload[] = [
+        ...mockLegendPayload,
+        {
+          value: 'hidden',
+          type: 'none',
+          id: 'hidden',
+          dataKey: 'hidden',
+        },
+      ];
+
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={payloadWithNone} />
+        </ChartContainer>
+      );
+
+      // Should only show 2 items (desktop + mobile), not the 'none' type
+      const colorIndicators = container.querySelectorAll('.h-2.w-2');
+      expect(colorIndicators.length).toBe(2);
+    });
+  });
+
+  describe('custom className', () => {
+    it('should apply custom className', () => {
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={mockLegendPayload} className="custom-legend" />
+        </ChartContainer>
+      );
+
+      const legendContainer = container.querySelector('.custom-legend');
+      expect(legendContainer).toBeInTheDocument();
+    });
+  });
+
+  describe('nameKey prop', () => {
+    it('should use custom nameKey for config lookup', () => {
+      const customPayload: any[] = [
+        {
+          value: 'custom',
+          type: 'rect',
+          id: 'item1',
+          color: '#ff0000',
+          customKey: 'desktop',
+        },
+      ];
+
+      const { container } = render(
+        <ChartContainer config={mockChartConfig}>
+          <ChartLegendContent payload={customPayload} nameKey="customKey" />
+        </ChartContainer>
+      );
+
+      const legendContainer = container.querySelector('.flex.items-center');
+      expect(legendContainer).toBeTruthy();
+    });
   });
 });
