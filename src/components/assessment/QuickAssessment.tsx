@@ -5,7 +5,7 @@ export interface QuickAssessmentProps {
     activity: { score: number; level: 'High' | 'Moderate' | 'Low' };
     impact: { score: number; level: 'Exceptional' | 'Strong' | 'Moderate' | 'Low' | 'Minimal' };
     quality: { score: number; level: 'Excellent' | 'Strong' | 'Good' | 'Fair' | 'Weak' };
-    growth: { score: number; level: 'High' | 'Moderate' | 'Low' };
+    growth: { score: number; level: 'Rapid Growth' | 'Growing' | 'Stable' | 'Declining' | 'Rapid Decline' };
   };
   loading?: boolean;
   onExplainMetric?: (metric: string) => void;

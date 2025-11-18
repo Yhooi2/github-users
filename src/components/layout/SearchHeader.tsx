@@ -8,9 +8,9 @@ export interface SearchHeaderProps {
   userName: string;
 
   /**
-   * Callback when search is submitted
+   * Callback when search is submitted (same type as React setState)
    */
-  onSearch: (username: string) => void;
+  onSearch: React.Dispatch<React.SetStateAction<string>>;
 }
 
 /**
