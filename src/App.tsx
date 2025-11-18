@@ -49,7 +49,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <div className="container mx-auto space-y-8 p-4 pb-16">
         {/* Search Header with Theme Toggle */}
         <SearchHeader userName={userName} onSearch={setUserName} />
@@ -65,7 +65,7 @@ function App() {
         {/* Error Display */}
         {error && (
           <div
-            className="rounded-lg border border-destructive p-4 text-destructive"
+            className="border-destructive text-destructive rounded-lg border p-4"
             role="alert"
             aria-live="assertive"
           >

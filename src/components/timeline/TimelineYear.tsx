@@ -28,7 +28,7 @@ export function TimelineYear({ year, maxCommits }: TimelineYearProps) {
       {/* Year bar (clickable) */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full p-4 text-left transition-colors hover:bg-muted"
+        className="hover:bg-muted w-full p-4 text-left transition-colors"
         aria-expanded={expanded}
         aria-label={`Toggle ${year.year} details`}
       >
@@ -38,16 +38,16 @@ export function TimelineYear({ year, maxCommits }: TimelineYearProps) {
             <span className="text-lg font-semibold">{year.year}</span>
 
             {/* Visual bar */}
-            <div className="h-8 min-w-[100px] flex-1 rounded bg-muted">
+            <div className="bg-muted h-8 min-w-[100px] flex-1 rounded">
               <div
-                className="h-full rounded bg-primary transition-all duration-500"
+                className="bg-primary h-full rounded transition-all duration-500"
                 style={{ width: `${widthPercent}%` }}
                 aria-label={`${widthPercent.toFixed(0)}% of maximum commits`}
               />
             </div>
 
             {/* Stats */}
-            <div className="flex gap-4 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex gap-4 text-sm">
               <span>{year.totalCommits} commits</span>
               <span>{year.totalPRs} PRs</span>
               <span>{year.ownedRepos.length + year.contributions.length} repos</span>

@@ -341,7 +341,7 @@ describe('Tabs', () => {
     });
 
     it('should support aria-label', () => {
-      const { container } = render(
+      render(
         <Tabs defaultValue="tab1" aria-label="Navigation tabs">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>

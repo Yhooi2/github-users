@@ -81,7 +81,7 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
 
       {/* No activity fallback */}
       {topOwnedRepos.length === 0 && topContributions.length === 0 && (
-        <div className="rounded-lg border p-8 text-center text-muted-foreground">
+        <div className="text-muted-foreground rounded-lg border p-8 text-center">
           No repositories found for this year
         </div>
       )}
@@ -95,7 +95,7 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg border p-3">
-      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className="text-muted-foreground text-sm">{label}</div>
       <div className="text-2xl font-bold">{value}</div>
     </div>
   )

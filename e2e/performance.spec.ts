@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test';
 
+// Extend Performance interface to include Chrome-specific memory property
+interface PerformanceWithMemory extends Performance {
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
+}
+
 test.describe('Performance', () => {
   test('measures page load performance', async ({ page }) => {
     const startTime = Date.now();
@@ -211,7 +220,7 @@ test.describe('Performance', () => {
     // Get initial memory
     const initialMemory = await page.evaluate(() => {
       if ('memory' in performance) {
-        return (performance as any).memory.usedJSHeapSize;
+        return (performance as PerformanceWithMemory).memory?.usedJSHeapSize ?? 0;
       }
       return 0;
     });
@@ -236,7 +245,7 @@ test.describe('Performance', () => {
     // Get final memory
     const finalMemory = await page.evaluate(() => {
       if ('memory' in performance) {
-        return (performance as any).memory.usedJSHeapSize;
+        return (performance as PerformanceWithMemory).memory?.usedJSHeapSize ?? 0;
       }
       return 0;
     });

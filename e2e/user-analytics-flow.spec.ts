@@ -239,7 +239,7 @@ test.describe('User Analytics Flow', () => {
     // Should show loading state briefly
     // Note: This may be too fast to catch in some cases
     const loadingIndicator = page.locator('text=/loading|fetching/i');
-    const isLoading = await loadingIndicator.isVisible().catch(() => false);
+    void (await loadingIndicator.isVisible().catch(() => false));
 
     await searchPromise;
 
