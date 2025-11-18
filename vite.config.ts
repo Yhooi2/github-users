@@ -35,7 +35,7 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
         'node_modules/',
         'src/test/',
@@ -44,7 +44,16 @@ export default defineConfig({
         '**/mockData',
         'dist/',
         'e2e/',
+        '**/*.stories.tsx',
+        '**/*.spec.ts',
+        'src/main.tsx',
       ],
+      thresholds: {
+        lines: 90,
+        functions: 90,
+        branches: 85,
+        statements: 90,
+      },
     },
   },
 })
