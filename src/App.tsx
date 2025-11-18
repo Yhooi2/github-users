@@ -1,96 +1,46 @@
-import { useState, lazy, Suspense } from 'react';
-import SearchForm from './components/SearchForm';
-import UserProfile from './components/UserProfile';
-import { MainTabs } from './components/layout/MainTabs';
-import { ThemeToggle } from './components/layout/ThemeToggle';
-import { ErrorBoundary } from './components/layout/ErrorBoundary';
-import { LoadingState } from './components/layout/LoadingState';
+import { useState } from 'react';
+import { SearchHeader } from './components/layout/SearchHeader';
+import { useUserAnalytics } from './hooks/useUserAnalytics';
 import { RateLimitBanner } from './components/layout/RateLimitBanner';
 import { AuthRequiredModal } from './components/auth/AuthRequiredModal';
-
-// Lazy load heavy components (Repository components with table/list views)
-const RepositoryList = lazy(() =>
-  import('./components/repository/RepositoryList').then((m) => ({ default: m.RepositoryList }))
-);
-const RepositoryTable = lazy(() =>
-  import('./components/repository/RepositoryTable').then((m) => ({ default: m.RepositoryTable }))
-);
-const RepositoryFilters = lazy(() =>
-  import('./components/repository/RepositoryFilters').then((m) => ({
-    default: m.RepositoryFilters,
-  }))
-);
-const RepositorySorting = lazy(() =>
-  import('./components/repository/RepositorySorting').then((m) => ({
-    default: m.RepositorySorting,
-  }))
-);
-const RepositoryPagination = lazy(() =>
-  import('./components/repository/RepositoryPagination').then((m) => ({
-    default: m.RepositoryPagination,
-  }))
-);
-
-// Lazy load statistics components (heavy with Recharts dependency)
-const StatsOverview = lazy(() =>
-  import('./components/statistics/StatsOverview').then((m) => ({ default: m.StatsOverview }))
-);
-import { useRepositoryFilters } from './hooks/useRepositoryFilters';
-import { useRepositorySorting } from './hooks/useRepositorySorting';
-import useQueryUser from './apollo/useQueryUser';
-import { Button } from './components/ui/button';
-import { List, Table2 } from 'lucide-react';
-import {
-  calculateYearlyCommitStats,
-  calculateLanguageStatistics,
-  calculateCommitActivity,
-} from './lib/statistics';
-import type { RepositoryFilter, SortBy } from './types/filters';
+import { ErrorBoundary } from './components/layout/ErrorBoundary';
+import UserProfile from './components/UserProfile';
+import { QuickAssessment } from './components/assessment/QuickAssessment';
+import { ActivityTimeline } from './components/timeline/ActivityTimeline';
+import { ProjectSection } from './components/projects/ProjectSection';
+import { calculateActivityScore } from './lib/metrics/activity';
+import { calculateImpactScore } from './lib/metrics/impact';
+import { calculateQualityScore } from './lib/metrics/quality';
+import { calculateGrowthScore } from './lib/metrics/growth';
+import type { Repository } from './apollo/github-api.types';
 
 function App() {
   const [userName, setUserName] = useState('');
-  const [viewMode, setViewMode] = useState<'list' | 'table'>('list');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
   const [rateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 });
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // Fetch user data
-  const { data, loading, error } = useQueryUser(userName);
+  // Fetch user analytics data
+  const { profile, timeline, loading, error } = useUserAnalytics(userName);
 
-  // Extract repositories
-  const repositories = data?.user?.repositories?.nodes || [];
+  // Calculate metrics from timeline data
+  const metrics =
+    timeline.length > 0
+      ? {
+          activity: calculateActivityScore(timeline),
+          impact: calculateImpactScore(timeline),
+          quality: calculateQualityScore(timeline),
+          growth: calculateGrowthScore(timeline),
+        }
+      : null;
 
-  // Apply filters and sorting
-  const { filteredRepositories, filters, updateFilter, clearFilters, hasActiveFilters } =
-    useRepositoryFilters(repositories);
-  const { sortedRepositories, sorting, setSortBy, setSortDirection, toggleDirection } =
-    useRepositorySorting(filteredRepositories);
-
-  // Pagination
-  const totalPages = Math.ceil(sortedRepositories.length / pageSize);
-  const paginatedRepositories = sortedRepositories.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  // Reset pagination when filters/sorting change
-  const handleFilterChange = <K extends keyof RepositoryFilter>(
-    key: K,
-    value: RepositoryFilter[K]
-  ) => {
-    updateFilter(key, value);
-    setCurrentPage(1);
-  };
-
-  const handleSortChange = (field: SortBy) => {
-    setSortBy(field);
-    setCurrentPage(1);
-  };
-
-  const handleClearFilters = () => {
-    clearFilters();
-    setCurrentPage(1);
+  // Extract and categorize repositories from timeline
+  const projects = {
+    owned: timeline.flatMap((year) =>
+      year.ownedRepos.map((repo) => repo.repository)
+    ) as Repository[],
+    contributions: timeline.flatMap((year) =>
+      year.contributions.map((repo) => repo.repository)
+    ) as Repository[],
   };
 
   const handleGitHubAuth = () => {
@@ -98,170 +48,61 @@ function App() {
     console.log('GitHub OAuth not yet implemented');
   };
 
-  // Calculate statistics data
-  const yearlyStats = data?.user
-    ? calculateYearlyCommitStats({
-        year1: data.user.year1,
-        year2: data.user.year2,
-        year3: data.user.year3,
-      })
-    : [];
-
-  const languageStats = calculateLanguageStatistics(repositories);
-
-  const activityStats = data?.user
-    ? calculateCommitActivity(
-        data.user.contributionsCollection?.totalCommitContributions || 0,
-        365 // Default to 365 days (last year)
-      )
-    : { total: 0, perDay: 0, perWeek: 0, perMonth: 0 };
-
-  const tabs = [
-    {
-      value: 'profile',
-      label: 'Profile',
-      icon: '👤',
-      content: <UserProfile userName={userName} />,
-    },
-    {
-      value: 'repositories',
-      label: 'Repositories',
-      icon: '📦',
-      content: (
-        <Suspense fallback={<LoadingState variant="card" count={3} />}>
-          <div className="space-y-6">
-            {/* Controls Row */}
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              {/* Filters */}
-              <div className="w-full lg:w-96">
-                <RepositoryFilters
-                  filters={filters}
-                  onFilterChange={handleFilterChange}
-                  onClearFilters={handleClearFilters}
-                  hasActiveFilters={hasActiveFilters}
-                  availableLanguages={Array.from(
-                    new Set(
-                      repositories
-                        .map((r) => r.primaryLanguage?.name)
-                        .filter((lang): lang is string => Boolean(lang))
-                    )
-                  ).sort()}
-                />
-              </div>
-
-              {/* Sorting and View Toggle */}
-              <div className="flex flex-wrap items-center gap-3">
-                <RepositorySorting
-                  sortBy={sorting.field}
-                  sortDirection={sorting.direction}
-                  onSortByChange={handleSortChange}
-                  onSortDirectionChange={setSortDirection}
-                  onToggleDirection={toggleDirection}
-                />
-
-                {/* View Mode Toggle */}
-                <div className="bg-background flex gap-1 rounded-lg border p-1">
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                    aria-label="List view"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === 'table' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('table')}
-                    aria-label="Table view"
-                  >
-                    <Table2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Repository Display */}
-            {viewMode === 'list' ? (
-              <RepositoryList repositories={paginatedRepositories} loading={loading} />
-            ) : (
-              <RepositoryTable repositories={paginatedRepositories} loading={loading} />
-            )}
-
-            {/* Pagination */}
-            {sortedRepositories.length > 0 && (
-              <RepositoryPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pageSize={pageSize}
-                totalItems={sortedRepositories.length}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={(newSize) => {
-                  setPageSize(newSize);
-                  setCurrentPage(1);
-                }}
-              />
-            )}
-          </div>
-        </Suspense>
-      ),
-    },
-    {
-      value: 'statistics',
-      label: 'Statistics',
-      icon: '📊',
-      content: (
-        <Suspense fallback={<LoadingState variant="card" count={3} />}>
-          <ErrorBoundary>
-            <StatsOverview
-              yearlyCommits={yearlyStats}
-              languages={languageStats}
-              activity={activityStats}
-              loading={loading}
-            />
-          </ErrorBoundary>
-        </Suspense>
-      ),
-    },
-  ];
-
   return (
-    <main className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4 sm:right-6 lg:right-8">
-        <ThemeToggle />
+    <div className="bg-background min-h-screen">
+      <div className="container mx-auto space-y-8 p-4 pb-16">
+        {/* Search Header with Theme Toggle */}
+        <SearchHeader userName={userName} onSearch={setUserName} />
+
+        {/* Rate Limit Banner */}
+        <RateLimitBanner
+          remaining={rateLimit.remaining}
+          limit={rateLimit.limit}
+          reset={rateLimit.reset}
+          onAuthClick={() => setShowAuthModal(true)}
+        />
+
+        {/* Error Display */}
+        {error && (
+          <div
+            className="border-destructive text-destructive rounded-lg border p-4"
+            role="alert"
+            aria-live="assertive"
+          >
+            Error: {error.message}
+          </div>
+        )}
+
+        {/* Main Content - Single Page Layout */}
+        {userName && profile && !error && (
+          <ErrorBoundary>
+            {/* User Profile Section */}
+            <UserProfile userName={userName} />
+
+            {/* Quick Assessment - 4 Key Metrics */}
+            {metrics && <QuickAssessment metrics={metrics} loading={loading} />}
+
+            {/* Activity Timeline - Year by Year */}
+            <ActivityTimeline timeline={timeline} loading={loading} />
+
+            {/* Project Section - Owned vs Contributions */}
+            <ProjectSection projects={projects} loading={loading} />
+          </ErrorBoundary>
+        )}
+
+        {/* Loading State - Show UserProfile for loading indication */}
+        {userName && loading && !profile && <UserProfile userName={userName} />}
+
+        {/* Auth Required Modal */}
+        <AuthRequiredModal
+          open={showAuthModal}
+          onOpenChange={setShowAuthModal}
+          onGitHubAuth={handleGitHubAuth}
+          remaining={rateLimit.remaining}
+          limit={rateLimit.limit}
+        />
       </div>
-
-      {/* Search Form */}
-      <div className="mb-8">
-        <SearchForm userName={userName} setUserName={setUserName} />
-      </div>
-
-      {/* Rate Limit Banner */}
-      <RateLimitBanner
-        remaining={rateLimit.remaining}
-        limit={rateLimit.limit}
-        reset={rateLimit.reset}
-        onAuthClick={() => setShowAuthModal(true)}
-      />
-
-      {/* Main Content - Show tabs only when user is loaded */}
-      {userName && data && !loading && !error && (
-        <MainTabs tabs={tabs} defaultValue="profile" />
-      )}
-
-      {/* Show UserProfile directly when loading or error (maintains existing behavior) */}
-      {userName && (loading || error) && <UserProfile userName={userName} />}
-
-      {/* Auth Required Modal */}
-      <AuthRequiredModal
-        open={showAuthModal}
-        onOpenChange={setShowAuthModal}
-        onGitHubAuth={handleGitHubAuth}
-        remaining={rateLimit.remaining}
-        limit={rateLimit.limit}
-      />
-    </main>
+    </div>
   );
 }
 

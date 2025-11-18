@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 export interface MetricCardProps {
   title: string;
   score: number;
-  level: 'Low' | 'Moderate' | 'High' | 'Strong' | 'Excellent' | 'Exceptional' | 'Minimal' | 'Good' | 'Fair' | 'Weak';
+  level: 'Low' | 'Moderate' | 'High' | 'Strong' | 'Excellent' | 'Exceptional' | 'Minimal' | 'Good' | 'Fair' | 'Weak' | 'Rapid Growth' | 'Growing' | 'Stable' | 'Declining' | 'Rapid Decline';
   breakdown?: Array<{
     label: string;
     value: number;
@@ -27,17 +27,17 @@ export function MetricCard({
     return (
       <Card className="animate-pulse">
         <CardHeader>
-          <div className="h-6 w-1/2 rounded bg-muted" />
+          <div className="bg-muted h-6 w-1/2 rounded" />
         </CardHeader>
         <CardContent>
-          <div className="h-12 rounded bg-muted" />
+          <div className="bg-muted h-12 rounded" />
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+    <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">{title}</CardTitle>
         {onExplainClick && (
@@ -55,13 +55,13 @@ export function MetricCard({
         {/* Score display */}
         <div className="text-center">
           <div className="text-4xl font-bold">{score}%</div>
-          <div className="text-sm text-muted-foreground">{level}</div>
+          <div className="text-muted-foreground text-sm">{level}</div>
         </div>
 
         {/* Progress bar */}
-        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
           <div
-            className="h-2 rounded-full bg-primary transition-all duration-500 ease-out"
+            className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${score}%` }}
           />
         </div>

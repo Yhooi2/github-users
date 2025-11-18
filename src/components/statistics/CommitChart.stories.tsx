@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+ 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CommitChart } from './CommitChart';
 import type { YearlyCommitStats } from '@/lib/statistics';

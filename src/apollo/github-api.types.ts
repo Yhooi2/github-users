@@ -63,6 +63,7 @@ type PageInfo = {
   // Repository owner type
   type RepositoryOwner = {
     login: string;
+    avatarUrl: string;
   };
 
   // Parent repository type (for forks)
@@ -96,6 +97,9 @@ type PageInfo = {
     forkCount: number;
     stargazerCount: number;
     url: string;
+
+    // Owner
+    owner: RepositoryOwner;
 
     // Authenticity fields
     isFork: boolean;

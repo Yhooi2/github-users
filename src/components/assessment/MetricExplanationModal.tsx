@@ -90,7 +90,7 @@ export function MetricExplanationModal({
           <h4 className="font-medium">Score Breakdown:</h4>
           {Object.entries(breakdown).map(([key, value]) => (
             <div key={key} className="flex justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 {explanation.components[key] || key}
               </span>
               <span className="font-medium">{value} pts</span>
