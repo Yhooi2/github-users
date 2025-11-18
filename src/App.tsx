@@ -52,7 +52,7 @@ function App() {
   const [viewMode, setViewMode] = useState<'list' | 'table'>('list');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [rateLimit, setRateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 });
+  const [rateLimit, _setRateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 });
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Fetch user data
