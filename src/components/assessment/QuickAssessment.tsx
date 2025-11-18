@@ -4,7 +4,7 @@ export interface QuickAssessmentProps {
   metrics: {
     activity: { score: number; level: 'High' | 'Moderate' | 'Low' };
     impact: { score: number; level: 'Exceptional' | 'Strong' | 'Moderate' | 'Low' | 'Minimal' };
-    quality: { score: number; level: 'Excellent' | 'High' | 'Moderate' | 'Low' | 'Minimal' };
+    quality: { score: number; level: 'Excellent' | 'Strong' | 'Good' | 'Fair' | 'Weak' };
     growth: { score: number; level: 'High' | 'Moderate' | 'Low' };
   };
   loading?: boolean;

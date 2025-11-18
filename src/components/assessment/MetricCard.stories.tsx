@@ -114,19 +114,35 @@ export const QualityExcellent: Story = {
   },
 };
 
-export const QualityHigh: Story = {
+export const QualityStrong: Story = {
   args: {
     title: 'Quality',
     score: 75,
-    level: 'High',
+    level: 'Strong',
   },
 };
 
-export const QualityModerate: Story = {
+export const QualityGood: Story = {
   args: {
     title: 'Quality',
     score: 50,
-    level: 'Moderate',
+    level: 'Good',
+  },
+};
+
+export const QualityFair: Story = {
+  args: {
+    title: 'Quality',
+    score: 30,
+    level: 'Fair',
+  },
+};
+
+export const QualityWeak: Story = {
+  args: {
+    title: 'Quality',
+    score: 10,
+    level: 'Weak',
   },
 };
 

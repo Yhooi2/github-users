@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 export interface MetricCardProps {
   title: string;
   score: number;
-  level: 'Low' | 'Moderate' | 'High' | 'Strong' | 'Excellent' | 'Exceptional' | 'Minimal';
+  level: 'Low' | 'Moderate' | 'High' | 'Strong' | 'Excellent' | 'Exceptional' | 'Minimal' | 'Good' | 'Fair' | 'Weak';
   breakdown?: Array<{
     label: string;
     value: number;

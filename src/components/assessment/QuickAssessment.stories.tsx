@@ -40,7 +40,7 @@ export const AveragePerformer: Story = {
     metrics: {
       activity: { score: 55, level: 'Moderate' },
       impact: { score: 48, level: 'Moderate' },
-      quality: { score: 52, level: 'Moderate' },
+      quality: { score: 52, level: 'Good' },
       growth: { score: 25, level: 'Moderate' },
     },
   },
@@ -51,7 +51,7 @@ export const LowPerformer: Story = {
     metrics: {
       activity: { score: 25, level: 'Low' },
       impact: { score: 15, level: 'Minimal' },
-      quality: { score: 30, level: 'Low' },
+      quality: { score: 30, level: 'Fair' },
       growth: { score: 10, level: 'Low' },
     },
   },
@@ -62,7 +62,7 @@ export const Loading: Story = {
     metrics: {
       activity: { score: 0, level: 'Low' },
       impact: { score: 0, level: 'Minimal' },
-      quality: { score: 0, level: 'Minimal' },
+      quality: { score: 0, level: 'Weak' },
       growth: { score: 0, level: 'Low' },
     },
     loading: true,
