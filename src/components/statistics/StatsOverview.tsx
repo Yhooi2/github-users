@@ -1,10 +1,28 @@
-import { CommitChart } from './CommitChart';
-import { LanguageChart } from './LanguageChart';
-import { ActivityChart } from './ActivityChart';
+import { lazy, Suspense } from 'react';
 import type { YearlyCommitStats, LanguageStats, CommitActivity } from '@/lib/statistics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { BarChart3, Code2, Activity, TrendingUp } from 'lucide-react';
+
+// Lazy load chart components to reduce initial bundle size
+const CommitChart = lazy(() => import('./CommitChart').then(m => ({ default: m.CommitChart })));
+const LanguageChart = lazy(() => import('./LanguageChart').then(m => ({ default: m.LanguageChart })));
+const ActivityChart = lazy(() => import('./ActivityChart').then(m => ({ default: m.ActivityChart })));
+
+// Loading fallback for lazy-loaded charts
+function ChartLoadingFallback() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-[300px] w-full" />
+      <div className="flex gap-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+    </div>
+  );
+}
 
 type Props = {
   /**
@@ -129,16 +147,18 @@ export function StatsOverview({
                 <CardDescription>Yearly commit contributions</CardDescription>
               </CardHeader>
               <CardContent>
-                <CommitChart
-                  data={yearlyCommits || []}
-                  loading={loading}
-                  error={error}
-                  loadingMessage={loadingMessage}
-                  errorTitle={errorTitle}
-                  errorDescription={errorDescription}
-                  variant="line"
-                  showTrend={true}
-                />
+                <Suspense fallback={<ChartLoadingFallback />}>
+                  <CommitChart
+                    data={yearlyCommits || []}
+                    loading={loading}
+                    error={error}
+                    loadingMessage={loadingMessage}
+                    errorTitle={errorTitle}
+                    errorDescription={errorDescription}
+                    variant="line"
+                    showTrend={true}
+                  />
+                </Suspense>
               </CardContent>
             </Card>
 
@@ -151,15 +171,17 @@ export function StatsOverview({
                 <CardDescription>Average commits per period</CardDescription>
               </CardHeader>
               <CardContent>
-                <ActivityChart
-                  data={activity}
-                  loading={loading}
-                  error={error}
-                  loadingMessage={loadingMessage}
-                  errorTitle={errorTitle}
-                  errorDescription={errorDescription}
-                  showTotal={true}
-                />
+                <Suspense fallback={<ChartLoadingFallback />}>
+                  <ActivityChart
+                    data={activity}
+                    loading={loading}
+                    error={error}
+                    loadingMessage={loadingMessage}
+                    errorTitle={errorTitle}
+                    errorDescription={errorDescription}
+                    showTotal={true}
+                  />
+                </Suspense>
               </CardContent>
             </Card>
           </div>
@@ -173,17 +195,19 @@ export function StatsOverview({
               <CardDescription>Programming languages used across repositories</CardDescription>
             </CardHeader>
             <CardContent>
-              <LanguageChart
-                data={languages || []}
-                loading={loading}
-                error={error}
-                loadingMessage={loadingMessage}
-                errorTitle={errorTitle}
-                errorDescription={errorDescription}
-                variant="pie"
-                maxLanguages={5}
-                showLegend={true}
-              />
+              <Suspense fallback={<ChartLoadingFallback />}>
+                <LanguageChart
+                  data={languages || []}
+                  loading={loading}
+                  error={error}
+                  loadingMessage={loadingMessage}
+                  errorTitle={errorTitle}
+                  errorDescription={errorDescription}
+                  variant="pie"
+                  maxLanguages={5}
+                  showLegend={true}
+                />
+              </Suspense>
             </CardContent>
           </Card>
         </TabsContent>
@@ -197,16 +221,18 @@ export function StatsOverview({
             <CardDescription>Yearly commit contributions over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <CommitChart
-              data={yearlyCommits || []}
-              loading={loading}
-              error={error}
-              loadingMessage={loadingMessage}
-              errorTitle={errorTitle}
-              errorDescription={errorDescription}
-              variant="line"
-              showTrend={true}
-            />
+            <Suspense fallback={<ChartLoadingFallback />}>
+              <CommitChart
+                data={yearlyCommits || []}
+                loading={loading}
+                error={error}
+                loadingMessage={loadingMessage}
+                errorTitle={errorTitle}
+                errorDescription={errorDescription}
+                variant="line"
+                showTrend={true}
+              />
+            </Suspense>
           </CardContent>
         </Card>
       </TabsContent>
@@ -219,17 +245,19 @@ export function StatsOverview({
             <CardDescription>Programming languages used across repositories</CardDescription>
           </CardHeader>
           <CardContent>
-            <LanguageChart
-              data={languages || []}
-              loading={loading}
-              error={error}
-              loadingMessage={loadingMessage}
-              errorTitle={errorTitle}
-              errorDescription={errorDescription}
-              variant="donut"
-              maxLanguages={8}
-              showLegend={true}
-            />
+            <Suspense fallback={<ChartLoadingFallback />}>
+              <LanguageChart
+                data={languages || []}
+                loading={loading}
+                error={error}
+                loadingMessage={loadingMessage}
+                errorTitle={errorTitle}
+                errorDescription={errorDescription}
+                variant="donut"
+                maxLanguages={8}
+                showLegend={true}
+              />
+            </Suspense>
           </CardContent>
         </Card>
       </TabsContent>
@@ -242,15 +270,17 @@ export function StatsOverview({
             <CardDescription>Average commits per time period</CardDescription>
           </CardHeader>
           <CardContent>
-            <ActivityChart
-              data={activity}
-              loading={loading}
-              error={error}
-              loadingMessage={loadingMessage}
-              errorTitle={errorTitle}
-              errorDescription={errorDescription}
-              showTotal={true}
-            />
+            <Suspense fallback={<ChartLoadingFallback />}>
+              <ActivityChart
+                data={activity}
+                loading={loading}
+                error={error}
+                loadingMessage={loadingMessage}
+                errorTitle={errorTitle}
+                errorDescription={errorDescription}
+                showTotal={true}
+              />
+            </Suspense>
           </CardContent>
         </Card>
       </TabsContent>

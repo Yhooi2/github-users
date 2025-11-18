@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StatsOverview } from './StatsOverview';
 import type { YearlyCommitStats, LanguageStats, CommitActivity } from '@/lib/statistics';
@@ -263,7 +263,7 @@ describe('StatsOverview', () => {
   });
 
   describe('Loading State', () => {
-    it('should show loading state in commits tab', () => {
+    it('should show loading state in commits tab', async () => {
       render(
         <StatsOverview
           yearlyCommits={null}
@@ -274,10 +274,12 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Loading commit statistics...')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Loading commit statistics...')).toBeInTheDocument();
+      });
     });
 
-    it('should show loading state in languages tab', () => {
+    it('should show loading state in languages tab', async () => {
       render(
         <StatsOverview
           yearlyCommits={null}
@@ -288,10 +290,12 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Loading language statistics...')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Loading language statistics...')).toBeInTheDocument();
+      });
     });
 
-    it('should show loading state in activity tab', () => {
+    it('should show loading state in activity tab', async () => {
       render(
         <StatsOverview
           yearlyCommits={null}
@@ -302,10 +306,12 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Loading activity statistics...')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Loading activity statistics...')).toBeInTheDocument();
+      });
     });
 
-    it('should show custom loading message', () => {
+    it('should show custom loading message', async () => {
       render(
         <StatsOverview
           yearlyCommits={null}
@@ -317,12 +323,14 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Fetching GitHub statistics...')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Fetching GitHub statistics...')).toBeInTheDocument();
+      });
     });
   });
 
   describe('Error State', () => {
-    it('should show error state in commits tab', () => {
+    it('should show error state in commits tab', async () => {
       const error = new Error('API Error');
 
       render(
@@ -335,10 +343,12 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Failed to load commit statistics')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Failed to load commit statistics')).toBeInTheDocument();
+      });
     });
 
-    it('should show error state in languages tab', () => {
+    it('should show error state in languages tab', async () => {
       const error = new Error('API Error');
 
       render(
@@ -351,10 +361,12 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Failed to load language statistics')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Failed to load language statistics')).toBeInTheDocument();
+      });
     });
 
-    it('should show error state in activity tab', () => {
+    it('should show error state in activity tab', async () => {
       const error = new Error('API Error');
 
       render(
@@ -367,10 +379,12 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Failed to load activity statistics')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Failed to load activity statistics')).toBeInTheDocument();
+      });
     });
 
-    it('should show custom error messages', () => {
+    it('should show custom error messages', async () => {
       const error = new Error('Network timeout');
 
       render(
@@ -385,8 +399,10 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Connection Error')).toBeInTheDocument();
-      expect(screen.getByText('Unable to load statistics')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Connection Error')).toBeInTheDocument();
+        expect(screen.getByText('Unable to load statistics')).toBeInTheDocument();
+      });
     });
   });
 
