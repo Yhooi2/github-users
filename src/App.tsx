@@ -16,7 +16,7 @@ import type { Repository } from './apollo/github-api.types';
 
 function App() {
   const [userName, setUserName] = useState('');
-  const [rateLimit, _setRateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 });
+  const [rateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 });
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Fetch user analytics data
