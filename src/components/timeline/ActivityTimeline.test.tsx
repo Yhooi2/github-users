@@ -1,51 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ActivityTimeline } from './ActivityTimeline'
-import type { YearData } from '@/hooks/useUserAnalytics'
-
-const mockRepository = {
-  name: 'test-repo',
-  url: 'https://github.com/user/test-repo',
-  description: 'Test repository',
-  stargazerCount: 100,
-  forkCount: 10,
-  watchers: { totalCount: 5 },
-  isFork: false,
-  isArchived: false,
-  primaryLanguage: { name: 'TypeScript', color: '#3178c6' },
-  repositoryTopics: { nodes: [] },
-  updatedAt: '2025-01-15T10:30:00Z',
-  defaultBranchRef: null,
-}
-
-const mockTimeline: YearData[] = [
-  {
-    year: 2025,
-    totalCommits: 450,
-    totalIssues: 30,
-    totalPRs: 25,
-    totalReviews: 15,
-    ownedRepos: [
-      {
-        repository: mockRepository,
-        contributions: { totalCount: 200 },
-      },
-    ],
-    contributions: [],
-  },
-  {
-    year: 2024,
-    totalCommits: 320,
-    totalIssues: 20,
-    totalPRs: 15,
-    totalReviews: 10,
-    ownedRepos: [],
-    contributions: [],
-  },
-]
+import { createMockTimeline, createMockYearData } from './__tests__/fixtures'
 
 describe('ActivityTimeline', () => {
   it('renders timeline with years', () => {
+    const mockTimeline = createMockTimeline()
     render(<ActivityTimeline timeline={mockTimeline} />)
 
     expect(screen.getByText('📊 Activity Timeline')).toBeInTheDocument()
@@ -67,6 +27,7 @@ describe('ActivityTimeline', () => {
   })
 
   it('calculates max commits correctly', () => {
+    const mockTimeline = createMockTimeline()
     render(<ActivityTimeline timeline={mockTimeline} />)
 
     // The component should calculate maxCommits as 450 (from 2025)
@@ -76,6 +37,7 @@ describe('ActivityTimeline', () => {
   })
 
   it('renders correct number of year rows', () => {
+    const mockTimeline = createMockTimeline()
     const { container } = render(<ActivityTimeline timeline={mockTimeline} />)
 
     // Each year is rendered in a button element
@@ -84,13 +46,14 @@ describe('ActivityTimeline', () => {
   })
 
   it('renders timeline with proper ARIA label', () => {
+    const mockTimeline = createMockTimeline()
     render(<ActivityTimeline timeline={mockTimeline} />)
 
     expect(screen.getByRole('region', { name: 'Activity Timeline' })).toBeInTheDocument()
   })
 
   it('renders single year correctly', () => {
-    const singleYear = [mockTimeline[0]]
+    const singleYear = [createMockYearData()]
     render(<ActivityTimeline timeline={singleYear} />)
 
     expect(screen.getByText('2025')).toBeInTheDocument()
@@ -98,8 +61,8 @@ describe('ActivityTimeline', () => {
   })
 
   it('handles zero commits gracefully', () => {
-    const zeroCommitTimeline: YearData[] = [
-      {
+    const zeroCommitTimeline = [
+      createMockYearData({
         year: 2020,
         totalCommits: 0,
         totalIssues: 0,
@@ -107,7 +70,7 @@ describe('ActivityTimeline', () => {
         totalReviews: 0,
         ownedRepos: [],
         contributions: [],
-      },
+      }),
     ]
 
     render(<ActivityTimeline timeline={zeroCommitTimeline} />)

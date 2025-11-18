@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import type { Repository } from '@/apollo/github-api.types'
 
 /**
  * GraphQL query to fetch user contributions for a specific year
@@ -109,77 +110,6 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
     }
   }
 `
-
-/**
- * TypeScript types for repository data
- */
-export interface Repository {
-  id: string
-  name: string
-  nameWithOwner: string
-  url: string
-  description: string | null
-  createdAt: string
-  updatedAt: string
-  pushedAt: string | null
-  stargazerCount: number
-  forkCount: number
-  isFork: boolean
-  isTemplate: boolean
-  isArchived: boolean
-  isPrivate: boolean
-  diskUsage: number | null
-  homepageUrl: string | null
-  primaryLanguage: {
-    name: string
-    color: string
-  } | null
-  owner: {
-    login: string
-    avatarUrl: string
-  }
-  parent: {
-    name: string
-    url: string
-    owner: {
-      login: string
-    }
-  } | null
-  watchers: {
-    totalCount: number
-  }
-  issues: {
-    totalCount: number
-  }
-  repositoryTopics: {
-    nodes: Array<{
-      topic: {
-        name: string
-      }
-    }>
-  }
-  languages: {
-    totalSize: number
-    edges: Array<{
-      size: number
-      node: {
-        name: string
-      }
-    }>
-  }
-  licenseInfo: {
-    name: string
-    spdxId: string
-  } | null
-  defaultBranchRef: {
-    name: string
-    target: {
-      history: {
-        totalCount: number
-      }
-    } | null
-  } | null
-}
 
 /**
  * Repository with contribution count
