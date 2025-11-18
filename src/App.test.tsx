@@ -2,8 +2,60 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
-import * as useQueryUserModule from './apollo/useQueryUser';
-import { createMockUser, createMockRepository } from './test/mocks/github-data';
+import { ApolloProvider } from '@apollo/client';
+import { MockedProvider } from '@apollo/client/testing';
+import type { YearData } from './hooks/useUserAnalytics';
+
+// Mock useUserAnalytics hook
+const mockUseUserAnalytics = vi.fn();
+vi.mock('./hooks/useUserAnalytics', () => ({
+  useUserAnalytics: () => mockUseUserAnalytics(),
+}));
+
+// Mock child components
+vi.mock('./components/layout/SearchHeader', () => ({
+  SearchHeader: ({ userName, onSearch }: { userName: string; onSearch: (name: string) => void }) => (
+    <div data-testid="search-header">
+      <input
+        data-testid="search-input"
+        value={userName}
+        onChange={(e) => onSearch(e.target.value)}
+        placeholder="Search GitHub User..."
+      />
+      <button data-testid="search-button" onClick={() => onSearch(userName)}>
+        Search
+      </button>
+    </div>
+  ),
+}));
+
+vi.mock('./components/UserProfile', () => ({
+  default: () => <div data-testid="user-profile">User Profile</div>,
+}));
+
+vi.mock('./components/assessment/QuickAssessment', () => ({
+  QuickAssessment: () => <div data-testid="quick-assessment">Quick Assessment</div>,
+}));
+
+vi.mock('./components/timeline/ActivityTimeline', () => ({
+  ActivityTimeline: () => <div data-testid="activity-timeline">Activity Timeline</div>,
+}));
+
+vi.mock('./components/projects/ProjectSection', () => ({
+  ProjectSection: () => <div data-testid="project-section">Project Section</div>,
+}));
+
+vi.mock('./components/layout/RateLimitBanner', () => ({
+  RateLimitBanner: () => <div data-testid="rate-limit-banner">Rate Limit Banner</div>,
+}));
+
+vi.mock('./components/auth/AuthRequiredModal', () => ({
+  AuthRequiredModal: () => <div data-testid="auth-modal">Auth Modal</div>,
+}));
+
+vi.mock('./components/layout/ErrorBoundary', () => ({
+  ErrorBoundary: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 // Mock sonner toast
 vi.mock('sonner', () => ({
@@ -14,495 +66,356 @@ vi.mock('sonner', () => ({
   Toaster: () => null,
 }));
 
-describe('App Integration Tests', () => {
-  const mockUser = createMockUser({
+describe('App Integration Tests - Phase 5 Single Page Layout', () => {
+  const mockProfile = {
+    id: '1',
     login: 'testuser',
     name: 'Test User',
-    repositories: {
-      totalCount: 50,
-      pageInfo: { endCursor: 'cursor', hasNextPage: false },
-      nodes: [
-        createMockRepository({
-          name: 'repo-1',
-          stargazerCount: 100,
-          primaryLanguage: { name: 'TypeScript', color: '#3178c6' },
-        }),
-        createMockRepository({
-          name: 'repo-2',
-          stargazerCount: 50,
-          primaryLanguage: { name: 'JavaScript', color: '#f1e05a' },
-        }),
-        createMockRepository({
-          name: 'repo-3',
-          stargazerCount: 25,
-          primaryLanguage: { name: 'Python', color: '#3572A5' },
-          isFork: true,
-        }),
-      ],
+    avatarUrl: 'https://avatar.url',
+    bio: 'Test bio',
+    url: 'https://github.com/testuser',
+    location: 'Test Location',
+    createdAt: '2020-01-01T00:00:00Z',
+    followers: { totalCount: 100 },
+    following: { totalCount: 50 },
+    gists: { totalCount: 10 },
+  };
+
+  const mockTimeline: YearData[] = [
+    {
+      year: 2024,
+      totalCommits: 250,
+      totalIssues: 30,
+      totalPRs: 40,
+      totalReviews: 20,
+      ownedRepos: [],
+      contributions: [],
     },
-  });
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe('Basic Rendering', () => {
-    it('should render search form on initial load', () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: null,
+    it('should render search header on initial load', () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: null,
+        timeline: [],
         loading: false,
-        error: null,
+        error: undefined,
       });
 
       render(<App />);
 
-      expect(screen.getByPlaceholderText(/search github user/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
+      expect(screen.getByTestId('search-header')).toBeInTheDocument();
+      expect(screen.getByTestId('search-input')).toBeInTheDocument();
     });
 
-    it('should not show tabs before search', () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: null,
+    it('should not show content sections before search', () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: null,
+        timeline: [],
         loading: false,
-        error: null,
+        error: undefined,
       });
 
       render(<App />);
 
-      expect(screen.queryByRole('tab', { name: /profile/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('tab', { name: /repositories/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('tab', { name: /statistics/i })).not.toBeInTheDocument();
+      expect(screen.queryByTestId('user-profile')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('quick-assessment')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('activity-timeline')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('project-section')).not.toBeInTheDocument();
     });
 
-    it('should render theme toggle', () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: null,
+    it('should render rate limit banner', () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: null,
+        timeline: [],
         loading: false,
-        error: null,
+        error: undefined,
       });
 
       render(<App />);
 
-      expect(screen.getByRole('button', { name: /switch to dark mode|switch to light mode/i })).toBeInTheDocument();
+      expect(screen.getByTestId('rate-limit-banner')).toBeInTheDocument();
+    });
+
+    it('should render auth modal', () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: null,
+        timeline: [],
+        loading: false,
+        error: undefined,
+      });
+
+      render(<App />);
+
+      expect(screen.getByTestId('auth-modal')).toBeInTheDocument();
     });
   });
 
   describe('Search Flow', () => {
-    it('should show tabs after successful user search', async () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: { user: mockUser },
+    it('should show all sections after successful user search', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: mockTimeline,
         loading: false,
-        error: null,
+        error: undefined,
       });
 
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username to trigger tabs rendering
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input');
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
 
+      // Wait for all sections to appear
       await waitFor(() => {
-        // UserProfile должен рендериться через MainTabs
-        expect(screen.getByRole('tab', { name: /profile/i })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: /statistics/i })).toBeInTheDocument();
+        expect(screen.getByTestId('user-profile')).toBeInTheDocument();
+        expect(screen.getByTestId('quick-assessment')).toBeInTheDocument();
+        expect(screen.getByTestId('activity-timeline')).toBeInTheDocument();
+        expect(screen.getByTestId('project-section')).toBeInTheDocument();
       });
     });
 
-    it('should display loading state during search', () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: null,
+    it('should display loading state during search', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: null,
+        timeline: [],
         loading: true,
-        error: null,
+        error: undefined,
       });
 
+      const user = userEvent.setup();
       render(<App />);
 
-      // Should show UserProfile component which handles loading state
-      expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+      const input = screen.getByTestId('search-input');
+      await user.type(input, 'testuser');
+
+      // Should show UserProfile for loading indication
+      await waitFor(() => {
+        expect(screen.getByTestId('user-profile')).toBeInTheDocument();
+      });
+
+      // Should not show other sections while loading
+      expect(screen.queryByTestId('quick-assessment')).not.toBeInTheDocument();
     });
 
-    it('should handle search errors gracefully', () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: null,
+    it('should handle search errors gracefully', async () => {
+      const error = {
+        message: 'User not found',
+        graphQLErrors: [],
+        clientErrors: [],
+        networkError: null,
+        extraInfo: undefined,
+        name: 'ApolloError',
+      };
+
+      mockUseUserAnalytics.mockReturnValue({
+        profile: null,
+        timeline: [],
         loading: false,
-        error: new Error('User not found'),
+        error,
       });
 
+      const user = userEvent.setup();
       render(<App />);
 
-      // Should show UserProfile component which handles error state
-      expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+      const input = screen.getByTestId('search-input');
+      await user.type(input, 'invaliduser');
+
+      // Should show error message
+      await waitFor(() => {
+        expect(screen.getByText(/error.*user not found/i)).toBeInTheDocument();
+      });
+
+      // Should not show content sections
+      expect(screen.queryByTestId('quick-assessment')).not.toBeInTheDocument();
     });
   });
 
-  describe('Tab Navigation', () => {
-    beforeEach(() => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: { user: mockUser },
+  describe('Single Page Layout', () => {
+    it('should render all sections in vertical order', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: mockTimeline,
         loading: false,
-        error: null,
+        error: undefined,
       });
-    });
 
-    it('should have profile tab selected by default', async () => {
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username to trigger tabs rendering
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input');
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
 
       await waitFor(() => {
-        const profileTab = screen.getByRole('tab', { name: /profile/i });
-        expect(profileTab).toHaveAttribute('data-state', 'active');
+        const sections = [
+          screen.getByTestId('user-profile'),
+          screen.getByTestId('quick-assessment'),
+          screen.getByTestId('activity-timeline'),
+          screen.getByTestId('project-section'),
+        ];
+
+        // All sections should be visible (no tabs)
+        sections.forEach((section) => {
+          expect(section).toBeVisible();
+        });
       });
     });
 
-    it('should switch between tabs correctly', async () => {
+    it('should not have tab navigation', () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: mockTimeline,
+        loading: false,
+        error: undefined,
+      });
+
+      render(<App />);
+
+      // Old tab-based navigation should not exist
+      expect(screen.queryByRole('tab', { name: /profile/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /repositories/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /statistics/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+    });
+
+    it('should show QuickAssessment when metrics are available', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: mockTimeline,
+        loading: false,
+        error: undefined,
+      });
+
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username to trigger tabs rendering
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input');
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
-      });
-
-      // Click Repositories tab
-      const reposTab = screen.getByRole('tab', { name: /repositories/i });
-      await user.click(reposTab);
-
-      await waitFor(() => {
-        expect(reposTab).toHaveAttribute('data-state', 'active');
-      });
-
-      // Click Statistics tab
-      const statsTab = screen.getByRole('tab', { name: /statistics/i });
-      await user.click(statsTab);
-
-      await waitFor(() => {
-        expect(statsTab).toHaveAttribute('data-state', 'active');
+        expect(screen.getByTestId('quick-assessment')).toBeInTheDocument();
       });
     });
 
-    it('should render tab content appropriately', async () => {
+    it('should not show QuickAssessment when no timeline data', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: [],
+        loading: false,
+        error: undefined,
+      });
+
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input');
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
 
+      // User profile should be shown
       await waitFor(() => {
-        expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
-      }, { timeout: 10000 });
+        expect(screen.getByTestId('user-profile')).toBeInTheDocument();
+      });
 
-      // Click Repositories tab
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText('repo-1')).toBeInTheDocument();
-        expect(screen.getByText('repo-2')).toBeInTheDocument();
-        expect(screen.getByText('repo-3')).toBeInTheDocument();
-      }, { timeout: 10000 });
+      // QuickAssessment should not be shown without timeline data
+      expect(screen.queryByTestId('quick-assessment')).not.toBeInTheDocument();
     });
   });
 
-  describe('Repository Features', () => {
-    const setupWithUser = async () => {
-      const user = userEvent.setup();
-      render(<App />);
-
-      // Set username to trigger tabs
-      const input = screen.getByPlaceholderText(/search github user/i);
-      await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
-
-      // Wait for tabs to appear
-      await waitFor(() => {
-        expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
-      });
-
-      return user;
-    };
-
-    beforeEach(() => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: { user: mockUser },
+  describe('Progressive Disclosure', () => {
+    it('should show UserProfile first when data loads', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: mockTimeline,
         loading: false,
-        error: null,
-      });
-    });
-
-    it('should show repository list by default', async () => {
-      const user = await setupWithUser();
-
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(
-        () => {
-          // Verify repository content is visible
-          expect(screen.getByText('repo-1')).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-    });
-
-    it('should switch between list and table views', async () => {
-      const user = await setupWithUser();
-
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(
-        () => {
-          expect(screen.getByRole('button', { name: /table view/i })).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-
-      // Switch to table view
-      await user.click(screen.getByRole('button', { name: /table view/i }));
-
-      await waitFor(
-        () => {
-          expect(screen.getByRole('table')).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-
-      // Verify list view button is now available
-      expect(screen.getByRole('button', { name: /list view/i })).toBeInTheDocument();
-    });
-
-    it('should filter repositories by language', async () => {
-      const user = await setupWithUser();
-
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(
-        () => {
-          // All repos should be visible initially
-          expect(screen.getByText('repo-1')).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-
-      // Click on Filters header to expand
-      await user.click(screen.getByText('Filters'));
-
-      // Verify filters component is rendered by checking for filter label
-      await waitFor(
-        () => {
-          expect(screen.getByLabelText(/language/i)).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-    });
-
-    it('should render filters controls', async () => {
-      const user = await setupWithUser();
-
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(
-        () => {
-          expect(screen.getByText('repo-1')).toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
-
-      // Click on Filters header to expand
-      await user.click(screen.getByText('Filters'));
-
-      // Verify filter controls exist
-      expect(screen.getByLabelText(/minimum stars/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/language/i)).toBeInTheDocument();
-    });
-
-    it('should change sorting when sort control is used', async () => {
-      const user = await setupWithUser();
-
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(
-        () => {
-          expect(screen.getByText('repo-1')).toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
-
-      // Verify sorting control exists
-      expect(screen.getByText(/sort by/i)).toBeInTheDocument();
-
-      // Default is sorted by stars descending (repo-1, repo-2, repo-3)
-      const cards = screen.queryAllByRole('article');
-      if (cards.length > 0) {
-        expect(cards[0]).toHaveTextContent('repo-1');
-      }
-    });
-
-    it('should show pagination when there are many repositories', async () => {
-      const manyRepos = Array.from({ length: 25 }, (_, i) =>
-        createMockRepository({ name: `repo-${i}` })
-      );
-
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: {
-          user: createMockUser({
-            repositories: {
-              totalCount: 25,
-              pageInfo: { endCursor: 'cursor', hasNextPage: false },
-              nodes: manyRepos,
-            },
-          }),
-        },
-        loading: false,
-        error: null,
+        error: undefined,
       });
 
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username to trigger tabs rendering
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input');
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
-      });
-
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(() => {
-        // Should show pagination controls
-        expect(screen.getByRole('button', { name: /next page/i })).toBeInTheDocument();
-        expect(screen.getByText(/page 1 of 2/i)).toBeInTheDocument();
+        expect(screen.getByTestId('user-profile')).toBeInTheDocument();
       });
     });
-  });
 
-  describe('Statistics', () => {
-    beforeEach(() => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: { user: mockUser },
+    it('should show all sections when profile and timeline are loaded', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: mockTimeline,
         loading: false,
-        error: null,
+        error: undefined,
       });
-    });
 
-    it('should render statistics tab with charts', async () => {
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username to trigger tabs rendering
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input');
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('tab', { name: /statistics/i })).toBeInTheDocument();
-      });
-
-      await user.click(screen.getByRole('tab', { name: /statistics/i }));
-
-      await waitFor(() => {
-        // StatsOverview has nested tabs
-        expect(screen.getByRole('tab', { name: /overview/i })).toBeInTheDocument();
+        expect(screen.getByTestId('user-profile')).toBeInTheDocument();
+        expect(screen.getByTestId('quick-assessment')).toBeInTheDocument();
+        expect(screen.getByTestId('activity-timeline')).toBeInTheDocument();
+        expect(screen.getByTestId('project-section')).toBeInTheDocument();
       });
     });
   });
 
   describe('Edge Cases', () => {
-    it('should handle user with no repositories', async () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: {
-          user: createMockUser({
-            repositories: {
-              totalCount: 0,
-              pageInfo: { endCursor: null, hasNextPage: false },
-              nodes: [],
-            },
-          }),
-        },
+    it('should handle user with empty timeline', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: mockProfile,
+        timeline: [],
         loading: false,
-        error: null,
+        error: undefined,
       });
 
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username to trigger tabs rendering
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input');
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
+        expect(screen.getByTestId('user-profile')).toBeInTheDocument();
+        expect(screen.getByTestId('activity-timeline')).toBeInTheDocument();
+        expect(screen.getByTestId('project-section')).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(/no repositories found/i)).toBeInTheDocument();
-      });
+      // QuickAssessment should not show without timeline data
+      expect(screen.queryByTestId('quick-assessment')).not.toBeInTheDocument();
     });
 
-    it('should handle empty filter results', async () => {
-      vi.spyOn(useQueryUserModule, 'default').mockReturnValue({
-        data: {
-          user: createMockUser({
-            repositories: {
-              totalCount: 2,
-              pageInfo: { endCursor: 'cursor', hasNextPage: false },
-              nodes: [
-                createMockRepository({ name: 'repo-1', stargazerCount: 100 }),
-                createMockRepository({ name: 'repo-2', stargazerCount: 50 }),
-              ],
-            },
-          }),
-        },
+    it('should handle clearing username', async () => {
+      mockUseUserAnalytics.mockReturnValue({
+        profile: null,
+        timeline: [],
         loading: false,
-        error: null,
+        error: undefined,
       });
 
       const user = userEvent.setup();
       render(<App />);
 
-      // Set username to trigger tabs rendering
-      const input = screen.getByPlaceholderText(/search github user/i);
+      const input = screen.getByTestId('search-input') as HTMLInputElement;
+
+      // Type username
       await user.type(input, 'testuser');
-      await user.click(screen.getByRole('button', { name: /search/i }));
+      expect(input.value).toBe('testuser');
 
-      await waitFor(
-        () => {
-          expect(screen.getByRole('tab', { name: /repositories/i })).toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      // Clear username
+      await user.clear(input);
+      expect(input.value).toBe('');
 
-      await user.click(screen.getByRole('tab', { name: /repositories/i }));
-
-      await waitFor(
-        () => {
-          expect(screen.getByText('repo-1')).toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
-
-      // Click on Filters header to expand
-      await user.click(screen.getByText('Filters'));
-
-      // Verify filter inputs exist
-      expect(screen.getByLabelText(/minimum stars/i)).toBeInTheDocument();
+      // Content sections should not be visible
+      expect(screen.queryByTestId('user-profile')).not.toBeInTheDocument();
     });
   });
 });

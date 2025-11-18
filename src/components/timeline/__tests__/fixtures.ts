@@ -8,7 +8,6 @@ export function createMockRepository(overrides?: Partial<Repository>): Repositor
   return {
     id: 'repo-123',
     name: 'test-repo',
-    nameWithOwner: 'user/test-repo',
     url: 'https://github.com/user/test-repo',
     description: 'Test repository',
     createdAt: '2020-01-01T00:00:00Z',
@@ -19,12 +18,10 @@ export function createMockRepository(overrides?: Partial<Repository>): Repositor
     isFork: false,
     isTemplate: false,
     isArchived: false,
-    isPrivate: false,
     diskUsage: 1024,
     homepageUrl: null,
     primaryLanguage: {
       name: 'TypeScript',
-      color: '#3178c6',
     },
     owner: {
       login: 'user',
