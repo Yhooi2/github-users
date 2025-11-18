@@ -12,6 +12,7 @@
 - [Структура тестов](#структура-тестов)
 - [Паттерны тестирования](#паттерны-тестирования)
 - [Coverage Requirements](#coverage-requirements)
+- [Testing Anti-Patterns & Best Practices](#testing-anti-patterns--best-practices)
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
 
@@ -883,6 +884,549 @@ All files           |   95.2  |   90.5   |  100.0  |   95.8  |
 
 ---
 
+## Testing Anti-Patterns & Best Practices
+
+### 🚨 Anti-Patterns to Avoid
+
+Основано на исследованиях Kent C Dodds, React Testing Library best practices и опыте Phase 4 refactoring.
+
+#### 1. Type Casting Anti-Pattern ❌
+
+**Проблема:** Использование type casting (`as unknown as Type`) скрывает проблемы типов вместо их решения.
+
+```typescript
+// ❌ ПЛОХО: Костыли с type casting
+import type { Repository as RepositoryCardType } from '@/apollo/github-api.types'
+
+<RepositoryCard
+  repository={repo.repository as unknown as RepositoryCardType}
+  compact
+/>
+
+// ✅ ХОРОШО: Single Source of Truth
+import type { Repository } from '@/apollo/github-api.types'
+
+// Удалить дублирующие типы, использовать один источник
+export interface RepositoryContribution {
+  contributions: { totalCount: number }
+  repository: Repository  // Импортируется из единственного места
+}
+
+<RepositoryCard
+  repository={repo.repository}  // Нет casting!
+  compact
+/>
+```
+
+**Правило:** Если нужен type casting - это признак проблемы в архитектуре типов. Исправь типы, а не добавляй casting.
+
+**Реальный пример из Phase 4:**
+- **До:** Дублирование типа Repository в `yearContributions.ts` + type casting в компонентах
+- **После:** Один тип Repository в `github-api.types.ts`, импортируется везде
+- **Результат:** 0 type casting, 100% type safety
+
+---
+
+#### 2. Test Mock Duplication ❌
+
+**Проблема:** Дублирование mock-объектов во всех тестах.
+
+```typescript
+// ❌ ПЛОХО: Дублирование в каждом тесте
+// ActivityTimeline.test.tsx
+const mockRepository = {
+  name: 'test-repo',
+  url: 'https://github.com/user/test-repo',
+  stargazerCount: 100,
+  // ... incomplete
+}
+
+// TimelineYear.test.tsx
+const mockRepository = {  // ДУБЛИРОВАНИЕ!
+  name: 'test-repo',
+  url: 'https://github.com/user/test-repo',
+  stargazerCount: 100,
+  // ... incomplete
+}
+
+// YearExpandedView.test.tsx
+const mockRepository = {  // ЕЩЕ ДУБЛИРОВАНИЕ!
+  name: 'test-repo',
+  // ... different fields, inconsistent!
+}
+
+// ✅ ХОРОШО: Factory Pattern в fixtures
+// __tests__/fixtures.ts
+export function createMockRepository(overrides?: Partial<Repository>): Repository {
+  return {
+    id: 'repo-123',
+    name: 'test-repo',
+    nameWithOwner: 'user/test-repo',
+    url: 'https://github.com/user/test-repo',
+    description: 'Test repository',
+    stargazerCount: 100,
+    forkCount: 10,
+    primaryLanguage: { name: 'TypeScript', color: '#3178c6' },
+    // ... ALL required fields with sensible defaults
+    ...overrides,  // Easy to override specific fields
+  }
+}
+
+export function createMockYearData(overrides?: Partial<YearData>): YearData {
+  return {
+    year: 2025,
+    totalCommits: 450,
+    totalIssues: 30,
+    ownedRepos: [
+      {
+        repository: createMockRepository(),
+        contributions: { totalCount: 200 },
+      },
+    ],
+    ...overrides,
+  }
+}
+
+// В тестах
+import { createMockRepository, createMockYearData } from './__tests__/fixtures'
+
+it('renders timeline', () => {
+  const timeline = [createMockYearData()]
+  render(<ActivityTimeline timeline={timeline} />)
+})
+
+it('handles high star count', () => {
+  const repo = createMockRepository({ stargazerCount: 10000 })
+  render(<RepositoryCard repository={repo} />)
+})
+```
+
+**Преимущества Factory Pattern:**
+- ✅ DRY (Don't Repeat Yourself)
+- ✅ Консистентные данные
+- ✅ Полные объекты (все required поля)
+- ✅ Легко переопределить нужные поля
+- ✅ Centralized maintenance
+
+**Реальный пример из Phase 4:**
+- **До:** 3 файла с дублирующими `mockRepository` объектами
+- **После:** Один файл `fixtures.ts` с factory functions
+- **Результат:** Уменьшение кода на ~60 строк, 0 дублирования
+
+---
+
+#### 3. Not Using `screen` for Queries ❌
+
+**Проблема:** Destructuring queries from `render()` вместо использования `screen`.
+
+```typescript
+// ❌ ПЛОХО: Destructuring queries
+const { getByText, getByRole } = render(<Component />)
+expect(getByText('Hello')).toBeInTheDocument()
+
+// ✅ ХОРОШО: screen queries
+import { render, screen } from '@testing-library/react'
+
+render(<Component />)
+expect(screen.getByText('Hello')).toBeInTheDocument()
+```
+
+**Почему `screen` лучше:**
+- ✅ Более читабельно
+- ✅ Не нужно destructuring
+- ✅ Автоматический suggestion в IDE
+- ✅ Следует best practices React Testing Library
+
+**Исключение:** `container` нужен для `querySelector`:
+```typescript
+const { container } = render(<Tabs>...</Tabs>)
+const tabs = container.querySelector('[data-slot="tabs"]')
+```
+
+---
+
+#### 4. Testing Implementation Details ❌
+
+**Проблема:** Тестирование внутренней реализации вместо поведения.
+
+```typescript
+// ❌ ПЛОХО: Тестируем state напрямую
+it('sets expanded state to true', () => {
+  const { result } = renderHook(() => useState(false))
+  act(() => {
+    result.current[1](true)
+  })
+  expect(result.current[0]).toBe(true)  // Тестируем детали!
+})
+
+// ❌ ПЛОХО: Тестируем CSS классы
+it('applies correct class', () => {
+  render(<Button variant="primary" />)
+  const button = screen.getByRole('button')
+  expect(button).toHaveClass('bg-primary')  // Implementation detail!
+})
+
+// ✅ ХОРОШО: Тестируем поведение
+it('expands year details when clicked', async () => {
+  const user = userEvent.setup()
+  const year = createMockYearData()
+
+  render(<TimelineYear year={year} maxCommits={1000} />)
+
+  // Initially collapsed
+  expect(screen.queryByText('👤 Your Projects')).not.toBeInTheDocument()
+
+  // Click to expand
+  const expandButton = screen.getByRole('button', { name: /toggle.*details/i })
+  await user.click(expandButton)
+
+  // Now expanded
+  expect(screen.getByText('👤 Your Projects')).toBeInTheDocument()
+  expect(expandButton).toHaveAttribute('aria-expanded', 'true')
+})
+
+// ✅ ХОРОШО: Тестируем accessibility
+it('button has correct ARIA attributes', () => {
+  render(<Button variant="primary">Submit</Button>)
+  const button = screen.getByRole('button', { name: /submit/i })
+  expect(button).toBeInTheDocument()  // Behavior, not class!
+})
+```
+
+**Правило:** Тестируй то, что видит и делает пользователь, не то, как это реализовано.
+
+---
+
+#### 5. Using `fireEvent` Instead of `userEvent` ❌
+
+**Проблема:** `fireEvent` - низкоуровневый API, не симулирует реальные действия пользователя.
+
+```typescript
+// ❌ ПЛОХО: fireEvent
+import { fireEvent } from '@testing-library/react'
+
+it('handles click', () => {
+  render(<Button onClick={mockHandler}>Click</Button>)
+  const button = screen.getByRole('button')
+  fireEvent.click(button)  // Только один event!
+  expect(mockHandler).toHaveBeenCalled()
+})
+
+// ✅ ХОРОШО: userEvent
+import userEvent from '@testing-library/user-event'
+
+it('handles click', async () => {
+  const user = userEvent.setup()
+  render(<Button onClick={mockHandler}>Click</Button>)
+  const button = screen.getByRole('button')
+
+  await user.click(button)  // Симулирует: mousedown, focus, mouseup, click
+  expect(mockHandler).toHaveBeenCalled()
+})
+
+// ✅ ХОРОШО: userEvent для ввода текста
+it('updates input on typing', async () => {
+  const user = userEvent.setup()
+  render(<SearchForm />)
+
+  const input = screen.getByPlaceholderText(/search/i)
+  await user.type(input, 'octocat')
+
+  expect(input).toHaveValue('octocat')
+})
+```
+
+**Почему `userEvent` лучше:**
+- ✅ Симулирует реальные user interactions
+- ✅ Генерирует все related events (focus, blur, keydown, keyup, etc.)
+- ✅ Асинхронный - ближе к реальности
+- ✅ Лучше для accessibility testing
+
+---
+
+#### 6. Excessive Mocking ❌
+
+**Проблема:** Слишком много моков - тесты не проверяют интеграцию.
+
+```typescript
+// ❌ ПЛОХО: Моки везде
+vi.mock('./Button')
+vi.mock('./Card')
+vi.mock('./Badge')
+vi.mock('./Icon')
+
+it('renders component', () => {
+  render(<UserProfile />)
+  // Тестируешь моки, а не реальные компоненты!
+})
+
+// ✅ ХОРОШО: Моки только для external dependencies
+vi.mock('sonner', () => ({
+  toast: { error: vi.fn(), success: vi.fn() },
+}))
+
+vi.mock('@/apollo/useQueryUser', () => ({
+  default: vi.fn(),
+}))
+
+// Внутренние компоненты НЕ мокаем!
+it('renders component with real subcomponents', () => {
+  vi.mocked(useQueryUser).mockReturnValue({
+    data: mockData,
+    loading: false,
+    error: undefined,
+  })
+
+  render(<UserProfile userName="octocat" />)
+
+  // Проверяем реальный UI
+  expect(screen.getByText('The Octocat')).toBeInTheDocument()
+})
+```
+
+**Что мокать:**
+- ✅ External APIs (fetch, axios)
+- ✅ Third-party libraries (toast, analytics)
+- ✅ Custom hooks с Apollo/GraphQL
+- ✅ Browser APIs (localStorage, matchMedia)
+
+**Что НЕ мокать:**
+- ❌ Внутренние компоненты
+- ❌ Utility functions (тестируй их отдельно)
+- ❌ UI library components
+
+---
+
+#### 7. Conditional Assertions ❌
+
+**Проблема:** Assertions внутри if-clauses или циклов - могут не выполниться.
+
+```typescript
+// ❌ ПЛОХО: Conditional assertions
+it('renders repositories', () => {
+  const repos = getRepositories()
+
+  if (repos.length > 0) {  // Если repos.length === 0, тест пройдет без проверок!
+    expect(screen.getByText(repos[0].name)).toBeInTheDocument()
+  }
+})
+
+// ❌ ПЛОХО: Assertions в цикле
+it('renders all items', () => {
+  const items = getItems()
+
+  items.forEach((item) => {  // Если items пустой, assertions не выполнятся!
+    expect(screen.getByText(item.name)).toBeInTheDocument()
+  })
+})
+
+// ✅ ХОРОШО: Explicit assertions
+it('renders repositories', () => {
+  const repos = getRepositories()
+
+  expect(repos.length).toBeGreaterThan(0)  // Explicit check
+  expect(screen.getByText(repos[0].name)).toBeInTheDocument()
+})
+
+// ✅ ХОРОШО: Проверка количества элементов
+it('renders all repository cards', () => {
+  const timeline = createMockTimeline()
+  render(<ActivityTimeline timeline={timeline} />)
+
+  // Проверяем количество
+  const yearRows = screen.getAllByRole('button', { name: /toggle.*details/i })
+  expect(yearRows).toHaveLength(2)
+})
+```
+
+**Правило:** Каждый тест должен иметь хотя бы одну assertion, которая ВСЕГДА выполняется.
+
+---
+
+#### 8. Not Awaiting Async Operations ❌
+
+**Проблема:** Не используется `await` для async queries - приводит к act() warnings.
+
+```typescript
+// ❌ ПЛОХО: Забыли await
+it('loads user data', () => {
+  render(<UserProfile userName="octocat" />)
+
+  screen.findByText('The Octocat')  // Забыли await!
+  expect(screen.getByText('The Octocat')).toBeInTheDocument()  // Упадет!
+})
+
+// ❌ ПЛОХО: Не ждем userEvent
+it('handles click', () => {
+  const user = userEvent.setup()
+  render(<Button onClick={mockHandler}>Click</Button>)
+
+  user.click(screen.getByRole('button'))  // Забыли await!
+  expect(mockHandler).toHaveBeenCalled()  // Может упасть!
+})
+
+// ✅ ХОРОШО: Всегда await async operations
+it('loads user data', async () => {
+  render(<UserProfile userName="octocat" />)
+
+  const userName = await screen.findByText('The Octocat')
+  expect(userName).toBeInTheDocument()
+})
+
+// ✅ ХОРОШО: await userEvent
+it('handles click', async () => {
+  const user = userEvent.setup()
+  render(<Button onClick={mockHandler}>Click</Button>)
+
+  await user.click(screen.getByRole('button'))
+  expect(mockHandler).toHaveBeenCalled()
+})
+
+// ✅ ХОРОШО: waitFor для сложных условий
+it('updates UI after fetch', async () => {
+  render(<Component />)
+
+  await waitFor(() => {
+    expect(screen.getByText('Loaded')).toBeInTheDocument()
+    expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+  })
+})
+```
+
+**Правило:** Всегда `await` для:
+- `findBy*` queries
+- `userEvent` actions
+- `waitFor` / `waitForElementToBeRemoved`
+- Custom async helpers
+
+---
+
+#### 9. Complex Test Logic ❌
+
+**Проблема:** Слишком сложная логика в тестах - тесты должны быть простыми.
+
+```typescript
+// ❌ ПЛОХО: Сложная логика в тесте
+it('renders correct repositories', () => {
+  const repos = createMockYearData().ownedRepos
+
+  // Sorting logic в тесте!
+  const sortedRepos = repos
+    .sort((a, b) => b.repository.stargazerCount - a.repository.stargazerCount)
+    .slice(0, 5)
+    .map((r) => r.repository.name)
+
+  render(<YearExpandedView year={createMockYearData()} />)
+
+  sortedRepos.forEach((name) => {
+    expect(screen.getByText(name)).toBeInTheDocument()
+  })
+})
+
+// ✅ ХОРОШО: Простая проверка поведения
+it('sorts owned repos by stars (descending)', () => {
+  const year = createMockYearData({
+    ownedRepos: [
+      {
+        repository: createMockRepository({ name: 'low-stars', stargazerCount: 100 }),
+        contributions: { totalCount: 50 },
+      },
+      {
+        repository: createMockRepository({ name: 'high-stars', stargazerCount: 500 }),
+        contributions: { totalCount: 50 },
+      },
+    ],
+  })
+
+  render(<YearExpandedView year={year} />)
+
+  const repoNames = screen.getAllByText(/stars/)
+  expect(repoNames[0]).toHaveTextContent('high-stars')
+  expect(repoNames[1]).toHaveTextContent('low-stars')
+})
+```
+
+**Правило:** Если тест требует сложной логики - возможно, нужен отдельный unit test для этой логики.
+
+---
+
+#### 10. 100% Coverage Obsession ❌
+
+**Проблема:** Погоня за 100% coverage вместо осмысленных тестов.
+
+```typescript
+// ❌ ПЛОХО: Тесты ради coverage
+it('covers else branch', () => {
+  render(<Component showDetails={false} />)
+  // Просто вызвали код, но ничего не проверили!
+})
+
+// ❌ ПЛОХО: Тесты констант
+it('exports correct constant', () => {
+  expect(MAX_REPOS).toBe(5)  // Зачем тестировать константу?
+})
+
+// ✅ ХОРОШО: Осмысленные тесты
+it('hides details section when showDetails is false', () => {
+  render(<Component showDetails={false} />)
+
+  expect(screen.queryByText('Details')).not.toBeInTheDocument()
+})
+
+it('limits repositories to 5', () => {
+  const manyRepos = Array.from({ length: 10 }, (_, i) =>
+    createMockRepository({ name: `repo-${i}` })
+  )
+
+  render(<RepositoryList repos={manyRepos} />)
+
+  const repoCards = screen.getAllByTestId('repository-card')
+  expect(repoCards).toHaveLength(5)
+})
+```
+
+**Правило:**
+- ✅ Coverage - это метрика, не цель
+- ✅ Лучше 80% coverage с осмысленными тестами, чем 100% с бессмысленными
+- ✅ Фокусируйся на критичных путях: business logic, user interactions, error handling
+
+---
+
+### ✅ Best Practices Summary
+
+**DO:**
+- ✅ Use `screen` for queries
+- ✅ Use `userEvent` for interactions
+- ✅ Use factory pattern for test data
+- ✅ Test behavior, not implementation
+- ✅ Mock only external dependencies
+- ✅ Always await async operations
+- ✅ Write simple, focused tests
+- ✅ Follow Single Source of Truth for types
+
+**DON'T:**
+- ❌ Use type casting (`as unknown as Type`)
+- ❌ Duplicate mock objects across tests
+- ❌ Use `fireEvent` (prefer `userEvent`)
+- ❌ Test implementation details (state, classes)
+- ❌ Mock internal components
+- ❌ Put assertions in conditionals/loops
+- ❌ Forget to await async operations
+- ❌ Chase 100% coverage blindly
+
+**Testing Trophy Philosophy:**
+- 🏆 50% Integration tests (components with hooks)
+- 🥈 40% Unit tests (utilities, helpers)
+- 🥉 5% E2E tests (critical user flows)
+- 🎯 5% Static analysis (TypeScript, ESLint)
+
+**Resources:**
+- [Kent C Dodds - Common Testing Mistakes](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
+- [React Testing Library Best Practices](https://testing-library.com/docs/react-testing-library/cheatsheet)
+- [Testing Implementation Details](https://kentcdodds.com/blog/testing-implementation-details)
+
+---
+
 ## Best Practices
 
 ### 1. Изоляция тестов
@@ -1205,6 +1749,10 @@ npm test -- --bail              # Остановить при первой ош�
 
 ---
 
-**Последнее обновление:** Ноябрь 2025
+**Последнее обновление:** 2025-11-18 (Phase 4)
 **Vitest:** 4.0.6 | **Playwright:** 1.56.1
-**Статус тестов:** ✅ 62/62 passing
+**Статус тестов:** ✅ 1572/1574 passing (99.87%)
+**Изменения:**
+- ➕ Добавлен раздел "Testing Anti-Patterns & Best Practices" с 10 анти-паттернами
+- ➕ Примеры из Phase 4: Type Casting Anti-Pattern, Factory Pattern для тестов
+- ➕ Ссылки на Kent C Dodds и React Testing Library best practices

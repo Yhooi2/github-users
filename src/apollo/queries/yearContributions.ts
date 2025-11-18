@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import type { Repository } from '@/apollo/github-api.types'
 
 /**
  * GraphQL query to fetch user contributions for a specific year
@@ -47,8 +48,11 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
             stargazerCount
             forkCount
             isFork
+            isTemplate
             isArchived
             isPrivate
+            diskUsage
+            homepageUrl
             primaryLanguage {
               name
               color
@@ -57,12 +61,48 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
               login
               avatarUrl
             }
+            parent {
+              name
+              url
+              owner {
+                login
+              }
+            }
+            watchers {
+              totalCount
+            }
+            issues {
+              totalCount
+            }
+            repositoryTopics(first: 10) {
+              nodes {
+                topic {
+                  name
+                }
+              }
+            }
+            languages(first: 5) {
+              totalSize
+              edges {
+                size
+                node {
+                  name
+                }
+              }
+            }
             licenseInfo {
               name
               spdxId
             }
             defaultBranchRef {
               name
+              target {
+                ... on Commit {
+                  history {
+                    totalCount
+                  }
+                }
+              }
             }
           }
         }
@@ -70,40 +110,6 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
     }
   }
 `
-
-/**
- * TypeScript types for repository data
- */
-export interface Repository {
-  id: string
-  name: string
-  nameWithOwner: string
-  url: string
-  description: string | null
-  createdAt: string
-  updatedAt: string
-  pushedAt: string | null
-  stargazerCount: number
-  forkCount: number
-  isFork: boolean
-  isArchived: boolean
-  isPrivate: boolean
-  primaryLanguage: {
-    name: string
-    color: string
-  } | null
-  owner: {
-    login: string
-    avatarUrl: string
-  }
-  licenseInfo: {
-    name: string
-    spdxId: string
-  } | null
-  defaultBranchRef: {
-    name: string
-  } | null
-}
 
 /**
  * Repository with contribution count
