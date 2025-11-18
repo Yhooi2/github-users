@@ -101,8 +101,8 @@ describe('User Timeline Generation', () => {
       // Assert: Past years track full 12 months
       pastYears.forEach((year) => {
         const endDate = new Date(year.to)
-        expect(endDate.getMonth()).toBe(11) // December
-        expect(endDate.getDate()).toBe(31) // Last day of year
+        expect(endDate.getUTCMonth()).toBe(11) // December
+        expect(endDate.getUTCDate()).toBe(31) // Last day of year
       })
     })
   })
@@ -164,8 +164,8 @@ describe('User Timeline Generation', () => {
 
       // Assert: Leap year is handled (full year still tracked)
       expect(leapYear).toBeDefined()
-      expect(new Date(leapYear!.to).getMonth()).toBe(11) // December
-      expect(new Date(leapYear!.to).getDate()).toBe(31)
+      expect(new Date(leapYear!.to).getUTCMonth()).toBe(11) // December
+      expect(new Date(leapYear!.to).getUTCDate()).toBe(31)
     })
 
     it('should handle accounts created mid-year', () => {

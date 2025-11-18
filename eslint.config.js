@@ -38,6 +38,11 @@ export default tseslint.config(
         cssFiles: ['src/index.css'],
       },
     },
+    rules: {
+      // Disable custom classname check for Tailwind CSS v4
+      // v4 uses CSS variables and theme() function instead of config file
+      'tailwindcss/no-custom-classname': 'off',
+    },
   },
   ...storybook.configs["flat/recommended"],
   prettier

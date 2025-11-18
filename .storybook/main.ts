@@ -34,6 +34,26 @@ const config: StorybookConfig = {
           '@': path.resolve(__dirname, '../src'),
         },
       },
+      optimizeDeps: {
+        ...config.optimizeDeps,
+        include: [
+          ...(config.optimizeDeps?.include || []),
+          '@radix-ui/react-dialog',
+          '@radix-ui/react-accordion',
+          '@radix-ui/react-tabs',
+          '@radix-ui/react-tooltip',
+          '@radix-ui/react-select',
+          '@radix-ui/react-avatar',
+          '@radix-ui/react-checkbox',
+          '@radix-ui/react-collapsible',
+          '@radix-ui/react-label',
+          '@radix-ui/react-progress',
+          '@radix-ui/react-scroll-area',
+          '@radix-ui/react-separator',
+          '@radix-ui/react-slot',
+          '@radix-ui/react-switch',
+        ],
+      },
     };
   },
 };
