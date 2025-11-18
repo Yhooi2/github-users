@@ -41,6 +41,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 const httpLink = createHttpLink({
   uri: "/api/github-proxy", // Proxy to GitHub API (token secured on server)
   includeExtensions: true, // ← CRITICAL: Include extensions in request body
+  credentials: 'include', // ← Include cookies for OAuth session
   fetch: (uri, options) => {
     // Extract cacheKey from extensions and add to body
     const body = JSON.parse((options?.body as string) || "{}");
@@ -56,6 +57,7 @@ const httpLink = createHttpLink({
 
     return fetch(uri, {
       ...options,
+      credentials: 'include', // Ensure cookies are sent with every request
       body: JSON.stringify(newBody),
     });
   },

@@ -157,9 +157,20 @@ type PageInfo = {
     repositories: Repositories;
   };
   
+  // Rate limit information from backend proxy
+  type RateLimit = {
+    remaining: number;
+    limit: number;
+    reset: number;
+    used: number;
+    isDemo: boolean;
+    userLogin?: string;
+  };
+
   // Root GraphQL response type
   type GitHubGraphQLResponse = {
       user: GitHubUser;
+      rateLimit?: RateLimit; // Optional: added by backend proxy
   };
   
   export type {
@@ -177,5 +188,6 @@ type PageInfo = {
     RepositoryContributions,
     YearlyContributions,
     PageInfo,
+    RateLimit,
     ConnectionCount
   };

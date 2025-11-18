@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SearchHeader } from './components/layout/SearchHeader';
+import { UserMenu } from './components/layout/UserMenu';
 import { useUserAnalytics } from './hooks/useUserAnalytics';
 import { RateLimitBanner } from './components/layout/RateLimitBanner';
 import { AuthRequiredModal } from './components/auth/AuthRequiredModal';
@@ -14,13 +15,58 @@ import { calculateQualityScore } from './lib/metrics/quality';
 import { calculateGrowthScore } from './lib/metrics/growth';
 import type { Repository } from './apollo/github-api.types';
 
+/**
+ * Rate limit state interface
+ */
+interface RateLimitState {
+  remaining: number;
+  limit: number;
+  reset: number;
+  isDemo: boolean;
+  userLogin?: string;
+}
+
 function App() {
   const [userName, setUserName] = useState('');
-  const [rateLimit] = useState({ remaining: 5000, limit: 5000, reset: 0 });
+
+  // Rate limit state (updated from GraphQL responses)
+  const [rateLimit, setRateLimit] = useState<RateLimitState>({
+    remaining: 5000,
+    limit: 5000,
+    reset: 0,
+    isDemo: true,
+  });
+
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Fetch user analytics data
   const { profile, timeline, loading, error } = useUserAnalytics(userName);
+
+  // Handle URL parameters after OAuth redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const authStatus = params.get('auth');
+    const errorParam = params.get('error');
+
+    if (authStatus === 'success') {
+      // TODO: Add success toast notification
+      console.log('✅ Authentication successful!');
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (authStatus === 'logged_out') {
+      // TODO: Add info toast notification
+      console.log('ℹ️ Logged out successfully');
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (errorParam) {
+      // TODO: Add error toast notification
+      console.error('❌ Authentication error:', errorParam);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  // TODO: Extract rate limit from GraphQL responses
+  // This will be implemented when backend proxy returns rate limit info
+  // For now, keeping the placeholder logic
 
   // Calculate metrics from timeline data
   const metrics =
@@ -43,23 +89,54 @@ function App() {
     ) as Repository[],
   };
 
+  // OAuth handler - redirect to backend OAuth endpoint
   const handleGitHubAuth = () => {
-    // TODO: Implement OAuth flow in Phase 7
-    console.log('GitHub OAuth not yet implemented');
+    window.location.href = '/api/auth/login';
   };
+
+  // Logout handler - redirect to backend logout endpoint
+  const handleLogout = () => {
+    window.location.href = '/api/auth/logout';
+  };
+
+  // Determine authentication status
+  const isAuthenticated = !rateLimit.isDemo && !!rateLimit.userLogin;
 
   return (
     <div className="bg-background min-h-screen">
       <div className="container mx-auto space-y-8 p-4 pb-16">
-        {/* Search Header with Theme Toggle */}
-        <SearchHeader userName={userName} onSearch={setUserName} />
+        {/* Header with Search and User Menu */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <SearchHeader userName={userName} onSearch={setUserName} />
+          </div>
+
+          {/* User Menu - Sign in / Avatar */}
+          <div className="flex-shrink-0 pt-2">
+            <UserMenu
+              isAuthenticated={isAuthenticated}
+              user={
+                isAuthenticated
+                  ? {
+                      login: rateLimit.userLogin!,
+                      avatarUrl: `https://github.com/${rateLimit.userLogin}.png`,
+                    }
+                  : undefined
+              }
+              onSignIn={() => setShowAuthModal(true)}
+              onSignOut={handleLogout}
+            />
+          </div>
+        </div>
 
         {/* Rate Limit Banner */}
         <RateLimitBanner
           remaining={rateLimit.remaining}
           limit={rateLimit.limit}
           reset={rateLimit.reset}
+          isDemo={rateLimit.isDemo}
           onAuthClick={() => setShowAuthModal(true)}
+          onLogoutClick={handleLogout}
         />
 
         {/* Error Display */}
