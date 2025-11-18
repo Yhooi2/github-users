@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { YearExpandedView } from './YearExpandedView'
 import type { YearData } from '@/hooks/useUserAnalytics'
 

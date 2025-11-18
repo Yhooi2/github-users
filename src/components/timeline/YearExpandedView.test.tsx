@@ -106,10 +106,9 @@ describe('YearExpandedView', () => {
       })),
     }
 
-    const { container } = render(<YearExpandedView year={manyOwnedRepos} />)
+    render(<YearExpandedView year={manyOwnedRepos} />)
 
     // Should only show top 5 repos
-    const ownedSection = container.querySelector(':has(> h3:contains("Your Projects"))')
     const repoCards = screen.getAllByText(/repo-/)
     expect(repoCards.length).toBeLessThanOrEqual(5)
   })

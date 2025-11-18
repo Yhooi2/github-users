@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { QuickAssessment } from './QuickAssessment';
 
 const meta: Meta<typeof QuickAssessment> = {

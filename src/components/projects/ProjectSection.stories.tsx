@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ProjectSection } from './ProjectSection';
 import type { Repository } from '@/apollo/github-api.types';
 

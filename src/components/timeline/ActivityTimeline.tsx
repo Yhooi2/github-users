@@ -29,7 +29,7 @@ export function ActivityTimeline({ timeline, loading = false }: ActivityTimeline
     return (
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">📊 Activity Timeline</h2>
-        <div className="rounded-lg border p-8 text-center text-muted-foreground">
+        <div className="text-muted-foreground rounded-lg border p-8 text-center">
           No activity data available
         </div>
       </section>
@@ -57,10 +57,10 @@ export function ActivityTimeline({ timeline, loading = false }: ActivityTimeline
 function TimelineSkeleton() {
   return (
     <section className="space-y-4" aria-label="Loading activity timeline">
-      <div className="h-8 w-64 animate-pulse rounded bg-muted" />
+      <div className="bg-muted h-8 w-64 animate-pulse rounded" />
       <div className="space-y-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+          <div key={i} className="bg-muted h-16 animate-pulse rounded-lg" />
         ))}
       </div>
     </section>

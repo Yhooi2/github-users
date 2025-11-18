@@ -85,7 +85,7 @@ export function ProjectSection({ projects, loading = false }: ProjectSectionProp
 
       {/* Empty State */}
       {hasNoProjects && (
-        <div className="rounded-lg border p-8 text-center text-muted-foreground">
+        <div className="text-muted-foreground rounded-lg border p-8 text-center">
           No repositories found
         </div>
       )}
@@ -99,10 +99,10 @@ export function ProjectSection({ projects, loading = false }: ProjectSectionProp
 function ProjectSectionSkeleton() {
   return (
     <section className="space-y-6" aria-label="Loading projects">
-      <div className="h-8 w-64 animate-pulse rounded bg-muted" />
+      <div className="bg-muted h-8 w-64 animate-pulse rounded" />
       <div className="grid gap-4 md:grid-cols-2">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-32 animate-pulse rounded-lg bg-muted" />
+          <div key={i} className="bg-muted h-32 animate-pulse rounded-lg" />
         ))}
       </div>
     </section>
