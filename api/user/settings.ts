@@ -227,7 +227,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       if (
-        updatedPreferences.itemsPerPage &&
+        updatedPreferences.itemsPerPage !== undefined &&
         (updatedPreferences.itemsPerPage < 1 || updatedPreferences.itemsPerPage > 100)
       ) {
         return res.status(400).json({
@@ -237,7 +237,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       if (
-        updatedPreferences.refreshInterval &&
+        updatedPreferences.refreshInterval !== undefined &&
         (updatedPreferences.refreshInterval < 5000 || updatedPreferences.refreshInterval > 300000)
       ) {
         return res.status(400).json({
