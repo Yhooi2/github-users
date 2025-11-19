@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
+// Set environment variables BEFORE importing handler (required for kv initialization)
+process.env.GITHUB_TOKEN = 'demo_token_123'
+process.env.KV_REST_API_URL = 'http://kv.test'
+process.env.KV_REST_API_TOKEN = 'kv_token'
+
 // Mock @vercel/kv BEFORE importing handler
 vi.mock('@vercel/kv', () => ({
   kv: {
@@ -10,7 +15,7 @@ vi.mock('@vercel/kv', () => ({
   },
 }))
 
-// Dynamic import handler after mocks are set up
+// Dynamic import handler after mocks and env vars are set up
 const handlerModule = await import('./github-proxy')
 const handler = handlerModule.default
 
@@ -150,7 +155,10 @@ describe('GitHub Proxy with OAuth Support', () => {
 
       req.headers = { cookie: 'session=valid_session_id' }
 
-      vi.mocked(kv.get).mockResolvedValue(mockSession)
+      // kv.get is called twice: first for session, then for cache check
+      vi.mocked(kv.get)
+        .mockResolvedValueOnce(mockSession) // session check
+        .mockResolvedValueOnce(null) // cache check (no cache)
 
       const mockHeaders = new Map([
         ['X-RateLimit-Remaining', '4999'],
