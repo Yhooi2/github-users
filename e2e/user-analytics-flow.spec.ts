@@ -262,4 +262,67 @@ test.describe('User Analytics Flow', () => {
     const activitySection = page.locator('text=/Recent Activity|Contribution History|Activity Timeline/i');
     await expect(activitySection.first()).toBeVisible({ timeout: 5000 });
   });
+
+  test('statistics section shows all charts simultaneously (Phase 5)', async ({ page }) => {
+    await page.goto('/');
+
+    await page.fill('input[placeholder*="GitHub username"]', 'torvalds');
+    await page.click('button:has-text("Search")');
+
+    await expect(page.locator('text=@torvalds')).toBeVisible({ timeout: 10000 });
+
+    // Navigate to Statistics tab
+    const statisticsTab = page.getByRole('tab', { name: /statistics/i });
+    await statisticsTab.click();
+    await page.waitForTimeout(300);
+
+    // Verify Statistics section heading
+    await expect(page.locator('text=📊 Statistics')).toBeVisible();
+
+    // Verify all three charts are visible simultaneously (no tabs needed)
+    await expect(page.locator('text=Commit Trends')).toBeVisible();
+    await expect(page.locator('text=Commit Activity')).toBeVisible();
+    await expect(page.locator('text=Language Distribution')).toBeVisible();
+
+    // Verify there are NO sub-tabs within the Statistics section
+    // (Overview, Commits, Activity, Languages tabs were removed in Phase 5)
+    const subTabsList = page.locator('text=/Overview.*Commits.*Activity.*Languages/i');
+    await expect(subTabsList).not.toBeVisible();
+
+    // Verify charts are in correct layout:
+    // - Top row: Commit Trends and Commit Activity (2-column grid)
+    // - Bottom row: Language Distribution (full width)
+    const commitTrendsCard = page.locator('text=Commit Trends').locator('..');
+    const commitActivityCard = page.locator('text=Commit Activity').locator('..');
+    const languageCard = page.locator('text=Language Distribution').locator('..');
+
+    await expect(commitTrendsCard).toBeVisible();
+    await expect(commitActivityCard).toBeVisible();
+    await expect(languageCard).toBeVisible();
+  });
+
+  test('metric timeline appears above statistics (Phase 4)', async ({ page }) => {
+    await page.goto('/');
+
+    await page.fill('input[placeholder*="GitHub username"]', 'torvalds');
+    await page.click('button:has-text("Search")');
+
+    await expect(page.locator('text=@torvalds')).toBeVisible({ timeout: 10000 });
+
+    // Check for Metric Timeline section
+    const metricTimeline = page.locator('text=📈 Metric Development');
+    await expect(metricTimeline).toBeVisible();
+
+    // Check for Statistics section
+    const statistics = page.locator('text=📊 Statistics');
+    await expect(statistics).toBeVisible();
+
+    // Verify order: MetricTimeline appears before StatsOverview
+    const timelineBox = await metricTimeline.boundingBox();
+    const statsBox = await statistics.boundingBox();
+
+    expect(timelineBox).not.toBeNull();
+    expect(statsBox).not.toBeNull();
+    expect(timelineBox!.y).toBeLessThan(statsBox!.y);
+  });
 });
