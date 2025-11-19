@@ -21,12 +21,14 @@
 - [Phase 5: Layout Refactoring](./phases/phase-5-layout-refactoring.md) — 1 day, P1 (Important)
 - [Phase 6: Testing & Polish](./phases/phase-6-testing-polish.md) — 2 days, P2 (Polish)
 - [Phase 7: OAuth Integration (Optional)](./phases/phase-7-oauth-integration.md) — 3 days, P3 (Optional)
+- [Phase 8: Test Refactoring & Quality](./TEST_REFACTORING_REPORT.md) — 4 weeks, P1 (Critical Quality)
 
 **Supporting Documents:**
 - [Rollback Plan](./ROLLBACK_PLAN.md)
 - [Performance Benchmarks](./PERFORMANCE_BENCHMARKS.md)
 - [Deployment Strategy](./DEPLOYMENT_STRATEGY.md)
 - [Metrics Explanation](./metrics-explanation.md)
+- [Test Refactoring Plan](./TEST_REFACTORING_REPORT.md) — Comprehensive test quality improvement
 
 **Test Documentation:**
 - [Phase 0 Test Results](./PHASE_0_TEST_RESULTS.md) — Backend proxy security validation
@@ -302,8 +304,10 @@ See [Testing Guide](./testing-guide.md) for:
 | **Phase 5** | 1 day | P1 🟡 | Remove tabs, single-page layout |
 | **Phase 6** | 2 days | P2 🟢 | E2E tests, accessibility, production |
 | **Phase 7** | 3 days | P3 ⚪ | OAuth integration (OPTIONAL - can be deferred) |
+| **Phase 8** | 4 weeks | P1 🟡 | Test refactoring & quality improvement (CAN RUN IN PARALLEL) |
 | **TOTAL (P0-P2)** | **15 days** | | Core features complete |
 | **TOTAL (with P3)** | **18 days** | | Including OAuth |
+| **TOTAL (with P8)** | **+4 weeks** | | With test quality improvements |
 
 **P0 = Critical** (must have), **P1 = Important** (should have), **P2 = Polish** (nice to have)
 
@@ -677,6 +681,68 @@ code-review-specialist agent → "Review against Phase 1 deliverables"
 - [ ] Performance: LCP <2.5s, Bundle <500KB
 - [ ] Coverage >95%
 - [ ] Production deployed
+
+### Phase 8 (Test Refactoring) - In Progress
+**Status:** ✅ Plan Complete, ⏳ Implementation Week 1 in progress
+
+**Overview:** Comprehensive test suite improvement to ensure tests catch bugs early and provide clear diagnostics.
+
+**Duration:** 4 weeks (can run in parallel with Phase 7)
+
+**Priority:** P1 🟡 (Critical for long-term quality)
+
+**Goals:**
+- Fix 3 critical production bugs found in test analysis
+- Achieve 100% API endpoint coverage (currently 67%)
+- Improve test diagnostics quality: 40% → 95%
+- Add integration tests for all critical paths
+- Reduce debugging time from 30min → <5min per test failure
+
+**Week 1 (P0 - Critical): 12-16 hours**
+- [x] Planning complete (TEST_REFACTORING_REPORT.md created)
+- [ ] Fix rate limit bug (UserProfile.tsx → App.tsx callback)
+- [ ] Add Analytics API tests (api/analytics/*.test.ts)
+- [ ] OAuth security edge cases (CSRF expiration, session lifecycle)
+
+**Week 2 (P1 - High): 13-17 hours**
+- [ ] Custom assertion messages (detailed failure diagnostics)
+- [ ] Structural assertions (DOM structure verification)
+- [ ] ErrorBoundary tests (critical component, 0% coverage)
+
+**Week 3 (P2 - Medium): 10-15 hours**
+- [ ] Cache transition integration test (Demo → Auth)
+- [ ] Parallel query failure test (partial data handling)
+- [ ] All critical paths covered
+
+**Week 4 (P3 - Low): 8 hours**
+- [ ] Mock data consolidation (-500 lines duplication)
+- [ ] Documentation updates
+- [ ] Team training
+
+**Success Metrics:**
+- ✅ API coverage: 67% → **100%** (Week 1 goal)
+- ✅ Test diagnostics: 40% → **95%** (Week 2 goal)
+- ✅ Integration coverage: 60% → **90%** (Week 3 goal)
+- ✅ Code duplication: -500 lines (Week 4 goal)
+
+**Critical Bugs Found:**
+1. 🔴 Rate limit not updating in UI (production visible)
+2. 🔴 Analytics endpoints without tests (375+ lines, silent failures)
+3. 🔴 OAuth security edge cases untested (CSRF, session expiration)
+
+**Detailed Plan:** See [TEST_REFACTORING_REPORT.md](./TEST_REFACTORING_REPORT.md)
+
+**Matrix of Required Tests:** See [Test Matrix](./TEST_REFACTORING_REPORT.md#-матрица-обязательных-тестов)
+
+**Quick Start:**
+```bash
+# Week 1, Day 1: Fix rate limit bug (2-3 hours)
+git checkout -b test-refactoring
+# 1. Add onRateLimitUpdate prop to UserProfile.tsx
+# 2. Pass callback from App.tsx
+# 3. Create integration test: src/apollo/rate-limit-flow.integration.test.tsx
+npm test -- rate-limit-flow.integration.test.tsx
+```
 
 ---
 
