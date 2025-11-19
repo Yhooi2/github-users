@@ -6,6 +6,17 @@ import { UserStats } from '@/components/user/UserStats';
 import { ContributionHistory } from '@/components/user/ContributionHistory';
 import { RecentActivity } from '@/components/user/RecentActivity';
 import { UserAuthenticity } from '@/components/user/UserAuthenticity';
+import { StatsOverview } from '@/components/statistics/StatsOverview';
+import { RepositoryList } from '@/components/repository/RepositoryList';
+import {
+  calculateYearlyCommitStats,
+  calculateLanguageStatistics,
+  calculateCommitActivity
+} from '@/lib/statistics';
+import { useRepositorySorting } from '@/hooks/useRepositorySorting';
+import { useRepositoryFilters } from '@/hooks/useRepositoryFilters';
+import { RepositorySorting } from '@/components/repository/RepositorySorting';
+import { RepositoryFilters } from '@/components/repository/RepositoryFilters';
 
 type Props = {
   userName: string;
@@ -54,6 +65,39 @@ function UserProfile({ userName }: Props) {
   }
 
   const user = data.user;
+  const repositories = user.repositories.nodes;
+
+  // Calculate statistics for charts
+  const yearlyCommits = calculateYearlyCommitStats({
+    year1: user.year1,
+    year2: user.year2,
+    year3: user.year3,
+  });
+
+  const languageStats = calculateLanguageStatistics(repositories);
+
+  const commitActivity = calculateCommitActivity(
+    user.contributionsCollection.totalCommitContributions,
+    365 // Default to last year
+  );
+
+  // Repository filtering and sorting
+  const {
+    filteredRepositories,
+    filters,
+    setFilters,
+    resetFilters,
+    hasActiveFilters,
+    availableLanguages
+  } = useRepositoryFilters(repositories);
+
+  const {
+    sortedRepositories,
+    sorting,
+    setSortBy,
+    setSortDirection,
+    toggleDirection
+  } = useRepositorySorting(filteredRepositories);
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6 p-6">
@@ -78,7 +122,42 @@ function UserProfile({ userName }: Props) {
         }}
       />
 
-      <UserAuthenticity repositories={user.repositories.nodes} />
+      <UserAuthenticity repositories={repositories} />
+
+      <StatsOverview
+        yearlyCommits={yearlyCommits}
+        languages={languageStats}
+        activity={commitActivity}
+        loading={loading}
+        error={error}
+        defaultTab="overview"
+      />
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Repositories</h2>
+
+        <RepositoryFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          onReset={resetFilters}
+          availableLanguages={availableLanguages}
+        />
+
+        <RepositorySorting
+          sortBy={sorting.field}
+          sortDirection={sorting.direction}
+          onSortByChange={setSortBy}
+          onSortDirectionChange={setSortDirection}
+          onToggleDirection={toggleDirection}
+        />
+
+        <RepositoryList
+          repositories={sortedRepositories}
+          loading={loading}
+          error={error}
+          hasActiveFilters={hasActiveFilters}
+        />
+      </div>
 
       <ContributionHistory
         contributions={{

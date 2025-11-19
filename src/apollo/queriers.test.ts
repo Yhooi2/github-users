@@ -70,7 +70,7 @@ describe('GET_USER_INFO GraphQL Query', () => {
   it('should query repository list with pagination', () => {
     const query = GET_USER_INFO.loc?.source.body || '';
 
-    expect(query).toContain('repositories(first: 100, ownerAffiliations: OWNER)');
+    expect(query).toContain('repositories(first: 100, ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER])');
     expect(query).toContain('totalCount');
     expect(query).toContain('pageInfo');
     expect(query).toContain('endCursor');
