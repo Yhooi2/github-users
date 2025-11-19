@@ -9,6 +9,7 @@ import { UserAuthenticity } from '@/components/user/UserAuthenticity';
 import { StatsOverview } from '@/components/statistics/StatsOverview';
 import { RepositoryList } from '@/components/repository/RepositoryList';
 import { QuickAssessment } from '@/components/assessment/QuickAssessment';
+import { MetricTimeline } from '@/components/assessment/MetricTimeline';
 import {
   calculateYearlyCommitStats,
   calculateLanguageStatistics,
@@ -150,6 +151,8 @@ function UserProfile({ userName }: Props) {
       <UserAuthenticity repositories={repositories} />
 
       <QuickAssessment metrics={metrics} loading={analyticsLoading} />
+
+      <MetricTimeline timeline={timeline} loading={analyticsLoading} />
 
       <StatsOverview
         yearlyCommits={yearlyCommits}
