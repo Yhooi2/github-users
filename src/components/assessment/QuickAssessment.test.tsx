@@ -4,10 +4,30 @@ import { QuickAssessment } from './QuickAssessment';
 
 describe('QuickAssessment', () => {
   const mockMetrics = {
-    activity: { score: 85, level: 'High' as const },
-    impact: { score: 72, level: 'Strong' as const },
-    quality: { score: 90, level: 'Excellent' as const },
-    growth: { score: 45, level: 'Moderate' as const },
+    activity: {
+      score: 85,
+      level: 'High' as const,
+      breakdown: { recentCommits: 30, consistency: 25, diversity: 30 },
+      details: { last3MonthsCommits: 150, activeMonths: 10, uniqueRepos: 12 }
+    },
+    impact: {
+      score: 72,
+      level: 'Strong' as const,
+      breakdown: { stars: 28, forks: 15, contributors: 12, reach: 12, engagement: 5 },
+      details: { totalStars: 400, totalForks: 150, totalWatchers: 80, totalPRs: 50, totalIssues: 100 }
+    },
+    quality: {
+      score: 90,
+      level: 'Excellent' as const,
+      breakdown: { originality: 28, documentation: 23, ownership: 18, maturity: 13, stack: 8 },
+      details: { totalRepos: 20, originalRepos: 18, docsQuality: 0.9, avgAge: 2.5, uniqueLanguages: 8 }
+    },
+    growth: {
+      score: 45,
+      level: 'Growing' as const,
+      breakdown: { commitGrowth: 20, repoGrowth: 15, impactGrowth: 10 },
+      details: { commitChange: 0.3, repoChange: 0.2, impactChange: 0.15 }
+    },
   };
 
   it('renders section title', () => {
@@ -40,7 +60,7 @@ describe('QuickAssessment', () => {
     expect(screen.getByText('High')).toBeInTheDocument();
     expect(screen.getByText('Strong')).toBeInTheDocument();
     expect(screen.getByText('Excellent')).toBeInTheDocument();
-    expect(screen.getByText('Moderate')).toBeInTheDocument();
+    expect(screen.getByText('Growing')).toBeInTheDocument();
   });
 
   it('applies responsive grid layout', () => {
@@ -59,42 +79,53 @@ describe('QuickAssessment', () => {
     expect(loadingCards).toHaveLength(4);
   });
 
-  it('calls onExplainMetric with correct metric name when explain button clicked', () => {
-    const handleExplain = vi.fn();
-    render(<QuickAssessment metrics={mockMetrics} onExplainMetric={handleExplain} />);
+  it('opens modal when explain button clicked', () => {
+    render(<QuickAssessment metrics={mockMetrics} />);
 
     // Click explain button for Activity (first info button)
     const explainButtons = screen.getAllByLabelText(/Explain .* score/);
     expect(explainButtons).toHaveLength(4);
 
     fireEvent.click(explainButtons[0]); // Activity
-    expect(handleExplain).toHaveBeenCalledWith('activity');
 
-    fireEvent.click(explainButtons[1]); // Impact
-    expect(handleExplain).toHaveBeenCalledWith('impact');
-
-    fireEvent.click(explainButtons[2]); // Quality
-    expect(handleExplain).toHaveBeenCalledWith('quality');
-
-    fireEvent.click(explainButtons[3]); // Growth
-    expect(handleExplain).toHaveBeenCalledWith('growth');
-
-    expect(handleExplain).toHaveBeenCalledTimes(4);
+    // Modal should be visible
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByText('Activity Score: 85%')).toBeInTheDocument();
   });
 
-  it('does not render explain buttons when onExplainMetric not provided', () => {
+  it('renders explain buttons for all metrics', () => {
     render(<QuickAssessment metrics={mockMetrics} />);
 
-    const explainButtons = screen.queryAllByLabelText(/Explain .* score/);
-    expect(explainButtons).toHaveLength(0);
+    const explainButtons = screen.getAllByLabelText(/Explain .* score/);
+    expect(explainButtons).toHaveLength(4);
   });
 
   it('renders with different metric values', () => {
     const differentMetrics = {
-      activity: { score: 20, level: 'Low' as const },
-      impact: { score: 15, level: 'Minimal' as const },
-      quality: { score: 30, level: 'Low' as const },
-      growth: { score: 10, level: 'Low' as const },
+      activity: {
+        score: 20,
+        level: 'Low' as const,
+        breakdown: { recentCommits: 5, consistency: 5, diversity: 10 },
+        details: { last3MonthsCommits: 25, activeMonths: 2, uniqueRepos: 3 }
+      },
+      impact: {
+        score: 15,
+        level: 'Minimal' as const,
+        breakdown: { stars: 3, forks: 2, contributors: 2, reach: 5, engagement: 3 },
+        details: { totalStars: 10, totalForks: 5, totalWatchers: 8, totalPRs: 5, totalIssues: 15 }
+      },
+      quality: {
+        score: 30,
+        level: 'Fair' as const,
+        breakdown: { originality: 10, documentation: 8, ownership: 5, maturity: 4, stack: 3 },
+        details: { totalRepos: 5, originalRepos: 3, docsQuality: 0.4, avgAge: 0.5, uniqueLanguages: 3 }
+      },
+      growth: {
+        score: 10,
+        level: 'Stable' as const,
+        breakdown: { commitGrowth: 5, repoGrowth: 3, impactGrowth: 2 },
+        details: { commitChange: 0.05, repoChange: 0.03, impactChange: 0.02 }
+      },
     };
 
     render(<QuickAssessment metrics={differentMetrics} />);
@@ -104,8 +135,10 @@ describe('QuickAssessment', () => {
     expect(screen.getByText('30%')).toBeInTheDocument();
     expect(screen.getByText('10%')).toBeInTheDocument();
 
-    // All should show "Low" or "Minimal"
-    expect(screen.getAllByText('Low')).toHaveLength(3);
+    // Check levels
+    expect(screen.getByText('Low')).toBeInTheDocument();
     expect(screen.getByText('Minimal')).toBeInTheDocument();
+    expect(screen.getByText('Fair')).toBeInTheDocument();
+    expect(screen.getByText('Stable')).toBeInTheDocument();
   });
 });

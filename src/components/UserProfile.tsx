@@ -100,10 +100,10 @@ function UserProfile({ userName }: Props) {
   const growthMetric = calculateGrowthScore(timeline);
 
   const metrics = {
-    activity: { score: activityMetric.score, level: activityMetric.level },
-    impact: { score: impactMetric.score, level: impactMetric.level },
-    quality: { score: qualityMetric.score, level: qualityMetric.level },
-    growth: { score: growthMetric.score, level: growthMetric.level },
+    activity: activityMetric,
+    impact: impactMetric,
+    quality: qualityMetric,
+    growth: growthMetric,
   };
 
   // Repository filtering and sorting
