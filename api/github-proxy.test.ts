@@ -467,6 +467,10 @@ describe('GitHub Proxy with OAuth Support', () => {
         headers: mockHeaders,
       } as Response)
 
+      // Reset KV mock to simulate unavailable KV (prevent cache pollution from previous tests)
+      vi.mocked(kv.get).mockResolvedValue(null)
+      vi.mocked(kv.set).mockResolvedValue('OK')
+
       // Re-import handler to apply new env
       const freshHandlerModule = await import('./github-proxy?t=' + Date.now())
       await freshHandlerModule.default(req as VercelRequest, res as VercelResponse)

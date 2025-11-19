@@ -23,10 +23,8 @@ export function RateLimitBanner({
   const resetDate = new Date(reset * 1000)
   const timeUntilReset = Math.ceil((resetDate.getTime() - Date.now()) / 1000 / 60)
 
-  // Show banner only if:
-  // - In demo mode AND < 10% remaining
-  // - OR in auth mode AND < 10% remaining
-  if (!isDemo && percentage >= 10) return null
+  // Show banner only if <= 10% remaining (in both demo and auth modes)
+  if (percentage > 10) return null
 
   const variant = percentage < 5 ? 'destructive' : 'default'
   const Icon = percentage < 5 ? AlertTriangle : Info
