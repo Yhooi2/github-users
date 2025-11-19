@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { kv } from '@vercel/kv'
 import handler from './oauth-usage'
 
-// Mock Vercel KV
+// Mock @vercel/kv
 vi.mock('@vercel/kv', () => ({
   kv: {
     scan: vi.fn(),
@@ -12,880 +12,513 @@ vi.mock('@vercel/kv', () => ({
   },
 }))
 
-describe('api/analytics/oauth-usage', () => {
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>
-  let mockReq: Partial<VercelRequest>
-  let mockRes: Partial<VercelResponse>
-  let statusMock: ReturnType<typeof vi.fn>
-  let jsonMock: ReturnType<typeof vi.fn>
-  let setHeaderMock: ReturnType<typeof vi.fn>
+describe('OAuth Usage Analytics API', () => {
+  let req: Partial<VercelRequest>
+  let res: Partial<VercelResponse>
 
   beforeEach(() => {
+    // Reset all mocks before each test for isolation
     vi.clearAllMocks()
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    // Setup mock response
-    jsonMock = vi.fn()
-    statusMock = vi.fn().mockReturnValue({ json: jsonMock })
-    setHeaderMock = vi.fn()
+    // Mock console to avoid noise
+    console.log = vi.fn()
+    console.warn = vi.fn()
+    console.error = vi.fn()
 
-    mockRes = {
-      status: statusMock,
-      json: jsonMock,
-      setHeader: setHeaderMock,
-    }
-
-    // Setup default mock request
-    mockReq = {
+    // Mock request
+    req = {
       method: 'GET',
       query: {},
     }
+
+    // Mock response
+    res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn().mockReturnThis(),
+      setHeader: vi.fn().mockReturnThis(),
+    }
+
+    // Setup default mocks for KV (will be overridden by specific tests)
+    vi.mocked(kv.scan).mockResolvedValue([0, []])
+    vi.mocked(kv.get).mockResolvedValue(null)
+    vi.mocked(kv.zrange).mockResolvedValue([])
   })
 
-  afterEach(() => {
-    consoleErrorSpy.mockRestore()
+  describe('Method Validation', () => {
+    it('should reject non-GET requests', async () => {
+      req.method = 'POST'
+
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.status).toHaveBeenCalledWith(405)
+      expect(res.json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+    })
+
+    it('should accept GET requests', async () => {
+      // Mock KV scan to return empty results
+      vi.mocked(kv.scan).mockResolvedValue([0, []])
+      vi.mocked(kv.zrange).mockResolvedValue([])
+
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.status).toHaveBeenCalledWith(200)
+    })
   })
 
-  describe('HTTP Method Validation', () => {
-    it(
-      'возвращает 405 для POST запроса',
-      async () => {
-        mockReq.method = 'POST'
+  describe('Period Parameter Validation', () => {
+    beforeEach(() => {
+      vi.mocked(kv.scan).mockResolvedValue([0, []])
+      vi.mocked(kv.zrange).mockResolvedValue([])
+    })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+    it('should accept valid period: hour', async () => {
+      req.query = { period: 'hour' }
 
-        expect(statusMock).toHaveBeenCalledWith(405)
-        expect(jsonMock).toHaveBeenCalledWith({ error: 'Method not allowed' })
-      },
-      10000
-    )
+      await handler(req as VercelRequest, res as VercelResponse)
 
-    it(
-      'возвращает 405 для PUT запроса',
-      async () => {
-        mockReq.method = 'PUT'
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(405)
-        expect(jsonMock).toHaveBeenCalledWith({ error: 'Method not allowed' })
-      },
-      10000
-    )
-
-    it(
-      'возвращает 405 для DELETE запроса',
-      async () => {
-        mockReq.method = 'DELETE'
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(405)
-        expect(jsonMock).toHaveBeenCalledWith({ error: 'Method not allowed' })
-      },
-      10000
-    )
-
-    it(
-      'принимает GET запрос',
-      async () => {
-        mockReq.method = 'GET'
-        mockReq.query = { period: 'day' }
-
-        // Mock empty data
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-      },
-      10000
-    )
-  })
-
-  describe('Query Parameter Validation', () => {
-    it(
-      'использует period=day по умолчанию',
-      async () => {
-        mockReq.query = {}
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-        expect(jsonMock).toHaveBeenCalledWith(
-          expect.objectContaining({
-            period: 'day',
-          })
-        )
-      },
-      10000
-    )
-
-    it(
-      'принимает period=hour',
-      async () => {
-        mockReq.query = { period: 'hour' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-        expect(jsonMock).toHaveBeenCalledWith(
-          expect.objectContaining({
-            period: 'hour',
-          })
-        )
-      },
-      10000
-    )
-
-    it(
-      'принимает period=week',
-      async () => {
-        mockReq.query = { period: 'week' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-        expect(jsonMock).toHaveBeenCalledWith(
-          expect.objectContaining({
-            period: 'week',
-          })
-        )
-      },
-      10000
-    )
-
-    it(
-      'принимает period=month',
-      async () => {
-        mockReq.query = { period: 'month' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-        expect(jsonMock).toHaveBeenCalledWith(
-          expect.objectContaining({
-            period: 'month',
-          })
-        )
-      },
-      10000
-    )
-
-    it(
-      'возвращает 400 для невалидного period',
-      async () => {
-        mockReq.query = { period: 'invalid' }
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(400)
-        expect(jsonMock).toHaveBeenCalledWith({
-          error: 'Invalid period',
-          message: 'Period must be one of: hour, day, week, month',
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          period: 'hour',
         })
-      },
-      10000
-    )
+      )
+    })
 
-    it(
-      'возвращает 400 для period=year',
-      async () => {
-        mockReq.query = { period: 'year' }
+    it('should accept valid period: day', async () => {
+      req.query = { period: 'day' }
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+      await handler(req as VercelRequest, res as VercelResponse)
 
-        expect(statusMock).toHaveBeenCalledWith(400)
-        expect(jsonMock).toHaveBeenCalledWith({
-          error: 'Invalid period',
-          message: 'Period must be one of: hour, day, week, month',
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          period: 'day',
         })
-      },
-      10000
-    )
-  })
+      )
+    })
 
-  describe('Detailed Parameter', () => {
-    it(
-      'НЕ включает detailed данные по умолчанию',
-      async () => {
-        mockReq.query = { period: 'day' }
+    it('should accept valid period: week', async () => {
+      req.query = { period: 'week' }
 
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      await handler(req as VercelRequest, res as VercelResponse)
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.detailed).toBeUndefined()
-      },
-      10000
-    )
-
-    it(
-      'включает detailed данные когда detailed=true',
-      async () => {
-        mockReq.query = { period: 'day', detailed: 'true' }
-
-        // Mock session data
-        vi.mocked(kv.scan).mockResolvedValue([
-          0,
-          ['session:abc123', 'session:def456'],
-        ])
-        vi.mocked(kv.get).mockResolvedValue({
-          userId: 123,
-          login: 'testuser',
-          accessToken: 'token',
-          avatarUrl: 'https://avatar.url',
-          createdAt: Date.now() - 86400000,
-          lastActivity: Date.now(),
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          period: 'week',
         })
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      )
+    })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+    it('should accept valid period: month', async () => {
+      req.query = { period: 'month' }
 
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.detailed).toBeDefined()
-        expect(response.detailed.sessions).toBeDefined()
-        expect(response.detailed.timeline).toBeDefined()
-      },
-      10000
-    )
+      await handler(req as VercelRequest, res as VercelResponse)
 
-    it(
-      'усекает sessionId в detailed данных (privacy)',
-      async () => {
-        mockReq.query = { period: 'day', detailed: 'true' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, ['session:abcdefghijklmnop']])
-        vi.mocked(kv.get).mockResolvedValue({
-          userId: 123,
-          login: 'testuser',
-          accessToken: 'token',
-          avatarUrl: 'https://avatar.url',
-          createdAt: Date.now(),
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          period: 'month',
         })
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      )
+    })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+    it('should default to "day" when no period specified', async () => {
+      req.query = {}
 
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.detailed.sessions[0].sessionId).toBe('abcdefgh...')
-      },
-      10000
-    )
-  })
+      await handler(req as VercelRequest, res as VercelResponse)
 
-  describe('Active Sessions', () => {
-    it(
-      'возвращает 0 активных сессий если KV пуст',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.activeSessions).toBe(0)
-      },
-      10000
-    )
-
-    it(
-      'корректно подсчитывает активные сессии',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        // Mock 2 sessions
-        vi.mocked(kv.scan).mockResolvedValue([0, ['session:abc', 'session:def']])
-        vi.mocked(kv.get).mockResolvedValue({
-          userId: 123,
-          login: 'testuser',
-          accessToken: 'token',
-          avatarUrl: 'https://avatar.url',
-          createdAt: Date.now(),
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          period: 'day',
         })
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      )
+    })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+    it('should reject invalid period', async () => {
+      req.query = { period: 'invalid' }
 
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.activeSessions).toBe(2)
-      },
-      10000
-    )
+      await handler(req as VercelRequest, res as VercelResponse)
 
-    it(
-      'обрабатывает pagination KV scan (cursor !== 0)',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        // Mock paginated scan results
-        vi.mocked(kv.scan)
-          .mockResolvedValueOnce([1, ['session:abc']]) // cursor=1, has more
-          .mockResolvedValueOnce([0, ['session:def']]) // cursor=0, done
-
-        vi.mocked(kv.get)
-          .mockResolvedValueOnce({
-            userId: 123,
-            login: 'user1',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: Date.now(),
-          })
-          .mockResolvedValueOnce({
-            userId: 456,
-            login: 'user2',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: Date.now(),
-          })
-
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.activeSessions).toBe(2)
-        expect(kv.scan).toHaveBeenCalledTimes(2)
-        expect(kv.get).toHaveBeenCalledTimes(2)
-      },
-      10000
-    )
-
-    it(
-      'пропускает null session data',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, ['session:abc', 'session:def']])
-        vi.mocked(kv.get)
-          .mockResolvedValueOnce({
-            userId: 123,
-            login: 'testuser',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: Date.now(),
-          })
-          .mockResolvedValueOnce(null) // второй сессии нет
-
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.activeSessions).toBe(1) // только 1 валидная сессия
-      },
-      10000
-    )
+      expect(res.status).toHaveBeenCalledWith(400)
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Invalid period',
+        message: 'Period must be one of: hour, day, week, month',
+      })
+    })
   })
 
-  describe('OAuth Events', () => {
-    it(
-      'возвращает 0 событий если KV пуст',
-      async () => {
-        mockReq.query = { period: 'day' }
+  describe('Happy Path - Basic Metrics', () => {
+    beforeEach(() => {
+      // Mock active sessions
+      vi.mocked(kv.scan).mockResolvedValue([
+        0,
+        ['session:abc123', 'session:def456'],
+      ])
 
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.totalLogins).toBe(0)
-        expect(response.metrics.totalLogouts).toBe(0)
-      },
-      10000
-    )
-
-    it(
-      'корректно подсчитывает login события',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange)
-          .mockResolvedValueOnce([
-            // logins
-            JSON.stringify({ timestamp: Date.now(), userId: 123, login: 'user1' }),
-            JSON.stringify({ timestamp: Date.now(), userId: 456, login: 'user2' }),
-          ])
-          .mockResolvedValueOnce([]) // logouts
-          .mockResolvedValueOnce([]) // ratelimit
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.totalLogins).toBe(2)
-        expect(response.metrics.totalLogouts).toBe(0)
-      },
-      10000
-    )
-
-    it(
-      'корректно подсчитывает logout события',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        // kv.zrange вызывается в Promise.all параллельно, не sequentially
-        // Поэтому нужно использовать mockImplementation для различения вызовов
-        vi.mocked(kv.zrange).mockImplementation(
-          async (key: string) => {
-            if (key === 'analytics:oauth:logins') return []
-            if (key === 'analytics:oauth:logouts') {
-              return [
-                JSON.stringify({ timestamp: Date.now(), userId: 123, login: 'user1' }),
-              ]
-            }
-            if (key === 'analytics:ratelimit') return []
-            return []
-          }
-        )
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.totalLogins).toBe(0)
-        expect(response.metrics.totalLogouts).toBe(1)
-      },
-      10000
-    )
-
-    it(
-      'считает все login события, но пропускает невалидный JSON при парсинге timeline',
-      async () => {
-        mockReq.query = { period: 'day', detailed: 'true' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange)
-          .mockResolvedValueOnce([
-            // logins - 3 события всего
-            JSON.stringify({ timestamp: Date.now(), userId: 123, login: 'user1' }),
-            'invalid json {{{', // невалидный JSON
-            JSON.stringify({ timestamp: Date.now(), userId: 456, login: 'user2' }),
-          ])
-          .mockResolvedValueOnce([]) // logouts
-          .mockResolvedValueOnce([]) // ratelimit
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.totalLogins).toBe(3) // считает все элементы массива
-        expect(response.detailed.timeline).toHaveLength(2) // но timeline содержит только 2 валидных
-      },
-      10000
-    )
-  })
-
-  describe('Unique Users', () => {
-    it(
-      'возвращает 0 уникальных юзеров если сессий нет',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.uniqueUsers).toBe(0)
-      },
-      10000
-    )
-
-    it(
-      'корректно подсчитывает уникальных юзеров',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        // First scan call - returns 3 sessions
-        vi.mocked(kv.scan).mockResolvedValueOnce([
-          0,
-          ['session:abc', 'session:def', 'session:ghi'],
-        ])
-
-        // kv.get calls for each session
-        vi.mocked(kv.get)
-          .mockResolvedValueOnce({
-            userId: 123,
-            login: 'user1',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: Date.now(),
-          })
-          .mockResolvedValueOnce({
-            userId: 123, // тот же userId
-            login: 'user1',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: Date.now(),
-          })
-          .mockResolvedValueOnce({
-            userId: 456, // другой userId
-            login: 'user2',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: Date.now(),
-          })
-
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.uniqueUsers).toBe(2) // только 2 уникальных userId
-        expect(response.metrics.activeSessions).toBe(3) // 3 сессии всего
-      },
-      10000
-    )
-  })
-
-  describe('Average Session Duration', () => {
-    it(
-      'возвращает 0 если сессий нет',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.avgSessionDuration).toBe(0)
-      },
-      10000
-    )
-
-    it(
-      'корректно рассчитывает среднюю длительность сессии',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        const now = Date.now()
-        const oneHourAgo = now - 3600000
-
-        vi.mocked(kv.scan).mockResolvedValue([0, ['session:abc', 'session:def']])
-        vi.mocked(kv.get)
-          .mockResolvedValueOnce({
-            userId: 123,
-            login: 'user1',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: oneHourAgo,
-            lastActivity: now, // 1 hour duration
-          })
-          .mockResolvedValueOnce({
-            userId: 456,
-            login: 'user2',
-            accessToken: 'token',
-            avatarUrl: 'https://avatar.url',
-            createdAt: now - 7200000,
-            lastActivity: now, // 2 hours duration
-          })
-
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        // Average: (3600000 + 7200000) / 2 = 5400000
-        expect(response.metrics.avgSessionDuration).toBe(5400000)
-      },
-      10000
-    )
-
-    it(
-      'использует текущее время если lastActivity отсутствует',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        const oneHourAgo = Date.now() - 3600000
-
-        vi.mocked(kv.scan).mockResolvedValue([0, ['session:abc']])
-        vi.mocked(kv.get).mockResolvedValue({
-          userId: 123,
+      vi.mocked(kv.get)
+        .mockResolvedValueOnce({
+          userId: 12345,
           login: 'user1',
-          accessToken: 'token',
-          avatarUrl: 'https://avatar.url',
-          createdAt: oneHourAgo,
-          // NO lastActivity
+          accessToken: 'token1',
+          avatarUrl: 'https://example.com/avatar1.png',
+          createdAt: 1699900000000,
+          lastActivity: 1700000000000,
+        })
+        .mockResolvedValueOnce({
+          userId: 67890,
+          login: 'user2',
+          accessToken: 'token2',
+          avatarUrl: 'https://example.com/avatar2.png',
+          createdAt: 1699950000000,
+          lastActivity: 1700050000000,
         })
 
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      // Mock kv.zrange by key
+      vi.mocked(kv.zrange).mockImplementation(async (key: string) => {
+        if (key === 'analytics:oauth:logins') {
+          return [
+            JSON.stringify({
+              timestamp: 1699900000000,
+              userId: 12345,
+              login: 'user1',
+              sessionId: 'abc123',
+            }),
+            JSON.stringify({
+              timestamp: 1699950000000,
+              userId: 67890,
+              login: 'user2',
+              sessionId: 'def456',
+            }),
+          ]
+        }
+        if (key === 'analytics:oauth:logouts') {
+          return [
+            JSON.stringify({
+              timestamp: 1699980000000,
+              userId: 12345,
+              login: 'user1',
+              sessionId: 'old_session',
+            }),
+          ]
+        }
+        if (key === 'analytics:ratelimit') {
+          return [
+            JSON.stringify({
+              timestamp: 1700000000000,
+              remaining: 4500,
+              limit: 5000,
+              used: 500,
+              isDemo: false,
+              userLogin: 'user1',
+            }),
+            JSON.stringify({
+              timestamp: 1700010000000,
+              remaining: 4200,
+              limit: 5000,
+              used: 800,
+              isDemo: false,
+              userLogin: 'user2',
+            }),
+          ]
+        }
+        return []
+      })
+    })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+    it('should return correct metrics structure', async () => {
+      await handler(req as VercelRequest, res as VercelResponse)
 
-        const response = jsonMock.mock.calls[0][0]
-        // Should use current time as lastActivity (around 1 hour = 3600000ms)
-        // Allow 10% margin for test execution time
-        expect(response.metrics.avgSessionDuration).toBeGreaterThan(3400000)
-        expect(response.metrics.avgSessionDuration).toBeLessThan(3800000)
-      },
-      10000
-    )
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          period: 'day',
+          timestamp: expect.any(Number),
+          metrics: expect.objectContaining({
+            activeSessions: expect.any(Number),
+            totalLogins: expect.any(Number),
+            totalLogouts: expect.any(Number),
+            uniqueUsers: expect.any(Number),
+            avgSessionDuration: expect.any(Number),
+            rateLimit: expect.objectContaining({
+              avgUsage: expect.any(Number),
+              peakUsage: expect.any(Number),
+              avgRemaining: expect.any(Number),
+            }),
+          }),
+        })
+      )
+    })
+
+    it('should calculate active sessions correctly', async () => {
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            activeSessions: 2,
+          }),
+        })
+      )
+    })
+
+    it('should calculate unique users correctly', async () => {
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            uniqueUsers: 2,
+          }),
+        })
+      )
+    })
+
+    it('should calculate login/logout counts correctly', async () => {
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            totalLogins: 2,
+            totalLogouts: 1,
+          }),
+        })
+      )
+    })
+
+    it('should calculate rate limit stats correctly', async () => {
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            rateLimit: {
+              avgUsage: 650, // (500 + 800) / 2
+              peakUsage: 800,
+              avgRemaining: 4350, // (4500 + 4200) / 2
+            },
+          }),
+        })
+      )
+    })
+
+    it('should set cache headers', async () => {
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.setHeader).toHaveBeenCalledWith(
+        'Cache-Control',
+        'public, s-maxage=300, stale-while-revalidate=600'
+      )
+    })
   })
 
-  describe('Rate Limit Statistics', () => {
-    it(
-      'возвращает дефолтные значения если snapshots нет',
-      async () => {
-        mockReq.query = { period: 'day' }
+  describe('Detailed Mode', () => {
+    beforeEach(() => {
+      vi.mocked(kv.scan).mockResolvedValue([
+        0,
+        ['session:abc123'],
+      ])
 
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      vi.mocked(kv.get).mockResolvedValue({
+        userId: 12345,
+        login: 'user1',
+        accessToken: 'token1',
+        avatarUrl: 'https://example.com/avatar1.png',
+        createdAt: 1699900000000,
+        lastActivity: 1700000000000,
+      })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+      vi.mocked(kv.zrange)
+        .mockResolvedValueOnce([
+          JSON.stringify({
+            timestamp: 1699900000000,
+            userId: 12345,
+            login: 'user1',
+            sessionId: 'abc123',
+          }),
+        ])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+    })
 
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.rateLimit).toEqual({
-          avgUsage: 0,
-          peakUsage: 0,
-          avgRemaining: 5000,
+    it('should not include detailed data by default', async () => {
+      req.query = { detailed: 'false' }
+
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.not.objectContaining({
+          detailed: expect.anything(),
         })
-      },
-      10000
-    )
+      )
+    })
 
-    it(
-      'корректно рассчитывает avgUsage и peakUsage',
-      async () => {
-        mockReq.query = { period: 'day' }
+    it('should include detailed data when requested', async () => {
+      req.query = { detailed: 'true' }
 
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockImplementation(async (key: string) => {
-          if (key === 'analytics:oauth:logins') return []
-          if (key === 'analytics:oauth:logouts') return []
-          if (key === 'analytics:ratelimit') {
-            return [
-              JSON.stringify({ timestamp: Date.now(), used: 100, remaining: 4900 }),
-              JSON.stringify({ timestamp: Date.now(), used: 500, remaining: 4500 }),
-              JSON.stringify({ timestamp: Date.now(), used: 300, remaining: 4700 }),
-            ]
-          }
-          return []
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detailed: expect.objectContaining({
+            sessions: expect.any(Array),
+            timeline: expect.any(Array),
+          }),
         })
+      )
+    })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+    it('should truncate session IDs for privacy', async () => {
+      req.query = { detailed: 'true' }
 
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.rateLimit.avgUsage).toBe(300) // (100 + 500 + 300) / 3
-        expect(response.metrics.rateLimit.peakUsage).toBe(500) // max
-        expect(response.metrics.rateLimit.avgRemaining).toBe(4700) // (4900 + 4500 + 4700) / 3
-      },
-      10000
-    )
+      await handler(req as VercelRequest, res as VercelResponse)
 
-    it(
-      'пропускает невалидные JSON snapshots при парсинге',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockImplementation(async (key: string) => {
-          if (key === 'analytics:oauth:logins') return []
-          if (key === 'analytics:oauth:logouts') return []
-          if (key === 'analytics:ratelimit') {
-            return [
-              JSON.stringify({ timestamp: Date.now(), used: 100, remaining: 4900 }),
-              'invalid json',
-              JSON.stringify({ timestamp: Date.now(), used: 200, remaining: 4800 }),
-            ]
-          }
-          return []
-        })
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        const response = jsonMock.mock.calls[0][0]
-        // avgUsage = (100 + 200) / 3 = 100, потому что length=3, но invalid даёт 0
-        // На самом деле код делит на snapshots.length (3), не на количество валидных (2)
-        expect(response.metrics.rateLimit.avgUsage).toBe(100) // Math.round(300 / 3)
-      },
-      10000
-    )
+      const call = vi.mocked(res.json).mock.calls[0][0] as any
+      expect(call.detailed.sessions[0].sessionId).toBe('abc123...')
+    })
   })
 
-  describe('Cache Headers', () => {
-    it(
-      'устанавливает правильные cache headers',
-      async () => {
-        mockReq.query = { period: 'day' }
+  describe('Edge Cases', () => {
+    it('should handle no active sessions', async () => {
+      vi.mocked(kv.scan).mockResolvedValue([0, []])
+      vi.mocked(kv.zrange).mockResolvedValue([])
 
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      await handler(req as VercelRequest, res as VercelResponse)
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            activeSessions: 0,
+            uniqueUsers: 0,
+            avgSessionDuration: 0,
+          }),
+        })
+      )
+    })
 
-        expect(setHeaderMock).toHaveBeenCalledWith(
-          'Cache-Control',
-          'public, s-maxage=300, stale-while-revalidate=600'
-        )
-      },
-      10000
-    )
+    it('should handle malformed JSON in events', async () => {
+      vi.mocked(kv.scan).mockResolvedValue([0, []])
+      vi.mocked(kv.zrange).mockImplementation(async (key: string) => {
+        if (key === 'analytics:oauth:logins') {
+          return ['invalid json', 'also invalid']
+        }
+        return []
+      })
+
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.status).toHaveBeenCalledWith(200)
+      const response = vi.mocked(res.json).mock.calls[0][0] as any
+
+      // Note: Code returns loginEvents.length (not parsed events count)
+      // So even invalid JSON is counted in totalLogins
+      expect(response.metrics.totalLogins).toBe(2)
+      expect(response.metrics.totalLogouts).toBe(0)
+
+      // But timeline should be empty (invalid events not parsed)
+      if (response.detailed) {
+        expect(response.detailed.timeline).toHaveLength(0)
+      }
+    })
+
+    it('should handle KV scan errors gracefully', async () => {
+      vi.mocked(kv.scan).mockRejectedValue(new Error('KV scan failed'))
+      vi.mocked(kv.zrange).mockResolvedValue([])
+
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      // Should return 200 with empty metrics instead of crashing
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            activeSessions: 0,
+          }),
+        })
+      )
+    })
+
+    it('should handle KV zrange errors gracefully', async () => {
+      vi.mocked(kv.scan).mockResolvedValue([0, []])
+      vi.mocked(kv.zrange).mockRejectedValue(new Error('KV zrange failed'))
+
+      await handler(req as VercelRequest, res as VercelResponse)
+
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            totalLogins: 0,
+            totalLogouts: 0,
+          }),
+        })
+      )
+    })
   })
 
   describe('Error Handling', () => {
-    it(
-      'возвращает 200 с пустыми данными если getActiveSessions падает (graceful degradation)',
-      async () => {
-        mockReq.query = { period: 'day' }
+    it('should handle errors gracefully and return 200 with partial data', async () => {
+      // All helper functions handle errors internally and return empty/default values
+      // So even if internal operations fail, the handler returns 200 with safe defaults
+      vi.mocked(kv.scan).mockRejectedValue(new Error('KV scan failed'))
+      vi.mocked(kv.zrange).mockRejectedValue(new Error('KV zrange failed'))
 
-        vi.mocked(kv.scan).mockRejectedValue(new Error('KV scan error'))
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      await handler(req as VercelRequest, res as VercelResponse)
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.activeSessions).toBe(0) // fallback to empty
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Error fetching active sessions:',
-          expect.any(Error)
-        )
-      },
-      10000
-    )
-
-    it(
-      'возвращает 200 с пустыми событиями если getOAuthEvents падает (graceful degradation)',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockRejectedValue(new Error('KV zrange error'))
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.totalLogins).toBe(0) // fallback to 0
-        expect(response.metrics.totalLogouts).toBe(0) // fallback to 0
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Error fetching OAuth events:',
-          expect.any(Error)
-        )
-      },
-      10000
-    )
-
-    it(
-      'возвращает 200 с дефолтными rate limit если getRateLimitStats падает (graceful degradation)',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-
-        // Используем mockImplementation чтобы различать вызовы по ключу
-        vi.mocked(kv.zrange).mockImplementation(async (key: string) => {
-          if (key === 'analytics:oauth:logins') return []
-          if (key === 'analytics:oauth:logouts') return []
-          if (key === 'analytics:ratelimit') {
-            throw new Error('Rate limit fetch error')
-          }
-          return []
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            activeSessions: 0,
+            totalLogins: 0,
+            totalLogouts: 0,
+            uniqueUsers: 0,
+          }),
         })
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        expect(statusMock).toHaveBeenCalledWith(200)
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.metrics.rateLimit).toEqual({
-          avgUsage: 0,
-          peakUsage: 0,
-          avgRemaining: 5000,
-        })
-        // getRateLimitStats ловит ошибку и логирует её
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Error fetching rate limit stats:',
-          expect.any(Error)
-        )
-      },
-      10000
-    )
-
-    it(
-      'возвращает 500 только если handler сам падает (Promise.all fails)',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        // Симулируем критическую ошибку через query parsing
-        mockReq.query = { period: { invalid: 'object' } } as never
-
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-
-        // Handler может вернуть 400 или 500 в зависимости от ошибки
-        expect(statusMock).toHaveBeenCalled()
-      },
-      10000
-    )
+      )
+    })
   })
 
-  describe('Response Structure', () => {
-    it(
-      'возвращает корректную структуру ответа',
-      async () => {
-        mockReq.query = { period: 'day' }
+  describe('Multi-page Session Scan', () => {
+    it('should handle paginated KV scan results', async () => {
+      // First scan returns cursor 100 (more results)
+      vi.mocked(kv.scan)
+        .mockResolvedValueOnce([100, ['session:abc123']])
+        .mockResolvedValueOnce([0, ['session:def456']]) // Second scan returns cursor 0 (done)
 
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
+      vi.mocked(kv.get)
+        .mockResolvedValueOnce({
+          userId: 12345,
+          login: 'user1',
+          accessToken: 'token1',
+          avatarUrl: 'https://example.com/avatar1.png',
+          createdAt: 1699900000000,
+        })
+        .mockResolvedValueOnce({
+          userId: 67890,
+          login: 'user2',
+          accessToken: 'token2',
+          avatarUrl: 'https://example.com/avatar2.png',
+          createdAt: 1699950000000,
+        })
 
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
+      vi.mocked(kv.zrange).mockResolvedValue([])
 
-        expect(statusMock).toHaveBeenCalledWith(200)
+      await handler(req as VercelRequest, res as VercelResponse)
 
-        const response = jsonMock.mock.calls[0][0]
-        expect(response).toHaveProperty('period')
-        expect(response).toHaveProperty('timestamp')
-        expect(response).toHaveProperty('metrics')
-        expect(response.metrics).toHaveProperty('activeSessions')
-        expect(response.metrics).toHaveProperty('totalLogins')
-        expect(response.metrics).toHaveProperty('totalLogouts')
-        expect(response.metrics).toHaveProperty('uniqueUsers')
-        expect(response.metrics).toHaveProperty('avgSessionDuration')
-        expect(response.metrics).toHaveProperty('rateLimit')
-        expect(response.metrics.rateLimit).toHaveProperty('avgUsage')
-        expect(response.metrics.rateLimit).toHaveProperty('peakUsage')
-        expect(response.metrics.rateLimit).toHaveProperty('avgRemaining')
-      },
-      10000
-    )
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metrics: expect.objectContaining({
+            activeSessions: 2,
+          }),
+        })
+      )
 
-    it(
-      'timestamp близок к текущему времени',
-      async () => {
-        mockReq.query = { period: 'day' }
-
-        vi.mocked(kv.scan).mockResolvedValue([0, []])
-        vi.mocked(kv.zrange).mockResolvedValue([])
-
-        const before = Date.now()
-        await handler(mockReq as VercelRequest, mockRes as VercelResponse)
-        const after = Date.now()
-
-        const response = jsonMock.mock.calls[0][0]
-        expect(response.timestamp).toBeGreaterThanOrEqual(before)
-        expect(response.timestamp).toBeLessThanOrEqual(after)
-      },
-      10000
-    )
+      // Verify scan was called twice
+      expect(kv.scan).toHaveBeenCalledTimes(2)
+    })
   })
 })

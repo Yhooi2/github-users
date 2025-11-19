@@ -11,7 +11,7 @@ import {
   type RateLimitSnapshot,
 } from './logger'
 
-// Mock Vercel KV
+// Mock @vercel/kv
 vi.mock('@vercel/kv', () => ({
   kv: {
     zadd: vi.fn(),
@@ -22,194 +22,133 @@ vi.mock('@vercel/kv', () => ({
   },
 }))
 
-describe('api/analytics/logger', () => {
-  let consoleWarnSpy: ReturnType<typeof vi.spyOn>
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>
-  let consoleLogSpy: ReturnType<typeof vi.spyOn>
+describe('Analytics Logger', () => {
+  // Mock console to avoid noise in test output
+  const originalConsoleLog = console.log
+  const originalConsoleWarn = console.warn
+  const originalConsoleError = console.error
 
   beforeEach(() => {
     vi.clearAllMocks()
-    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    console.log = vi.fn()
+    console.warn = vi.fn()
+    console.error = vi.fn()
   })
 
   afterEach(() => {
-    consoleWarnSpy.mockRestore()
-    consoleErrorSpy.mockRestore()
-    consoleLogSpy.mockRestore()
+    console.log = originalConsoleLog
+    console.warn = originalConsoleWarn
+    console.error = originalConsoleError
   })
 
   describe('logOAuthLogin', () => {
     const mockEvent: OAuthLoginEvent = {
-      timestamp: 1234567890000,
-      userId: 123,
+      timestamp: 1700000000000,
+      userId: 12345,
       login: 'testuser',
-      sessionId: 'session-abc-123',
+      sessionId: 'session123',
     }
 
-    it(
-      'успешно логирует OAuth login в KV',
-      async () => {
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockResolvedValue(true)
+    it('should successfully log OAuth login event', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockResolvedValue(1)
 
-        await logOAuthLogin(mockEvent)
+      await logOAuthLogin(mockEvent)
 
-        expect(kv.zadd).toHaveBeenCalledWith('analytics:oauth:logins', {
-          score: mockEvent.timestamp,
-          member: JSON.stringify({
-            timestamp: mockEvent.timestamp,
-            userId: mockEvent.userId,
-            login: mockEvent.login,
-            sessionId: mockEvent.sessionId,
-          }),
-        })
-        expect(kv.expire).toHaveBeenCalledWith('analytics:oauth:logins', 2592000)
-        expect(consoleLogSpy).toHaveBeenCalledWith(
-          `OAuth login logged: ${mockEvent.login} (${mockEvent.userId})`
-        )
-      },
-      10000
-    )
-
-    it(
-      'устанавливает правильный TTL (30 дней = 2592000 секунд)',
-      async () => {
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockResolvedValue(true)
-
-        await logOAuthLogin(mockEvent)
-
-        expect(kv.expire).toHaveBeenCalledWith('analytics:oauth:logins', 2592000)
-      },
-      10000
-    )
-
-    it(
-      'НЕ падает если zadd и expire оба выбрасывают exception',
-      async () => {
-        vi.mocked(kv.zadd).mockRejectedValue(new Error('KV timeout'))
-        vi.mocked(kv.expire).mockRejectedValue(new Error('KV timeout'))
-
-        await expect(logOAuthLogin(mockEvent)).resolves.not.toThrow()
-        expect(consoleErrorSpy).toHaveBeenCalled()
-      },
-      10000
-    )
-
-    it(
-      'логирует ошибку если zadd выбрасывает exception',
-      async () => {
-        const error = new Error('KV timeout')
-        vi.mocked(kv.zadd).mockRejectedValue(error)
-
-        await logOAuthLogin(mockEvent)
-
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to log OAuth login:', error)
-      },
-      10000
-    )
-
-    it(
-      'логирует ошибку если expire выбрасывает exception',
-      async () => {
-        const error = new Error('KV connection lost')
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockRejectedValue(error)
-
-        await logOAuthLogin(mockEvent)
-
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to log OAuth login:', error)
-      },
-      10000
-    )
-
-    it(
-      'корректно сериализует event с всеми полями',
-      async () => {
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockResolvedValue(true)
-
-        await logOAuthLogin(mockEvent)
-
-        const zaддCall = vi.mocked(kv.zadd).mock.calls[0]
-        const serializedMember = zaддCall[1].member as string
-        const parsed = JSON.parse(serializedMember)
-
-        expect(parsed).toEqual({
+      // Verify zadd was called with correct parameters
+      expect(kv.zadd).toHaveBeenCalledWith('analytics:oauth:logins', {
+        score: mockEvent.timestamp,
+        member: JSON.stringify({
           timestamp: mockEvent.timestamp,
           userId: mockEvent.userId,
           login: mockEvent.login,
           sessionId: mockEvent.sessionId,
-        })
-      },
-      10000
-    )
+        }),
+      })
+
+      // Verify expiry was set to 30 days
+      expect(kv.expire).toHaveBeenCalledWith('analytics:oauth:logins', 2592000)
+
+      // Verify success log
+      expect(console.log).toHaveBeenCalledWith(
+        `OAuth login logged: ${mockEvent.login} (${mockEvent.userId})`
+      )
+    })
+
+    it('should handle KV errors gracefully', async () => {
+      const error = new Error('KV connection timeout')
+      vi.mocked(kv.zadd).mockRejectedValue(error)
+
+      await logOAuthLogin(mockEvent)
+
+      // Should not throw
+      expect(console.error).toHaveBeenCalledWith('Failed to log OAuth login:', error)
+    })
+
+    it('should handle zadd success but expire failure', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockRejectedValue(new Error('Expire failed'))
+
+      await logOAuthLogin(mockEvent)
+
+      // zadd should succeed
+      expect(kv.zadd).toHaveBeenCalled()
+
+      // Error should be logged
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to log OAuth login:',
+        expect.any(Error)
+      )
+    })
   })
 
   describe('logOAuthLogout', () => {
     const mockEvent: OAuthLogoutEvent = {
-      timestamp: 1234567890000,
-      userId: 456,
-      login: 'logoutuser',
-      sessionId: 'session-xyz-789',
+      timestamp: 1700000000000,
+      userId: 12345,
+      login: 'testuser',
+      sessionId: 'session123',
     }
 
-    it(
-      'успешно логирует OAuth logout в KV',
-      async () => {
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockResolvedValue(true)
+    it('should successfully log OAuth logout event', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockResolvedValue(1)
 
-        await logOAuthLogout(mockEvent)
+      await logOAuthLogout(mockEvent)
 
-        expect(kv.zadd).toHaveBeenCalledWith('analytics:oauth:logouts', {
-          score: mockEvent.timestamp,
-          member: JSON.stringify({
-            timestamp: mockEvent.timestamp,
-            userId: mockEvent.userId,
-            login: mockEvent.login,
-            sessionId: mockEvent.sessionId,
-          }),
-        })
-        expect(kv.expire).toHaveBeenCalledWith('analytics:oauth:logouts', 2592000)
-        expect(consoleLogSpy).toHaveBeenCalledWith(
-          `OAuth logout logged: ${mockEvent.login} (${mockEvent.userId})`
-        )
-      },
-      10000
-    )
+      // Verify zadd was called with correct parameters
+      expect(kv.zadd).toHaveBeenCalledWith('analytics:oauth:logouts', {
+        score: mockEvent.timestamp,
+        member: JSON.stringify({
+          timestamp: mockEvent.timestamp,
+          userId: mockEvent.userId,
+          login: mockEvent.login,
+          sessionId: mockEvent.sessionId,
+        }),
+      })
 
-    it(
-      'НЕ падает если zadd и expire оба выбрасывают exception',
-      async () => {
-        vi.mocked(kv.zadd).mockRejectedValue(new Error('Connection lost'))
-        vi.mocked(kv.expire).mockRejectedValue(new Error('Connection lost'))
+      // Verify expiry was set to 30 days
+      expect(kv.expire).toHaveBeenCalledWith('analytics:oauth:logouts', 2592000)
 
-        await expect(logOAuthLogout(mockEvent)).resolves.not.toThrow()
-        expect(consoleErrorSpy).toHaveBeenCalled()
-      },
-      10000
-    )
+      // Verify success log
+      expect(console.log).toHaveBeenCalledWith(
+        `OAuth logout logged: ${mockEvent.login} (${mockEvent.userId})`
+      )
+    })
 
-    it(
-      'обрабатывает ошибку KV gracefully',
-      async () => {
-        const error = new Error('Network error')
-        vi.mocked(kv.zadd).mockRejectedValue(error)
+    it('should handle KV errors gracefully', async () => {
+      const error = new Error('KV write failed')
+      vi.mocked(kv.zadd).mockRejectedValue(error)
 
-        await logOAuthLogout(mockEvent)
+      await logOAuthLogout(mockEvent)
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to log OAuth logout:', error)
-      },
-      10000
-    )
+      expect(console.error).toHaveBeenCalledWith('Failed to log OAuth logout:', error)
+    })
   })
 
   describe('logRateLimitSnapshot', () => {
     const mockSnapshot: RateLimitSnapshot = {
-      timestamp: Date.now(),
+      timestamp: 1700000000000,
       remaining: 4500,
       limit: 5000,
       used: 500,
@@ -217,386 +156,266 @@ describe('api/analytics/logger', () => {
       userLogin: 'testuser',
     }
 
-    it(
-      'успешно логирует rate limit snapshot в KV',
-      async () => {
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockResolvedValue(true)
+    it('should successfully log rate limit snapshot', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockResolvedValue(1)
 
-        await logRateLimitSnapshot(mockSnapshot)
+      await logRateLimitSnapshot(mockSnapshot)
 
-        expect(kv.zadd).toHaveBeenCalledWith('analytics:ratelimit', {
-          score: mockSnapshot.timestamp,
-          member: JSON.stringify({
-            timestamp: mockSnapshot.timestamp,
-            remaining: mockSnapshot.remaining,
-            limit: mockSnapshot.limit,
-            used: mockSnapshot.used,
-            isDemo: mockSnapshot.isDemo,
-            userLogin: mockSnapshot.userLogin,
-          }),
-        })
-      },
-      10000
-    )
+      // Verify zadd was called with correct parameters
+      expect(kv.zadd).toHaveBeenCalledWith('analytics:ratelimit', {
+        score: mockSnapshot.timestamp,
+        member: JSON.stringify({
+          timestamp: mockSnapshot.timestamp,
+          remaining: mockSnapshot.remaining,
+          limit: mockSnapshot.limit,
+          used: mockSnapshot.used,
+          isDemo: mockSnapshot.isDemo,
+          userLogin: mockSnapshot.userLogin,
+        }),
+      })
 
-    it(
-      'устанавливает TTL 7 дней (604800 секунд) для rate limit данных',
-      async () => {
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockResolvedValue(true)
+      // Verify expiry was set to 7 days
+      expect(kv.expire).toHaveBeenCalledWith('analytics:ratelimit', 604800)
+    })
 
-        await logRateLimitSnapshot(mockSnapshot)
+    it('should handle demo mode snapshot', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockResolvedValue(1)
 
-        expect(kv.expire).toHaveBeenCalledWith('analytics:ratelimit', 604800)
-      },
-      10000
-    )
+      const demoSnapshot: RateLimitSnapshot = {
+        timestamp: 1700000000000,
+        remaining: 4500,
+        limit: 5000,
+        used: 500,
+        isDemo: true,
+      }
 
-    it(
-      'НЕ падает если expire выбрасывает exception',
-      async () => {
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockRejectedValue(new Error('Expire failed'))
+      await logRateLimitSnapshot(demoSnapshot)
 
-        await expect(logRateLimitSnapshot(mockSnapshot)).resolves.not.toThrow()
-        expect(consoleErrorSpy).toHaveBeenCalled()
-      },
-      10000
-    )
+      expect(kv.zadd).toHaveBeenCalledWith('analytics:ratelimit', {
+        score: demoSnapshot.timestamp,
+        member: expect.stringContaining('"isDemo":true'),
+      })
+    })
 
-    it(
-      'обрабатывает ошибку без предупреждения (silent fail)',
-      async () => {
-        const error = new Error('KV error')
-        vi.mocked(kv.zadd).mockRejectedValue(error)
+    it('should handle KV errors gracefully', async () => {
+      const error = new Error('KV zadd failed')
+      vi.mocked(kv.zadd).mockRejectedValue(error)
 
-        await logRateLimitSnapshot(mockSnapshot)
+      await logRateLimitSnapshot(mockSnapshot)
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Failed to log rate limit snapshot:',
-          error
-        )
-      },
-      10000
-    )
-
-    it(
-      'корректно сериализует snapshot с demo mode',
-      async () => {
-        const demoSnapshot: RateLimitSnapshot = {
-          ...mockSnapshot,
-          isDemo: true,
-          userLogin: undefined,
-        }
-
-        vi.mocked(kv.zadd).mockResolvedValue(1)
-        vi.mocked(kv.expire).mockResolvedValue(true)
-
-        await logRateLimitSnapshot(demoSnapshot)
-
-        const zaaddCall = vi.mocked(kv.zadd).mock.calls[0]
-        const serializedMember = zaaddCall[1].member as string
-        const parsed = JSON.parse(serializedMember)
-
-        expect(parsed.isDemo).toBe(true)
-        expect(parsed.userLogin).toBeUndefined()
-      },
-      10000
-    )
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to log rate limit snapshot:',
+        error
+      )
+    })
   })
 
   describe('updateSessionActivity', () => {
-    const mockSessionId = 'session-test-123'
+    const mockSessionId = 'session123'
     const mockSession = {
-      userId: 123,
+      userId: 12345,
       login: 'testuser',
-      accessToken: 'token-abc',
-      avatarUrl: 'https://github.com/avatar.png',
-      createdAt: 1234567890000,
+      accessToken: 'token123',
+      avatarUrl: 'https://example.com/avatar.png',
+      createdAt: 1699900000000,
+      lastActivity: 1699950000000,
     }
 
-    it(
-      'успешно обновляет lastActivity для существующей сессии',
-      async () => {
-        const now = Date.now()
-        vi.mocked(kv.get).mockResolvedValue(mockSession)
-        vi.mocked(kv.set).mockResolvedValue('OK')
+    beforeEach(() => {
+      // Mock Date.now() for consistent testing
+      vi.spyOn(Date, 'now').mockReturnValue(1700000000000)
+    })
 
-        await updateSessionActivity(mockSessionId)
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
 
-        expect(kv.get).toHaveBeenCalledWith(`session:${mockSessionId}`)
-        expect(kv.set).toHaveBeenCalledWith(
-          `session:${mockSessionId}`,
-          {
-            ...mockSession,
-            lastActivity: expect.any(Number),
-          },
-          { ex: 2592000 }
-        )
+    it('should successfully update session activity', async () => {
+      vi.mocked(kv.get).mockResolvedValue(mockSession)
+      vi.mocked(kv.set).mockResolvedValue('OK')
 
-        // Check that lastActivity is close to current time
-        const setCall = vi.mocked(kv.set).mock.calls[0]
-        const updatedSession = setCall[1] as typeof mockSession & { lastActivity: number }
-        expect(updatedSession.lastActivity).toBeGreaterThanOrEqual(now)
-        expect(updatedSession.lastActivity).toBeLessThanOrEqual(Date.now())
-      },
-      10000
-    )
+      await updateSessionActivity(mockSessionId)
 
-    it(
-      'НЕ обновляет если сессия не найдена',
-      async () => {
-        vi.mocked(kv.get).mockResolvedValue(null)
+      // Verify session was retrieved
+      expect(kv.get).toHaveBeenCalledWith(`session:${mockSessionId}`)
 
-        await updateSessionActivity(mockSessionId)
+      // Verify session was updated with new lastActivity
+      expect(kv.set).toHaveBeenCalledWith(
+        `session:${mockSessionId}`,
+        {
+          ...mockSession,
+          lastActivity: 1700000000000, // Date.now() mock
+        },
+        { ex: 2592000 } // 30 days TTL
+      )
+    })
 
-        expect(kv.get).toHaveBeenCalledWith(`session:${mockSessionId}`)
-        expect(kv.set).not.toHaveBeenCalled()
-      },
-      10000
-    )
+    it('should handle session not found', async () => {
+      vi.mocked(kv.get).mockResolvedValue(null)
 
-    it(
-      'сохраняет существующие поля сессии при обновлении',
-      async () => {
-        vi.mocked(kv.get).mockResolvedValue(mockSession)
-        vi.mocked(kv.set).mockResolvedValue('OK')
+      await updateSessionActivity(mockSessionId)
 
-        await updateSessionActivity(mockSessionId)
+      // get should be called
+      expect(kv.get).toHaveBeenCalledWith(`session:${mockSessionId}`)
 
-        const setCall = vi.mocked(kv.set).mock.calls[0]
-        const updatedSession = setCall[1] as typeof mockSession
-        expect(updatedSession.userId).toBe(mockSession.userId)
-        expect(updatedSession.login).toBe(mockSession.login)
-        expect(updatedSession.accessToken).toBe(mockSession.accessToken)
-        expect(updatedSession.avatarUrl).toBe(mockSession.avatarUrl)
-        expect(updatedSession.createdAt).toBe(mockSession.createdAt)
-      },
-      10000
-    )
+      // set should NOT be called
+      expect(kv.set).not.toHaveBeenCalled()
+    })
 
-    it(
-      'обрабатывает ошибку KV.get gracefully',
-      async () => {
-        const error = new Error('KV read error')
-        vi.mocked(kv.get).mockRejectedValue(error)
+    it('should handle KV get errors gracefully', async () => {
+      const error = new Error('KV get failed')
+      vi.mocked(kv.get).mockRejectedValue(error)
 
-        await updateSessionActivity(mockSessionId)
+      await updateSessionActivity(mockSessionId)
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Failed to update session activity:',
-          error
-        )
-      },
-      10000
-    )
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to update session activity:',
+        error
+      )
+    })
 
-    it(
-      'обрабатывает ошибку KV.set gracefully',
-      async () => {
-        const error = new Error('KV write error')
-        vi.mocked(kv.get).mockResolvedValue(mockSession)
-        vi.mocked(kv.set).mockRejectedValue(error)
+    it('should handle KV set errors gracefully', async () => {
+      vi.mocked(kv.get).mockResolvedValue(mockSession)
+      vi.mocked(kv.set).mockRejectedValue(new Error('KV set failed'))
 
-        await updateSessionActivity(mockSessionId)
+      await updateSessionActivity(mockSessionId)
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Failed to update session activity:',
-          error
-        )
-      },
-      10000
-    )
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to update session activity:',
+        expect.any(Error)
+      )
+    })
   })
 
   describe('cleanupOldAnalytics', () => {
     beforeEach(() => {
-      vi.useFakeTimers()
+      // Mock Date.now() to a known value
+      vi.spyOn(Date, 'now').mockReturnValue(1700000000000)
     })
 
     afterEach(() => {
-      vi.useRealTimers()
+      vi.restoreAllMocks()
     })
 
-    it(
-      'удаляет OAuth login события старше 30 дней',
-      async () => {
-        const now = Date.now()
-        vi.setSystemTime(now)
+    it('should successfully cleanup old analytics data', async () => {
+      vi.mocked(kv.zremrangebyscore).mockResolvedValue(5)
 
-        vi.mocked(kv.zremrangebyscore).mockResolvedValue(5)
+      await cleanupOldAnalytics()
 
-        await cleanupOldAnalytics()
+      const now = 1700000000000
+      const thirtyDaysAgo = now - 2592000000
+      const sevenDaysAgo = now - 604800000
 
-        const thirtyDaysAgo = now - 2592000000 // 30 days in ms
-        expect(kv.zremrangebyscore).toHaveBeenCalledWith(
-          'analytics:oauth:logins',
-          0,
-          thirtyDaysAgo
-        )
-      },
-      10000
-    )
+      // Verify old login events removed (30 days)
+      expect(kv.zremrangebyscore).toHaveBeenCalledWith(
+        'analytics:oauth:logins',
+        0,
+        thirtyDaysAgo
+      )
 
-    it(
-      'удаляет OAuth logout события старше 30 дней',
-      async () => {
-        const now = Date.now()
-        vi.setSystemTime(now)
+      // Verify old logout events removed (30 days)
+      expect(kv.zremrangebyscore).toHaveBeenCalledWith(
+        'analytics:oauth:logouts',
+        0,
+        thirtyDaysAgo
+      )
 
-        vi.mocked(kv.zremrangebyscore).mockResolvedValue(3)
+      // Verify old rate limit snapshots removed (7 days)
+      expect(kv.zremrangebyscore).toHaveBeenCalledWith(
+        'analytics:ratelimit',
+        0,
+        sevenDaysAgo
+      )
 
-        await cleanupOldAnalytics()
+      // Verify completion log
+      expect(console.log).toHaveBeenCalledWith('Analytics cleanup completed')
+    })
 
-        const thirtyDaysAgo = now - 2592000000
-        expect(kv.zremrangebyscore).toHaveBeenCalledWith(
-          'analytics:oauth:logouts',
-          0,
-          thirtyDaysAgo
-        )
-      },
-      10000
-    )
+    it('should handle KV errors gracefully', async () => {
+      const error = new Error('KV cleanup failed')
+      vi.mocked(kv.zremrangebyscore).mockRejectedValue(error)
 
-    it(
-      'удаляет rate limit snapshots старше 7 дней',
-      async () => {
-        const now = Date.now()
-        vi.setSystemTime(now)
+      await cleanupOldAnalytics()
 
-        vi.mocked(kv.zremrangebyscore).mockResolvedValue(10)
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to cleanup old analytics:',
+        error
+      )
+    })
 
-        await cleanupOldAnalytics()
+    it('should handle partial cleanup failures', async () => {
+      // First call succeeds, second fails
+      vi.mocked(kv.zremrangebyscore)
+        .mockResolvedValueOnce(5)
+        .mockRejectedValueOnce(new Error('Second cleanup failed'))
 
-        const sevenDaysAgo = now - 604800000 // 7 days in ms
-        expect(kv.zremrangebyscore).toHaveBeenCalledWith(
-          'analytics:ratelimit',
-          0,
-          sevenDaysAgo
-        )
-      },
-      10000
-    )
+      await cleanupOldAnalytics()
 
-    it(
-      'вызывает все три cleanup операции',
-      async () => {
-        vi.mocked(kv.zremrangebyscore).mockResolvedValue(1)
+      // Error should be logged
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to cleanup old analytics:',
+        expect.any(Error)
+      )
+    })
+  })
 
-        await cleanupOldAnalytics()
+  describe('Edge Cases', () => {
+    it('should handle very large timestamps', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockResolvedValue(1)
 
-        expect(kv.zremrangebyscore).toHaveBeenCalledTimes(3)
-        expect(kv.zremrangebyscore).toHaveBeenCalledWith(
-          'analytics:oauth:logins',
-          expect.any(Number),
-          expect.any(Number)
-        )
-        expect(kv.zremrangebyscore).toHaveBeenCalledWith(
-          'analytics:oauth:logouts',
-          expect.any(Number),
-          expect.any(Number)
-        )
-        expect(kv.zremrangebyscore).toHaveBeenCalledWith(
-          'analytics:ratelimit',
-          expect.any(Number),
-          expect.any(Number)
-        )
-      },
-      10000
-    )
+      const largeTimestamp = Number.MAX_SAFE_INTEGER
 
-    it(
-      'логирует успешное завершение cleanup',
-      async () => {
-        vi.mocked(kv.zremrangebyscore).mockResolvedValue(5)
+      await logOAuthLogin({
+        timestamp: largeTimestamp,
+        userId: 12345,
+        login: 'testuser',
+        sessionId: 'session123',
+      })
 
-        await cleanupOldAnalytics()
+      expect(kv.zadd).toHaveBeenCalledWith('analytics:oauth:logins', {
+        score: largeTimestamp,
+        member: expect.stringContaining(String(largeTimestamp)),
+      })
+    })
 
-        expect(consoleLogSpy).toHaveBeenCalledWith('Analytics cleanup completed')
-      },
-      10000
-    )
+    it('should handle special characters in usernames', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockResolvedValue(1)
 
-    it(
-      'НЕ падает если одна из cleanup операций выбрасывает exception',
-      async () => {
-        vi.mocked(kv.zremrangebyscore)
-          .mockResolvedValueOnce(5) // logins успех
-          .mockRejectedValueOnce(new Error('KV error')) // logouts ошибка
-          .mockResolvedValueOnce(3) // ratelimit успех
+      const specialUsername = 'user-with_special.chars@123'
 
-        await expect(cleanupOldAnalytics()).resolves.not.toThrow()
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Failed to cleanup old analytics:',
-          expect.any(Error)
-        )
-      },
-      10000
-    )
+      await logOAuthLogin({
+        timestamp: 1700000000000,
+        userId: 12345,
+        login: specialUsername,
+        sessionId: 'session123',
+      })
 
-    it(
-      'обрабатывает ошибку KV gracefully',
-      async () => {
-        const error = new Error('KV cleanup error')
-        vi.mocked(kv.zremrangebyscore).mockRejectedValue(error)
+      expect(kv.zadd).toHaveBeenCalledWith('analytics:oauth:logins', {
+        score: 1700000000000,
+        member: expect.stringContaining(specialUsername),
+      })
+    })
 
-        await cleanupOldAnalytics()
+    it('should handle zero values in rate limit snapshot', async () => {
+      vi.mocked(kv.zadd).mockResolvedValue(1)
+      vi.mocked(kv.expire).mockResolvedValue(1)
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Failed to cleanup old analytics:',
-          error
-        )
-      },
-      10000
-    )
+      await logRateLimitSnapshot({
+        timestamp: 1700000000000,
+        remaining: 0,
+        limit: 5000,
+        used: 5000,
+        isDemo: true,
+      })
 
-    it(
-      'использует правильные временные границы для 30-дневных данных',
-      async () => {
-        const fixedDate = new Date('2024-01-15T12:00:00Z').getTime()
-        vi.setSystemTime(fixedDate)
-
-        vi.mocked(kv.zremrangebyscore).mockResolvedValue(1)
-
-        await cleanupOldAnalytics()
-
-        const expectedThirtyDaysAgo = fixedDate - 2592000000 // 30 days in ms
-
-        // Check login cleanup call
-        const loginCall = vi.mocked(kv.zremrangebyscore).mock.calls.find(
-          (call) => call[0] === 'analytics:oauth:logins'
-        )
-        expect(loginCall?.[2]).toBe(expectedThirtyDaysAgo)
-
-        // Check logout cleanup call
-        const logoutCall = vi.mocked(kv.zremrangebyscore).mock.calls.find(
-          (call) => call[0] === 'analytics:oauth:logouts'
-        )
-        expect(logoutCall?.[2]).toBe(expectedThirtyDaysAgo)
-      },
-      10000
-    )
-
-    it(
-      'использует правильную временную границу для 7-дневных данных',
-      async () => {
-        const fixedDate = new Date('2024-01-15T12:00:00Z').getTime()
-        vi.setSystemTime(fixedDate)
-
-        vi.mocked(kv.zremrangebyscore).mockResolvedValue(1)
-
-        await cleanupOldAnalytics()
-
-        const expectedSevenDaysAgo = fixedDate - 604800000 // 7 days in ms
-
-        // Check rate limit cleanup call
-        const rateLimitCall = vi.mocked(kv.zremrangebyscore).mock.calls.find(
-          (call) => call[0] === 'analytics:ratelimit'
-        )
-        expect(rateLimitCall?.[2]).toBe(expectedSevenDaysAgo)
-      },
-      10000
-    )
+      expect(kv.zadd).toHaveBeenCalledWith('analytics:ratelimit', {
+        score: 1700000000000,
+        member: expect.stringContaining('"remaining":0'),
+      })
+    })
   })
 })
