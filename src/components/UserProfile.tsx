@@ -8,13 +8,21 @@ import { RecentActivity } from '@/components/user/RecentActivity';
 import { UserAuthenticity } from '@/components/user/UserAuthenticity';
 import { StatsOverview } from '@/components/statistics/StatsOverview';
 import { RepositoryList } from '@/components/repository/RepositoryList';
+import { QuickAssessment } from '@/components/assessment/QuickAssessment';
 import {
   calculateYearlyCommitStats,
   calculateLanguageStatistics,
   calculateCommitActivity
 } from '@/lib/statistics';
+import {
+  calculateActivityScore,
+  calculateImpactScore,
+  calculateQualityScore,
+  calculateGrowthScore
+} from '@/lib/metrics';
 import { useRepositorySorting } from '@/hooks/useRepositorySorting';
 import { useRepositoryFilters } from '@/hooks/useRepositoryFilters';
+import { useUserAnalytics } from '@/hooks/useUserAnalytics';
 import { RepositorySorting } from '@/components/repository/RepositorySorting';
 import { RepositoryFilters } from '@/components/repository/RepositoryFilters';
 
@@ -31,7 +39,10 @@ type Props = {
  * Displays:
  * - User header with avatar, name, bio, location
  * - Stats grid (repositories, followers, following, gists)
- * - Authenticity score with detailed breakdown (NEW FEATURE)
+ * - Authenticity score with detailed breakdown
+ * - Quick Assessment with 4 metrics (Activity, Impact, Quality, Growth) - NEW PHASE 2
+ * - Statistics overview with charts (Activity, Commits, Languages)
+ * - Repository list with filtering and sorting
  * - 3-year contribution history
  * - Recent activity by repository
  *
@@ -50,6 +61,7 @@ type Props = {
  */
 function UserProfile({ userName }: Props) {
   const { data, loading, error, refetch } = useQueryUser(userName);
+  const { timeline, loading: analyticsLoading } = useUserAnalytics(userName);
   const yearLabels = getYearLabels();
 
   if (loading) {
@@ -80,6 +92,19 @@ function UserProfile({ userName }: Props) {
     user.contributionsCollection.totalCommitContributions,
     365 // Default to last year
   );
+
+  // Calculate metrics for assessment
+  const activityMetric = calculateActivityScore(timeline);
+  const impactMetric = calculateImpactScore(timeline);
+  const qualityMetric = calculateQualityScore(timeline);
+  const growthMetric = calculateGrowthScore(timeline);
+
+  const metrics = {
+    activity: { score: activityMetric.score, level: activityMetric.level },
+    impact: { score: impactMetric.score, level: impactMetric.level },
+    quality: { score: qualityMetric.score, level: qualityMetric.level },
+    growth: { score: growthMetric.score, level: growthMetric.level },
+  };
 
   // Repository filtering and sorting
   const {
@@ -123,6 +148,8 @@ function UserProfile({ userName }: Props) {
       />
 
       <UserAuthenticity repositories={repositories} />
+
+      <QuickAssessment metrics={metrics} loading={analyticsLoading} />
 
       <StatsOverview
         yearlyCommits={yearlyCommits}
