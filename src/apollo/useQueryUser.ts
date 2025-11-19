@@ -2,7 +2,17 @@ import { useQuery } from "@apollo/client"
 import { useMemo } from "react"
 import { getQueryDates, getThreeYearRanges } from "./date-helpers";
 import { GET_USER_INFO } from "./queriers";
-import type { GitHubGraphQLResponse } from "./github-api.types";
+import type { GitHubGraphQLResponse, RateLimit } from "./github-api.types";
+
+/**
+ * Options for useQueryUser hook
+ */
+export interface UseQueryUserOptions {
+  /**
+   * Callback function called when rate limit information is received
+   */
+  onRateLimitUpdate?: (rateLimit: RateLimit) => void;
+}
 
 /**
  * Custom React hook for fetching GitHub user data via GraphQL
@@ -18,12 +28,15 @@ import type { GitHubGraphQLResponse } from "./github-api.types";
  *
  * @param login - GitHub username to query
  * @param daysBack - Number of days to fetch contribution data (default: 365)
+ * @param options - Optional configuration including rate limit callback
  * @returns Apollo useQuery result with data, loading, and error states
  *
  * @example
  * ```typescript
  * function UserProfile({ userName }: { userName: string }) {
- *   const { data, loading, error } = useQueryUser(userName)
+ *   const { data, loading, error } = useQueryUser(userName, 365, {
+ *     onRateLimitUpdate: (rateLimit) => console.log('Rate limit:', rateLimit)
+ *   })
  *
  *   if (loading) return <p>Loading...</p>
  *   if (error) return <p>Error: {error.message}</p>
@@ -33,7 +46,11 @@ import type { GitHubGraphQLResponse } from "./github-api.types";
  * }
  * ```
  */
-function useQueryUser(login: string, daysBack: number = 365) {
+function useQueryUser(
+  login: string,
+  daysBack: number = 365,
+  options?: UseQueryUserOptions
+) {
   const variables = useMemo(() => {
     const queryDates = getQueryDates(daysBack);
     const yearRanges = getThreeYearRanges();
@@ -50,12 +67,19 @@ function useQueryUser(login: string, daysBack: number = 365) {
       year3To: yearRanges.year3.to,
     };
   }, [login, daysBack]);
-  
-    return useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
-      variables,
-      skip: !login,
-      errorPolicy: 'all',
-      notifyOnNetworkStatusChange: true,
-    });
-  };
+
+  return useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
+    variables,
+    skip: !login,
+    errorPolicy: 'all',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      // Call rate limit callback if provided and rate limit exists in response
+      if (options?.onRateLimitUpdate && data.rateLimit) {
+        options.onRateLimitUpdate(data.rateLimit);
+      }
+    },
+  });
+}
+
 export default useQueryUser

@@ -12,6 +12,7 @@
 
 ### Core Features
 - 🔍 **Search GitHub Users** - Find any public GitHub user by username
+- 🔐 **OAuth Authentication** - Sign in with GitHub for higher rate limits (Phase 7)
 - 📊 **Comprehensive Statistics** - Detailed profile information with advanced analytics
 - 🎨 **Modern UI** - Built with 17+ shadcn/ui components (New York style)
 - 🌓 **Theme Support** - Dark and light mode with smooth transitions
@@ -57,19 +58,67 @@
 # Install dependencies
 npm install
 
-# Setup environment
+# Setup environment (required for demo mode)
 cp .env.example .env.local
-# Add your GitHub token to .env.local
+# Add your GitHub token to .env.local for demo mode
 
 # Start dev server
 npm run dev
 ```
 
-## 🔑 GitHub Token
+## 🔐 Authentication
+
+The application supports two modes of operation:
+
+### 1. Demo Mode (Default)
+- **No sign-in required** - Start using the app immediately
+- Uses shared GitHub API token
+- 5000 requests/hour shared across all users
+- Perfect for trying out the app
+
+### 2. OAuth Mode (Sign in with GitHub)
+- **Personal rate limits** - 5000 requests/hour per user
+- **Fresher data** - 10-minute cache vs 30-minute in demo mode
+- **Seamless upgrade** - Sign in anytime during usage
+- **Graceful fallback** - Automatically returns to demo mode on errors
+
+**To enable OAuth authentication:**
+
+1. **Create GitHub OAuth App** (for deployment):
+   - Go to: https://github.com/settings/developers
+   - Click "New OAuth App"
+   - Application name: `GitHub Users Analytics`
+   - Homepage URL: `https://your-domain.vercel.app`
+   - Authorization callback URL: `https://your-domain.vercel.app/api/auth/callback`
+
+2. **Set environment variables**:
+   ```bash
+   # Required for both modes
+   GITHUB_TOKEN=ghp_xxxxx              # Demo mode token
+
+   # Required for OAuth
+   GITHUB_OAUTH_CLIENT_ID=Ov23li...    # OAuth App client ID
+   GITHUB_OAUTH_CLIENT_SECRET=1a2b...  # OAuth App client secret
+
+   # Auto-configured by Vercel (for session storage)
+   KV_URL=redis://...
+   KV_REST_API_URL=https://...
+   KV_REST_API_TOKEN=...
+   ```
+
+3. **Setup Vercel KV** (for OAuth sessions):
+   - Vercel Dashboard → Storage → Create KV Database
+   - Link to your project
+
+**Demo Mode Token** (always required):
 
 Get token at: https://github.com/settings/tokens
 
 Required scopes: `read:user`, `user:email`
+
+**Documentation:**
+- [OAuth Security Checklist](./docs/PHASE_7_SECURITY_CHECKLIST.md)
+- [Phase 7 Implementation Summary](./docs/PHASE_7_COMPLETION_SUMMARY.md)
 
 ## 🚀 Scripts
 
@@ -111,6 +160,12 @@ npm run storybook         # Component documentation
 - [GraphQL API Reference](./docs/graphql-api.md) - GitHub GraphQL API details
 - [Dependencies Overview](./docs/dependencies.md) - Complete dependency reference
 
+### OAuth Integration (Phase 7)
+
+- [Phase 7 Completion Summary](./docs/PHASE_7_COMPLETION_SUMMARY.md) - Complete OAuth implementation details
+- [Security Checklist](./docs/PHASE_7_SECURITY_CHECKLIST.md) - Security verification and best practices
+- [Implementation Plan](./docs/PHASE_7_IMPLEMENTATION_PLAN_RU.md) - Detailed implementation plan (Russian)
+
 ### Development Guides
 
 - [Component Development](./docs/component-development.md) - React component workflow with shadcn/ui & Storybook
@@ -149,11 +204,13 @@ src/
 │   ├── date-helpers.ts         # Date range utilities
 │   └── github-api.types.ts     # TypeScript types for GitHub API
 │
-├── components/                  # React components (28+ components)
-│   ├── layout/                 # Layout components (7)
+├── components/                  # React components (30+ components)
+│   ├── layout/                 # Layout components (9)
 │   │   ├── StatsCard.tsx       # Statistics card wrapper
 │   │   ├── Section.tsx         # Content section wrapper
 │   │   ├── MainTabs.tsx        # Tab navigation
+│   │   ├── UserMenu.tsx        # OAuth authentication menu (Phase 7)
+│   │   ├── RateLimitBanner.tsx # Rate limit warnings with OAuth CTA
 │   │   ├── EmptyState.tsx      # Empty state placeholder
 │   │   ├── ErrorState.tsx      # Error display
 │   │   ├── LoadingState.tsx    # Loading skeletons
@@ -220,10 +277,16 @@ docs/                           # Comprehensive documentation
 
 The application follows a clean **layered architecture**:
 
-1. **Data Layer** - Apollo Client with link chain (error → auth → http)
-2. **Business Logic** - Custom hooks and utility functions
-3. **Presentation** - React components with shadcn/ui
-4. **UI Library** - Reusable components built on Radix UI
+1. **Data Layer** - Apollo Client with link chain (error → http → GitHub API)
+2. **Authentication Layer** - OAuth 2.0 flow with session management (Vercel KV)
+3. **Business Logic** - Custom hooks and utility functions
+4. **Presentation** - React components with shadcn/ui
+5. **UI Library** - Reusable components built on Radix UI
+
+**Authentication Architecture:**
+- **Demo Mode**: Shared GitHub token, 30-minute cache, no authentication required
+- **OAuth Mode**: User-specific tokens, 10-minute cache, httpOnly session cookies
+- **Graceful Degradation**: Automatic fallback from OAuth to demo mode on errors
 
 For detailed architecture information, see [docs/architecture.md](./docs/architecture.md)
 
