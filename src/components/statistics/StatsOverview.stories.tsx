@@ -70,7 +70,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default overview with all statistics
+ * Default single-page layout with all statistics displayed simultaneously
+ * (Phase 5: Tabs removed - all charts visible at once)
  */
 export const Default: Story = {
   args: {
@@ -81,68 +82,7 @@ export const Default: Story = {
 };
 
 /**
- * Overview tab as default (all stats in one view)
- */
-export const OverviewTab: Story = {
-  args: {
-    yearlyCommits: yearlyCommitsData,
-    languages: languagesData,
-    activity: activityData,
-    defaultTab: 'overview',
-  },
-};
-
-/**
- * Commits tab as default
- */
-export const CommitsTab: Story = {
-  args: {
-    yearlyCommits: yearlyCommitsData,
-    languages: languagesData,
-    activity: activityData,
-    defaultTab: 'commits',
-  },
-};
-
-/**
- * Languages tab as default
- */
-export const LanguagesTab: Story = {
-  args: {
-    yearlyCommits: yearlyCommitsData,
-    languages: languagesData,
-    activity: activityData,
-    defaultTab: 'languages',
-  },
-};
-
-/**
- * Activity tab as default
- */
-export const ActivityTab: Story = {
-  args: {
-    yearlyCommits: yearlyCommitsData,
-    languages: languagesData,
-    activity: activityData,
-    defaultTab: 'activity',
-  },
-};
-
-/**
- * Without overview tab
- */
-export const WithoutOverview: Story = {
-  args: {
-    yearlyCommits: yearlyCommitsData,
-    languages: languagesData,
-    activity: activityData,
-    showOverview: false,
-    defaultTab: 'commits',
-  },
-};
-
-/**
- * Minimal data (new user)
+ * Minimal data (new user with limited activity)
  */
 export const MinimalData: Story = {
   args: {
@@ -153,7 +93,7 @@ export const MinimalData: Story = {
 };
 
 /**
- * Rich data (experienced user with many languages)
+ * Rich data (experienced user with many languages and high activity)
  */
 export const RichData: Story = {
   args: {
@@ -259,7 +199,7 @@ export const Empty: Story = {
 };
 
 /**
- * Partial loading (some data loaded, some still loading)
+ * Partial data (some charts have data, others are loading/empty)
  */
 export const PartialData: Story = {
   args: {
@@ -270,14 +210,13 @@ export const PartialData: Story = {
 };
 
 /**
- * Mobile viewport preview
+ * Mobile viewport preview - responsive 2-column layout stacks vertically
  */
 export const MobileView: Story = {
   args: {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'overview',
   },
   parameters: {
     viewport: {
@@ -287,14 +226,13 @@ export const MobileView: Story = {
 };
 
 /**
- * Tablet viewport preview
+ * Tablet viewport preview - shows 2-column grid for commits/activity
  */
 export const TabletView: Story = {
   args: {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'overview',
   },
   parameters: {
     viewport: {

@@ -1,6 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { StatsOverview } from './StatsOverview';
 import type { YearlyCommitStats, LanguageStats, CommitActivity } from '@/lib/statistics';
 
@@ -25,7 +24,7 @@ describe('StatsOverview', () => {
   };
 
   describe('Rendering', () => {
-    it('should render tabs interface', () => {
+    it('should render main heading', () => {
       render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
@@ -34,11 +33,11 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByRole('tablist')).toBeInTheDocument();
+      expect(screen.getByText('📊 Statistics')).toBeInTheDocument();
     });
 
-    it('should render all tab triggers', () => {
-      render(
+    it('should render as a section with aria-label', () => {
+      const { container } = render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
           languages={languagesData}
@@ -46,177 +45,30 @@ describe('StatsOverview', () => {
         />
       );
 
-      // Note: Tab text may be hidden on mobile, so we check for presence in any form
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs.length).toBe(4); // Overview, Commits, Languages, Activity
+      const section = container.querySelector('section[aria-label="Statistics Overview"]');
+      expect(section).toBeInTheDocument();
     });
 
-    it('should render without overview tab when showOverview is false', () => {
+    it('should display all three charts simultaneously', () => {
       render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
           languages={languagesData}
           activity={activityData}
-          showOverview={false}
-        />
-      );
-
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs.length).toBe(3); // Commits, Languages, Activity only
-    });
-  });
-
-  describe('Default Tab', () => {
-    it('should show commits tab by default', () => {
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-        />
-      );
-
-      // The commits tab content should be visible
-      expect(screen.getByText('Yearly commit contributions over time')).toBeInTheDocument();
-    });
-
-    it('should show overview tab when defaultTab is "overview"', () => {
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="overview"
-        />
-      );
-
-      // Overview tab shows multiple cards
-      expect(screen.getByText('Commit Trends')).toBeInTheDocument();
-      const langTexts = screen.getAllByText('Language Distribution');
-      expect(langTexts.length).toBeGreaterThan(0);
-    });
-
-    it('should show languages tab when defaultTab is "languages"', () => {
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="languages"
-        />
-      );
-
-      expect(
-        screen.getByText('Programming languages used across repositories')
-      ).toBeInTheDocument();
-    });
-
-    it('should show activity tab when defaultTab is "activity"', () => {
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="activity"
-        />
-      );
-
-      expect(screen.getByText('Average commits per time period')).toBeInTheDocument();
-    });
-  });
-
-  describe('Tab Switching', () => {
-    it('should switch to commits tab when clicked', async () => {
-      const user = userEvent.setup();
-
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="overview"
-        />
-      );
-
-      const tabs = screen.getAllByRole('tab');
-      const commitsTab = tabs.find((tab) => tab.getAttribute('value') === 'commits');
-
-      if (commitsTab) {
-        await user.click(commitsTab);
-        expect(screen.getByText('Yearly commit contributions over time')).toBeInTheDocument();
-      }
-    });
-
-    it('should switch to languages tab when clicked', async () => {
-      const user = userEvent.setup();
-
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="commits"
-        />
-      );
-
-      const tabs = screen.getAllByRole('tab');
-      const languagesTab = tabs.find((tab) => tab.getAttribute('value') === 'languages');
-
-      if (languagesTab) {
-        await user.click(languagesTab);
-        expect(
-          screen.getByText('Programming languages used across repositories')
-        ).toBeInTheDocument();
-      }
-    });
-
-    it('should switch to activity tab when clicked', async () => {
-      const user = userEvent.setup();
-
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="commits"
-        />
-      );
-
-      const tabs = screen.getAllByRole('tab');
-      const activityTab = tabs.find((tab) => tab.getAttribute('value') === 'activity');
-
-      if (activityTab) {
-        await user.click(activityTab);
-        expect(screen.getByText('Average commits per time period')).toBeInTheDocument();
-      }
-    });
-  });
-
-  describe('Overview Tab Content', () => {
-    it('should display all three charts in overview tab', () => {
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="overview"
         />
       );
 
       expect(screen.getByText('Commit Trends')).toBeInTheDocument();
-      const activityTexts = screen.getAllByText('Commit Activity');
-      expect(activityTexts.length).toBeGreaterThan(0);
-      const langTexts = screen.getAllByText('Language Distribution');
-      expect(langTexts.length).toBeGreaterThan(0);
+      expect(screen.getByText('Commit Activity')).toBeInTheDocument();
+      expect(screen.getByText('Language Distribution')).toBeInTheDocument();
     });
 
-    it('should display card descriptions in overview', () => {
+    it('should display card descriptions', () => {
       render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
           languages={languagesData}
           activity={activityData}
-          defaultTab="overview"
         />
       );
 
@@ -226,13 +78,41 @@ describe('StatsOverview', () => {
     });
   });
 
+  describe('Layout', () => {
+    it('should render commits and activity side by side', () => {
+      const { container } = render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      // Check for grid layout with 2 columns on md+ screens
+      const grids = container.querySelectorAll('.md\\:grid-cols-2');
+      expect(grids.length).toBeGreaterThan(0);
+    });
+
+    it('should render languages chart full width', () => {
+      render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      expect(screen.getByText('Language Distribution')).toBeInTheDocument();
+    });
+  });
+
   describe('Data Handling', () => {
     it('should handle null data for commits', () => {
       render(
         <StatsOverview yearlyCommits={null} languages={languagesData} activity={activityData} />
       );
 
-      expect(screen.getByText('Yearly commit contributions over time')).toBeInTheDocument();
+      expect(screen.getByText('Commit Trends')).toBeInTheDocument();
     });
 
     it('should handle null data for languages', () => {
@@ -240,7 +120,7 @@ describe('StatsOverview', () => {
         <StatsOverview yearlyCommits={yearlyCommitsData} languages={null} activity={activityData} />
       );
 
-      expect(screen.getByText('Yearly commit contributions over time')).toBeInTheDocument();
+      expect(screen.getByText('Language Distribution')).toBeInTheDocument();
     });
 
     it('should handle null data for activity', () => {
@@ -252,69 +132,47 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByText('Yearly commit contributions over time')).toBeInTheDocument();
+      expect(screen.getByText('Commit Activity')).toBeInTheDocument();
     });
 
     it('should handle empty arrays', () => {
       render(<StatsOverview yearlyCommits={[]} languages={[]} activity={null} />);
 
-      expect(screen.getByRole('tablist')).toBeInTheDocument();
+      expect(screen.getByText('📊 Statistics')).toBeInTheDocument();
+    });
+
+    it('should handle all null data', () => {
+      render(<StatsOverview yearlyCommits={null} languages={null} activity={null} />);
+
+      expect(screen.getByText('Commit Trends')).toBeInTheDocument();
+      expect(screen.getByText('Commit Activity')).toBeInTheDocument();
+      expect(screen.getByText('Language Distribution')).toBeInTheDocument();
     });
   });
 
   describe('Loading State', () => {
-    it('should show loading state in commits tab', async () => {
+    it('should show loading state in all charts', async () => {
       render(
         <StatsOverview
           yearlyCommits={null}
           languages={null}
           activity={null}
           loading={true}
-          defaultTab="commits"
         />
       );
 
       await waitFor(
         () => {
+          // All three charts should show loading state
           expect(screen.getByText('Loading commit statistics...')).toBeInTheDocument();
+          expect(screen.getByText('Loading activity statistics...')).toBeInTheDocument();
+          expect(screen.getByText('Loading language statistics...')).toBeInTheDocument();
         },
         { timeout: 5000 }
       );
     });
 
-    it('should show loading state in languages tab', async () => {
-      render(
-        <StatsOverview
-          yearlyCommits={null}
-          languages={null}
-          activity={null}
-          loading={true}
-          defaultTab="languages"
-        />
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText('Loading language statistics...')).toBeInTheDocument();
-      });
-    });
-
-    it('should show loading state in activity tab', async () => {
-      render(
-        <StatsOverview
-          yearlyCommits={null}
-          languages={null}
-          activity={null}
-          loading={true}
-          defaultTab="activity"
-        />
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText('Loading activity statistics...')).toBeInTheDocument();
-      });
-    });
-
-    it('should show custom loading message', async () => {
+    it('should show custom loading message in all charts', async () => {
       render(
         <StatsOverview
           yearlyCommits={null}
@@ -322,18 +180,18 @@ describe('StatsOverview', () => {
           activity={null}
           loading={true}
           loadingMessage="Fetching GitHub statistics..."
-          defaultTab="commits"
         />
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Fetching GitHub statistics...')).toBeInTheDocument();
+        const messages = screen.getAllByText('Fetching GitHub statistics...');
+        expect(messages.length).toBe(3); // One for each chart
       });
     });
   });
 
   describe('Error State', () => {
-    it('should show error state in commits tab', async () => {
+    it('should show error state in all charts', async () => {
       const error = new Error('API Error');
 
       render(
@@ -342,47 +200,12 @@ describe('StatsOverview', () => {
           languages={null}
           activity={null}
           error={error}
-          defaultTab="commits"
         />
       );
 
       await waitFor(() => {
         expect(screen.getByText('Failed to load commit statistics')).toBeInTheDocument();
-      });
-    });
-
-    it('should show error state in languages tab', async () => {
-      const error = new Error('API Error');
-
-      render(
-        <StatsOverview
-          yearlyCommits={null}
-          languages={null}
-          activity={null}
-          error={error}
-          defaultTab="languages"
-        />
-      );
-
-      await waitFor(() => {
         expect(screen.getByText('Failed to load language statistics')).toBeInTheDocument();
-      });
-    });
-
-    it('should show error state in activity tab', async () => {
-      const error = new Error('API Error');
-
-      render(
-        <StatsOverview
-          yearlyCommits={null}
-          languages={null}
-          activity={null}
-          error={error}
-          defaultTab="activity"
-        />
-      );
-
-      await waitFor(() => {
         expect(screen.getByText('Failed to load activity statistics')).toBeInTheDocument();
       });
     });
@@ -398,19 +221,20 @@ describe('StatsOverview', () => {
           error={error}
           errorTitle="Connection Error"
           errorDescription="Unable to load statistics"
-          defaultTab="commits"
         />
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Connection Error')).toBeInTheDocument();
-        expect(screen.getByText('Unable to load statistics')).toBeInTheDocument();
+        const errorTitles = screen.getAllByText('Connection Error');
+        const errorDescs = screen.getAllByText('Unable to load statistics');
+        expect(errorTitles.length).toBe(3); // One for each chart
+        expect(errorDescs.length).toBe(3);
       });
     });
   });
 
   describe('Icons', () => {
-    it('should render tab icons', () => {
+    it('should render chart icons in card headers', () => {
       const { container } = render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
@@ -423,56 +247,92 @@ describe('StatsOverview', () => {
       const icons = container.querySelectorAll('svg');
       expect(icons.length).toBeGreaterThan(0);
     });
-  });
 
-  describe('Card Structure', () => {
-    it('should render cards in commits tab', () => {
+    it('should have BarChart3 icon for commits', () => {
       render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
           languages={languagesData}
           activity={activityData}
-          defaultTab="commits"
+        />
+      );
+
+      const commitTrends = screen.getByText('Commit Trends');
+      expect(commitTrends).toBeInTheDocument();
+    });
+
+    it('should have Activity icon for commit activity', () => {
+      render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      const commitActivity = screen.getAllByText('Commit Activity');
+      expect(commitActivity.length).toBeGreaterThan(0);
+    });
+
+    it('should have Code2 icon for languages', () => {
+      render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      const langDistribution = screen.getAllByText('Language Distribution');
+      expect(langDistribution.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Card Structure', () => {
+    it('should render commit trends card', () => {
+      render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
         />
       );
 
       expect(screen.getByText('Commit Trends')).toBeInTheDocument();
-      expect(screen.getByText('Yearly commit contributions over time')).toBeInTheDocument();
+      expect(screen.getByText('Yearly commit contributions')).toBeInTheDocument();
     });
 
-    it('should render cards in languages tab', () => {
+    it('should render commit activity card', () => {
       render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
           languages={languagesData}
           activity={activityData}
-          defaultTab="languages"
         />
       );
 
-      const langTexts = screen.getAllByText('Language Distribution');
-      expect(langTexts.length).toBeGreaterThan(0);
+      const activityTitles = screen.getAllByText('Commit Activity');
+      expect(activityTitles.length).toBeGreaterThan(0);
+      expect(screen.getByText('Average commits per period')).toBeInTheDocument();
+    });
+
+    it('should render language distribution card', () => {
+      render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      const langTitles = screen.getAllByText('Language Distribution');
+      expect(langTitles.length).toBeGreaterThan(0);
       expect(screen.getByText('Programming languages used across repositories')).toBeInTheDocument();
-    });
-
-    it('should render cards in activity tab', () => {
-      render(
-        <StatsOverview
-          yearlyCommits={yearlyCommitsData}
-          languages={languagesData}
-          activity={activityData}
-          defaultTab="activity"
-        />
-      );
-
-      const activityTexts = screen.getAllByText('Commit Activity');
-      expect(activityTexts.length).toBeGreaterThan(0);
-      expect(screen.getByText('Average commits per time period')).toBeInTheDocument();
     });
   });
 
   describe('Accessibility', () => {
-    it('should have accessible tab structure', () => {
+    it('should have proper heading structure', () => {
       render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
@@ -481,21 +341,69 @@ describe('StatsOverview', () => {
         />
       );
 
-      expect(screen.getByRole('tablist')).toBeInTheDocument();
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs.length).toBeGreaterThan(0);
+      const heading = screen.getByRole('heading', { name: /statistics/i });
+      expect(heading).toBeInTheDocument();
+      expect(heading.tagName).toBe('H2');
     });
 
-    it('should have proper heading structure in cards', () => {
+    it('should have semantic section element', () => {
+      const { container } = render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      const section = container.querySelector('section');
+      expect(section).toBeInTheDocument();
+      expect(section).toHaveAttribute('aria-label', 'Statistics Overview');
+    });
+
+    it('should render all cards with proper titles', () => {
       render(
         <StatsOverview
           yearlyCommits={yearlyCommitsData}
           languages={languagesData}
           activity={activityData}
-          defaultTab="commits"
         />
       );
 
+      expect(screen.getByText('Commit Trends')).toBeInTheDocument();
+      const activityTitles = screen.getAllByText('Commit Activity');
+      expect(activityTitles.length).toBeGreaterThan(0);
+      const langTitles = screen.getAllByText('Language Distribution');
+      expect(langTitles.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Responsive Design', () => {
+    it('should have responsive grid classes', () => {
+      const { container } = render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      // Check for responsive grid (2 columns on md+)
+      const responsiveGrid = container.querySelector('.md\\:grid-cols-2');
+      expect(responsiveGrid).toBeInTheDocument();
+    });
+  });
+
+  describe('Lazy Loading', () => {
+    it('should use Suspense for lazy-loaded charts', () => {
+      const { container } = render(
+        <StatsOverview
+          yearlyCommits={yearlyCommitsData}
+          languages={languagesData}
+          activity={activityData}
+        />
+      );
+
+      // Charts are rendered within the component
       expect(screen.getByText('Commit Trends')).toBeInTheDocument();
     });
   });

@@ -160,7 +160,6 @@ function UserProfile({ userName }: Props) {
         activity={commitActivity}
         loading={loading}
         error={error}
-        defaultTab="overview"
       />
 
       <div className="space-y-4">

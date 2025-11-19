@@ -1,9 +1,8 @@
 import { lazy, Suspense } from 'react';
 import type { YearlyCommitStats, LanguageStats, CommitActivity } from '@/lib/statistics';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BarChart3, Code2, Activity, TrendingUp } from 'lucide-react';
+import { BarChart3, Code2, Activity } from 'lucide-react';
 
 // Lazy load chart components to reduce initial bundle size
 const CommitChart = lazy(() => import('./CommitChart').then(m => ({ default: m.CommitChart })));
@@ -47,16 +46,6 @@ type Props = {
    */
   error?: Error | null;
   /**
-   * Default active tab
-   * @default 'commits'
-   */
-  defaultTab?: 'commits' | 'languages' | 'activity' | 'overview';
-  /**
-   * Show overview tab with all stats
-   * @default true
-   */
-  showOverview?: boolean;
-  /**
    * Custom loading message
    */
   loadingMessage?: string;
@@ -77,10 +66,10 @@ type Props = {
  * - Yearly commit trends
  * - Programming language distribution
  * - Commit activity rates
- * - Combined overview with all stats
  *
  * Features:
- * - Tabbed interface for different views
+ * - Single-page layout (no tabs - Phase 5 refactoring)
+ * - All charts visible simultaneously
  * - Loading and error state handling
  * - Responsive grid layout
  * - Individual chart customization
@@ -95,7 +84,6 @@ type Props = {
  *   yearlyCommits={yearlyStats}
  *   languages={langStats}
  *   activity={activity}
- *   defaultTab="overview"
  * />
  * ```
  */
@@ -105,120 +93,23 @@ export function StatsOverview({
   activity = null,
   loading = false,
   error = null,
-  defaultTab = 'commits',
-  showOverview = true,
   loadingMessage,
   errorTitle,
   errorDescription,
 }: Props) {
   return (
-    <Tabs defaultValue={defaultTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
-        {showOverview && (
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Overview</span>
-          </TabsTrigger>
-        )}
-        <TabsTrigger value="commits" className="flex items-center gap-2">
-          <BarChart3 className="h-4 w-4" />
-          <span className="hidden sm:inline">Commits</span>
-        </TabsTrigger>
-        <TabsTrigger value="languages" className="flex items-center gap-2">
-          <Code2 className="h-4 w-4" />
-          <span className="hidden sm:inline">Languages</span>
-        </TabsTrigger>
-        <TabsTrigger value="activity" className="flex items-center gap-2">
-          <Activity className="h-4 w-4" />
-          <span className="hidden sm:inline">Activity</span>
-        </TabsTrigger>
-      </TabsList>
+    <section className="space-y-4" aria-label="Statistics Overview">
+      <h2 className="text-2xl font-bold">📊 Statistics</h2>
 
-      {/* Overview Tab - All Stats Together */}
-      {showOverview && (
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Commit Trends
-                </CardTitle>
-                <CardDescription>Yearly commit contributions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Suspense fallback={<ChartLoadingFallback />}>
-                  <CommitChart
-                    data={yearlyCommits || []}
-                    loading={loading}
-                    error={error}
-                    loadingMessage={loadingMessage}
-                    errorTitle={errorTitle}
-                    errorDescription={errorDescription}
-                    variant="line"
-                    showTrend={true}
-                  />
-                </Suspense>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
-                  Commit Activity
-                </CardTitle>
-                <CardDescription>Average commits per period</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Suspense fallback={<ChartLoadingFallback />}>
-                  <ActivityChart
-                    data={activity}
-                    loading={loading}
-                    error={error}
-                    loadingMessage={loadingMessage}
-                    errorTitle={errorTitle}
-                    errorDescription={errorDescription}
-                    showTotal={true}
-                  />
-                </Suspense>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Code2 className="h-5 w-5" />
-                Language Distribution
-              </CardTitle>
-              <CardDescription>Programming languages used across repositories</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Suspense fallback={<ChartLoadingFallback />}>
-                <LanguageChart
-                  data={languages || []}
-                  loading={loading}
-                  error={error}
-                  loadingMessage={loadingMessage}
-                  errorTitle={errorTitle}
-                  errorDescription={errorDescription}
-                  variant="pie"
-                  maxLanguages={5}
-                  showLegend={true}
-                />
-              </Suspense>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      )}
-
-      {/* Commits Tab */}
-      <TabsContent value="commits">
+      {/* Top Row: Commits and Activity side by side */}
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Commit Trends</CardTitle>
-            <CardDescription>Yearly commit contributions over time</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Commit Trends
+            </CardTitle>
+            <CardDescription>Yearly commit contributions</CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense fallback={<ChartLoadingFallback />}>
@@ -235,39 +126,14 @@ export function StatsOverview({
             </Suspense>
           </CardContent>
         </Card>
-      </TabsContent>
 
-      {/* Languages Tab */}
-      <TabsContent value="languages">
         <Card>
           <CardHeader>
-            <CardTitle>Language Distribution</CardTitle>
-            <CardDescription>Programming languages used across repositories</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Suspense fallback={<ChartLoadingFallback />}>
-              <LanguageChart
-                data={languages || []}
-                loading={loading}
-                error={error}
-                loadingMessage={loadingMessage}
-                errorTitle={errorTitle}
-                errorDescription={errorDescription}
-                variant="donut"
-                maxLanguages={8}
-                showLegend={true}
-              />
-            </Suspense>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      {/* Activity Tab */}
-      <TabsContent value="activity">
-        <Card>
-          <CardHeader>
-            <CardTitle>Commit Activity</CardTitle>
-            <CardDescription>Average commits per time period</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Commit Activity
+            </CardTitle>
+            <CardDescription>Average commits per period</CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense fallback={<ChartLoadingFallback />}>
@@ -283,7 +149,33 @@ export function StatsOverview({
             </Suspense>
           </CardContent>
         </Card>
-      </TabsContent>
-    </Tabs>
+      </div>
+
+      {/* Bottom Row: Languages full width */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Code2 className="h-5 w-5" />
+            Language Distribution
+          </CardTitle>
+          <CardDescription>Programming languages used across repositories</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Suspense fallback={<ChartLoadingFallback />}>
+            <LanguageChart
+              data={languages || []}
+              loading={loading}
+              error={error}
+              loadingMessage={loadingMessage}
+              errorTitle={errorTitle}
+              errorDescription={errorDescription}
+              variant="pie"
+              maxLanguages={5}
+              showLegend={true}
+            />
+          </Suspense>
+        </CardContent>
+      </Card>
+    </section>
   );
 }
