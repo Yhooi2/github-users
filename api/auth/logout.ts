@@ -1,5 +1,6 @@
 import { kv } from '@vercel/kv'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { logOAuthLogout } from '../analytics/logger'
 
 /**
  * Extract session ID from cookie header
@@ -39,10 +40,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (sessionId) {
     try {
+      // Get session data before deleting (for analytics)
+      const sessionData = await kv.get<{
+        userId: number
+        login: string
+        accessToken: string
+        avatarUrl: string
+        createdAt: number
+      }>(`session:${sessionId}`)
+
       // Delete session from Vercel KV
       console.log(`Logout: Deleting session ${sessionId}`)
       await kv.del(`session:${sessionId}`)
       console.log(`Logout: Session ${sessionId} deleted successfully`)
+
+      // Log logout event for analytics
+      if (sessionData) {
+        await logOAuthLogout({
+          timestamp: Date.now(),
+          userId: sessionData.userId,
+          login: sessionData.login,
+          sessionId,
+        })
+      }
     } catch (error) {
       // Log error but continue (session might already be expired/deleted)
       console.error('Logout: Failed to delete session from KV', error)

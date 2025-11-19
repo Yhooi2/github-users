@@ -1,6 +1,7 @@
 import { kv } from '@vercel/kv'
 import { randomBytes } from 'crypto'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { logOAuthLogin } from '../analytics/logger'
 
 /**
  * Session data stored in Vercel KV
@@ -164,6 +165,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       await kv.set(`session:${sessionId}`, sessionData, { ex: sessionTTL })
       console.log(`OAuth callback: Session stored successfully (ID: ${sessionId})`)
+
+      // Log OAuth login event for analytics
+      await logOAuthLogin({
+        timestamp: Date.now(),
+        userId: user.id,
+        login: user.login,
+        sessionId,
+      })
     } catch (kvError) {
       console.error('OAuth callback: Failed to store session in KV', kvError)
       throw new Error('Failed to create session')

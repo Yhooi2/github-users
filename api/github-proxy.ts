@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { logRateLimitSnapshot, updateSessionActivity } from './analytics/logger'
 
 /**
  * GraphQL request body structure
@@ -169,6 +170,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Extract rate limit from response headers
     const rateLimit = extractRateLimit(response.headers, isDemo, userLogin)
+
+    // Log rate limit snapshot for analytics
+    await logRateLimitSnapshot({
+      timestamp: Date.now(),
+      remaining: rateLimit.remaining,
+      limit: rateLimit.limit,
+      used: rateLimit.used,
+      isDemo,
+      userLogin,
+    })
+
+    // Update session activity if authenticated
+    if (!isDemo && sessionId) {
+      await updateSessionActivity(sessionId)
+    }
 
     // Log warning if rate limit is low
     const percentage = (rateLimit.remaining / rateLimit.limit) * 100
