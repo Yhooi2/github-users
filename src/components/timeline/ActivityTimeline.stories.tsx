@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ActivityTimeline } from './ActivityTimeline'
+import { createMockRepository } from '@/test/mocks/github-data'
 import type { YearData } from '@/hooks/useUserAnalytics'
 
 const meta: Meta<typeof ActivityTimeline> = {
@@ -14,21 +15,19 @@ const meta: Meta<typeof ActivityTimeline> = {
 export default meta
 type Story = StoryObj<typeof ActivityTimeline>
 
-// Mock repository data
-const mockRepository = {
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
+const mockRepository = createMockRepository({
   name: 'github-users',
   url: 'https://github.com/user/github-users',
   description: 'GitHub user analytics dashboard built with React and Apollo',
   stargazerCount: 145,
   forkCount: 23,
   watchers: { totalCount: 12 },
-  isFork: false,
-  isArchived: false,
   primaryLanguage: { name: 'TypeScript', color: '#3178c6' },
   repositoryTopics: { nodes: [] },
   updatedAt: '2025-01-15T10:30:00Z',
   defaultBranchRef: null,
-}
+})
 
 // Mock year data
 const mockTimeline: YearData[] = [

@@ -6,9 +6,11 @@ import { UserStats } from '@/components/user/UserStats';
 import { ContributionHistory } from '@/components/user/ContributionHistory';
 import { RecentActivity } from '@/components/user/RecentActivity';
 import { UserAuthenticity } from '@/components/user/UserAuthenticity';
+import type { RateLimit } from '@/apollo/github-api.types';
 
 type Props = {
   userName: string;
+  onRateLimitUpdate?: (rateLimit: RateLimit) => void;
 };
 
 /**
@@ -26,19 +28,23 @@ type Props = {
  *
  * @param props - Component props
  * @param props.userName - GitHub username to fetch and display
+ * @param props.onRateLimitUpdate - Optional callback for rate limit updates from GraphQL API
  * @returns User profile component with loading/error/data states
  *
  * @example
  * ```typescript
  * function App() {
  *   const [userName, setUserName] = useState('octocat')
+ *   const handleRateLimit = (rateLimit) => console.log('Rate limit:', rateLimit)
  *
- *   return <UserProfile userName={userName} />
+ *   return <UserProfile userName={userName} onRateLimitUpdate={handleRateLimit} />
  * }
  * ```
  */
-function UserProfile({ userName }: Props) {
-  const { data, loading, error, refetch } = useQueryUser(userName);
+function UserProfile({ userName, onRateLimitUpdate }: Props) {
+  const { data, loading, error, refetch } = useQueryUser(userName, 365, {
+    onRateLimitUpdate,
+  });
   const yearLabels = getYearLabels();
 
   if (loading) {

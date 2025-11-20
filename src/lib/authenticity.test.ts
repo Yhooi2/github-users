@@ -6,42 +6,42 @@ import {
   type AuthenticityScore,
 } from './authenticity';
 import type { Repository } from '@/apollo/github-api.types';
+import { createMockRepository } from '@/test/mocks/github-data';
 
-// Helper to create mock repository
-const createMockRepo = (overrides: Partial<Repository> = {}): Repository => ({
-  id: 'repo-1',
-  name: 'test-repo',
-  description: 'Test repository',
-  forkCount: 0,
-  stargazerCount: 0,
-  url: 'https://github.com/test/repo',
-  isFork: false,
-  isTemplate: false,
-  parent: null,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
-  pushedAt: '2024-01-01T00:00:00Z',
-  diskUsage: 1000,
-  isArchived: false,
-  homepageUrl: null,
-  watchers: { totalCount: 0 },
-  issues: { totalCount: 0 },
-  repositoryTopics: { nodes: [] },
-  licenseInfo: null,
-  defaultBranchRef: {
-    target: {
-      history: { totalCount: 10 },
+// Helper to create mock repository (uses centralized factory)
+const createMockRepo = (overrides: Partial<Repository> = {}): Repository =>
+  createMockRepository({
+    id: 'repo-1',
+    name: 'test-repo',
+    description: 'Test repository',
+    forkCount: 0,
+    stargazerCount: 0,
+    url: 'https://github.com/test/repo',
+    isFork: false,
+    isTemplate: false,
+    parent: null,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+    pushedAt: '2024-01-01T00:00:00Z',
+    diskUsage: 1000,
+    isArchived: false,
+    homepageUrl: null,
+    watchers: { totalCount: 0 },
+    issues: { totalCount: 0 },
+    repositoryTopics: { nodes: [] },
+    licenseInfo: null,
+    defaultBranchRef: {
+      target: {
+        history: { totalCount: 10 },
+      },
     },
-  },
-  primaryLanguage: { name: 'TypeScript' },
-  languages: {
-    totalSize: 100000,
-    edges: [
-      { size: 100000, node: { name: 'TypeScript' } },
-    ],
-  },
-  ...overrides,
-});
+    primaryLanguage: { name: 'TypeScript' },
+    languages: {
+      totalSize: 100000,
+      edges: [{ size: 100000, node: { name: 'TypeScript' } }],
+    },
+    ...overrides,
+  });
 
 describe('calculateAuthenticityScore', () => {
   describe('Edge cases', () => {

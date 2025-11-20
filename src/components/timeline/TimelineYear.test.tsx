@@ -1,22 +1,22 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { TimelineYear } from './TimelineYear'
+import { createMockRepository } from '@/test/mocks/github-data'
 import type { YearData } from '@/hooks/useUserAnalytics'
 
-const mockRepository = {
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
+const mockRepository = createMockRepository({
   name: 'test-repo',
   url: 'https://github.com/user/test-repo',
   description: 'Test repository',
   stargazerCount: 100,
   forkCount: 10,
   watchers: { totalCount: 5 },
-  isFork: false,
-  isArchived: false,
   primaryLanguage: { name: 'TypeScript', color: '#3178c6' },
   repositoryTopics: { nodes: [] },
   updatedAt: '2025-01-15T10:30:00Z',
   defaultBranchRef: null,
-}
+})
 
 const mockYear: YearData = {
   year: 2025,

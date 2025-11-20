@@ -119,40 +119,49 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
 
         // Step 3: Parallel queries for each year
         const yearPromises = yearRanges.map(async ({ year, from, to }) => {
-          const result = await client.query<
-            GetYearContributionsResponse,
-            GetYearContributionsVariables
-          >({
-            query: GET_YEAR_CONTRIBUTIONS,
-            variables: { login: username, from, to },
-            // Cache key for backend proxy
-            context: { cacheKey: `user:${username}:year:${year}` },
-          })
+          try {
+            const result = await client.query<
+              GetYearContributionsResponse,
+              GetYearContributionsVariables
+            >({
+              query: GET_YEAR_CONTRIBUTIONS,
+              variables: { login: username, from, to },
+              // Cache key for backend proxy
+              context: { cacheKey: `user:${username}:year:${year}` },
+            })
 
-          const collection = result.data.user.contributionsCollection
-          const repos = collection.commitContributionsByRepository
+            const collection = result.data.user.contributionsCollection
+            const repos = collection.commitContributionsByRepository
 
-          // Step 4: Separate owned repos from contributions
-          const ownedRepos = repos.filter(
-            (r) => r.repository.owner.login === username
-          )
-          const contributions = repos.filter(
-            (r) => r.repository.owner.login !== username
-          )
+            // Step 4: Separate owned repos from contributions
+            const ownedRepos = repos.filter(
+              (r) => r.repository.owner.login === username
+            )
+            const contributions = repos.filter(
+              (r) => r.repository.owner.login !== username
+            )
 
-          return {
-            year,
-            totalCommits: collection.totalCommitContributions,
-            totalIssues: collection.totalIssueContributions,
-            totalPRs: collection.totalPullRequestContributions,
-            totalReviews: collection.totalPullRequestReviewContributions,
-            ownedRepos,
-            contributions,
+            return {
+              year,
+              totalCommits: collection.totalCommitContributions,
+              totalIssues: collection.totalIssueContributions,
+              totalPRs: collection.totalPullRequestContributions,
+              totalReviews: collection.totalPullRequestReviewContributions,
+              ownedRepos,
+              contributions,
+            }
+          } catch (error) {
+            // Log individual year query failure but don't stop other queries
+            console.warn(`Failed to fetch data for year ${year}:`, error)
+            return null
           }
         })
 
-        // Wait for all year queries to complete
-        const years = await Promise.all(yearPromises)
+        // Wait for all year queries to complete (gracefully handle partial failures)
+        const yearResults = await Promise.all(yearPromises)
+
+        // Filter out failed queries (null values)
+        const years = yearResults.filter((year): year is YearData => year !== null)
 
         // Step 5: Sort by year (newest first)
         const sortedYears = years.sort((a, b) => b.year - a.year)

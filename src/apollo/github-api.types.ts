@@ -146,9 +146,16 @@ type PageInfo = {
     bio: string;
     url: string;
     location: string | null;
+    // Optional profile fields (from GET_USER_PROFILE query)
+    email?: string | null;
+    company?: string | null;
+    websiteUrl?: string | null;
+    twitterUsername?: string | null;
+    // Social stats
     followers: ConnectionCount;
     following: ConnectionCount;
     gists: ConnectionCount;
+    // Yearly contributions
     year1: YearlyContributions;
     year2: YearlyContributions;
     year3: YearlyContributions;

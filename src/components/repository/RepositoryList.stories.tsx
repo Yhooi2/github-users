@@ -1,48 +1,44 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RepositoryList } from './RepositoryList';
+import { createMockRepository as createMockRepo } from '@/test/mocks/github-data';
 import type { Repository } from '@/apollo/github-api.types';
 
-// Mock repository data
-const createMockRepository = (id: number, overrides?: Partial<Repository>): Repository => ({
-  id: `repo-${id}`,
-  name: `repository-${id}`,
-  description: `A sample repository for testing purposes with ID ${id}`,
-  url: `https://github.com/user/repository-${id}`,
-  stargazerCount: Math.floor(Math.random() * 1000) + 10,
-  forkCount: Math.floor(Math.random() * 100) + 5,
-  isFork: false,
-  isTemplate: false,
-  parent: null,
-  createdAt: new Date(2023, id % 12, id % 28 + 1).toISOString(),
-  updatedAt: new Date(2024, 10, id % 28 + 1).toISOString(),
-  pushedAt: new Date(2024, 10, id % 28 + 1).toISOString(),
-  diskUsage: Math.floor(Math.random() * 10000),
-  isArchived: false,
-  homepageUrl: null,
-  watchers: { totalCount: Math.floor(Math.random() * 50) + 1 },
-  issues: { totalCount: Math.floor(Math.random() * 20) },
-  repositoryTopics: {
-    nodes: [
-      { topic: { name: 'react' } },
-      { topic: { name: 'typescript' } },
-    ],
-  },
-  licenseInfo: { name: 'MIT License' },
-  defaultBranchRef: {
-    target: {
-      history: { totalCount: Math.floor(Math.random() * 200) + 10 },
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
+const createMockRepository = (id: number, overrides?: Partial<Repository>): Repository =>
+  createMockRepo({
+    id: `repo-${id}`,
+    name: `repository-${id}`,
+    description: `A sample repository for testing purposes with ID ${id}`,
+    url: `https://github.com/user/repository-${id}`,
+    stargazerCount: Math.floor(Math.random() * 1000) + 10,
+    forkCount: Math.floor(Math.random() * 100) + 5,
+    createdAt: new Date(2023, id % 12, id % 28 + 1).toISOString(),
+    updatedAt: new Date(2024, 10, id % 28 + 1).toISOString(),
+    pushedAt: new Date(2024, 10, id % 28 + 1).toISOString(),
+    diskUsage: Math.floor(Math.random() * 10000),
+    watchers: { totalCount: Math.floor(Math.random() * 50) + 1 },
+    issues: { totalCount: Math.floor(Math.random() * 20) },
+    repositoryTopics: {
+      nodes: [
+        { topic: { name: 'react' } },
+        { topic: { name: 'typescript' } },
+      ],
     },
-  },
-  primaryLanguage: { name: ['TypeScript', 'JavaScript', 'Python', 'Go'][id % 4] },
-  languages: {
-    totalSize: 5000,
-    edges: [
-      { size: 4000, node: { name: 'TypeScript' } },
-      { size: 1000, node: { name: 'CSS' } },
-    ],
-  },
-  ...overrides,
-});
+    defaultBranchRef: {
+      target: {
+        history: { totalCount: Math.floor(Math.random() * 200) + 10 },
+      },
+    },
+    primaryLanguage: { name: ['TypeScript', 'JavaScript', 'Python', 'Go'][id % 4] },
+    languages: {
+      totalSize: 5000,
+      edges: [
+        { size: 4000, node: { name: 'TypeScript' } },
+        { size: 1000, node: { name: 'CSS' } },
+      ],
+    },
+    ...overrides,
+  });
 
 const mockRepositories: Repository[] = Array.from({ length: 5 }, (_, i) =>
   createMockRepository(i + 1)

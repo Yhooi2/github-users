@@ -2,25 +2,19 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RepositoryCard } from './RepositoryCard';
-import type { Repository } from '@/apollo/github-api.types';
+import { createMockRepository } from '@/test/mocks/github-data';
 
-// Mock repository data
-const mockRepository: Repository = {
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
+const mockRepository = createMockRepository({
   id: '1',
   name: 'test-repo',
   description: 'A test repository description',
   url: 'https://github.com/user/test-repo',
   stargazerCount: 100,
   forkCount: 20,
-  isFork: false,
-  isTemplate: false,
-  parent: null,
-  createdAt: '2023-01-01T00:00:00Z',
   updatedAt: '2024-11-05T10:00:00Z',
   pushedAt: '2024-11-05T10:00:00Z',
   diskUsage: 1000,
-  isArchived: false,
-  homepageUrl: null,
   watchers: { totalCount: 10 },
   issues: { totalCount: 5 },
   repositoryTopics: {
@@ -43,7 +37,7 @@ const mockRepository: Repository = {
       { size: 200, node: { name: 'CSS' } },
     ],
   },
-};
+});
 
 describe('RepositoryCard', () => {
   describe('Rendering', () => {

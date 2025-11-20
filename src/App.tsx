@@ -64,9 +64,23 @@ function App() {
     }
   }, []);
 
-  // TODO: Extract rate limit from GraphQL responses
-  // This will be implemented when backend proxy returns rate limit info
-  // For now, keeping the placeholder logic
+  // Handle rate limit updates from GraphQL responses
+  const handleRateLimitUpdate = (newRateLimit: {
+    remaining: number;
+    limit: number;
+    reset: number;
+    used: number;
+    isDemo: boolean;
+    userLogin?: string;
+  }) => {
+    setRateLimit({
+      remaining: newRateLimit.remaining,
+      limit: newRateLimit.limit,
+      reset: newRateLimit.reset,
+      isDemo: newRateLimit.isDemo,
+      userLogin: newRateLimit.userLogin,
+    });
+  };
 
   // Calculate metrics from timeline data
   const metrics =
@@ -154,7 +168,7 @@ function App() {
         {userName && profile && !error && (
           <ErrorBoundary>
             {/* User Profile Section */}
-            <UserProfile userName={userName} />
+            <UserProfile userName={userName} onRateLimitUpdate={handleRateLimitUpdate} />
 
             {/* Quick Assessment - 4 Key Metrics */}
             {metrics && <QuickAssessment metrics={metrics} loading={loading} />}
@@ -168,7 +182,7 @@ function App() {
         )}
 
         {/* Loading State - Show UserProfile for loading indication */}
-        {userName && loading && !profile && <UserProfile userName={userName} />}
+        {userName && loading && !profile && <UserProfile userName={userName} onRateLimitUpdate={handleRateLimitUpdate} />}
 
         {/* Auth Required Modal */}
         <AuthRequiredModal
