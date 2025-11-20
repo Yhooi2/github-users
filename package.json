@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm:dev:vite\" \"npm:dev:api\"",
+    "dev": "vercel dev --listen 3000",
     "dev:vite": "vite",
     "dev:api": "vercel dev --listen 3000",
     "build": "tsc -b && vite build",
