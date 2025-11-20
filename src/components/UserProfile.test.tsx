@@ -166,6 +166,28 @@ describe('UserProfile', () => {
       </MockedProvider>
     )
 
-    expect(useQueryUser).toHaveBeenCalledWith('specificuser')
+    expect(useQueryUser).toHaveBeenCalledWith('specificuser', 365, {
+      onRateLimitUpdate: undefined,
+    })
+  })
+
+  it('passes onRateLimitUpdate callback to useQueryUser', () => {
+    const mockCallback = vi.fn()
+
+    vi.mocked(useQueryUser).mockReturnValue({
+      data: null,
+      loading: true,
+      error: undefined,
+    })
+
+    render(
+      <MockedProvider>
+        <UserProfile userName="octocat" onRateLimitUpdate={mockCallback} />
+      </MockedProvider>
+    )
+
+    expect(useQueryUser).toHaveBeenCalledWith('octocat', 365, {
+      onRateLimitUpdate: mockCallback,
+    })
   })
 })
