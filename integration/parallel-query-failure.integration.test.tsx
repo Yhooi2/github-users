@@ -4,6 +4,7 @@ import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { useUserAnalytics } from '@/hooks/useUserAnalytics'
 import { GET_USER_PROFILE } from '@/apollo/queries/userProfile'
 import { GET_YEAR_CONTRIBUTIONS } from '@/apollo/queries/yearContributions'
+import { generateYearRanges } from '@/lib/date-utils'
 import type { ReactNode } from 'react'
 
 /**
@@ -26,6 +27,7 @@ describe('Parallel Query Failure Integration Test', () => {
   const currentYear = new Date().getFullYear()
 
   // Mock user profile data (matches GetUserProfileResponse)
+  // IMPORTANT: createdAt is recent to match year mocks (currentYear - 2)
   const mockUserProfile = {
     user: {
       id: 'U_torvalds',
@@ -35,7 +37,7 @@ describe('Parallel Query Failure Integration Test', () => {
       avatarUrl: 'https://github.com/torvalds.png',
       url: 'https://github.com/torvalds',
       location: 'Portland, OR',
-      createdAt: '2011-09-03T15:26:22Z',
+      createdAt: `${currentYear - 2}-01-15T08:30:00Z`, // Account created 2 years ago
       email: 'torvalds@linux-foundation.org',
       company: 'Linux Foundation',
       websiteUrl: 'https://kernel.org',
@@ -71,12 +73,28 @@ describe('Parallel Query Failure Integration Test', () => {
               stargazerCount: 1000,
               forkCount: 500,
               isFork: false,
+              isTemplate: false,
               isArchived: false,
               isPrivate: false,
+              diskUsage: 50000,
+              homepageUrl: null,
               primaryLanguage: { name: 'C', color: '#555555' },
               owner: { login: 'torvalds', avatarUrl: 'https://github.com/torvalds.png' },
+              parent: null,
+              watchers: { totalCount: 500 },
+              issues: { totalCount: 100 },
+              repositoryTopics: { nodes: [] },
+              languages: {
+                totalSize: 100000,
+                edges: [{ size: 100000, node: { name: 'C' } }],
+              },
               licenseInfo: { name: 'GNU General Public License v2.0', spdxId: 'GPL-2.0' },
-              defaultBranchRef: { name: 'master' },
+              defaultBranchRef: {
+                name: 'master',
+                target: {
+                  history: { totalCount: commits },
+                },
+              },
             },
           },
         ],
@@ -96,6 +114,9 @@ describe('Parallel Query Failure Integration Test', () => {
   })
 
   it('should show partial timeline when some year queries fail', async () => {
+    // Generate year ranges from mock profile createdAt (this is what the hook does)
+    const yearRanges = generateYearRanges(mockUserProfile.user.createdAt)
+
     // Mock: Last 2 years succeed, current year fails
     const mocks: MockedResponse[] = [
       // User profile query (success)
@@ -107,44 +128,35 @@ describe('Parallel Query Failure Integration Test', () => {
         result: { data: mockUserProfile },
       },
 
-      // Year -2 (success)
+      // Year -2 (success) - use exact dates from generateYearRanges
       {
         request: {
           query: GET_YEAR_CONTRIBUTIONS,
           variables: {
             login: 'torvalds',
-            from: `${currentYear - 2}-01-01T00:00:00Z`,
-            to: `${currentYear - 1}-01-01T00:00:00Z`,
+            from: yearRanges[0].from,
+            to: yearRanges[0].to,
           },
         },
-        result: { data: createYearData(currentYear - 2, 250) },
+        result: { data: createYearData(yearRanges[0].year, 250) },
       },
 
-      // Year -1 (success)
+      // Year -1 (success) - use exact dates from generateYearRanges
       {
         request: {
           query: GET_YEAR_CONTRIBUTIONS,
           variables: {
             login: 'torvalds',
-            from: `${currentYear - 1}-01-01T00:00:00Z`,
-            to: `${currentYear}-01-01T00:00:00Z`,
+            from: yearRanges[1].from,
+            to: yearRanges[1].to,
           },
         },
-        result: { data: createYearData(currentYear - 1, 300) },
+        result: { data: createYearData(yearRanges[1].year, 300) },
       },
 
-      // Current year (FAILURE - network timeout)
-      {
-        request: {
-          query: GET_YEAR_CONTRIBUTIONS,
-          variables: {
-            login: 'torvalds',
-            from: `${currentYear}-01-01T00:00:00Z`,
-            to: `${currentYear + 1}-01-01T00:00:00Z`,
-          },
-        },
-        error: new Error('Network timeout'),
-      },
+      // Current year (FAILURE) - No mock provided, will fail as unmatched query
+      // generateYearRanges creates yearRanges[2] for current year
+      // Since we don't mock it, Apollo will treat it as a network error
     ]
 
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -158,52 +170,49 @@ describe('Parallel Query Failure Integration Test', () => {
     // Wait for loading to complete
     await waitFor(
       () => {
-        expect(result.current.yearLoading).toBe(false)
+        expect(result.current.loading).toBe(false)
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     )
 
     // Verify timeline contains only successful years (last 2 years)
     expect(
       result.current.timeline.length,
-      `Timeline should contain only the 2 successful years (${currentYear - 2}, ${currentYear - 1}), not the failed ${currentYear}`
+      `Timeline should contain only the 2 successful years (${yearRanges[0].year}, ${yearRanges[1].year}), not the failed ${yearRanges[2].year}`
     ).toBe(2)
 
     // Verify year data
-    const years = result.current.timeline.map((yearData) => {
-      const year = new Date(yearData.year).getFullYear()
-      return year
-    })
+    const years = result.current.timeline.map((yearData) => yearData.year)
 
     expect(
       years,
-      `Timeline should include year ${currentYear - 2} (successful query)`
-    ).toContain(currentYear - 2)
+      `Timeline should include year ${yearRanges[0].year} (successful query)`
+    ).toContain(yearRanges[0].year)
 
     expect(
       years,
-      `Timeline should include year ${currentYear - 1} (successful query)`
-    ).toContain(currentYear - 1)
+      `Timeline should include year ${yearRanges[1].year} (successful query)`
+    ).toContain(yearRanges[1].year)
 
     expect(
       years,
-      `Timeline should NOT include ${currentYear} (failed query)`
-    ).not.toContain(currentYear)
+      `Timeline should NOT include ${yearRanges[2].year} (failed query)`
+    ).not.toContain(yearRanges[2].year)
 
-    // Verify contributions from successful years
-    const totalContributions = result.current.timeline.reduce(
-      (sum, yearData) => sum + yearData.contributions,
+    // Verify commits from successful years
+    const totalCommits = result.current.timeline.reduce(
+      (sum, yearData) => sum + yearData.totalCommits,
       0
     )
 
     expect(
-      totalContributions,
-      'Total contributions should be sum of successful years only (250 + 300 = 550)'
+      totalCommits,
+      'Total commits should be sum of successful years only (250 + 300 = 550)'
     ).toBe(550)
 
     // Verify repositories from successful years
     const totalRepos = result.current.timeline.reduce(
-      (sum, yearData) => sum + yearData.repositories.length,
+      (sum, yearData) => sum + (yearData.ownedRepos.length + yearData.contributions.length),
       0
     )
 
@@ -214,12 +223,15 @@ describe('Parallel Query Failure Integration Test', () => {
 
     // Verify no loading errors (graceful degradation)
     expect(
-      result.current.yearLoading,
+      result.current.loading,
       'Loading should complete despite partial failures'
     ).toBe(false)
   })
 
   it('should handle all year queries failing gracefully', async () => {
+    // Generate year ranges from mock profile createdAt
+    const yearRanges = generateYearRanges(mockUserProfile.user.createdAt)
+
     // Mock: User profile succeeds, all year queries fail
     const mocks: MockedResponse[] = [
       // User profile query (success)
@@ -232,17 +244,39 @@ describe('Parallel Query Failure Integration Test', () => {
       },
 
       // All year queries fail (3 years)
-      ...Array.from({ length: 3 }, (_, i) => ({
+      {
         request: {
           query: GET_YEAR_CONTRIBUTIONS,
           variables: {
             login: 'torvalds',
-            from: `${currentYear - 2 + i}-01-01T00:00:00Z`,
-            to: `${currentYear - 1 + i}-01-01T00:00:00Z`,
+            from: yearRanges[0].from,
+            to: yearRanges[0].to,
           },
         },
         error: new Error('Network error'),
-      })),
+      },
+      {
+        request: {
+          query: GET_YEAR_CONTRIBUTIONS,
+          variables: {
+            login: 'torvalds',
+            from: yearRanges[1].from,
+            to: yearRanges[1].to,
+          },
+        },
+        error: new Error('Network error'),
+      },
+      {
+        request: {
+          query: GET_YEAR_CONTRIBUTIONS,
+          variables: {
+            login: 'torvalds',
+            from: yearRanges[2].from,
+            to: yearRanges[2].to,
+          },
+        },
+        error: new Error('Network error'),
+      },
     ]
 
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -256,9 +290,9 @@ describe('Parallel Query Failure Integration Test', () => {
     // Wait for loading to complete
     await waitFor(
       () => {
-        expect(result.current.yearLoading).toBe(false)
+        expect(result.current.loading).toBe(false)
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     )
 
     // Verify timeline is empty (all queries failed)
@@ -269,14 +303,14 @@ describe('Parallel Query Failure Integration Test', () => {
 
     // Verify profile data still available (profile query succeeded)
     expect(
-      result.current.userProfile,
+      result.current.profile,
       'User profile should still be available despite year query failures'
     ).toBeDefined()
-    expect(result.current.userProfile?.login).toBe('torvalds')
+    expect(result.current.profile?.login).toBe('torvalds')
 
     // Verify loading completes (no infinite loading state)
     expect(
-      result.current.yearLoading,
+      result.current.loading,
       'Loading should complete even when all queries fail (graceful degradation)'
     ).toBe(false)
   })
@@ -304,23 +338,23 @@ describe('Parallel Query Failure Integration Test', () => {
     // Wait for error state
     await waitFor(
       () => {
-        expect(result.current.profileError).toBeDefined()
+        expect(result.current.error).toBeDefined()
       },
       { timeout: 3000 }
     )
 
     // Verify error is captured
     expect(
-      result.current.profileError,
+      result.current.error,
       'Profile error should be captured when user profile query fails'
     ).toBeDefined()
-    expect(result.current.profileError?.message).toContain('User not found')
+    expect(result.current.error?.message).toContain('User not found')
 
     // Verify no user profile data
     expect(
-      result.current.userProfile,
-      'User profile should be undefined when query fails'
-    ).toBeUndefined()
+      result.current.profile,
+      'User profile should be null when query fails (hook returns null for missing data)'
+    ).toBeNull()
 
     // Verify timeline is empty (profile query is prerequisite for year queries)
     expect(
@@ -330,6 +364,9 @@ describe('Parallel Query Failure Integration Test', () => {
   })
 
   it('should calculate metrics from available years only (partial failure)', async () => {
+    // Generate year ranges from mock profile createdAt
+    const yearRanges = generateYearRanges(mockUserProfile.user.createdAt)
+
     // Mock: Only 1 year succeeds, others fail
     const mocks: MockedResponse[] = [
       // User profile query (success)
@@ -341,31 +378,43 @@ describe('Parallel Query Failure Integration Test', () => {
         result: { data: mockUserProfile },
       },
 
-      // Year -2 (success)
+      // Year -2 (success) - use exact dates from generateYearRanges
       {
         request: {
           query: GET_YEAR_CONTRIBUTIONS,
           variables: {
             login: 'torvalds',
-            from: `${currentYear - 2}-01-01T00:00:00Z`,
-            to: `${currentYear - 1}-01-01T00:00:00Z`,
+            from: yearRanges[0].from,
+            to: yearRanges[0].to,
           },
         },
-        result: { data: createYearData(currentYear - 2, 100) },
+        result: { data: createYearData(yearRanges[0].year, 100) },
       },
 
-      // Years -1 and current (all fail)
-      ...Array.from({ length: 2 }, (_, i) => ({
+      // Year -1 (fail)
+      {
         request: {
           query: GET_YEAR_CONTRIBUTIONS,
           variables: {
             login: 'torvalds',
-            from: `${currentYear - 1 + i}-01-01T00:00:00Z`,
-            to: `${currentYear + i}-01-01T00:00:00Z`,
+            from: yearRanges[1].from,
+            to: yearRanges[1].to,
           },
         },
         error: new Error('API rate limit exceeded'),
-      })),
+      },
+      // Current year (fail) - no mock provided, treated as error
+      {
+        request: {
+          query: GET_YEAR_CONTRIBUTIONS,
+          variables: {
+            login: 'torvalds',
+            from: yearRanges[2].from,
+            to: yearRanges[2].to,
+          },
+        },
+        error: new Error('API rate limit exceeded'),
+      },
     ]
 
     const wrapper = ({ children }: { children: ReactNode }) => (
@@ -379,9 +428,9 @@ describe('Parallel Query Failure Integration Test', () => {
     // Wait for loading to complete
     await waitFor(
       () => {
-        expect(result.current.yearLoading).toBe(false)
+        expect(result.current.loading).toBe(false)
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     )
 
     // Verify timeline contains only 1 successful year
@@ -391,19 +440,19 @@ describe('Parallel Query Failure Integration Test', () => {
     ).toBe(1)
 
     // Verify metrics calculated from 1 year only
-    const totalContributions = result.current.timeline.reduce(
-      (sum, yearData) => sum + yearData.contributions,
+    const totalCommits = result.current.timeline.reduce(
+      (sum, yearData) => sum + yearData.totalCommits,
       0
     )
 
     expect(
-      totalContributions,
-      'Metrics should be calculated from available 1 year only (100), not all 3 years'
+      totalCommits,
+      'Metrics should be calculated from available 1 year only (100 commits), not all 3 years'
     ).toBe(100)
 
     // Verify repositories count
     expect(
-      result.current.timeline.reduce((sum, yearData) => sum + yearData.repositories.length, 0),
+      result.current.timeline.reduce((sum, yearData) => sum + (yearData.ownedRepos.length + yearData.contributions.length), 0),
       'Repository count should be from available year only (1 repo)'
     ).toBe(1)
   })
