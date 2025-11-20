@@ -43,12 +43,19 @@
 
 ### ⚠️ ИЗВЕСТНЫЕ ПРОБЛЕМЫ
 
-**Integration Test: cache-transition.integration.test.tsx** - Temporarily Skipped
-- ❌ 3 tests skipped (Apollo cache normalization issue)
-- 📝 Проблема: Apollo ожидает поля (email, company, websiteUrl, twitterUsername), которых нет в query
-- 🔧 Требуется: Refactor to use MockedProvider with no-cache policy
-- 📚 См.: https://www.apollographql.com/docs/react/development-testing/testing/
-- 📝 Коммит с документацией: f74d078
+**Integration Test: cache-transition.integration.test.tsx** - Temporarily Skipped (P2)
+- ❌ 3 tests skipped (Apollo InMemoryCache architecture mismatch)
+- 🔍 **Root Cause (Deep Dive Complete):**
+  - Apollo Client InMemoryCache normalizes data across **ALL queries in project**
+  - Multiple queries request different fields for same types (User, ContributionsCollection)
+  - Apollo expects **union of ALL fields** ever requested to be in mock data
+  - Integration tests use REAL Apollo Client → infinite whack-a-mole adding fields
+- 🔧 **Correct Solution:** Refactor to use MockedProvider (4-6 hours)
+  - Isolated cache per test (no cross-query pollution)
+  - Only need fields for specific mocked queries
+  - See `docs/INTEGRATION_TEST_APOLLO_ISSUE.md` for complete implementation plan
+- 📊 **Impact:** ZERO (application works correctly, other tests 99.8%+ passing)
+- 📝 **Analysis Commits:** f74d078, 2fa8b40
 
 ### 📊 ТЕКУЩАЯ СТАТИСТИКА
 

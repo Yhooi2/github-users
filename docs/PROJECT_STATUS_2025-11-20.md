@@ -75,8 +75,11 @@ All planned refactoring phases have been **successfully completed**, including:
 - **OAuth Security Tests:** 25 tests (login + callback + logout) ✅
 
 **Known Issues:**
-- 3 integration tests temporarily skipped (Apollo cache normalization issue)
-- Documented with TODO and refactoring plan
+- 3 integration tests temporarily skipped (Apollo InMemoryCache architecture mismatch)
+- **Root cause:** Apollo normalizes across ALL queries; expects union of all fields
+- **Solution:** Refactor to use MockedProvider (4-6 hours, P2 priority)
+- **Impact:** ZERO (app works correctly, 99.8%+ other tests pass)
+- **Documentation:** `docs/INTEGRATION_TEST_APOLLO_ISSUE.md` (full analysis)
 
 ---
 
@@ -149,10 +152,13 @@ Environment:   jsdom + Playwright
 ## 🎯 Next Steps (Optional Enhancements)
 
 ### Short-term (1-2 weeks)
-1. **Fix Skipped Tests** (1-2 hours)
-   - Refactor cache-transition integration tests
-   - Use MockedProvider with no-cache policy
-   - Reference: https://www.apollographql.com/docs/react/development-testing/testing/
+1. **Fix Skipped Integration Tests** (4-6 hours, P2)
+   - Refactor cache-transition integration tests to use MockedProvider
+   - Create `renderWithMockedProvider` helper utility
+   - Create query mock factory (`createUserInfoMock`, etc.)
+   - Update 3 integration tests with proper Apollo mocking
+   - Reference: `docs/INTEGRATION_TEST_APOLLO_ISSUE.md` (complete implementation plan)
+   - Why needed: Current approach uses real Apollo Client that normalizes across ALL queries
 
 2. **Performance Optimization** (Optional)
    - Code splitting for better load times
