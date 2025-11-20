@@ -42,6 +42,21 @@ interface OAuthMetrics {
       avgRemaining: number;
     };
   };
+  detailed?: {
+    sessions: Array<{
+      sessionId: string;
+      userId: number;
+      login: string;
+      createdAt: number;
+      lastActivity: number;
+    }>;
+    timeline: Array<{
+      timestamp: number;
+      event: string;
+      userId?: number;
+      login?: string;
+    }>;
+  };
 }
 
 export interface OAuthMetricsDashboardProps {
