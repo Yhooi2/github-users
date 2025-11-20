@@ -39,14 +39,56 @@ function renderApp() {
 }
 
 /**
- * TEMPORARILY SKIPPED (2025-11-20):
- * These tests fail due to Apollo Client cache normalization issues in test environment.
- * Apollo expects fields (email, company, websiteUrl, twitterUsername) that are not
- * part of our GraphQL query. This requires deeper refactoring of Apollo mock setup
- * using MockedProvider with no-cache policy or proper type policies.
+ * Integration Test: Cache Transition (Demo → Auth)
  *
- * TODO: Refactor these tests to use MockedProvider with proper cache configuration
- * See: https://www.apollographql.com/docs/react/development-testing/testing/
+ * TEMPORARILY SKIPPED (2025-11-20) - DEEP DIVE ANALYSIS COMPLETE
+ *
+ * ROOT CAUSE IDENTIFIED:
+ * Apollo Client InMemoryCache normalizes data across ALL GraphQL queries in the project.
+ * Multiple queries request different fields for the same types:
+ *
+ * For User type:
+ * - GET_USER_INFO (queriers.ts) - basic fields
+ * - GET_USER_PROFILE (queries/userProfile.ts) - adds email, company, websiteUrl, twitterUsername
+ *
+ * For ContributionsCollection type:
+ * - Some queries request: totalIssueContributions, totalPullRequestContributions,
+ *   totalPullRequestReviewContributions, restrictedContributionsCount
+ *
+ * Apollo expects ALL fields ever requested for a type to be present in mock data,
+ * creating an ever-growing list of required fields.
+ *
+ * WHY THIS APPROACH FAILS:
+ * - Adding fields to mocks is not scalable (infinite whack-a-mole)
+ * - Integration tests use REAL Apollo Client with InMemoryCache
+ * - Real client merges data from ALL queries across the app
+ * - Each new query adds more required fields
+ *
+ * CORRECT SOLUTION (4-6 hours work):
+ * Refactor to use MockedProvider with isolated cache per test:
+ *
+ * ```typescript
+ * import { MockedProvider } from '@apollo/client/testing';
+ *
+ * const mocks = [{
+ *   request: { query: GET_USER_INFO, variables: {...} },
+ *   result: { data: { user: mockUser } }
+ * }];
+ *
+ * render(
+ *   <MockedProvider mocks={mocks} addTypename={false}>
+ *     <App />
+ *   </MockedProvider>
+ * );
+ * ```
+ *
+ * BENEFITS OF MockedProvider:
+ * - Isolated cache per test (no cross-query pollution)
+ * - Only need fields for specific mocked queries
+ * - Proper query matching
+ * - No global fetch mocking required
+ *
+ * Reference: https://www.apollographql.com/docs/react/development-testing/testing/
  */
 describe.skip('Cache Transition Integration Test (Demo → Auth)', () => {
   // Use centralized mock factory (Week 4 P3)

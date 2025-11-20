@@ -128,6 +128,12 @@ export const mockUser: GitHubUser = {
   url: 'https://github.com/testuser',
   location: 'San Francisco, CA',
 
+  // Optional profile fields (for GET_USER_PROFILE query compatibility)
+  email: 'testuser@example.com',
+  company: '@TestCompany',
+  websiteUrl: 'https://testuser.dev',
+  twitterUsername: 'testuser',
+
   followers: { totalCount: 100 },
   following: { totalCount: 50 },
   gists: { totalCount: 10 },
