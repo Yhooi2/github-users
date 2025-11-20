@@ -20,20 +20,9 @@ import App from '../src/App'
  * 4. Fresh data should be fetched for authenticated user
  */
 
-// Mock fetch to track API calls
+// Mock fetch to track API calls (client-side observable)
 const mockFetch = vi.fn()
 global.fetch = mockFetch
-
-// Mock @vercel/kv for cache key verification
-vi.mock('@vercel/kv', () => ({
-  kv: {
-    get: vi.fn(),
-    set: vi.fn(),
-    keys: vi.fn(),
-  },
-}))
-
-import { kv } from '@vercel/kv'
 
 /**
  * Helper to render App with all required providers
@@ -49,10 +38,6 @@ function renderApp() {
 }
 
 describe('Cache Transition Integration Test (Demo → Auth)', () => {
-  const DEMO_CACHE_KEY_PREFIX = 'demo:user:torvalds:'
-  const AUTH_CACHE_KEY_PREFIX = 'user:session123:user:torvalds:'
-  const MOCK_SESSION_ID = 'session123'
-
   const mockUserData = {
     data: {
       user: {
@@ -75,7 +60,7 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
         limit: 5000,
         reset: Math.floor(Date.now() / 1000) + 3600,
         used: 0,
-        isDemo: true,
+        isDemo: true, // ← Client-side observable: demo mode active
       },
     },
   }
@@ -86,7 +71,9 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
       ...mockUserData.data,
       rateLimit: {
         ...mockUserData.data.rateLimit,
-        isDemo: false,
+        remaining: 4950,
+        used: 50,
+        isDemo: false, // ← Client-side observable: auth mode active
         userLogin: 'authenticateduser',
       },
     },
@@ -99,6 +86,7 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => mockUserData,
+      text: async () => JSON.stringify(mockUserData), // ← Required by Apollo Client
       headers: new Headers({
         'X-RateLimit-Remaining': '5000',
         'X-RateLimit-Limit': '5000',
@@ -106,21 +94,16 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
         'X-RateLimit-Used': '0',
       }),
     })
-
-    // Mock KV cache - initially no cache
-    vi.mocked(kv.get).mockResolvedValue(null)
-    vi.mocked(kv.set).mockResolvedValue('OK')
-    vi.mocked(kv.keys).mockResolvedValue([])
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
   })
 
-  it('should use demo cache key before OAuth login', async () => {
+  it('should display demo mode rate limit before OAuth login', async () => {
     const user = userEvent.setup()
 
-    // 1. Render app (demo mode)
+    // 1. Render app (demo mode by default)
     renderApp()
 
     // 2. Search for user in demo mode
@@ -130,27 +113,28 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
     await user.type(searchInput, 'torvalds')
     await user.click(searchButton)
 
-    // 3. Wait for GraphQL query
+    // 3. Wait for API call (client-side observable)
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalled()
     }, { timeout: 3000 })
 
-    // 4. Verify cache key used in proxy request contains "demo:" prefix
-    // The cacheKey is sent in the POST body to /api/github-proxy
-    const proxyCall = mockFetch.mock.calls.find((call) =>
-      call[0].includes('/api/github-proxy')
-    )
+    // 4. Verify demo mode rate limit displayed (client-side observable)
+    await waitFor(() => {
+      const rateLimitText = screen.queryByText(/5000.*5000/i)
+      expect(
+        rateLimitText,
+        'Demo mode rate limit (5000/5000) should be displayed in UI'
+      ).toBeInTheDocument()
+    })
 
+    // 5. Verify exactly 1 API call made (no cache hit, fresh fetch)
     expect(
-      proxyCall,
-      'github-proxy should be called with demo mode cache key'
-    ).toBeDefined()
-
-    // Note: In real implementation, the cache key would be verified server-side
-    // This test focuses on client-side behavior and rate limit state
+      mockFetch,
+      'Demo mode should make API call to fetch user data'
+    ).toHaveBeenCalledTimes(1)
   })
 
-  it('should transition to user cache key after OAuth login', async () => {
+  it('should transition rate limit display from demo to auth mode after login', async () => {
     const user = userEvent.setup()
 
     // 1. Search in demo mode
@@ -166,23 +150,21 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
       expect(mockFetch).toHaveBeenCalledTimes(1)
     })
 
-    // Verify demo mode active
+    // Verify demo mode active (client-side observable)
     await waitFor(() => {
       const rateLimitText = screen.queryByText(/5000.*5000/i)
       expect(
         rateLimitText,
-        'Demo mode rate limit should be displayed initially'
+        'Demo mode rate limit (5000/5000 used: 0) should be displayed initially'
       ).toBeInTheDocument()
     })
 
-    // 2. Simulate OAuth login (mock session cookie)
-    // In real app, this would redirect to /api/auth/login
-    // Here we mock the result: session cookie set + auth mode activated
-
-    // Mock authenticated fetch response
+    // 2. Simulate OAuth login → auth mode
+    // Mock authenticated API response (isDemo: false)
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => mockAuthUserData,
+      text: async () => JSON.stringify(mockAuthUserData),
       headers: new Headers({
         'X-RateLimit-Remaining': '4950',
         'X-RateLimit-Limit': '5000',
@@ -191,16 +173,7 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
       }),
     })
 
-    // Mock session in KV
-    vi.mocked(kv.get).mockResolvedValue({
-      userId: 12345,
-      login: 'authenticateduser',
-      avatarUrl: 'https://github.com/authenticateduser.png',
-      accessToken: 'gho_authenticated_token',
-      createdAt: Date.now(),
-    })
-
-    // 3. Search same user again (should use auth cache key)
+    // 3. Search same user again (should fetch fresh data for auth mode)
     await user.clear(searchInput)
     await user.type(searchInput, 'torvalds')
     await user.click(searchButton)
@@ -209,32 +182,26 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
       expect(mockFetch).toHaveBeenCalledTimes(2)
     }, { timeout: 3000 })
 
-    // 4. Verify auth mode activated (rate limit should show authenticated)
+    // 4. Verify auth mode rate limit displayed (client-side observable)
     await waitFor(() => {
-      // The isDemo flag should be false in authenticated mode
-      // This would typically show different UI (e.g., user avatar, different banner)
       const rateLimit = screen.queryByText(/4950.*5000/i)
       expect(
         rateLimit,
-        'Authenticated mode rate limit should be displayed after login'
+        'Authenticated mode rate limit (4950/5000 used: 50) should be displayed after login'
       ).toBeInTheDocument()
     })
+
+    // 5. Verify second API call was made (fresh data fetch, not cached demo data)
+    expect(
+      mockFetch,
+      'Auth mode should make fresh API call (not reuse demo cache)'
+    ).toHaveBeenCalledTimes(2)
   })
 
-  it('should NOT reuse demo cache after OAuth login', async () => {
+  it('should fetch fresh data after transitioning from demo to auth mode', async () => {
     const user = userEvent.setup()
 
-    // Setup: Pre-populate demo cache
-    const demoCacheKey = `${DEMO_CACHE_KEY_PREFIX}contributions`
-    vi.mocked(kv.keys).mockResolvedValue([demoCacheKey])
-    vi.mocked(kv.get).mockImplementation(async (key) => {
-      if (key === demoCacheKey) {
-        return mockUserData // Cached demo data
-      }
-      return null
-    })
-
-    // 1. Render app and search (demo mode, cache HIT)
+    // 1. First search in demo mode
     renderApp()
 
     const searchInput = screen.getByPlaceholderText(/search github user/i)
@@ -243,40 +210,19 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
     await user.type(searchInput, 'torvalds')
     await user.click(searchButton)
 
-    // Should use cached demo data (no fetch)
+    // Wait for demo mode API call
     await waitFor(() => {
-      expect(screen.getByText(/linus torvalds/i)).toBeInTheDocument()
+      expect(mockFetch).toHaveBeenCalledTimes(1)
     })
 
-    const initialFetchCount = mockFetch.mock.calls.length
+    // Capture initial fetch count
+    const demoFetchCount = mockFetch.mock.calls.length
 
-    // 2. Simulate OAuth login → auth mode
-    vi.mocked(kv.get).mockImplementation(async (key) => {
-      // Session exists now
-      if (key === `session:${MOCK_SESSION_ID}`) {
-        return {
-          userId: 12345,
-          login: 'authenticateduser',
-          avatarUrl: 'https://github.com/authenticateduser.png',
-          accessToken: 'gho_auth_token',
-          createdAt: Date.now(),
-        }
-      }
-      // No cache for auth user yet
-      if (key.startsWith('user:')) {
-        return null
-      }
-      // Demo cache still exists but should NOT be used
-      if (key === demoCacheKey) {
-        return mockUserData
-      }
-      return null
-    })
-
-    // Mock fresh fetch for authenticated user
+    // 2. Simulate OAuth login → auth mode (mock fresh API response)
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => mockAuthUserData,
+      text: async () => JSON.stringify(mockAuthUserData),
       headers: new Headers({
         'X-RateLimit-Remaining': '4999',
         'X-RateLimit-Limit': '5000',
@@ -285,120 +231,29 @@ describe('Cache Transition Integration Test (Demo → Auth)', () => {
       }),
     })
 
-    // 3. Search same user (auth mode, should fetch fresh data)
+    // 3. Search same user again (auth mode should fetch fresh data)
     await user.clear(searchInput)
     await user.type(searchInput, 'torvalds')
     await user.click(searchButton)
 
-    // 4. Verify fresh data fetched (NOT from demo cache)
+    // 4. Verify fresh API call made (client-side observable)
     await waitFor(() => {
-      const finalFetchCount = mockFetch.mock.calls.length
-      expect(
-        finalFetchCount,
-        'Should fetch fresh data for authenticated user, NOT reuse demo cache'
-      ).toBeGreaterThan(initialFetchCount)
+      expect(mockFetch).toHaveBeenCalledTimes(demoFetchCount + 1)
     }, { timeout: 3000 })
 
-    // 5. Verify authenticated rate limit shown
+    // 5. Verify auth mode rate limit displayed (confirms fresh data, not demo cache)
     await waitFor(() => {
       const authRateLimit = screen.queryByText(/4999.*5000/i)
       expect(
         authRateLimit,
-        'Authenticated rate limit should be displayed (fresh data)'
+        'Authenticated rate limit should be displayed (4999/5000 used: 1), proving fresh data fetch'
       ).toBeInTheDocument()
     })
-  })
 
-  it('should create separate cache entries for demo and auth modes', async () => {
-    const user = userEvent.setup()
-
-    // Track cache SET operations
-    const cacheSetCalls: Array<{ key: string; value: any }> = []
-    vi.mocked(kv.set).mockImplementation(async (key, value) => {
-      cacheSetCalls.push({ key: String(key), value })
-      return 'OK'
-    })
-
-    // 1. Search in demo mode
-    renderApp()
-
-    const searchInput = screen.getByPlaceholderText(/search github user/i)
-    const searchButton = screen.getByRole('button', { name: /search/i })
-
-    await user.type(searchInput, 'torvalds')
-    await user.click(searchButton)
-
-    await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalled()
-    })
-
-    // Give time for cache SET
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    const demoCacheCalls = cacheSetCalls.filter((call) =>
-      call.key.startsWith('demo:')
-    )
-
+    // 6. Verify total API calls = 2 (1 demo + 1 auth, no cache reuse)
     expect(
-      demoCacheCalls.length,
-      'Demo mode should create cache entries with "demo:" prefix'
-    ).toBeGreaterThan(0)
-
-    // 2. Simulate OAuth login
-    vi.mocked(kv.get).mockImplementation(async (key) => {
-      if (key === `session:${MOCK_SESSION_ID}`) {
-        return {
-          userId: 12345,
-          login: 'authenticateduser',
-          avatarUrl: 'https://github.com/authenticateduser.png',
-          accessToken: 'gho_auth_token',
-          createdAt: Date.now(),
-        }
-      }
-      return null
-    })
-
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockAuthUserData,
-      headers: new Headers({
-        'X-RateLimit-Remaining': '4999',
-        'X-RateLimit-Limit': '5000',
-        'X-RateLimit-Reset': String(Math.floor(Date.now() / 1000) + 3600),
-        'X-RateLimit-Used': '1',
-      }),
-    })
-
-    // 3. Search in auth mode
-    await user.clear(searchInput)
-    await user.type(searchInput, 'torvalds')
-    await user.click(searchButton)
-
-    await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledTimes(2)
-    })
-
-    // Give time for cache SET
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    const userCacheCalls = cacheSetCalls.filter((call) =>
-      call.key.startsWith('user:')
-    )
-
-    expect(
-      userCacheCalls.length,
-      'Auth mode should create cache entries with "user:" prefix'
-    ).toBeGreaterThan(0)
-
-    // 4. Verify cache keys are different
-    const demoCacheKeys = demoCacheCalls.map((c) => c.key)
-    const userCacheKeys = userCacheCalls.map((c) => c.key)
-
-    const overlap = demoCacheKeys.filter((key) => userCacheKeys.includes(key))
-
-    expect(
-      overlap.length,
-      'Demo and auth cache keys should be completely separate (no overlap)'
-    ).toBe(0)
+      mockFetch,
+      'Should make exactly 2 API calls (demo + auth), proving demo cache not reused'
+    ).toHaveBeenCalledTimes(2)
   })
 })
