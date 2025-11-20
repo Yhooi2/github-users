@@ -17,11 +17,52 @@ vi.mock("@vercel/kv", () => ({
 }));
 
 // Dynamic import handler after env vars and mocks are set up
-const handlerModule = await import("./github-proxy");
+const handlerModule = await import("./github-proxy.js");
 const handler = handlerModule.default;
 
 // Import mocked kv
 import { kv } from "@vercel/kv";
+
+/**
+ * Helper function to create proper Response mock
+ */
+function createMockResponse(
+  data: any,
+  headers: Record<string, string> = {},
+  options: { ok?: boolean; status?: number; statusText?: string } = {},
+): Response {
+  const headersObj = new Headers(headers);
+
+  return {
+    ok: options.ok ?? true,
+    status: options.status ?? 200,
+    statusText: options.statusText ?? "OK",
+    redirected: false,
+    type: "basic" as ResponseType,
+    url: "https://api.github.com/graphql",
+    headers: headersObj,
+    json: async () => data,
+    text: async () => JSON.stringify(data),
+    blob: async () => new Blob([JSON.stringify(data)]),
+    arrayBuffer: async () => new ArrayBuffer(0),
+    formData: async () => new FormData(),
+    clone: function () {
+      return this;
+    },
+    body: null,
+    bodyUsed: false,
+  } as Response;
+}
+
+/**
+ * Default rate limit headers
+ */
+const DEFAULT_RATE_LIMIT_HEADERS = {
+  "X-RateLimit-Remaining": "5000",
+  "X-RateLimit-Limit": "5000",
+  "X-RateLimit-Reset": "1234567890",
+  "X-RateLimit-Used": "0",
+};
 
 describe("GitHub Proxy with OAuth Support", () => {
   let req: Partial<VercelRequest>;
@@ -69,22 +110,14 @@ describe("GitHub Proxy with OAuth Support", () => {
 
   describe("Demo Mode (Unauthenticated)", () => {
     it("должен использовать GITHUB_TOKEN для неавторизованных", async () => {
-      // No session cookie
       req.headers = {};
 
-      // Mock GitHub API response
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "5000"],
-        ["X-RateLimit-Limit", "5000"],
-        ["X-RateLimit-Reset", "1234567890"],
-        ["X-RateLimit-Used", "0"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: { viewer: { login: "testuser" } } }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse(
+          { data: { viewer: { login: "testuser" } } },
+          DEFAULT_RATE_LIMIT_HEADERS,
+        ),
+      );
 
       vi.mocked(kv.get).mockResolvedValue(null);
       vi.mocked(kv.set).mockResolvedValue("OK");
@@ -117,18 +150,9 @@ describe("GitHub Proxy with OAuth Support", () => {
     it("должен кешировать с префиксом demo:", async () => {
       req.headers = {};
 
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "5000"],
-        ["X-RateLimit-Limit", "5000"],
-        ["X-RateLimit-Reset", "1234567890"],
-        ["X-RateLimit-Used", "0"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse({ data: "test" }, DEFAULT_RATE_LIMIT_HEADERS),
+      );
 
       vi.mocked(kv.get).mockResolvedValue(null);
       vi.mocked(kv.set).mockResolvedValue("OK");
@@ -160,18 +184,17 @@ describe("GitHub Proxy with OAuth Support", () => {
         .mockResolvedValueOnce(mockSession) // Session lookup
         .mockResolvedValueOnce(null); // Cache miss
 
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "4999"],
-        ["X-RateLimit-Limit", "5000"],
-        ["X-RateLimit-Reset", "1234567890"],
-        ["X-RateLimit-Used", "1"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse(
+          { data: "test" },
+          {
+            "X-RateLimit-Remaining": "4999",
+            "X-RateLimit-Limit": "5000",
+            "X-RateLimit-Reset": "1234567890",
+            "X-RateLimit-Used": "1",
+          },
+        ),
+      );
 
       vi.mocked(kv.set).mockResolvedValue("OK");
 
@@ -213,18 +236,9 @@ describe("GitHub Proxy with OAuth Support", () => {
         .mockResolvedValueOnce(mockSession) // Session lookup
         .mockResolvedValueOnce(null); // Cache miss
 
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "5000"],
-        ["X-RateLimit-Limit", "5000"],
-        ["X-RateLimit-Reset", "1234567890"],
-        ["X-RateLimit-Used", "0"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse({ data: "test" }, DEFAULT_RATE_LIMIT_HEADERS),
+      );
 
       vi.mocked(kv.set).mockResolvedValue("OK");
 
@@ -243,18 +257,9 @@ describe("GitHub Proxy with OAuth Support", () => {
 
       vi.mocked(kv.get).mockResolvedValue(null); // Session not found
 
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "5000"],
-        ["X-RateLimit-Limit", "5000"],
-        ["X-RateLimit-Reset", "1234567890"],
-        ["X-RateLimit-Used", "0"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse({ data: "test" }, DEFAULT_RATE_LIMIT_HEADERS),
+      );
 
       vi.mocked(kv.set).mockResolvedValue("OK");
 
@@ -285,18 +290,17 @@ describe("GitHub Proxy with OAuth Support", () => {
     it("должен извлекать rate limit из headers", async () => {
       req.headers = {};
 
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "4567"],
-        ["X-RateLimit-Limit", "5000"],
-        ["X-RateLimit-Reset", "1704067200"],
-        ["X-RateLimit-Used", "433"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse(
+          { data: "test" },
+          {
+            "X-RateLimit-Remaining": "4567",
+            "X-RateLimit-Limit": "5000",
+            "X-RateLimit-Reset": "1704067200",
+            "X-RateLimit-Used": "433",
+          },
+        ),
+      );
 
       vi.mocked(kv.get).mockResolvedValue(null);
       vi.mocked(kv.set).mockResolvedValue("OK");
@@ -320,13 +324,9 @@ describe("GitHub Proxy with OAuth Support", () => {
     it("должен использовать defaults если headers отсутствуют", async () => {
       req.headers = {};
 
-      const mockHeaders = new Map(); // Empty headers
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse({ data: "test" }, {}), // Empty headers
+      );
 
       vi.mocked(kv.get).mockResolvedValue(null);
       vi.mocked(kv.set).mockResolvedValue("OK");
@@ -368,18 +368,15 @@ describe("GitHub Proxy with OAuth Support", () => {
     it("должен обработать GraphQL errors", async () => {
       req.headers = {};
 
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "5000"],
-        ["X-RateLimit-Limit", "5000"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          errors: [{ message: "Field not found" }],
-        }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse(
+          { errors: [{ message: "Field not found" }] },
+          {
+            "X-RateLimit-Remaining": "5000",
+            "X-RateLimit-Limit": "5000",
+          },
+        ),
+      );
 
       vi.mocked(kv.get).mockResolvedValue(null);
 
@@ -393,11 +390,14 @@ describe("GitHub Proxy with OAuth Support", () => {
 
     it("должен обработать GitHub API errors", async () => {
       req.headers = {};
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: false,
-        status: 503,
-        statusText: "Service Unavailable",
-      } as Response);
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse(
+          {},
+          {},
+          { ok: false, status: 503, statusText: "Service Unavailable" },
+        ),
+      );
 
       vi.mocked(kv.get).mockResolvedValue(null);
 
@@ -459,18 +459,9 @@ describe("GitHub Proxy with OAuth Support", () => {
       vi.mocked(kv.get).mockRejectedValue(new Error("KV unavailable"));
       vi.mocked(kv.set).mockRejectedValue(new Error("KV unavailable"));
 
-      const mockHeaders = new Map([
-        ["X-RateLimit-Remaining", "5000"],
-        ["X-RateLimit-Limit", "5000"],
-        ["X-RateLimit-Reset", "1234567890"],
-        ["X-RateLimit-Used", "0"],
-      ]);
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => ({ data: "test" }),
-        headers: mockHeaders,
-      } as Response);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        createMockResponse({ data: "test" }, DEFAULT_RATE_LIMIT_HEADERS),
+      );
 
       await handler(req as VercelRequest, res as VercelResponse);
 

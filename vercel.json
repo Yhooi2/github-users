@@ -7,5 +7,18 @@
       "source": "/api/:path*",
       "destination": "/api/:path*"
     }
+  ],
+  "ignores": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/test/**",
+    "**/tests/**",
+    "**/__tests__/**",
+    ".storybook/**",
+    "**/storybook-static/**"
   ]
 }

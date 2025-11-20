@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   logRateLimitSnapshot,
   updateSessionActivity,
-} from "./analytics/logger";
+} from "./analytics/logger.js";
 
 /**
  * GraphQL request body structure
@@ -120,28 +120,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         token = session.accessToken;
         isDemo = false;
         userLogin = session.login;
-        console.log(`Using authenticated token for user: ${userLogin}`);
       }
     } catch (error) {
       console.error("Failed to load session from KV:", error);
       // Fallback to demo mode
     }
-  }
-
-  // Debug: report which token will be used (masked)
-  try {
-    const mask = (t: string | undefined | null) =>
-      t ? `${String(t).slice(0, 4)}...${String(t).slice(-4)}` : "<none>";
-    console.log(
-      "[debug] github-proxy: token-selected=",
-      mask(token),
-      "isDemo=",
-      isDemo,
-      "userLogin=",
-      userLogin,
-    );
-  } catch (e) {
-    console.log("[debug] github-proxy: failed to print token info", e);
   }
 
   if (!token) {
@@ -163,7 +146,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const cached = await kv.get(finalCacheKey);
       if (cached) {
-        console.log(`Cache HIT: ${finalCacheKey}`);
         return res.status(200).json(cached);
       }
     } catch (error) {
@@ -177,12 +159,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // GitHub API request
   try {
-    console.log("[debug] github-proxy: calling fetch to GitHub GraphQL", {
-      cacheKey: finalCacheKey,
-      isDemo,
-      userLogin,
-    });
-
     const response = await fetch("https://api.github.com/graphql", {
       method: "POST",
       headers: {
@@ -191,15 +167,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       body: JSON.stringify({ query, variables }),
     });
-
-    console.log("[debug] github-proxy: fetch completed - response.ok=", response.ok);
-    // Some runtimes expose response.status, some mock responses may not; guard it
-    try {
-      // @ts-ignore - status may exist on mocked Response
-      console.log("[debug] github-proxy: response.status=", response.status);
-    } catch (e) {
-      /* ignore */
-    }
 
     if (!response.ok) {
       throw new Error(
@@ -254,9 +221,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // Demo: 30 minutes, User: 10 minutes
         const ttl = isDemo ? 1800 : 600;
         await kv.set(finalCacheKey, responseData, { ex: ttl });
-        console.log(
-          `Cache SET: ${finalCacheKey} (TTL: ${ttl}s, Demo: ${isDemo})`,
-        );
       } catch (error) {
         console.warn(
           "KV cache write failed:",
