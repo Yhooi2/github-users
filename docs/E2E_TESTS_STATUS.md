@@ -80,7 +80,7 @@ await searchInput.fill('octocat')
 await searchButton.click()
 
 // ДОЛЖНО БЫТЬ:
-await page.fill('input[placeholder*="GitHub username"]', 'octocat')
+await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
 await page.click('button:has-text("Search")')
 ```
 

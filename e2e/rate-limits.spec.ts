@@ -28,17 +28,14 @@ test.describe('Real API Integration E2E', () => {
 
   test('should successfully search and display user profile from real GitHub API', async ({ page }) => {
     // Проверяем реальную интеграцию с GitHub API
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
-    await searchInput.fill('octocat')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем завершения загрузки (реальный API запрос)
     await page.waitForLoadState('networkidle')
 
     // Проверяем, что данные пользователя загрузились (это значит API работает)
-    await expect(page.getByText(/The Octocat/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=The Octocat')).toBeVisible({ timeout: 10000 })
 
     console.log('✅ Real GitHub API integration working')
   })
@@ -56,15 +53,12 @@ test.describe('Real API Integration E2E', () => {
     })
 
     // Поиск пользователя
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
-    await searchInput.fill('torvalds')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'torvalds')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем загрузки
     await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/Linus Torvalds/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=Linus Torvalds')).toBeVisible({ timeout: 10000 })
 
     // Проверяем, что был запрос к нашему proxy API
     const hasProxyRequest = apiRequests.some((url) => url.includes('/api/github-proxy'))
@@ -99,15 +93,12 @@ test.describe('Real API Integration E2E', () => {
     })
 
     // Делаем поиск
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
-    await searchInput.fill('gaearon')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'gaearon')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем результата
     await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/Dan Abramov/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=Dan Abramov')).toBeVisible({ timeout: 10000 })
 
     // Проверяем, что был хотя бы один GraphQL request
     expect(graphqlRequestsCount).toBeGreaterThan(0)
@@ -119,13 +110,11 @@ test.describe('Real API Integration E2E', () => {
   test('should handle multiple user searches in sequence', async ({ page }) => {
     // Проверяем, что можно искать нескольких пользователей подряд
     const users = ['torvalds', 'gaearon', 'addyosmani']
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
 
     for (const username of users) {
-      await searchInput.clear()
-      await searchInput.fill(username)
-      await searchButton.click()
+      await page.fill('input[placeholder*="Search GitHub User"]', '')
+      await page.fill('input[placeholder*="Search GitHub User"]', username)
+      await page.click('button:has-text("Search")')
 
       // Ожидаем результата
       await page.waitForLoadState('networkidle')
@@ -147,11 +136,8 @@ test.describe('Real API Integration E2E', () => {
     })
 
     // Пытаемся сделать поиск
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
-    await searchInput.fill('octocat')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем отображения ошибки (или Loading state)
     await page.waitForTimeout(2000)
@@ -184,27 +170,24 @@ test.describe('Real API Integration E2E', () => {
     })
 
     // Первый поиск
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
-    await searchInput.fill('octocat')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем результата
     await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/The Octocat/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=The Octocat')).toBeVisible({ timeout: 10000 })
 
     const requestsAfterFirstSearch = apiRequests.length
     console.log('Requests after first search:', requestsAfterFirstSearch)
 
     // Очищаем и делаем тот же поиск снова
-    await searchInput.clear()
-    await searchInput.fill('octocat')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', '')
+    await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем результата
     await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/The Octocat/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=The Octocat')).toBeVisible({ timeout: 10000 })
 
     const requestsAfterSecondSearch = apiRequests.length
     console.log('Requests after second search:', requestsAfterSecondSearch)
@@ -225,19 +208,16 @@ test.describe('Rate Limit Banner E2E', () => {
     await page.goto('/')
 
     // Делаем поиск
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
-    await searchInput.fill('octocat')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем результата
     await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/The Octocat/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=The Octocat')).toBeVisible({ timeout: 10000 })
 
     // RateLimitBanner НЕ должен отображаться при высоком rate limit (>10%)
     // Баннер показывается только когда remaining < 500 из 5000
-    const rateLimitAlert = page.getByRole('alert').filter({ hasText: /requests remaining/i })
+    const rateLimitAlert = page.locator('[role="alert"]:has-text("requests remaining")')
 
     // Проверяем, что баннера либо нет, либо он не виден
     const isVisible = await rateLimitAlert.isVisible().catch(() => false)
@@ -254,19 +234,16 @@ test.describe('Rate Limit Banner E2E', () => {
     // Убеждаемся, что отсутствие баннера не мешает работе приложения
     await page.goto('/')
 
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
-    await searchInput.fill('torvalds')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'torvalds')
+    await page.click('button:has-text("Search")')
 
     await page.waitForLoadState('networkidle')
 
     // Проверяем, что профиль отображается корректно
-    await expect(page.getByText(/Linus Torvalds/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('text=Linus Torvalds')).toBeVisible({ timeout: 10000 })
 
     // Проверяем наличие ключевых элементов профиля
-    await expect(page.getByRole('img', { name: /avatar/i })).toBeVisible()
+    await expect(page.locator('img[alt*="avatar" i]')).toBeVisible()
 
     console.log('✅ User profile displays correctly regardless of rate limit banner visibility')
   })
@@ -276,12 +253,9 @@ test.describe('Error Handling E2E', () => {
   test('should display error state when user not found', async ({ page }) => {
     await page.goto('/')
 
-    const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-    const searchButton = page.getByRole('button', { name: /search/i })
-
     // Поиск несуществующего пользователя
-    await searchInput.fill('thisuserdoesnotexist123456789xyz')
-    await searchButton.click()
+    await page.fill('input[placeholder*="Search GitHub User"]', 'thisuserdoesnotexist123456789xyz')
+    await page.click('button:has-text("Search")')
 
     // Ожидаем сообщения "User Not Found" или ошибки
     await page.waitForTimeout(3000)
@@ -303,10 +277,8 @@ test.describe('Error Handling E2E', () => {
   test('should handle empty search gracefully', async ({ page }) => {
     await page.goto('/')
 
-    const searchButton = page.getByRole('button', { name: /search/i })
-
     // Пытаемся искать без ввода имени
-    await searchButton.click()
+    await page.click('button:has-text("Search")')
 
     // Должен появиться toast с ошибкой валидации
     await expect(page.locator('[data-sonner-toast]')).toBeVisible({ timeout: 5000 })
