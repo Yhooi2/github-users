@@ -2,43 +2,32 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RepositoryTable } from './RepositoryTable';
+import { createMockRepository } from '@/test/mocks/github-data';
 import type { Repository } from '@/apollo/github-api.types';
 
-// Mock repository helper
-const createMockRepo = (id: number, overrides?: Partial<Repository>): Repository => ({
-  id: `repo-${id}`,
-  name: `test-repo-${id}`,
-  description: `Test repository ${id}`,
-  url: `https://github.com/user/test-repo-${id}`,
-  stargazerCount: 100 * id,
-  forkCount: 10 * id,
-  isFork: false,
-  isTemplate: false,
-  parent: null,
-  createdAt: '2023-01-01T00:00:00Z',
-  updatedAt: '2024-11-01T00:00:00Z',
-  pushedAt: '2024-11-01T00:00:00Z',
-  diskUsage: 1000,
-  isArchived: false,
-  homepageUrl: null,
-  watchers: { totalCount: 5 * id },
-  issues: { totalCount: 2 * id },
-  repositoryTopics: {
-    nodes: [{ topic: { name: 'react' } }],
-  },
-  licenseInfo: { name: 'MIT License' },
-  defaultBranchRef: {
-    target: {
-      history: { totalCount: 50 },
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
+const createMockRepo = (id: number, overrides?: Partial<Repository>): Repository =>
+  createMockRepository({
+    id: `repo-${id}`,
+    name: `test-repo-${id}`,
+    description: `Test repository ${id}`,
+    url: `https://github.com/user/test-repo-${id}`,
+    stargazerCount: 100 * id,
+    forkCount: 10 * id,
+    updatedAt: '2024-11-01T00:00:00Z',
+    pushedAt: '2024-11-01T00:00:00Z',
+    watchers: { totalCount: 5 * id },
+    issues: { totalCount: 2 * id },
+    repositoryTopics: {
+      nodes: [{ topic: { name: 'react' } }],
     },
-  },
-  primaryLanguage: { name: 'TypeScript' },
-  languages: {
-    totalSize: 1000,
-    edges: [{ size: 800, node: { name: 'TypeScript' } }],
-  },
-  ...overrides,
-});
+    defaultBranchRef: {
+      target: {
+        history: { totalCount: 50 },
+      },
+    },
+    ...overrides,
+  });
 
 describe('RepositoryTable', () => {
   const mockRepositories = [

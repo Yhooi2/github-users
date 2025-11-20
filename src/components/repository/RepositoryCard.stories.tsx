@@ -1,24 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RepositoryCard } from './RepositoryCard';
-import type { Repository } from '@/apollo/github-api.types';
+import { createMockRepository } from '@/test/mocks/github-data';
 
-// Mock repository data
-const mockRepository: Repository = {
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
+const mockRepository = createMockRepository({
   id: '1',
   name: 'awesome-project',
   description: 'A comprehensive React application with TypeScript, Vite, and modern tooling',
   url: 'https://github.com/user/awesome-project',
   stargazerCount: 1234,
   forkCount: 89,
-  isFork: false,
-  isTemplate: false,
-  parent: null,
   createdAt: '2023-01-15T10:30:00Z',
   updatedAt: '2024-11-05T14:22:00Z',
   pushedAt: '2024-11-05T14:22:00Z',
   diskUsage: 5000,
-  isArchived: false,
-  homepageUrl: null,
   watchers: { totalCount: 45 },
   issues: { totalCount: 12 },
   repositoryTopics: {
@@ -29,13 +24,11 @@ const mockRepository: Repository = {
       { topic: { name: 'graphql' } },
     ],
   },
-  licenseInfo: { name: 'MIT License' },
   defaultBranchRef: {
     target: {
       history: { totalCount: 150 },
     },
   },
-  primaryLanguage: { name: 'TypeScript' },
   languages: {
     totalSize: 5000,
     edges: [
@@ -43,7 +36,7 @@ const mockRepository: Repository = {
       { size: 1000, node: { name: 'CSS' } },
     ],
   },
-};
+});
 
 const meta = {
   title: 'Components/Repository/RepositoryCard',
