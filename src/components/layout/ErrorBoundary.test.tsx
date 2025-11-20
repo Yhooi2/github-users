@@ -44,9 +44,18 @@ describe('ErrorBoundary', () => {
       )
 
       // Default ErrorState should be rendered
-      expect(screen.getByRole('alert')).toBeInTheDocument()
-      expect(screen.getByText('Something went wrong')).toBeInTheDocument()
-      expect(screen.getByText('Test error message')).toBeInTheDocument()
+      expect(
+        screen.getByRole('alert'),
+        'ErrorBoundary should render alert role when child component throws error'
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Something went wrong'),
+        'ErrorBoundary should display default error title "Something went wrong"'
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Test error message'),
+        'ErrorBoundary should display the actual error message from thrown error'
+      ).toBeInTheDocument()
     })
 
     it('should display error message from caught error', () => {
@@ -90,8 +99,14 @@ describe('ErrorBoundary', () => {
         </ErrorBoundary>
       )
 
-      expect(screen.getByText('Normal content')).toBeInTheDocument()
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      expect(
+        screen.getByText('Normal content'),
+        'ErrorBoundary should render children normally when no error is thrown'
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('alert'),
+        'ErrorBoundary should NOT render error alert when children render successfully'
+      ).not.toBeInTheDocument()
     })
 
     it('should render multiple children normally', () => {
