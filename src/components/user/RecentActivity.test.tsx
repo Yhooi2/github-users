@@ -1,14 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { RecentActivity } from './RecentActivity';
+import { mockContributionRepositories } from '@/test/mocks/github-data';
 
-const mockRepositories = [
-  { repository: { name: 'awesome-project' }, contributions: { totalCount: 127 } },
-  { repository: { name: 'web-app' }, contributions: { totalCount: 89 } },
-  { repository: { name: 'mobile-client' }, contributions: { totalCount: 56 } },
-  { repository: { name: 'api-server' }, contributions: { totalCount: 43 } },
-  { repository: { name: 'documentation' }, contributions: { totalCount: 21 } },
-];
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
+const mockRepositories = mockContributionRepositories;
 
 describe('RecentActivity', () => {
   describe('Rendering', () => {

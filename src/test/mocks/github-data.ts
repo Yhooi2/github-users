@@ -1,6 +1,8 @@
 /**
  * Centralized mock data for testing GitHub API responses
  * Provides factory functions for creating test data with realistic defaults
+ *
+ * Week 4 P3: Mock data consolidation - centralized factories to reduce duplication
  */
 
 import type {
@@ -11,6 +13,13 @@ import type {
   LicenseInfo,
   ConnectionCount,
 } from '@/apollo/github-api.types';
+import type {
+  AuthenticityScore,
+  ActivityMetric,
+  ImpactMetric,
+  QualityMetric,
+  GrowthMetric,
+} from '@/types/metrics';
 
 /**
  * Default programming language (TypeScript)
@@ -392,3 +401,314 @@ export function createMockRepositories(
     })
   );
 }
+
+// ============================================================================
+// Authenticity Score Mocks
+// ============================================================================
+
+/**
+ * Pre-configured mock: High authenticity score (85/100)
+ */
+export const mockHighAuthenticityScore: AuthenticityScore = {
+  score: 85,
+  category: 'High',
+  breakdown: {
+    originalityScore: 22,
+    activityScore: 20,
+    engagementScore: 23,
+    codeOwnershipScore: 20,
+  },
+  flags: [],
+  metadata: {
+    totalRepos: 10,
+    originalRepos: 9,
+    forkedRepos: 1,
+    archivedRepos: 0,
+    templateRepos: 0,
+  },
+};
+
+/**
+ * Pre-configured mock: Medium authenticity score (62/100)
+ */
+export const mockMediumAuthenticityScore: AuthenticityScore = {
+  score: 62,
+  category: 'Medium',
+  breakdown: {
+    originalityScore: 15,
+    activityScore: 18,
+    engagementScore: 14,
+    codeOwnershipScore: 15,
+  },
+  flags: [],
+  metadata: {
+    totalRepos: 8,
+    originalRepos: 5,
+    forkedRepos: 3,
+    archivedRepos: 0,
+    templateRepos: 0,
+  },
+};
+
+/**
+ * Pre-configured mock: Low authenticity score (35/100)
+ */
+export const mockLowAuthenticityScore: AuthenticityScore = {
+  score: 35,
+  category: 'Low',
+  breakdown: {
+    originalityScore: 8,
+    activityScore: 10,
+    engagementScore: 7,
+    codeOwnershipScore: 10,
+  },
+  flags: ['Low activity in original repositories', 'High fork-to-original ratio'],
+  metadata: {
+    totalRepos: 12,
+    originalRepos: 3,
+    forkedRepos: 7,
+    archivedRepos: 2,
+    templateRepos: 0,
+  },
+};
+
+/**
+ * Pre-configured mock: Suspicious authenticity score (15/100)
+ */
+export const mockSuspiciousAuthenticityScore: AuthenticityScore = {
+  score: 15,
+  category: 'Suspicious',
+  breakdown: {
+    originalityScore: 3,
+    activityScore: 5,
+    engagementScore: 2,
+    codeOwnershipScore: 5,
+  },
+  flags: ['Majority of repositories are forks', 'Very low engagement', 'Suspicious activity pattern'],
+  metadata: {
+    totalRepos: 15,
+    originalRepos: 1,
+    forkedRepos: 12,
+    archivedRepos: 2,
+    templateRepos: 0,
+  },
+};
+
+/**
+ * Factory function to create a custom authenticity score with overrides
+ */
+export function createMockAuthenticityScore(
+  overrides: Partial<AuthenticityScore> = {}
+): AuthenticityScore {
+  return {
+    ...mockHighAuthenticityScore,
+    ...overrides,
+  };
+}
+
+// ============================================================================
+// Contribution Repository Mocks (for RecentActivity component)
+// ============================================================================
+
+/**
+ * Contribution repository object (used in contributionsCollection)
+ */
+export interface ContributionRepository {
+  repository: {
+    name: string;
+  };
+  contributions: {
+    totalCount: number;
+  };
+}
+
+/**
+ * Pre-configured mock: Contribution repositories collection
+ */
+export const mockContributionRepositories: ContributionRepository[] = [
+  { repository: { name: 'awesome-project' }, contributions: { totalCount: 127 } },
+  { repository: { name: 'web-app' }, contributions: { totalCount: 89 } },
+  { repository: { name: 'mobile-client' }, contributions: { totalCount: 56 } },
+  { repository: { name: 'api-server' }, contributions: { totalCount: 43 } },
+  { repository: { name: 'documentation' }, contributions: { totalCount: 21 } },
+];
+
+/**
+ * Factory function to create contribution repository objects
+ */
+export function createMockContributionRepository(
+  name: string,
+  commits: number
+): ContributionRepository {
+  return {
+    repository: { name },
+    contributions: { totalCount: commits },
+  };
+}
+
+// ============================================================================
+// Metric Mocks (Activity, Impact, Quality, Growth)
+// ============================================================================
+
+/**
+ * Pre-configured mock: High activity metric
+ */
+export const mockHighActivityMetric: ActivityMetric = {
+  score: 85,
+  level: 'High',
+  breakdown: {
+    recentCommits: 30,
+    consistency: 28,
+    diversity: 27,
+  },
+  details: {
+    last3MonthsCommits: 150,
+    activeMonths: 11,
+    uniqueRepos: 8,
+  },
+};
+
+/**
+ * Pre-configured mock: Moderate activity metric
+ */
+export const mockModerateActivityMetric: ActivityMetric = {
+  score: 60,
+  level: 'Moderate',
+  breakdown: {
+    recentCommits: 20,
+    consistency: 18,
+    diversity: 22,
+  },
+  details: {
+    last3MonthsCommits: 80,
+    activeMonths: 8,
+    uniqueRepos: 5,
+  },
+};
+
+/**
+ * Pre-configured mock: Low activity metric
+ */
+export const mockLowActivityMetric: ActivityMetric = {
+  score: 30,
+  level: 'Low',
+  breakdown: {
+    recentCommits: 10,
+    consistency: 8,
+    diversity: 12,
+  },
+  details: {
+    last3MonthsCommits: 20,
+    activeMonths: 4,
+    uniqueRepos: 2,
+  },
+};
+
+/**
+ * Pre-configured mock: Exceptional impact metric
+ */
+export const mockExceptionalImpactMetric: ImpactMetric = {
+  score: 95,
+  level: 'Exceptional',
+  breakdown: {
+    stars: 33,
+    forks: 18,
+    contributors: 14,
+    reach: 18,
+    engagement: 12,
+  },
+  details: {
+    totalStars: 25000,
+    totalForks: 3500,
+    totalWatchers: 1200,
+    totalPRs: 450,
+    totalIssues: 320,
+  },
+};
+
+/**
+ * Pre-configured mock: Strong impact metric
+ */
+export const mockStrongImpactMetric: ImpactMetric = {
+  score: 75,
+  level: 'Strong',
+  breakdown: {
+    stars: 28,
+    forks: 15,
+    contributors: 11,
+    reach: 13,
+    engagement: 8,
+  },
+  details: {
+    totalStars: 5000,
+    totalForks: 800,
+    totalWatchers: 250,
+    totalPRs: 120,
+    totalIssues: 85,
+  },
+};
+
+/**
+ * Pre-configured mock: Excellent quality metric
+ */
+export const mockExcellentQualityMetric: QualityMetric = {
+  score: 90,
+  level: 'Excellent',
+  breakdown: {
+    originality: 19,
+    documentation: 18,
+    ownership: 19,
+    maturity: 17,
+    stack: 17,
+  },
+  details: {
+    totalRepos: 15,
+    originalRepos: 14,
+    forkedRepos: 1,
+    documentedRepos: 13,
+    ownedRepos: 12,
+    contributedRepos: 8,
+    averageRepoAge: 2.5,
+    uniqueLanguages: 8,
+  },
+};
+
+/**
+ * Pre-configured mock: Rapid growth metric
+ */
+export const mockRapidGrowthMetric: GrowthMetric = {
+  score: 75,
+  level: 'Rapid Growth',
+  breakdown: {
+    activityGrowth: 28,
+    impactGrowth: 25,
+    skillsGrowth: 22,
+  },
+  details: {
+    commitsChange: 150,
+    starsChange: 2500,
+    forksChange: 420,
+    newLanguages: 3,
+    yearsCompared: 2,
+  },
+};
+
+/**
+ * Pre-configured mock: Stable growth metric
+ */
+export const mockStableGrowthMetric: GrowthMetric = {
+  score: 10,
+  level: 'Stable',
+  breakdown: {
+    activityGrowth: 5,
+    impactGrowth: 3,
+    skillsGrowth: 2,
+  },
+  details: {
+    commitsChange: 20,
+    starsChange: 50,
+    forksChange: 10,
+    newLanguages: 1,
+    yearsCompared: 2,
+  },
+};

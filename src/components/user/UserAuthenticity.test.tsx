@@ -2,86 +2,20 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { UserAuthenticity } from './UserAuthenticity';
 import * as useAuthenticityScoreModule from '@/hooks/useAuthenticityScore';
-import type { AuthenticityScore } from '@/types/metrics';
 import type { Repository } from '@/apollo/github-api.types';
+import {
+  mockHighAuthenticityScore,
+  mockMediumAuthenticityScore,
+  mockLowAuthenticityScore,
+  mockSuspiciousAuthenticityScore,
+} from '@/test/mocks/github-data';
 
+// Use centralized mock factory (Week 4 P3: Mock data consolidation)
 const mockRepositories: Repository[] = [];
-
-const mockHighScore: AuthenticityScore = {
-  score: 85,
-  category: 'High',
-  breakdown: {
-    originalityScore: 22,
-    activityScore: 20,
-    engagementScore: 23,
-    codeOwnershipScore: 20,
-  },
-  flags: [],
-  metadata: {
-    totalRepos: 10,
-    originalRepos: 9,
-    forkedRepos: 1,
-    archivedRepos: 0,
-    templateRepos: 0,
-  },
-};
-
-const mockMediumScore: AuthenticityScore = {
-  score: 62,
-  category: 'Medium',
-  breakdown: {
-    originalityScore: 15,
-    activityScore: 18,
-    engagementScore: 14,
-    codeOwnershipScore: 15,
-  },
-  flags: [],
-  metadata: {
-    totalRepos: 8,
-    originalRepos: 5,
-    forkedRepos: 3,
-    archivedRepos: 0,
-    templateRepos: 0,
-  },
-};
-
-const mockLowScore: AuthenticityScore = {
-  score: 35,
-  category: 'Low',
-  breakdown: {
-    originalityScore: 8,
-    activityScore: 10,
-    engagementScore: 7,
-    codeOwnershipScore: 10,
-  },
-  flags: ['Low activity in original repositories', 'High fork-to-original ratio'],
-  metadata: {
-    totalRepos: 12,
-    originalRepos: 3,
-    forkedRepos: 7,
-    archivedRepos: 2,
-    templateRepos: 0,
-  },
-};
-
-const mockSuspiciousScore: AuthenticityScore = {
-  score: 15,
-  category: 'Suspicious',
-  breakdown: {
-    originalityScore: 3,
-    activityScore: 5,
-    engagementScore: 2,
-    codeOwnershipScore: 5,
-  },
-  flags: ['Majority of repositories are forks', 'Very low engagement', 'Suspicious activity pattern'],
-  metadata: {
-    totalRepos: 15,
-    originalRepos: 1,
-    forkedRepos: 12,
-    archivedRepos: 2,
-    templateRepos: 0,
-  },
-};
+const mockHighScore = mockHighAuthenticityScore;
+const mockMediumScore = mockMediumAuthenticityScore;
+const mockLowScore = mockLowAuthenticityScore;
+const mockSuspiciousScore = mockSuspiciousAuthenticityScore;
 
 describe('UserAuthenticity', () => {
   describe('Rendering', () => {
