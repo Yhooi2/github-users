@@ -32,6 +32,7 @@ describe('OAuthMetricsDashboard', () => {
 
   afterEach(() => {
     vi.clearAllTimers()
+    vi.useRealTimers() // Always restore real timers after each test
   })
 
   it('renders dashboard title and description', async () => {
@@ -237,26 +238,26 @@ describe('OAuthMetricsDashboard', () => {
     render(<OAuthMetricsDashboard refreshInterval={30000} />)
 
     // Initial fetch
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(1)
-    })
+    }, { timeout: 1000 })
 
-    // Fast-forward 30 seconds
-    vi.advanceTimersByTime(30000)
+    // Fast-forward 30 seconds and run pending timers
+    await vi.advanceTimersByTimeAsync(30000)
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(2)
-    })
+    }, { timeout: 1000 })
 
     // Fast-forward another 30 seconds
-    vi.advanceTimersByTime(30000)
+    await vi.advanceTimersByTimeAsync(30000)
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(mockFetch).toHaveBeenCalledTimes(3)
-    })
+    }, { timeout: 1000 })
 
     vi.useRealTimers()
-  })
+  }, 10000)
 
   it('displays auto-refresh badge when enabled', async () => {
     mockFetch.mockResolvedValue({
@@ -326,7 +327,8 @@ describe('OAuthMetricsDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Detailed Data (Admin Only)')).toBeInTheDocument()
-      expect(screen.getByText('Active Sessions')).toBeInTheDocument()
+      // Use getAllByText since "Active Sessions" appears in both metrics and detailed data
+      expect(screen.getAllByText('Active Sessions').length).toBeGreaterThan(0)
       expect(screen.getByText(/1 active sessions found/)).toBeInTheDocument()
       expect(screen.getByText('Recent Events')).toBeInTheDocument()
       expect(screen.getByText(/1 events in timeline/)).toBeInTheDocument()

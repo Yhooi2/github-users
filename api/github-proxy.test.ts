@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
+// Setup environment BEFORE importing handler
+// This is critical because github-proxy.ts checks KV config at module level
+process.env.KV_REST_API_URL = 'http://kv.test'
+process.env.KV_REST_API_TOKEN = 'kv_token'
+process.env.GITHUB_TOKEN = 'demo_token_123'
+
 // Mock @vercel/kv BEFORE importing handler
 vi.mock('@vercel/kv', () => ({
   kv: {
@@ -10,7 +16,7 @@ vi.mock('@vercel/kv', () => ({
   },
 }))
 
-// Dynamic import handler after mocks are set up
+// Dynamic import handler after env vars and mocks are set up
 const handlerModule = await import('./github-proxy')
 const handler = handlerModule.default
 
@@ -150,7 +156,9 @@ describe('GitHub Proxy with OAuth Support', () => {
 
       req.headers = { cookie: 'session=valid_session_id' }
 
-      vi.mocked(kv.get).mockResolvedValue(mockSession)
+      vi.mocked(kv.get)
+        .mockResolvedValueOnce(mockSession) // Session lookup
+        .mockResolvedValueOnce(null) // Cache miss
 
       const mockHeaders = new Map([
         ['X-RateLimit-Remaining', '4999'],
@@ -440,11 +448,11 @@ describe('GitHub Proxy with OAuth Support', () => {
     })
 
     it('должен работать без KV (graceful degradation)', async () => {
-      // Disable KV
-      delete process.env.KV_REST_API_URL
-      delete process.env.KV_REST_API_TOKEN
-
       req.headers = {}
+
+      // Mock KV to throw errors (simulating unavailability)
+      vi.mocked(kv.get).mockRejectedValue(new Error('KV unavailable'))
+      vi.mocked(kv.set).mockRejectedValue(new Error('KV unavailable'))
 
       const mockHeaders = new Map([
         ['X-RateLimit-Remaining', '5000'],
@@ -459,11 +467,9 @@ describe('GitHub Proxy with OAuth Support', () => {
         headers: mockHeaders,
       } as Response)
 
-      // Re-import handler to apply new env
-      const freshHandlerModule = await import('./github-proxy?t=' + Date.now())
-      await freshHandlerModule.default(req as VercelRequest, res as VercelResponse)
+      await handler(req as VercelRequest, res as VercelResponse)
 
-      // Should still work
+      // Should still work even when KV throws errors
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           data: 'test',
