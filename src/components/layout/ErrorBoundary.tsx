@@ -1,5 +1,5 @@
-import { Component, type ReactNode } from 'react';
-import { ErrorState } from './ErrorState';
+import { Component, type ReactNode } from "react";
+import { ErrorState } from "./ErrorState";
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -30,7 +30,10 @@ type ErrorBoundaryState = {
  * </ErrorBoundary>
  * ```
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -42,8 +45,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    if (process.env.NODE_ENV === "development") {
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
 
     // Call optional error handler
@@ -62,7 +65,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           title="Something went wrong"
           message={
             this.state.error?.message ||
-            'An unexpected error occurred while rendering this component.'
+            "An unexpected error occurred while rendering this component."
           }
         />
       );

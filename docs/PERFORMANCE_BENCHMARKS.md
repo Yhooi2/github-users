@@ -10,19 +10,21 @@
 
 ### Load Time Targets
 
-| Metric | Target | Current (v1.0) | After Phase 0 | After Phase 6 | Threshold |
-|--------|--------|----------------|---------------|---------------|-----------|
-| **LCP** (Largest Contentful Paint) | <2.5s | 1.8s ✅ | 2.0s ✅ | 1.5s ✅ | 🔴 >4s |
-| **FID** (First Input Delay) | <100ms | 45ms ✅ | 50ms ✅ | 40ms ✅ | 🔴 >300ms |
-| **CLS** (Cumulative Layout Shift) | <0.1 | 0.05 ✅ | 0.05 ✅ | 0.03 ✅ | 🔴 >0.25 |
-| **TTI** (Time to Interactive) | <3.5s | 2.5s ✅ | 2.8s ✅ | 2.2s ✅ | 🔴 >7s |
-| **TBT** (Total Blocking Time) | <200ms | 150ms ✅ | 180ms ✅ | 120ms ✅ | 🔴 >600ms |
+| Metric                             | Target | Current (v1.0) | After Phase 0 | After Phase 6 | Threshold |
+| ---------------------------------- | ------ | -------------- | ------------- | ------------- | --------- |
+| **LCP** (Largest Contentful Paint) | <2.5s  | 1.8s ✅        | 2.0s ✅       | 1.5s ✅       | 🔴 >4s    |
+| **FID** (First Input Delay)        | <100ms | 45ms ✅        | 50ms ✅       | 40ms ✅       | 🔴 >300ms |
+| **CLS** (Cumulative Layout Shift)  | <0.1   | 0.05 ✅        | 0.05 ✅       | 0.03 ✅       | 🔴 >0.25  |
+| **TTI** (Time to Interactive)      | <3.5s  | 2.5s ✅        | 2.8s ✅       | 2.2s ✅       | 🔴 >7s    |
+| **TBT** (Total Blocking Time)      | <200ms | 150ms ✅       | 180ms ✅      | 120ms ✅      | 🔴 >600ms |
 
 **Sources:**
+
 - LCP, FID, CLS: Core Web Vitals (Google)
 - TTI, TBT: Lighthouse Performance Score
 
 **How to measure:**
+
 ```bash
 # 1. Lighthouse
 npm run build
@@ -39,13 +41,14 @@ npx lighthouse http://localhost:4173 --view
 
 ### Bundle Size Targets
 
-| Asset | Target | Current (v1.0) | After Fraud Detection (Phase 1.5) | After All Phases |
-|-------|--------|----------------|-----------------------------------|-----------------|
-| **Main JS (gzip)** | <150KB | 141KB ✅ | 155KB ⚠️ (+14KB) | 165KB ⚠️ |
-| **CSS (gzip)** | <30KB | 25KB ✅ | 25KB ✅ | 28KB ✅ |
-| **Total (gzip)** | <180KB | 166KB ✅ | 180KB ✅ (at limit) | 193KB 🔴 (-13KB over) |
+| Asset              | Target | Current (v1.0) | After Fraud Detection (Phase 1.5) | After All Phases      |
+| ------------------ | ------ | -------------- | --------------------------------- | --------------------- |
+| **Main JS (gzip)** | <150KB | 141KB ✅       | 155KB ⚠️ (+14KB)                  | 165KB ⚠️              |
+| **CSS (gzip)**     | <30KB  | 25KB ✅        | 25KB ✅                           | 28KB ✅               |
+| **Total (gzip)**   | <180KB | 166KB ✅       | 180KB ✅ (at limit)               | 193KB 🔴 (-13KB over) |
 
 **Bundle Breakdown:**
+
 ```
 Main JS breakdown:
   - React 19: ~42KB
@@ -59,6 +62,7 @@ Main JS breakdown:
 ```
 
 **How to measure:**
+
 ```bash
 # 1. Build
 npm run build
@@ -74,6 +78,7 @@ gzip -c dist/assets/index-*.js | wc -c
 ```
 
 **Optimization Strategies (if over limit):**
+
 - Code splitting: `React.lazy()` for heavy components
 - Tree shaking: Ensure `sideEffects: false` in package.json
 - Dynamic imports: Load fraud detection only when needed
@@ -83,14 +88,15 @@ gzip -c dist/assets/index-*.js | wc -c
 
 ### API Performance
 
-| Endpoint | Target | With Cache (30min) | Without Cache | Notes |
-|----------|--------|---------------------|---------------|-------|
-| Search user | <1s | <200ms ✅ | <800ms ✅ | Vercel KV cache |
-| Fraud detection | <100ms | N/A (client-side) | <80ms ✅ | Pure computation |
-| Overall rank | <50ms | N/A (client-side) | <30ms ✅ | Pure computation |
-| Year-by-year data (15 years) | <3s | <300ms ✅ | <2.5s ✅ | Promise.all parallel queries |
+| Endpoint                     | Target | With Cache (30min) | Without Cache | Notes                        |
+| ---------------------------- | ------ | ------------------ | ------------- | ---------------------------- |
+| Search user                  | <1s    | <200ms ✅          | <800ms ✅     | Vercel KV cache              |
+| Fraud detection              | <100ms | N/A (client-side)  | <80ms ✅      | Pure computation             |
+| Overall rank                 | <50ms  | N/A (client-side)  | <30ms ✅      | Pure computation             |
+| Year-by-year data (15 years) | <3s    | <300ms ✅          | <2.5s ✅      | Promise.all parallel queries |
 
 **How to measure:**
+
 ```typescript
 // Add performance tracking
 const start = performance.now();
@@ -110,6 +116,7 @@ if (duration > 1000) {
 ### 1. Vercel Analytics (Built-in)
 
 **Automatically tracks:**
+
 - ✅ LCP, FID, CLS (Core Web Vitals)
 - ✅ Page views, unique visitors
 - ✅ Top pages, traffic sources
@@ -146,12 +153,14 @@ export function trackMetricCalculation(metricName: string, duration: number) {
 
   // 2. Warn if slow
   if (duration > 100) {
-    console.warn(`⚠️ ${metricName} took ${duration.toFixed(2)}ms (>100ms threshold)`);
+    console.warn(
+      `⚠️ ${metricName} took ${duration.toFixed(2)}ms (>100ms threshold)`,
+    );
   }
 
   // 3. Send to analytics (production)
   if (import.meta.env.PROD && window.gtag) {
-    window.gtag('event', 'metric_calculation', {
+    window.gtag("event", "metric_calculation", {
       metric_name: metricName,
       duration_ms: Math.round(duration),
       is_slow: duration > 100,
@@ -168,16 +177,17 @@ export function trackMetricCalculation(metricName: string, duration: number) {
 ```
 
 **Usage:**
+
 ```typescript
 // In calculateFraudDetection()
 const start = performance.now();
 const fraud = detectFraudPatterns(user, repos);
-trackMetricCalculation('fraud_detection', performance.now() - start);
+trackMetricCalculation("fraud_detection", performance.now() - start);
 
 // In calculateActivityScore()
 const start = performance.now();
 const activity = computeActivity(timeline);
-trackMetricCalculation('activity_score', performance.now() - start);
+trackMetricCalculation("activity_score", performance.now() - start);
 ```
 
 ---
@@ -192,7 +202,7 @@ npm install @sentry/react
 
 ```typescript
 // src/main.tsx
-import * as Sentry from '@sentry/react';
+import * as Sentry from "@sentry/react";
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -203,6 +213,7 @@ Sentry.init({
 ```
 
 **Metrics tracked:**
+
 - Error rate (errors/total requests)
 - Error types (TypeError, NetworkError, etc.)
 - Affected users
@@ -217,27 +228,28 @@ Sentry.init({
 ```typescript
 // Pseudo-code for alert rules
 if (errorRate > 0.05) {
-  alert('🔴 Error rate >5%');
+  alert("🔴 Error rate >5%");
   rollback();
 }
 
 if (p95ResponseTime > 2000) {
-  alert('🟡 Slow responses (p95 >2s)');
+  alert("🟡 Slow responses (p95 >2s)");
   investigate();
 }
 
 if (rateLimitRemaining < 500) {
-  alert('🟡 GitHub API rate limit low');
+  alert("🟡 GitHub API rate limit low");
   checkCacheHitRate();
 }
 
 if (coreWebVitalsFailRate > 0.25) {
-  alert('🔴 Core Web Vitals failing (>25% users)');
+  alert("🔴 Core Web Vitals failing (>25% users)");
   optimizePerformance();
 }
 ```
 
 **Alert channels:**
+
 - Email: team@example.com
 - Slack: #alerts channel
 - PagerDuty: On-call rotation
@@ -266,6 +278,7 @@ npx lighthouse http://localhost:4173 --view
 ```
 
 **Save report:**
+
 ```bash
 npx lighthouse http://localhost:4173 \
   --output html \
@@ -290,6 +303,7 @@ npx vite-bundle-visualizer
 ```
 
 **Example output:**
+
 ```
 dist/assets/index-abc123.js     163 KB (gzipped)
   ├─ react                       42 KB
@@ -349,28 +363,30 @@ autocannon -c 10 -d 30 http://localhost:4173
 
 ## 🎯 Performance Goals by Phase
 
-| Phase | Goal | Benchmark |
-|-------|------|-----------|
-| Phase 0 | Backend proxy working | API response <1s |
-| Phase 1 | Year-by-year queries fast | 15 years in <3s |
-| Phase 1.5 | Fraud detection fast | Calculation <100ms |
-| Phase 2 | Metrics calculation fast | All 4 metrics <200ms total |
-| Phase 3 | Components render fast | First render <16ms (60fps) |
-| Phase 4 | Timeline smooth | Expand/collapse <100ms |
-| Phase 5 | Layout performant | No CLS, smooth scroll |
-| Phase 6 | Production ready | All targets met ✅ |
+| Phase     | Goal                      | Benchmark                  |
+| --------- | ------------------------- | -------------------------- |
+| Phase 0   | Backend proxy working     | API response <1s           |
+| Phase 1   | Year-by-year queries fast | 15 years in <3s            |
+| Phase 1.5 | Fraud detection fast      | Calculation <100ms         |
+| Phase 2   | Metrics calculation fast  | All 4 metrics <200ms total |
+| Phase 3   | Components render fast    | First render <16ms (60fps) |
+| Phase 4   | Timeline smooth           | Expand/collapse <100ms     |
+| Phase 5   | Layout performant         | No CLS, smooth scroll      |
+| Phase 6   | Production ready          | All targets met ✅         |
 
 ---
 
 ## 📚 Resources
 
 **Tools:**
+
 - Lighthouse: https://developers.google.com/web/tools/lighthouse
 - Vercel Analytics: https://vercel.com/analytics
 - Bundle Visualizer: https://www.npmjs.com/package/vite-bundle-visualizer
 - Chrome DevTools: https://developer.chrome.com/docs/devtools/
 
 **Best Practices:**
+
 - Web Vitals: https://web.dev/vitals/
 - Performance Budgets: https://web.dev/performance-budgets-101/
 - Bundle Optimization: https://vitejs.dev/guide/build.html#chunking-strategy

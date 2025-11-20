@@ -1,14 +1,30 @@
-import { lazy, Suspense } from 'react';
-import type { YearlyCommitStats, LanguageStats, CommitActivity } from '@/lib/statistics';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { BarChart3, Code2, Activity, TrendingUp } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type {
+  CommitActivity,
+  LanguageStats,
+  YearlyCommitStats,
+} from "@/lib/statistics";
+import { Activity, BarChart3, Code2, TrendingUp } from "lucide-react";
+import { lazy, Suspense } from "react";
 
 // Lazy load chart components to reduce initial bundle size
-const CommitChart = lazy(() => import('./CommitChart').then(m => ({ default: m.CommitChart })));
-const LanguageChart = lazy(() => import('./LanguageChart').then(m => ({ default: m.LanguageChart })));
-const ActivityChart = lazy(() => import('./ActivityChart').then(m => ({ default: m.ActivityChart })));
+const CommitChart = lazy(() =>
+  import("./CommitChart").then((m) => ({ default: m.CommitChart })),
+);
+const LanguageChart = lazy(() =>
+  import("./LanguageChart").then((m) => ({ default: m.LanguageChart })),
+);
+const ActivityChart = lazy(() =>
+  import("./ActivityChart").then((m) => ({ default: m.ActivityChart })),
+);
 
 // Loading fallback for lazy-loaded charts
 function ChartLoadingFallback() {
@@ -50,7 +66,7 @@ type Props = {
    * Default active tab
    * @default 'commits'
    */
-  defaultTab?: 'commits' | 'languages' | 'activity' | 'overview';
+  defaultTab?: "commits" | "languages" | "activity" | "overview";
   /**
    * Show overview tab with all stats
    * @default true
@@ -105,7 +121,7 @@ export function StatsOverview({
   activity = null,
   loading = false,
   error = null,
-  defaultTab = 'commits',
+  defaultTab = "commits",
   showOverview = true,
   loadingMessage,
   errorTitle,
@@ -192,7 +208,9 @@ export function StatsOverview({
                 <Code2 className="h-5 w-5" />
                 Language Distribution
               </CardTitle>
-              <CardDescription>Programming languages used across repositories</CardDescription>
+              <CardDescription>
+                Programming languages used across repositories
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Suspense fallback={<ChartLoadingFallback />}>
@@ -218,7 +236,9 @@ export function StatsOverview({
         <Card>
           <CardHeader>
             <CardTitle>Commit Trends</CardTitle>
-            <CardDescription>Yearly commit contributions over time</CardDescription>
+            <CardDescription>
+              Yearly commit contributions over time
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense fallback={<ChartLoadingFallback />}>
@@ -242,7 +262,9 @@ export function StatsOverview({
         <Card>
           <CardHeader>
             <CardTitle>Language Distribution</CardTitle>
-            <CardDescription>Programming languages used across repositories</CardDescription>
+            <CardDescription>
+              Programming languages used across repositories
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense fallback={<ChartLoadingFallback />}>

@@ -3,6 +3,7 @@
 > Полное руководство по Apollo Client 3.14 в проекте git-user-info
 
 **📚 Related Documentation:**
+
 - [API Reference](./api-reference.md) - GitHub GraphQL API reference
 - [Architecture Overview](./architecture.md) - Data layer architecture
 - [Testing Guide](./testing-guide.md) - Testing Apollo Client with MockedProvider
@@ -28,6 +29,7 @@
 **Версия:** @apollo/client 3.14.0
 
 **Назначение:**
+
 - GraphQL client для GitHub API
 - Управление данными и кешированием
 - Обработка ошибок и аутентификации
@@ -75,11 +77,11 @@ MockedProvider + vi.mock
 #### 1. HTTP Link (GraphQL endpoint)
 
 ```typescript
-import { createHttpLink } from '@apollo/client'
+import { createHttpLink } from "@apollo/client";
 
 const httpLink = createHttpLink({
-  uri: 'https://api.github.com/graphql',
-})
+  uri: "https://api.github.com/graphql",
+});
 ```
 
 **Назначение:** Подключение к GraphQL API
@@ -87,24 +89,25 @@ const httpLink = createHttpLink({
 #### 2. Auth Link (Bearer token)
 
 ```typescript
-import { setContext } from '@apollo/client/link/context'
+import { setContext } from "@apollo/client/link/context";
 
 const authLink = setContext((_, { headers }) => {
   // ✅ Priority: env variable > localStorage
-  const envToken = import.meta.env.VITE_GITHUB_TOKEN
-  const storedToken = localStorage.getItem('github_token')
-  const token = envToken || storedToken
+  const envToken = import.meta.env.VITE_GITHUB_TOKEN;
+  const storedToken = localStorage.getItem("github_token");
+  const token = envToken || storedToken;
 
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : '',
+      authorization: token ? `Bearer ${token}` : "",
     },
-  }
-})
+  };
+});
 ```
 
 **Особенности:**
+
 - ✅ Env variable имеет приоритет
 - ✅ Fallback на localStorage
 - ✅ Работает с каждым запросом
@@ -112,39 +115,40 @@ const authLink = setContext((_, { headers }) => {
 #### 3. Error Link (Global error handling)
 
 ```typescript
-import { onError } from '@apollo/client/link/error'
-import { toast } from 'sonner'
+import { onError } from "@apollo/client/link/error";
+import { toast } from "sonner";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   // ✅ Handle GraphQL errors
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, extensions }) => {
-      const errorMessage = `[GraphQL error]: ${message}`
-      console.error(errorMessage)
-      toast.error(errorMessage)
+      const errorMessage = `[GraphQL error]: ${message}`;
+      console.error(errorMessage);
+      toast.error(errorMessage);
 
       // ✅ Clear token if unauthenticated
-      if (extensions?.code === 'UNAUTHENTICATED') {
-        localStorage.removeItem('github_token')
+      if (extensions?.code === "UNAUTHENTICATED") {
+        localStorage.removeItem("github_token");
       }
-    })
+    });
   }
 
   // ✅ Handle Network errors (HTTP 401, etc.)
   if (networkError) {
     // Check for 401 Unauthorized
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
-      localStorage.removeItem('github_token')
+    if ("statusCode" in networkError && networkError.statusCode === 401) {
+      localStorage.removeItem("github_token");
     }
 
-    const errorMessage = `[Network error]: ${networkError}`
-    console.error(errorMessage)
-    toast.error(errorMessage)
+    const errorMessage = `[Network error]: ${networkError}`;
+    console.error(errorMessage);
+    toast.error(errorMessage);
   }
-})
+});
 ```
 
 **Обрабатывает:**
+
 - ✅ GraphQL errors (неверный query, rate limit)
 - ✅ Network errors (401, 500, timeout)
 - ✅ Authentication errors (автоматическая очистка token)
@@ -153,13 +157,14 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 #### 4. Link Chain
 
 ```typescript
-import { ApolloLink } from '@apollo/client'
+import { ApolloLink } from "@apollo/client";
 
 // ✅ Порядок важен: error → auth → http
-const link = ApolloLink.from([errorLink, authLink, httpLink])
+const link = ApolloLink.from([errorLink, authLink, httpLink]);
 ```
 
 **Порядок выполнения:**
+
 1. `errorLink` - ловит ошибки
 2. `authLink` - добавляет auth header
 3. `httpLink` - отправляет HTTP request
@@ -167,15 +172,16 @@ const link = ApolloLink.from([errorLink, authLink, httpLink])
 #### 5. Apollo Client Instance
 
 ```typescript
-import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
   link,
   cache: new InMemoryCache(),
-})
+});
 ```
 
 **InMemoryCache:**
+
 - Автоматическое кеширование query results
 - Нормализация данных по ID
 - Оптимистичные обновления (опционально)
@@ -191,6 +197,7 @@ export function ApolloAppProvider({ children }: { children: React.ReactNode }) {
 ```
 
 **Использование:**
+
 ```typescript
 // src/main.tsx
 import { ApolloAppProvider } from './apollo/ApolloAppProvider'
@@ -213,7 +220,7 @@ createRoot(document.getElementById('root')!).render(
 **Файл:** `src/apollo/queriers.ts`
 
 ```typescript
-import { gql } from '@apollo/client'
+import { gql } from "@apollo/client";
 
 export const GET_USER_INFO = gql`
   query GetUser(
@@ -312,7 +319,7 @@ export const GET_USER_INFO = gql`
       }
     }
   }
-`
+`;
 ```
 
 ### TypeScript типы
@@ -321,40 +328,40 @@ export const GET_USER_INFO = gql`
 
 ```typescript
 export type GitHubGraphQLResponse = {
-  user: GitHubUser | null
-}
+  user: GitHubUser | null;
+};
 
 export type GitHubUser = {
-  id: string
-  login: string
-  name: string | null
-  avatarUrl: string
-  bio: string | null
-  url: string
-  location: string | null
-  followers: { totalCount: number }
-  following: { totalCount: number }
-  gists: { totalCount: number }
-  year1: { totalCommitContributions: number }
-  year2: { totalCommitContributions: number }
-  year3: { totalCommitContributions: number }
-  createdAt: string
+  id: string;
+  login: string;
+  name: string | null;
+  avatarUrl: string;
+  bio: string | null;
+  url: string;
+  location: string | null;
+  followers: { totalCount: number };
+  following: { totalCount: number };
+  gists: { totalCount: number };
+  year1: { totalCommitContributions: number };
+  year2: { totalCommitContributions: number };
+  year3: { totalCommitContributions: number };
+  createdAt: string;
   contributionsCollection: {
-    totalCommitContributions: number
+    totalCommitContributions: number;
     commitContributionsByRepository: Array<{
-      contributions: { totalCount: number }
-      repository: { name: string }
-    }>
-  }
+      contributions: { totalCount: number };
+      repository: { name: string };
+    }>;
+  };
   repositories: {
-    totalCount: number
+    totalCount: number;
     pageInfo: {
-      endCursor: string | null
-      hasNextPage: boolean
-    }
-    nodes: GitHubRepository[]
-  }
-}
+      endCursor: string | null;
+      hasNextPage: boolean;
+    };
+    nodes: GitHubRepository[];
+  };
+};
 ```
 
 ---
@@ -366,17 +373,17 @@ export type GitHubUser = {
 **Файл:** `src/apollo/useQueryUser.ts`
 
 ```typescript
-import { useQuery } from '@apollo/client'
-import { useMemo } from 'react'
-import { getQueryDates, getThreeYearRanges } from './date-helpers'
-import { GET_USER_INFO } from './queriers'
-import type { GitHubGraphQLResponse } from './github-api.types'
+import { useQuery } from "@apollo/client";
+import { useMemo } from "react";
+import { getQueryDates, getThreeYearRanges } from "./date-helpers";
+import { GET_USER_INFO } from "./queriers";
+import type { GitHubGraphQLResponse } from "./github-api.types";
 
 function useQueryUser(login: string, daysBack: number = 365) {
   // ✅ useMemo для оптимизации - пересчитывается только при изменении login/daysBack
   const variables = useMemo(() => {
-    const queryDates = getQueryDates(daysBack)
-    const yearRanges = getThreeYearRanges()
+    const queryDates = getQueryDates(daysBack);
+    const yearRanges = getThreeYearRanges();
 
     return {
       login,
@@ -388,18 +395,18 @@ function useQueryUser(login: string, daysBack: number = 365) {
       year2To: yearRanges.year2.to,
       year3From: yearRanges.year3.from,
       year3To: yearRanges.year3.to,
-    }
-  }, [login, daysBack])
+    };
+  }, [login, daysBack]);
 
   return useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
     variables,
     skip: !login, // ✅ Skip если login пустой
-    errorPolicy: 'all', // ✅ Возвращать partial data + errors
+    errorPolicy: "all", // ✅ Возвращать partial data + errors
     notifyOnNetworkStatusChange: true, // ✅ Триггерить re-render при network changes
-  })
+  });
 }
 
-export default useQueryUser
+export default useQueryUser;
 ```
 
 ### Использование в компонентах
@@ -447,20 +454,20 @@ function UserProfile({ userName }: { userName: string }) {
 ```typescript
 useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
   // ✅ Variables для query
-  variables: { login: 'octocat' },
+  variables: { login: "octocat" },
 
   // ✅ Skip query если условие ложно
   skip: !login,
 
   // ✅ Fetch policy (кеширование)
-  fetchPolicy: 'cache-first', // default
+  fetchPolicy: "cache-first", // default
   // 'cache-only' - только cache
   // 'network-only' - всегда fetch
   // 'cache-and-network' - cache + background fetch
   // 'no-cache' - не кешировать
 
   // ✅ Error policy
-  errorPolicy: 'all', // возвращать partial data + errors
+  errorPolicy: "all", // возвращать partial data + errors
   // 'none' - throw error
   // 'ignore' - игнорировать errors
 
@@ -472,39 +479,39 @@ useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
 
   // ✅ Callback после завершения
   onCompleted: (data) => {
-    console.log('Query completed:', data)
+    console.log("Query completed:", data);
   },
 
   // ✅ Callback при ошибке
   onError: (error) => {
-    console.error('Query error:', error)
+    console.error("Query error:", error);
   },
-})
+});
 ```
 
 ### Возвращаемые значения useQuery
 
 ```typescript
-const result = useQuery(GET_USER_INFO, options)
+const result = useQuery(GET_USER_INFO, options);
 
 // ✅ Data
-result.data          // Query result data
-result.previousData  // Previous result (useful for transitions)
+result.data; // Query result data
+result.previousData; // Previous result (useful for transitions)
 
 // ✅ Status
-result.loading       // Initial loading
-result.networkStatus // Detailed network status
-result.error        // ApolloError if query failed
+result.loading; // Initial loading
+result.networkStatus; // Detailed network status
+result.error; // ApolloError if query failed
 
 // ✅ Functions
-result.refetch()     // Re-execute query
-result.fetchMore()   // Pagination
-result.startPolling(ms)  // Start auto-refresh
-result.stopPolling()     // Stop auto-refresh
-result.updateQuery((prev, { variables }) => newData)
+result.refetch(); // Re-execute query
+result.fetchMore(); // Pagination
+result.startPolling(ms); // Start auto-refresh
+result.stopPolling(); // Stop auto-refresh
+result.updateQuery((prev, { variables }) => newData);
 
 // ✅ Client
-result.client        // Apollo Client instance
+result.client; // Apollo Client instance
 ```
 
 ---
@@ -518,27 +525,27 @@ Apollo Client 3.14 имеет улучшенную error handling систему
 #### ApolloError Structure
 
 ```typescript
-import { ApolloError } from '@apollo/client'
+import { ApolloError } from "@apollo/client";
 
 // ✅ Проверка ошибки
 if (ApolloError.is(error)) {
-  console.error('Apollo error:', error.message)
+  console.error("Apollo error:", error.message);
 
   // GraphQL errors
-  error.graphQLErrors.forEach(gqlError => {
-    console.log(gqlError.message)
-    console.log(gqlError.extensions?.code)
-  })
+  error.graphQLErrors.forEach((gqlError) => {
+    console.log(gqlError.message);
+    console.log(gqlError.extensions?.code);
+  });
 
   // Network error
   if (error.networkError) {
-    console.error('Network error:', error.networkError)
+    console.error("Network error:", error.networkError);
   }
 
   // Client errors
-  error.clientErrors.forEach(clientError => {
-    console.error('Client error:', clientError)
-  })
+  error.clientErrors.forEach((clientError) => {
+    console.error("Client error:", clientError);
+  });
 }
 ```
 
@@ -546,9 +553,9 @@ if (ApolloError.is(error)) {
 
 ```typescript
 // GitHub API error codes
-extensions.code === 'UNAUTHENTICATED'  // Неверный token
-extensions.code === 'RATE_LIMITED'     // Rate limit exceeded
-extensions.code === 'NOT_FOUND'        // Ресурс не найден
+extensions.code === "UNAUTHENTICATED"; // Неверный token
+extensions.code === "RATE_LIMITED"; // Rate limit exceeded
+extensions.code === "NOT_FOUND"; // Ресурс не найден
 ```
 
 ### Component-level Error Handling
@@ -611,6 +618,7 @@ function UserProfile({ userName }: Props) {
 ### Global Error Handling (onError link)
 
 **Преимущества:**
+
 - ✅ Централизованная обработка
 - ✅ Автоматические действия (clear token, toast)
 - ✅ Logging
@@ -623,25 +631,25 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, extensions }) => {
       // ✅ Toast notification
-      toast.error(`[GraphQL error]: ${message}`)
+      toast.error(`[GraphQL error]: ${message}`);
 
       // ✅ Clear token if unauthenticated
-      if (extensions?.code === 'UNAUTHENTICATED') {
-        localStorage.removeItem('github_token')
+      if (extensions?.code === "UNAUTHENTICATED") {
+        localStorage.removeItem("github_token");
       }
-    })
+    });
   }
 
   if (networkError) {
     // ✅ Handle 401 Unauthorized
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
-      localStorage.removeItem('github_token')
+    if ("statusCode" in networkError && networkError.statusCode === 401) {
+      localStorage.removeItem("github_token");
     }
 
     // ✅ Toast notification
-    toast.error(`[Network error]: ${networkError}`)
+    toast.error(`[Network error]: ${networkError}`);
   }
-})
+});
 ```
 
 ---
@@ -657,10 +665,11 @@ Apollo Client автоматически кеширует все query results.
 ```typescript
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-})
+});
 ```
 
 **Как работает:**
+
 1. Query выполняется первый раз → fetch from network
 2. Result кешируется в памяти
 3. Повторный query с теми же variables → return from cache
@@ -671,51 +680,51 @@ const client = new ApolloClient({
 ```typescript
 // ✅ cache-first (default) - использовать cache, fetch только если нет в cache
 useQuery(GET_USER_INFO, {
-  fetchPolicy: 'cache-first'
-})
+  fetchPolicy: "cache-first",
+});
 
 // ✅ cache-and-network - вернуть cache + фоновый fetch
 useQuery(GET_USER_INFO, {
-  fetchPolicy: 'cache-and-network'
-})
+  fetchPolicy: "cache-and-network",
+});
 
 // ✅ network-only - всегда fetch, но кешировать result
 useQuery(GET_USER_INFO, {
-  fetchPolicy: 'network-only'
-})
+  fetchPolicy: "network-only",
+});
 
 // ✅ no-cache - не использовать и не обновлять cache
 useQuery(GET_USER_INFO, {
-  fetchPolicy: 'no-cache'
-})
+  fetchPolicy: "no-cache",
+});
 
 // ✅ cache-only - только из cache, не делать network request
 useQuery(GET_USER_INFO, {
-  fetchPolicy: 'cache-only'
-})
+  fetchPolicy: "cache-only",
+});
 ```
 
 #### Cache Invalidation
 
 ```typescript
 // ✅ Refetch query
-const { refetch } = useQuery(GET_USER_INFO)
-refetch() // Новый network request
+const { refetch } = useQuery(GET_USER_INFO);
+refetch(); // Новый network request
 
 // ✅ Update cache вручную
 client.cache.writeQuery({
   query: GET_USER_INFO,
-  variables: { login: 'octocat' },
+  variables: { login: "octocat" },
   data: newData,
-})
+});
 
 // ✅ Evict из cache
 client.cache.evict({
-  id: client.cache.identify({ __typename: 'User', id: 'userId' })
-})
+  id: client.cache.identify({ __typename: "User", id: "userId" }),
+});
 
 // ✅ Clear all cache
-client.cache.reset()
+client.cache.reset();
 ```
 
 #### Cache Configuration
@@ -726,20 +735,20 @@ const cache = new InMemoryCache({
   typePolicies: {
     User: {
       // Кастомный key для нормализации
-      keyFields: ['login'],
+      keyFields: ["login"],
 
       // Field policies
       fields: {
         // Merge strategies
         followers: {
           merge(existing, incoming) {
-            return incoming
-          }
-        }
-      }
-    }
-  }
-})
+            return incoming;
+          },
+        },
+      },
+    },
+  },
+});
 ```
 
 ---
@@ -911,25 +920,25 @@ describe('UserProfile Integration', () => {
 
 ```typescript
 // ✅ Mock только необходимое
-vi.mock('@/apollo/useQueryUser')
+vi.mock("@/apollo/useQueryUser");
 
 // ✅ Cleanup после каждого теста
 beforeEach(() => {
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 
 afterEach(() => {
-  vi.restoreAllMocks()
-})
+  vi.restoreAllMocks();
+});
 
 // ✅ Тестируй все состояния
-it('loading state')
-it('error state')
-it('empty state (no user)')
-it('success state (with data)')
+it("loading state");
+it("error state");
+it("empty state (no user)");
+it("success state (with data)");
 
 // ✅ Используй async/await для async operations
-const element = await screen.findByText('Content')
+const element = await screen.findByText("Content");
 ```
 
 ---
@@ -941,19 +950,22 @@ const element = await screen.findByText('Content')
 ```typescript
 // ✅ Хорошо: Custom hook инкапсулирует логику
 function useQueryUser(login: string) {
-  const variables = useMemo(() => ({
-    login,
-    // ... computed variables
-  }), [login])
+  const variables = useMemo(
+    () => ({
+      login,
+      // ... computed variables
+    }),
+    [login],
+  );
 
   return useQuery(GET_USER_INFO, {
     variables,
     skip: !login,
-  })
+  });
 }
 
 // Использование
-const { data, loading, error } = useQueryUser('octocat')
+const { data, loading, error } = useQueryUser("octocat");
 ```
 
 ```typescript
@@ -961,11 +973,11 @@ const { data, loading, error } = useQueryUser('octocat')
 function UserProfile() {
   const { data, loading, error } = useQuery(GET_USER_INFO, {
     variables: {
-      login: 'octocat',
+      login: "octocat",
       from: new Date().toISOString(), // Пересчитывается каждый render!
       // ...
-    }
-  })
+    },
+  });
 }
 ```
 
@@ -973,13 +985,16 @@ function UserProfile() {
 
 ```typescript
 // ✅ Хорошо: useMemo для complex objects
-const variables = useMemo(() => ({
-  login,
-  from: getQueryDates().from,
-  to: getQueryDates().to,
-}), [login])
+const variables = useMemo(
+  () => ({
+    login,
+    from: getQueryDates().from,
+    to: getQueryDates().to,
+  }),
+  [login],
+);
 
-useQuery(GET_USER_INFO, { variables })
+useQuery(GET_USER_INFO, { variables });
 ```
 
 ```typescript
@@ -989,8 +1004,8 @@ useQuery(GET_USER_INFO, {
     login,
     from: getQueryDates().from, // NEW object каждый render
     to: getQueryDates().to,
-  }
-})
+  },
+});
 ```
 
 ### 3. Используй skip для conditional queries
@@ -1000,14 +1015,14 @@ useQuery(GET_USER_INFO, {
 useQuery(GET_USER_INFO, {
   variables: { login },
   skip: !login, // Не запускать query если login пустой
-})
+});
 ```
 
 ```typescript
 // ❌ Плохо: Query выполнится с пустым login
 useQuery(GET_USER_INFO, {
-  variables: { login: login || '' },
-})
+  variables: { login: login || "" },
+});
 ```
 
 ### 4. Error Policy
@@ -1033,7 +1048,7 @@ if (data && error) {
 
 ```typescript
 // ✅ Хорошо: Типизированный useQuery
-useQuery<GitHubGraphQLResponse>(GET_USER_INFO, options)
+useQuery<GitHubGraphQLResponse>(GET_USER_INFO, options);
 
 // data автоматически типизирован как GitHubGraphQLResponse
 ```
@@ -1053,16 +1068,16 @@ src/apollo/
 
 ```typescript
 // ✅ Хорошо: Переиспользуй custom hook
-const { data: user1 } = useQueryUser('octocat')
-const { data: user2 } = useQueryUser('torvalds')
+const { data: user1 } = useQueryUser("octocat");
+const { data: user2 } = useQueryUser("torvalds");
 
 // ❌ Плохо: Дублируй useQuery логику
 const { data: user1 } = useQuery(GET_USER_INFO, {
-  variables: { login: 'octocat', /* ... */ }
-})
+  variables: { login: "octocat" /* ... */ },
+});
 const { data: user2 } = useQuery(GET_USER_INFO, {
-  variables: { login: 'torvalds', /* ... */ }
-})
+  variables: { login: "torvalds" /* ... */ },
+});
 ```
 
 ---
@@ -1074,6 +1089,7 @@ const { data: user2 } = useQuery(GET_USER_INFO, {
 **Причина:** Неверный token или нет интернета
 
 **Решение:**
+
 ```bash
 # Проверить token
 echo $VITE_GITHUB_TOKEN
@@ -1091,15 +1107,16 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 **Причина:** Кеширование
 
 **Решение:**
+
 ```typescript
 // ✅ Используй fetchPolicy
 useQuery(GET_USER_INFO, {
-  fetchPolicy: 'network-only', // Всегда fetch
-})
+  fetchPolicy: "network-only", // Всегда fetch
+});
 
 // Или refetch вручную
-const { refetch } = useQuery(GET_USER_INFO)
-refetch()
+const { refetch } = useQuery(GET_USER_INFO);
+refetch();
 ```
 
 ### Проблема: Variables не обновляются
@@ -1107,14 +1124,18 @@ refetch()
 **Причина:** Object reference не меняется
 
 **Решение:**
+
 ```typescript
 // ✅ useMemo для stabilization
-const variables = useMemo(() => ({
-  login,
-  from: dates.from,
-}), [login, dates.from]) // Dependencies!
+const variables = useMemo(
+  () => ({
+    login,
+    from: dates.from,
+  }),
+  [login, dates.from],
+); // Dependencies!
 
-useQuery(GET_USER_INFO, { variables })
+useQuery(GET_USER_INFO, { variables });
 ```
 
 ### Проблема: "Cannot read property 'user' of undefined"
@@ -1122,6 +1143,7 @@ useQuery(GET_USER_INFO, { variables })
 **Причина:** Data еще не загружен
 
 **Решение:**
+
 ```typescript
 // ✅ Проверяй loading и data
 if (loading) return <Loading />
@@ -1136,14 +1158,15 @@ const user = data.user
 **Причина:** Mock объявлен после импорта
 
 **Решение:**
+
 ```typescript
 // ✅ Mock ПЕРЕД импортом компонента
-vi.mock('@/apollo/useQueryUser', () => ({
+vi.mock("@/apollo/useQueryUser", () => ({
   default: vi.fn(),
-}))
+}));
 
-import useQueryUser from '@/apollo/useQueryUser'
-import Component from './Component'
+import useQueryUser from "@/apollo/useQueryUser";
+import Component from "./Component";
 
 // Теперь mock работает
 ```
@@ -1153,15 +1176,16 @@ import Component from './Component'
 **Причина:** Слишком много requests
 
 **Решение:**
+
 ```typescript
 // ✅ Используй pollInterval осторожно
 useQuery(GET_USER_INFO, {
   pollInterval: 60000, // Не менее 60 секунд!
-})
+});
 
 // ✅ Debounce user input
-const debouncedSearch = useDebouncedValue(searchQuery, 500)
-useQueryUser(debouncedSearch)
+const debouncedSearch = useDebouncedValue(searchQuery, 500);
+useQueryUser(debouncedSearch);
 ```
 
 ---

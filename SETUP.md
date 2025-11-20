@@ -9,6 +9,7 @@ The application has been configured to use Vercel's development server with serv
 You need a GitHub Personal Access Token to access the GitHub GraphQL API.
 
 #### Create Token:
+
 1. Visit: https://github.com/settings/tokens/new
 2. **Token name**: `GitHub User Analytics`
 3. **Scopes** (select these):
@@ -18,6 +19,7 @@ You need a GitHub Personal Access Token to access the GitHub GraphQL API.
 5. **Copy the token** (you won't be able to see it again!)
 
 #### Add Token to Environment:
+
 1. Open the file `.env.local` in the project root
 2. Replace `YOUR_GITHUB_TOKEN_HERE` with your actual token:
    ```bash
@@ -34,11 +36,13 @@ npm run dev
 ```
 
 This will:
+
 - Start Vercel's development server
 - Run the Vite frontend on port 3000
 - Enable the `/api/github-proxy` serverless function
 
 **Note**: The first time you run `vercel dev`, it may ask you to:
+
 - Log in to Vercel (or continue without login)
 - Set up your project
 
@@ -47,6 +51,7 @@ You can choose **"Continue without logging in"** for local development.
 ### 3. Access the Application
 
 Once running, open your browser to:
+
 - **Application**: http://localhost:3000
 - **Storybook** (separate terminal): `npm run storybook` → http://localhost:6006
 
@@ -55,6 +60,7 @@ Once running, open your browser to:
 ### "GITHUB_TOKEN not configured" Error
 
 If you see a 500 error with "GITHUB_TOKEN not configured":
+
 1. Make sure you created the `.env.local` file
 2. Verify the token is set correctly (starts with `ghp_`)
 3. Restart the dev server: `Ctrl+C` and run `npm run dev` again
@@ -62,6 +68,7 @@ If you see a 500 error with "GITHUB_TOKEN not configured":
 ### Port Already in Use
 
 If port 3000 is busy:
+
 ```bash
 # Kill the process using port 3000
 lsof -ti:3000 | xargs kill -9
@@ -73,6 +80,7 @@ PORT=3001 npm run dev
 ### Vercel CLI Issues
 
 If Vercel CLI has problems:
+
 ```bash
 # Reinstall Vercel CLI
 npm uninstall vercel
@@ -96,6 +104,7 @@ rm -rf .vercel
 ### Why Vercel Dev?
 
 The application uses a **backend proxy** for GitHub API requests:
+
 - Frontend → `/api/github-proxy` → GitHub GraphQL API
 - GitHub token is kept server-side (never exposed in browser)
 - Enables caching with Vercel KV (optional)
@@ -104,6 +113,7 @@ The application uses a **backend proxy** for GitHub API requests:
 ### Alternative: Direct API Access (Not Recommended)
 
 For quick development without Vercel, you can:
+
 1. Use `VITE_GITHUB_TOKEN` in `.env.local`
 2. Update Apollo Client to use GitHub API directly
 3. Run `npm run dev:vite`
@@ -113,6 +123,7 @@ For quick development without Vercel, you can:
 ## Next Steps
 
 Once the server is running:
+
 1. Search for a GitHub username (e.g., "torvalds", "gaearon")
 2. Explore the user analytics and metrics
 3. Check out the component library in Storybook

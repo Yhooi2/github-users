@@ -1,40 +1,49 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from './chart';
-import { Bar, BarChart, CartesianGrid, XAxis, Line, LineChart, Area, AreaChart } from 'recharts';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+} from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart";
 
 const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
+  { month: "January", desktop: 186, mobile: 80 },
+  { month: "February", desktop: 305, mobile: 200 },
+  { month: "March", desktop: 237, mobile: 120 },
+  { month: "April", desktop: 73, mobile: 190 },
+  { month: "May", desktop: 209, mobile: 130 },
+  { month: "June", desktop: 214, mobile: 140 },
 ];
 
 const chartConfig = {
   desktop: {
-    label: 'Desktop',
-    color: '#2563eb',
+    label: "Desktop",
+    color: "#2563eb",
   },
   mobile: {
-    label: 'Mobile',
-    color: '#60a5fa',
+    label: "Mobile",
+    color: "#60a5fa",
   },
 };
 
 const meta: Meta<typeof ChartContainer> = {
-  title: 'UI/Chart',
+  title: "UI/Chart",
   component: ChartContainer,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A chart container component built on Recharts for data visualization.',
+          "A chart container component built on Recharts for data visualization.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -132,17 +141,17 @@ export const SingleBarChart: Story = {
   render: () => {
     const config = {
       value: {
-        label: 'Value',
-        color: '#2563eb',
+        label: "Value",
+        color: "#2563eb",
       },
     };
 
     const data = [
-      { name: 'Jan', value: 400 },
-      { name: 'Feb', value: 300 },
-      { name: 'Mar', value: 600 },
-      { name: 'Apr', value: 800 },
-      { name: 'May', value: 500 },
+      { name: "Jan", value: 400 },
+      { name: "Feb", value: 300 },
+      { name: "Mar", value: 600 },
+      { name: "Apr", value: 800 },
+      { name: "May", value: 500 },
     ];
 
     return (
@@ -163,16 +172,16 @@ export const CommitsChart: Story = {
   render: () => {
     const config = {
       commits: {
-        label: 'Commits',
-        color: '#22c55e',
+        label: "Commits",
+        color: "#22c55e",
       },
     };
 
     const data = [
-      { year: '2021', commits: 245 },
-      { year: '2022', commits: 378 },
-      { year: '2023', commits: 512 },
-      { year: '2024', commits: 689 },
+      { year: "2021", commits: 245 },
+      { year: "2022", commits: 378 },
+      { year: "2023", commits: 512 },
+      { year: "2024", commits: 689 },
     ];
 
     return (
@@ -193,18 +202,18 @@ export const ActivityLineChart: Story = {
   render: () => {
     const config = {
       activity: {
-        label: 'Activity',
-        color: '#8b5cf6',
+        label: "Activity",
+        color: "#8b5cf6",
       },
     };
 
     const data = [
-      { week: 'W1', activity: 12 },
-      { week: 'W2', activity: 19 },
-      { week: 'W3', activity: 15 },
-      { week: 'W4', activity: 25 },
-      { week: 'W5', activity: 22 },
-      { week: 'W6', activity: 30 },
+      { week: "W1", activity: 12 },
+      { week: "W2", activity: 19 },
+      { week: "W3", activity: 15 },
+      { week: "W4", activity: 25 },
+      { week: "W5", activity: 22 },
+      { week: "W6", activity: 30 },
     ];
 
     return (
@@ -231,8 +240,8 @@ export const EmptyChart: Story = {
   render: () => {
     const config = {
       value: {
-        label: 'Value',
-        color: '#2563eb',
+        label: "Value",
+        color: "#2563eb",
       },
     };
 

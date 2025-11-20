@@ -1,20 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Skeleton } from './skeleton';
-import { Card, CardContent, CardHeader } from './card';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Card, CardContent, CardHeader } from "./card";
+import { Skeleton } from "./skeleton";
 
 const meta: Meta<typeof Skeleton> = {
-  title: 'UI/Skeleton',
+  title: "UI/Skeleton",
   component: Skeleton,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A skeleton component for displaying loading placeholders with a pulsing animation.',
+          "A skeleton component for displaying loading placeholders with a pulsing animation.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;

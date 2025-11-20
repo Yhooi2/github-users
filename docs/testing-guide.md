@@ -38,14 +38,14 @@ Functions: 100%
 
 ### Testing Stack
 
-| Инструмент | Версия | Назначение |
-|-----------|--------|------------|
-| **Vitest** | 4.0.6 | Unit & Integration testing |
-| **Playwright** | 1.56.1 | E2E testing (3 browsers) |
-| **React Testing Library** | 16.1.0 | Component testing |
-| **@testing-library/user-event** | 14.6.2 | User interactions |
-| **@apollo/client/testing** | 3.14.0 | GraphQL mocking |
-| **@vitest/coverage-v8** | 4.0.6 | Code coverage |
+| Инструмент                      | Версия | Назначение                 |
+| ------------------------------- | ------ | -------------------------- |
+| **Vitest**                      | 4.0.6  | Unit & Integration testing |
+| **Playwright**                  | 1.56.1 | E2E testing (3 browsers)   |
+| **React Testing Library**       | 16.1.0 | Component testing          |
+| **@testing-library/user-event** | 14.6.2 | User interactions          |
+| **@apollo/client/testing**      | 3.14.0 | GraphQL mocking            |
+| **@vitest/coverage-v8**         | 4.0.6  | Code coverage              |
 
 ### Типы тестов
 
@@ -72,38 +72,38 @@ E2E Tests (Playwright)
 
 ```typescript
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite'
+import { defineConfig } from "vite";
 
 export default defineConfig({
   test: {
-    globals: true,              // ✅ describe, it, expect без импортов
-    environment: 'jsdom',       // ✅ DOM API для React тестов
-    setupFiles: ['./src/test/setup.ts'], // ✅ Setup файл
-    css: true,                  // ✅ Обработка CSS
+    globals: true, // ✅ describe, it, expect без импортов
+    environment: "jsdom", // ✅ DOM API для React тестов
+    setupFiles: ["./src/test/setup.ts"], // ✅ Setup файл
+    css: true, // ✅ Обработка CSS
 
     exclude: [
-      'node_modules/**',
-      'dist/**',
-      'e2e/**',                 // ❗ E2E тесты отдельно
-      '**/*.e2e.ts',
-      '**/*.spec.ts',
+      "node_modules/**",
+      "dist/**",
+      "e2e/**", // ❗ E2E тесты отдельно
+      "**/*.e2e.ts",
+      "**/*.spec.ts",
     ],
 
     coverage: {
-      provider: 'v8',           // ✅ Быстрый V8 coverage
-      reporter: ['text', 'json', 'html'],
+      provider: "v8", // ✅ Быстрый V8 coverage
+      reporter: ["text", "json", "html"],
       exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        '**/*.config.*',
-        '**/mockData',
-        'dist/',
-        'e2e/',
+        "node_modules/",
+        "src/test/",
+        "**/*.d.ts",
+        "**/*.config.*",
+        "**/mockData",
+        "dist/",
+        "e2e/",
       ],
     },
   },
-})
+});
 ```
 
 ### Setup файл
@@ -111,23 +111,25 @@ export default defineConfig({
 **Файл:** `src/test/setup.ts`
 
 ```typescript
-import '@testing-library/jest-dom'
-import { cleanup } from '@testing-library/react'
-import { afterEach } from 'vitest'
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach } from "vitest";
 
 // ✅ Cleanup после каждого теста
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // ✅ Моки для browser APIs
-globalThis.matchMedia = globalThis.matchMedia || function() {
-  return {
-    matches: false,
-    addEventListener: () => {},
-    removeEventListener: () => {}
-  }
-}
+globalThis.matchMedia =
+  globalThis.matchMedia ||
+  function () {
+    return {
+      matches: false,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    };
+  };
 ```
 
 ### Запуск тестов
@@ -183,39 +185,39 @@ describe('ComponentName', () => {
 **Файл:** `playwright.config.ts`
 
 ```typescript
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: './e2e',           // ✅ E2E тесты в отдельной папке
-  fullyParallel: true,        // ✅ Параллельный запуск
+  testDir: "./e2e", // ✅ E2E тесты в отдельной папке
+  fullyParallel: true, // ✅ Параллельный запуск
 
-  forbidOnly: !!process.env.CI,  // ❗ test.only запрещен на CI
+  forbidOnly: !!process.env.CI, // ❗ test.only запрещен на CI
   retries: process.env.CI ? 2 : 0, // ✅ 2 retry на CI
   workers: process.env.CI ? 1 : undefined,
 
-  reporter: 'html',
+  reporter: "html",
 
   use: {
-    baseURL: 'http://localhost:5173',
-    trace: 'on-first-retry',      // ✅ Trace при retry
-    screenshot: 'only-on-failure', // ✅ Screenshot при ошибке
+    baseURL: "http://localhost:5173",
+    trace: "on-first-retry", // ✅ Trace при retry
+    screenshot: "only-on-failure", // ✅ Screenshot при ошибке
   },
 
   // ✅ 3 браузера
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ],
 
   // ✅ Автозапуск dev сервера
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
+    command: "npm run dev",
+    url: "http://localhost:5173",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
-})
+});
 ```
 
 ### Пример E2E теста
@@ -223,36 +225,39 @@ export default defineConfig({
 **Файл:** `e2e/user-search.spec.ts`
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('GitHub User Search', () => {
-  test('should search for user and display profile', async ({ page }) => {
+test.describe("GitHub User Search", () => {
+  test("should search for user and display profile", async ({ page }) => {
     // ✅ Открыть приложение
-    await page.goto('/')
+    await page.goto("/");
 
     // ✅ Ввести username
-    await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
+    await page.fill('input[placeholder*="Search GitHub User"]', "octocat");
 
     // ✅ Нажать Search
-    await page.click('button[type="submit"]')
+    await page.click('button[type="submit"]');
 
     // ✅ Дождаться загрузки
-    await page.waitForSelector('text=The Octocat', { timeout: 5000 })
+    await page.waitForSelector("text=The Octocat", { timeout: 5000 });
 
     // ✅ Проверить данные
-    await expect(page.locator('text=@octocat')).toBeVisible()
-    await expect(page.locator('text=GitHub mascot')).toBeVisible()
-  })
+    await expect(page.locator("text=@octocat")).toBeVisible();
+    await expect(page.locator("text=GitHub mascot")).toBeVisible();
+  });
 
-  test('should show error for invalid user', async ({ page }) => {
-    await page.goto('/')
-    await page.fill('input[placeholder*="Search GitHub User"]', 'nonexistentuser12345')
-    await page.click('button[type="submit"]')
+  test("should show error for invalid user", async ({ page }) => {
+    await page.goto("/");
+    await page.fill(
+      'input[placeholder*="Search GitHub User"]',
+      "nonexistentuser12345",
+    );
+    await page.click('button[type="submit"]');
 
     // ✅ Проверить ошибку
-    await expect(page.locator('text=User Not Found')).toBeVisible()
-  })
-})
+    await expect(page.locator("text=User Not Found")).toBeVisible();
+  });
+});
 ```
 
 ### Запуск E2E
@@ -284,6 +289,7 @@ npx playwright show-report
 React Testing Library - философия тестирования "как пользователь".
 
 **Принципы:**
+
 - ✅ Тестируй поведение, а не реализацию
 - ✅ Используй selectors как пользователь (text, role, label)
 - ❌ Не тестируй внутреннее состояние
@@ -293,17 +299,17 @@ React Testing Library - философия тестирования "как по
 
 ```typescript
 // ✅ 1. Accessible queries (лучше всего)
-screen.getByRole('button', { name: /search/i })
-screen.getByLabelText(/username/i)
-screen.getByPlaceholderText(/search github user/i)
-screen.getByText(/loading/i)
+screen.getByRole("button", { name: /search/i });
+screen.getByLabelText(/username/i);
+screen.getByPlaceholderText(/search github user/i);
+screen.getByText(/loading/i);
 
 // ✅ 2. Semantic queries
-screen.getByAltText('Profile avatar')
-screen.getByTitle('GitHub profile')
+screen.getByAltText("Profile avatar");
+screen.getByTitle("GitHub profile");
 
 // ⚠️ 3. Test IDs (последний вариант)
-screen.getByTestId('user-profile')
+screen.getByTestId("user-profile");
 ```
 
 ### Пример: Testing форм
@@ -389,48 +395,48 @@ describe('SearchForm', () => {
 ### User Interactions
 
 ```typescript
-import userEvent from '@testing-library/user-event'
+import userEvent from "@testing-library/user-event";
 
-const user = userEvent.setup()
+const user = userEvent.setup();
 
 // ✅ Typing
-await user.type(input, 'text')
+await user.type(input, "text");
 
 // ✅ Clicking
-await user.click(button)
+await user.click(button);
 
 // ✅ Double click
-await user.dblClick(element)
+await user.dblClick(element);
 
 // ✅ Hover
-await user.hover(element)
+await user.hover(element);
 
 // ✅ Tab navigation
-await user.tab()
+await user.tab();
 
 // ✅ Keyboard
-await user.keyboard('{Enter}')
-await user.type(input, 'text{Enter}')
+await user.keyboard("{Enter}");
+await user.type(input, "text{Enter}");
 
 // ✅ Clear
-await user.clear(input)
+await user.clear(input);
 ```
 
 ### Async Testing
 
 ```typescript
-import { waitFor, waitForElementToBeRemoved } from '@testing-library/react'
+import { waitFor, waitForElementToBeRemoved } from "@testing-library/react";
 
 // ✅ Wait for element to appear
 await waitFor(() => {
-  expect(screen.getByText('Loaded')).toBeInTheDocument()
-})
+  expect(screen.getByText("Loaded")).toBeInTheDocument();
+});
 
 // ✅ Wait for element to disappear
-await waitForElementToBeRemoved(() => screen.queryByText('Loading...'))
+await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
 
 // ✅ Find queries (async by default)
-const element = await screen.findByText('Async content')
+const element = await screen.findByText("Async content");
 ```
 
 ---
@@ -621,22 +627,22 @@ describe('UserProfile Integration', () => {
 ### Apollo Error Handling (v3.14)
 
 ```typescript
-import { ApolloError } from '@apollo/client'
+import { ApolloError } from "@apollo/client";
 
 // ✅ Новый метод .is() в Apollo 3.14
 if (ApolloError.is(error)) {
-  console.error('Apollo error:', error.message)
+  console.error("Apollo error:", error.message);
 }
 
 // ✅ Mock Apollo error в тестах
 const mockError = {
-  message: 'Network error',
-  name: 'NetworkError',
+  message: "Network error",
+  name: "NetworkError",
   graphQLErrors: [],
   clientErrors: [],
   networkError: null,
   extraInfo: null,
-}
+};
 ```
 
 ---
@@ -780,25 +786,25 @@ it('loads data asynchronously', async () => {
 ### 6. Testing Edge Cases
 
 ```typescript
-describe('date-helpers edge cases', () => {
-  it('handles leap year dates', () => {
-    const date = new Date('2024-02-29T00:00:00Z')
-    const result = formatDate(date)
-    expect(result).toBe('2024-02-29T00:00:00.000Z')
-  })
+describe("date-helpers edge cases", () => {
+  it("handles leap year dates", () => {
+    const date = new Date("2024-02-29T00:00:00Z");
+    const result = formatDate(date);
+    expect(result).toBe("2024-02-29T00:00:00.000Z");
+  });
 
-  it('handles end of year date', () => {
-    const date = new Date('2024-12-31T23:59:59Z')
-    const result = formatDate(date)
-    expect(result).toContain('2024-12-31')
-  })
+  it("handles end of year date", () => {
+    const date = new Date("2024-12-31T23:59:59Z");
+    const result = formatDate(date);
+    expect(result).toContain("2024-12-31");
+  });
 
-  it('handles 0 days back', () => {
-    const testDate = new Date('2024-06-15T12:00:00Z')
-    const dates = getQueryDates(0, testDate)
-    expect(dates.from).toBe(dates.to)
-  })
-})
+  it("handles 0 days back", () => {
+    const testDate = new Date("2024-06-15T12:00:00Z");
+    const dates = getQueryDates(0, testDate);
+    expect(dates.from).toBe(dates.to);
+  });
+});
 ```
 
 ### 7. Testing Accessibility
@@ -921,6 +927,7 @@ export interface RepositoryContribution {
 **Правило:** Если нужен type casting - это признак проблемы в архитектуре типов. Исправь типы, а не добавляй casting.
 
 **Реальный пример из Phase 4:**
+
 - **До:** Дублирование типа Repository в `yearContributions.ts` + type casting в компонентах
 - **После:** Один тип Repository в `github-api.types.ts`, импортируется везде
 - **Результат:** 0 type casting, 100% type safety
@@ -1002,6 +1009,7 @@ it('handles high star count', () => {
 ```
 
 **Преимущества Factory Pattern:**
+
 - ✅ DRY (Don't Repeat Yourself)
 - ✅ Консистентные данные
 - ✅ Полные объекты (все required поля)
@@ -1009,6 +1017,7 @@ it('handles high star count', () => {
 - ✅ Centralized maintenance
 
 **Реальный пример из Phase 4:**
+
 - **До:** 3 файла с дублирующими `mockRepository` объектами
 - **После:** Один файл `fixtures.ts` с factory functions
 - **Результат:** Уменьшение кода на ~60 строк, 0 дублирования
@@ -1032,12 +1041,14 @@ expect(screen.getByText('Hello')).toBeInTheDocument()
 ```
 
 **Почему `screen` лучше:**
+
 - ✅ Более читабельно
 - ✅ Не нужно destructuring
 - ✅ Автоматический suggestion в IDE
 - ✅ Следует best practices React Testing Library
 
 **Исключение:** `container` нужен для `querySelector`:
+
 ```typescript
 const { container } = render(<Tabs>...</Tabs>)
 const tabs = container.querySelector('[data-slot="tabs"]')
@@ -1137,6 +1148,7 @@ it('updates input on typing', async () => {
 ```
 
 **Почему `userEvent` лучше:**
+
 - ✅ Симулирует реальные user interactions
 - ✅ Генерирует все related events (focus, blur, keydown, keyup, etc.)
 - ✅ Асинхронный - ближе к реальности
@@ -1185,12 +1197,14 @@ it('renders component with real subcomponents', () => {
 ```
 
 **Что мокать:**
+
 - ✅ External APIs (fetch, axios)
 - ✅ Third-party libraries (toast, analytics)
 - ✅ Custom hooks с Apollo/GraphQL
 - ✅ Browser APIs (localStorage, matchMedia)
 
 **Что НЕ мокать:**
+
 - ❌ Внутренние компоненты
 - ❌ Utility functions (тестируй их отдельно)
 - ❌ UI library components
@@ -1294,6 +1308,7 @@ it('updates UI after fetch', async () => {
 ```
 
 **Правило:** Всегда `await` для:
+
 - `findBy*` queries
 - `userEvent` actions
 - `waitFor` / `waitForElementToBeRemoved`
@@ -1386,6 +1401,7 @@ it('limits repositories to 5', () => {
 ```
 
 **Правило:**
+
 - ✅ Coverage - это метрика, не цель
 - ✅ Лучше 80% coverage с осмысленными тестами, чем 100% с бессмысленными
 - ✅ Фокусируйся на критичных путях: business logic, user interactions, error handling
@@ -1395,6 +1411,7 @@ it('limits repositories to 5', () => {
 ### ✅ Best Practices Summary
 
 **DO:**
+
 - ✅ Use `screen` for queries
 - ✅ Use `userEvent` for interactions
 - ✅ Use factory pattern for test data
@@ -1405,6 +1422,7 @@ it('limits repositories to 5', () => {
 - ✅ Follow Single Source of Truth for types
 
 **DON'T:**
+
 - ❌ Use type casting (`as unknown as Type`)
 - ❌ Duplicate mock objects across tests
 - ❌ Use `fireEvent` (prefer `userEvent`)
@@ -1415,12 +1433,14 @@ it('limits repositories to 5', () => {
 - ❌ Chase 100% coverage blindly
 
 **Testing Trophy Philosophy:**
+
 - 🏆 50% Integration tests (components with hooks)
 - 🥈 40% Unit tests (utilities, helpers)
 - 🥉 5% E2E tests (critical user flows)
 - 🎯 5% Static analysis (TypeScript, ESLint)
 
 **Resources:**
+
 - [Kent C Dodds - Common Testing Mistakes](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
 - [React Testing Library Best Practices](https://testing-library.com/docs/react-testing-library/cheatsheet)
 - [Testing Implementation Details](https://kentcdodds.com/blog/testing-implementation-details)
@@ -1432,38 +1452,38 @@ it('limits repositories to 5', () => {
 ### 1. Изоляция тестов
 
 ```typescript
-describe('Component', () => {
+describe("Component", () => {
   beforeEach(() => {
     // ✅ Очистить моки перед каждым тестом
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
     // ✅ Восстановить моки после каждого теста
-    vi.restoreAllMocks()
-  })
+    vi.restoreAllMocks();
+  });
 
-  it('test 1', () => {
+  it("test 1", () => {
     // Этот тест независим
-  })
+  });
 
-  it('test 2', () => {
+  it("test 2", () => {
     // Этот тест тоже независим
-  })
-})
+  });
+});
 ```
 
 ### 2. Descriptive Test Names
 
 ```typescript
 // ❌ Плохо
-it('works', () => {})
-it('test 1', () => {})
+it("works", () => {});
+it("test 1", () => {});
 
 // ✅ Хорошо
-it('renders loading state when data is fetching', () => {})
-it('calls setUserName with trimmed value on form submit', () => {})
-it('shows validation error when input is empty', () => {})
+it("renders loading state when data is fetching", () => {});
+it("calls setUserName with trimmed value on form submit", () => {});
+it("shows validation error when input is empty", () => {});
 ```
 
 ### 3. DRY (Don't Repeat Yourself)
@@ -1589,17 +1609,17 @@ it('updates UI after fetch', async () => {
 
 ```typescript
 // ✅ Mock external dependencies
-vi.mock('sonner', () => ({
+vi.mock("sonner", () => ({
   toast: {
     error: vi.fn(),
     success: vi.fn(),
   },
-}))
+}));
 
 // ✅ Mock custom hooks
-vi.mock('@/apollo/useQueryUser', () => ({
+vi.mock("@/apollo/useQueryUser", () => ({
   default: vi.fn(),
-}))
+}));
 
 // ❌ Не mock внутренние компоненты
 // Если нужно - это признак плохой архитектуры
@@ -1614,16 +1634,17 @@ vi.mock('@/apollo/useQueryUser', () => ({
 **Причина:** Race conditions, недетерминизм
 
 **Решение:**
+
 ```typescript
 // ✅ Используй waitFor
 await waitFor(() => {
-  expect(screen.getByText('Loaded')).toBeInTheDocument()
-})
+  expect(screen.getByText("Loaded")).toBeInTheDocument();
+});
 
 // ✅ Очищай моки
 beforeEach(() => {
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 ```
 
 ### Проблема: "Unable to find element"
@@ -1631,16 +1652,17 @@ beforeEach(() => {
 **Причина:** Элемент еще не отрендерился
 
 **Решение:**
+
 ```typescript
 // ❌ getBy - синхронный, упадет если нет элемента
-const element = screen.getByText('Async content')
+const element = screen.getByText("Async content");
 
 // ✅ findBy - асинхронный, подождет
-const element = await screen.findByText('Async content')
+const element = await screen.findByText("Async content");
 
 // ✅ queryBy - вернет null если нет
-const element = screen.queryByText('Maybe exists')
-expect(element).not.toBeInTheDocument()
+const element = screen.queryByText("Maybe exists");
+expect(element).not.toBeInTheDocument();
 ```
 
 ### Проблема: Mock не работает
@@ -1648,14 +1670,15 @@ expect(element).not.toBeInTheDocument()
 **Причина:** Mock объявлен после импорта
 
 **Решение:**
+
 ```typescript
 // ✅ Mock ПЕРЕД импортом компонента
-vi.mock('@/apollo/useQueryUser', () => ({
+vi.mock("@/apollo/useQueryUser", () => ({
   default: vi.fn(),
-}))
+}));
 
-import useQueryUser from '@/apollo/useQueryUser'
-import Component from './Component'
+import useQueryUser from "@/apollo/useQueryUser";
+import Component from "./Component";
 ```
 
 ### Проблема: "Not wrapped in act(...)"
@@ -1663,15 +1686,16 @@ import Component from './Component'
 **Причина:** State update вне act()
 
 **Решение:**
+
 ```typescript
 // ✅ userEvent автоматически оборачивает в act()
-const user = userEvent.setup()
-await user.click(button)
+const user = userEvent.setup();
+await user.click(button);
 
 // ✅ Используй waitFor для async updates
 await waitFor(() => {
-  expect(screen.getByText('Updated')).toBeInTheDocument()
-})
+  expect(screen.getByText("Updated")).toBeInTheDocument();
+});
 ```
 
 ### Проблема: Coverage не учитывает файл
@@ -1679,13 +1703,14 @@ await waitFor(() => {
 **Причина:** Файл не импортируется в тестах
 
 **Решение:**
+
 ```typescript
 // ✅ Импортируй и тестируй
-import { myFunction } from './utils'
+import { myFunction } from "./utils";
 
-it('calls myFunction', () => {
-  expect(myFunction()).toBe('result')
-})
+it("calls myFunction", () => {
+  expect(myFunction()).toBe("result");
+});
 ```
 
 ### Проблема: Playwright timeout
@@ -1693,16 +1718,17 @@ it('calls myFunction', () => {
 **Причина:** Медленная загрузка
 
 **Решение:**
+
 ```typescript
 // ✅ Увеличь timeout
-await page.waitForSelector('text=Content', { timeout: 10000 })
+await page.waitForSelector("text=Content", { timeout: 10000 });
 
 // ✅ Или в конфиге
 export default defineConfig({
   use: {
     navigationTimeout: 30000,
   },
-})
+});
 ```
 
 ---
@@ -1771,23 +1797,28 @@ Phase 7 добавляет три категории новых тестов:
 
 ```typescript
 // Mock GitHub OAuth endpoints
-await page.route('https://github.com/login/oauth/access_token', async (route) => {
-  await route.fulfill({
-    status: 200,
-    body: JSON.stringify({
-      access_token: 'gho_mockToken',
-      token_type: 'bearer'
-    })
-  })
-})
+await page.route(
+  "https://github.com/login/oauth/access_token",
+  async (route) => {
+    await route.fulfill({
+      status: 200,
+      body: JSON.stringify({
+        access_token: "gho_mockToken",
+        token_type: "bearer",
+      }),
+    });
+  },
+);
 
 // Mock session cookies
-await context.addCookies([{
-  name: 'session',
-  value: 'mock_session_id',
-  domain: 'localhost',
-  httpOnly: true
-}])
+await context.addCookies([
+  {
+    name: "session",
+    value: "mock_session_id",
+    domain: "localhost",
+    httpOnly: true,
+  },
+]);
 ```
 
 **Запуск:**
@@ -1828,7 +1859,7 @@ npx playwright test e2e/oauth-flow.spec.ts -g "should complete OAuth login"
 
 ```typescript
 const mockDayMetrics = {
-  period: 'day',
+  period: "day",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 42,
@@ -1839,18 +1870,18 @@ const mockDayMetrics = {
     rateLimit: {
       avgUsage: 1245,
       peakUsage: 3500,
-      avgRemaining: 3755
-    }
-  }
-}
+      avgRemaining: 3755,
+    },
+  },
+};
 
 // Mock API endpoint
-await page.route('/api/analytics/oauth-usage*', async (route) => {
+await page.route("/api/analytics/oauth-usage*", async (route) => {
   await route.fulfill({
     status: 200,
-    body: JSON.stringify(mockDayMetrics)
-  })
-})
+    body: JSON.stringify(mockDayMetrics),
+  });
+});
 ```
 
 **Запуск:**
@@ -1942,12 +1973,12 @@ npm run storybook
 
 ### Test Coverage Goals
 
-| Компонент | Unit Tests | E2E Tests | Storybook | Coverage |
-|-----------|-----------|-----------|-----------|----------|
-| OAuth Flow | - | 13 tests | - | E2E only |
-| Analytics Dashboard | 20+ tests | 14 tests | 10 stories | 95%+ |
-| Analytics API | - | Mocked | - | Via E2E |
-| User Settings API | TBD | TBD | - | TBD |
+| Компонент           | Unit Tests | E2E Tests | Storybook  | Coverage |
+| ------------------- | ---------- | --------- | ---------- | -------- |
+| OAuth Flow          | -          | 13 tests  | -          | E2E only |
+| Analytics Dashboard | 20+ tests  | 14 tests  | 10 stories | 95%+     |
+| Analytics API       | -          | Mocked    | -          | Via E2E  |
+| User Settings API   | TBD        | TBD       | -          | TBD      |
 
 ### Running All Phase 7 Tests
 
@@ -1992,27 +2023,29 @@ for (const period of ['hour', 'day', 'week', 'month']) { ... }
 
 ```typescript
 // ✅ DO: Use context.addCookies for session simulation
-await context.addCookies([{
-  name: 'session',
-  value: 'mock_session_id',
-  httpOnly: true
-}])
+await context.addCookies([
+  {
+    name: "session",
+    value: "mock_session_id",
+    httpOnly: true,
+  },
+]);
 
 // ✅ DO: Test cookie clearing on logout
-const cookies = await context.cookies()
-expect(cookies.find(c => c.name === 'session')).toBeUndefined()
+const cookies = await context.cookies();
+expect(cookies.find((c) => c.name === "session")).toBeUndefined();
 ```
 
 **4. Error Scenarios:**
 
 ```typescript
 // ✅ DO: Test all error paths
-await page.route('/api/analytics/oauth-usage*', () => route.abort('failed'))
-await expect(page.getByText(/error/i)).toBeVisible()
+await page.route("/api/analytics/oauth-usage*", () => route.abort("failed"));
+await expect(page.getByText(/error/i)).toBeVisible();
 
 // ✅ DO: Test retry logic
-await retryButton.click()
-await expect(page.getByText('42')).toBeVisible()
+await retryButton.click();
+await expect(page.getByText("42")).toBeVisible();
 ```
 
 ### Troubleshooting Phase 7 Tests
@@ -2020,25 +2053,28 @@ await expect(page.getByText('42')).toBeVisible()
 **Problem:** E2E тесты падают с timeout
 
 **Solution:**
+
 ```typescript
 // Увеличьте timeout для медленных операций
-await expect(page.getByText('OAuth Analytics')).toBeVisible({
-  timeout: 10000
-})
+await expect(page.getByText("OAuth Analytics")).toBeVisible({
+  timeout: 10000,
+});
 ```
 
 **Problem:** Mock данные не применяются
 
 **Solution:**
+
 ```typescript
 // Убедитесь что route установлен ДО navigation
-await page.route('/api/analytics/oauth-usage*', handler)
-await page.goto('/')  // После route
+await page.route("/api/analytics/oauth-usage*", handler);
+await page.goto("/"); // После route
 ```
 
 **Problem:** Тесты проходят локально но падают в CI
 
 **Solution:**
+
 ```bash
 # Проверьте browser setup в CI
 npx playwright install
@@ -2068,6 +2104,7 @@ npx playwright install-deps
 **Vitest:** 4.0.6 | **Playwright:** 1.56.1
 **Статус тестов:** ✅ 1302 + 27 E2E passing (100%)
 **Изменения:**
+
 - ➕ Добавлен раздел "Phase 7 Enhancement Tests"
 - ➕ 13 E2E тестов для OAuth Flow (`e2e/oauth-flow.spec.ts`)
 - ➕ 14 E2E тестов для Analytics Dashboard (`e2e/analytics-dashboard.spec.ts`)

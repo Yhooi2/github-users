@@ -1,4 +1,4 @@
-import type { YearData } from '@/hooks/useUserAnalytics';
+import type { YearData } from "@/hooks/useUserAnalytics";
 
 /**
  * Growth metric result with detailed breakdown
@@ -19,7 +19,7 @@ export interface GrowthMetric {
   /** Overall score from -100 to +100 */
   score: number;
   /** Growth level based on score */
-  level: 'Rapid Growth' | 'Growing' | 'Stable' | 'Declining' | 'Rapid Decline';
+  level: "Rapid Growth" | "Growing" | "Stable" | "Declining" | "Rapid Decline";
   /** Detailed breakdown by component (weighted) */
   breakdown: {
     activityGrowth: number;
@@ -60,7 +60,7 @@ export function calculateGrowthScore(timeline: YearData[]): GrowthMetric {
     // Need at least 2 years to calculate growth
     return {
       score: 0,
-      level: 'Stable',
+      level: "Stable",
       breakdown: { activityGrowth: 0, impactGrowth: 0, skillsGrowth: 0 },
       details: {
         commitsYoYChange: 0,
@@ -85,7 +85,10 @@ export function calculateGrowthScore(timeline: YearData[]): GrowthMetric {
   // Calculate YoY change in commits
   const previousCommits = previousYear.totalCommits;
   const currentCommits = currentYear.totalCommits;
-  const commitsYoYChange = calculatePercentageChange(previousCommits, currentCommits);
+  const commitsYoYChange = calculatePercentageChange(
+    previousCommits,
+    currentCommits,
+  );
   const activityGrowthScore = normalizeGrowth(commitsYoYChange) * 40;
 
   // B. Impact growth (30% of total score)
@@ -109,7 +112,9 @@ export function calculateGrowthScore(timeline: YearData[]): GrowthMetric {
   const newLanguages = countNewLanguages(previousLanguages, currentLanguages);
   const skillsGrowthScore = calculateSkillsGrowth(newLanguages) * 30;
 
-  const score = Math.round(activityGrowthScore + impactGrowthScore + skillsGrowthScore);
+  const score = Math.round(
+    activityGrowthScore + impactGrowthScore + skillsGrowthScore,
+  );
 
   return {
     score: clamp(score, -100, 100),
@@ -199,7 +204,10 @@ function extractLanguages(yearData: YearData): Set<string> {
  * Count new languages in current year that weren't in previous year
  * @internal
  */
-function countNewLanguages(previousLanguages: Set<string>, currentLanguages: Set<string>): number {
+function countNewLanguages(
+  previousLanguages: Set<string>,
+  currentLanguages: Set<string>,
+): number {
   let count = 0;
   currentLanguages.forEach((lang) => {
     if (!previousLanguages.has(lang)) {
@@ -238,10 +246,10 @@ function clamp(value: number, min: number, max: number): number {
  * @param score - Growth score (-100 to +100)
  * @returns Growth level label
  */
-export function getGrowthLabel(score: number): GrowthMetric['level'] {
-  if (score >= 51) return 'Rapid Growth';
-  if (score >= 21) return 'Growing';
-  if (score >= -20) return 'Stable';
-  if (score >= -50) return 'Declining';
-  return 'Rapid Decline';
+export function getGrowthLabel(score: number): GrowthMetric["level"] {
+  if (score >= 51) return "Rapid Growth";
+  if (score >= 21) return "Growing";
+  if (score >= -20) return "Stable";
+  if (score >= -50) return "Declining";
+  return "Rapid Decline";
 }

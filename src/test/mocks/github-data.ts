@@ -6,33 +6,33 @@
  */
 
 import type {
-  Repository,
-  GitHubUser,
-  ProgrammingLanguage,
-  ParentRepository,
-  LicenseInfo,
   ConnectionCount,
-} from '@/apollo/github-api.types';
+  GitHubUser,
+  LicenseInfo,
+  ParentRepository,
+  ProgrammingLanguage,
+  Repository,
+} from "@/apollo/github-api.types";
 import type {
-  AuthenticityScore,
   ActivityMetric,
+  AuthenticityScore,
+  GrowthMetric,
   ImpactMetric,
   QualityMetric,
-  GrowthMetric,
-} from '@/types/metrics';
+} from "@/types/metrics";
 
 /**
  * Default programming language (TypeScript)
  */
 export const mockLanguageTypeScript: ProgrammingLanguage = {
-  name: 'TypeScript',
+  name: "TypeScript",
 };
 
 /**
  * Default programming language (JavaScript)
  */
 export const mockLanguageJavaScript: ProgrammingLanguage = {
-  name: 'JavaScript',
+  name: "JavaScript",
 };
 
 /**
@@ -46,30 +46,30 @@ export const mockConnectionCountZero: ConnectionCount = {
  * Default MIT license
  */
 export const mockLicenseMIT: LicenseInfo = {
-  name: 'MIT',
+  name: "MIT",
 };
 
 /**
  * Default parent repository (for forked repos)
  */
 export const mockParentRepository: ParentRepository = {
-  name: 'original-repo',
+  name: "original-repo",
   owner: {
-    login: 'original-owner',
+    login: "original-owner",
   },
-  url: 'https://github.com/original-owner/original-repo',
+  url: "https://github.com/original-owner/original-repo",
 };
 
 /**
  * Default repository mock with realistic values
  */
 export const mockRepository: Repository = {
-  id: 'repo-1',
-  name: 'test-repository',
-  description: 'A test repository for unit testing',
+  id: "repo-1",
+  name: "test-repository",
+  description: "A test repository for unit testing",
   forkCount: 10,
   stargazerCount: 100,
-  url: 'https://github.com/testuser/test-repository',
+  url: "https://github.com/testuser/test-repository",
 
   // Authenticity fields
   isFork: false,
@@ -77,14 +77,14 @@ export const mockRepository: Repository = {
   parent: null,
 
   // Timestamps (recent activity)
-  createdAt: new Date('2023-01-01T00:00:00Z').toISOString(),
-  updatedAt: new Date('2024-12-01T00:00:00Z').toISOString(),
-  pushedAt: new Date('2024-12-01T00:00:00Z').toISOString(),
+  createdAt: new Date("2023-01-01T00:00:00Z").toISOString(),
+  updatedAt: new Date("2024-12-01T00:00:00Z").toISOString(),
+  pushedAt: new Date("2024-12-01T00:00:00Z").toISOString(),
 
   // Additional stats
   diskUsage: 5000, // 5 MB
   isArchived: false,
-  homepageUrl: 'https://example.com',
+  homepageUrl: "https://example.com",
 
   // Engagement
   watchers: { totalCount: 25 },
@@ -92,10 +92,7 @@ export const mockRepository: Repository = {
 
   // Topics and license
   repositoryTopics: {
-    nodes: [
-      { topic: { name: 'typescript' } },
-      { topic: { name: 'react' } },
-    ],
+    nodes: [{ topic: { name: "typescript" } }, { topic: { name: "react" } }],
   },
   licenseInfo: mockLicenseMIT,
 
@@ -109,9 +106,9 @@ export const mockRepository: Repository = {
   languages: {
     totalSize: 100000,
     edges: [
-      { size: 70000, node: { name: 'TypeScript' } },
-      { size: 20000, node: { name: 'JavaScript' } },
-      { size: 10000, node: { name: 'CSS' } },
+      { size: 70000, node: { name: "TypeScript" } },
+      { size: 20000, node: { name: "JavaScript" } },
+      { size: 10000, node: { name: "CSS" } },
     ],
   },
 };
@@ -120,25 +117,25 @@ export const mockRepository: Repository = {
  * Default user mock with realistic values
  */
 export const mockUser: GitHubUser = {
-  id: 'user-1',
-  login: 'testuser',
-  name: 'Test User',
-  avatarUrl: 'https://avatars.githubusercontent.com/u/12345',
-  bio: 'Full-stack developer passionate about open source',
-  url: 'https://github.com/testuser',
-  location: 'San Francisco, CA',
+  id: "user-1",
+  login: "testuser",
+  name: "Test User",
+  avatarUrl: "https://avatars.githubusercontent.com/u/12345",
+  bio: "Full-stack developer passionate about open source",
+  url: "https://github.com/testuser",
+  location: "San Francisco, CA",
 
   // Optional profile fields (for GET_USER_PROFILE query compatibility)
-  email: 'testuser@example.com',
-  company: '@TestCompany',
-  websiteUrl: 'https://testuser.dev',
-  twitterUsername: 'testuser',
+  email: "testuser@example.com",
+  company: "@TestCompany",
+  websiteUrl: "https://testuser.dev",
+  twitterUsername: "testuser",
 
   followers: { totalCount: 100 },
   following: { totalCount: 50 },
   gists: { totalCount: 10 },
 
-  createdAt: new Date('2015-01-01T00:00:00Z').toISOString(),
+  createdAt: new Date("2015-01-01T00:00:00Z").toISOString(),
 
   // Yearly contributions
   year1: { totalCommitContributions: 100 },
@@ -150,7 +147,7 @@ export const mockUser: GitHubUser = {
     commitContributionsByRepository: [
       {
         contributions: { totalCount: 100 },
-        repository: { name: 'test-repository' },
+        repository: { name: "test-repository" },
       },
     ],
   },
@@ -158,7 +155,7 @@ export const mockUser: GitHubUser = {
   repositories: {
     totalCount: 10,
     pageInfo: {
-      endCursor: 'cursor123',
+      endCursor: "cursor123",
       hasNextPage: false,
     },
     nodes: [mockRepository],
@@ -178,7 +175,7 @@ export function createMockGraphQLResponse(
     used: number;
     isDemo: boolean;
     userLogin?: string;
-  }> = {}
+  }> = {},
 ) {
   return {
     data: {
@@ -209,7 +206,9 @@ export function createMockGraphQLResponse(
  * });
  * ```
  */
-export function createMockRepository(overrides: Partial<Repository> = {}): Repository {
+export function createMockRepository(
+  overrides: Partial<Repository> = {},
+): Repository {
   return {
     ...mockRepository,
     ...overrides,
@@ -230,7 +229,9 @@ export function createMockRepository(overrides: Partial<Repository> = {}): Repos
  * });
  * ```
  */
-export function createMockUser(overrides: Partial<GitHubUser> = {}): GitHubUser {
+export function createMockUser(
+  overrides: Partial<GitHubUser> = {},
+): GitHubUser {
   return {
     ...mockUser,
     ...overrides,
@@ -241,8 +242,8 @@ export function createMockUser(overrides: Partial<GitHubUser> = {}): GitHubUser 
  * Pre-configured mock: Forked repository
  */
 export const mockForkedRepository = createMockRepository({
-  id: 'repo-forked',
-  name: 'forked-repo',
+  id: "repo-forked",
+  name: "forked-repo",
   isFork: true,
   parent: mockParentRepository,
   stargazerCount: 5,
@@ -253,21 +254,21 @@ export const mockForkedRepository = createMockRepository({
  * Pre-configured mock: Archived repository
  */
 export const mockArchivedRepository = createMockRepository({
-  id: 'repo-archived',
-  name: 'archived-repo',
+  id: "repo-archived",
+  name: "archived-repo",
   isArchived: true,
-  pushedAt: new Date('2020-01-01T00:00:00Z').toISOString(),
-  updatedAt: new Date('2020-06-01T00:00:00Z').toISOString(),
+  pushedAt: new Date("2020-01-01T00:00:00Z").toISOString(),
+  updatedAt: new Date("2020-06-01T00:00:00Z").toISOString(),
 });
 
 /**
  * Pre-configured mock: Template repository
  */
 export const mockTemplateRepository = createMockRepository({
-  id: 'repo-template',
-  name: 'template-repo',
+  id: "repo-template",
+  name: "template-repo",
   isTemplate: true,
-  description: 'A template repository for bootstrapping projects',
+  description: "A template repository for bootstrapping projects",
   stargazerCount: 250,
 });
 
@@ -275,8 +276,8 @@ export const mockTemplateRepository = createMockRepository({
  * Pre-configured mock: Empty repository (no commits)
  */
 export const mockEmptyRepository = createMockRepository({
-  id: 'repo-empty',
-  name: 'empty-repo',
+  id: "repo-empty",
+  name: "empty-repo",
   defaultBranchRef: null,
   stargazerCount: 0,
   forkCount: 0,
@@ -289,18 +290,18 @@ export const mockEmptyRepository = createMockRepository({
  * Pre-configured mock: Popular repository (many stars)
  */
 export const mockPopularRepository = createMockRepository({
-  id: 'repo-popular',
-  name: 'popular-repo',
-  description: 'A very popular open-source project',
+  id: "repo-popular",
+  name: "popular-repo",
+  description: "A very popular open-source project",
   stargazerCount: 10000,
   forkCount: 1500,
   watchers: { totalCount: 500 },
   issues: { totalCount: 200 },
   repositoryTopics: {
     nodes: [
-      { topic: { name: 'awesome' } },
-      { topic: { name: 'popular' } },
-      { topic: { name: 'open-source' } },
+      { topic: { name: "awesome" } },
+      { topic: { name: "popular" } },
+      { topic: { name: "open-source" } },
     ],
   },
 });
@@ -309,8 +310,8 @@ export const mockPopularRepository = createMockRepository({
  * Pre-configured mock: Private/low-engagement repository
  */
 export const mockLowEngagementRepository = createMockRepository({
-  id: 'repo-low',
-  name: 'low-engagement-repo',
+  id: "repo-low",
+  name: "low-engagement-repo",
   stargazerCount: 1,
   forkCount: 0,
   watchers: { totalCount: 1 },
@@ -323,14 +324,14 @@ export const mockLowEngagementRepository = createMockRepository({
  * Pre-configured mock: JavaScript repository
  */
 export const mockJavaScriptRepository = createMockRepository({
-  id: 'repo-js',
-  name: 'javascript-repo',
+  id: "repo-js",
+  name: "javascript-repo",
   primaryLanguage: mockLanguageJavaScript,
   languages: {
     totalSize: 50000,
     edges: [
-      { size: 40000, node: { name: 'JavaScript' } },
-      { size: 10000, node: { name: 'HTML' } },
+      { size: 40000, node: { name: "JavaScript" } },
+      { size: 10000, node: { name: "HTML" } },
     ],
   },
 });
@@ -339,16 +340,16 @@ export const mockJavaScriptRepository = createMockRepository({
  * Pre-configured mock: Multi-language repository
  */
 export const mockMultiLanguageRepository = createMockRepository({
-  id: 'repo-multi',
-  name: 'multi-language-repo',
+  id: "repo-multi",
+  name: "multi-language-repo",
   languages: {
     totalSize: 200000,
     edges: [
-      { size: 80000, node: { name: 'TypeScript' } },
-      { size: 50000, node: { name: 'Python' } },
-      { size: 40000, node: { name: 'Go' } },
-      { size: 20000, node: { name: 'Rust' } },
-      { size: 10000, node: { name: 'Shell' } },
+      { size: 80000, node: { name: "TypeScript" } },
+      { size: 50000, node: { name: "Python" } },
+      { size: 40000, node: { name: "Go" } },
+      { size: 20000, node: { name: "Rust" } },
+      { size: 10000, node: { name: "Shell" } },
     ],
   },
 });
@@ -357,8 +358,8 @@ export const mockMultiLanguageRepository = createMockRepository({
  * Pre-configured mock: Repository without license
  */
 export const mockNoLicenseRepository = createMockRepository({
-  id: 'repo-no-license',
-  name: 'no-license-repo',
+  id: "repo-no-license",
+  name: "no-license-repo",
   licenseInfo: null,
 });
 
@@ -366,8 +367,8 @@ export const mockNoLicenseRepository = createMockRepository({
  * Pre-configured mock: Repository without topics
  */
 export const mockNoTopicsRepository = createMockRepository({
-  id: 'repo-no-topics',
-  name: 'no-topics-repo',
+  id: "repo-no-topics",
+  name: "no-topics-repo",
   repositoryTopics: { nodes: [] },
 });
 
@@ -400,14 +401,14 @@ export const mockOriginalRepositories: Repository[] = [
 export const mockInactiveRepositories: Repository[] = [
   mockArchivedRepository,
   createMockRepository({
-    id: 'repo-inactive-1',
-    name: 'inactive-repo-1',
-    pushedAt: new Date('2019-01-01T00:00:00Z').toISOString(),
+    id: "repo-inactive-1",
+    name: "inactive-repo-1",
+    pushedAt: new Date("2019-01-01T00:00:00Z").toISOString(),
   }),
   createMockRepository({
-    id: 'repo-inactive-2',
-    name: 'inactive-repo-2',
-    pushedAt: new Date('2018-06-01T00:00:00Z').toISOString(),
+    id: "repo-inactive-2",
+    name: "inactive-repo-2",
+    pushedAt: new Date("2018-06-01T00:00:00Z").toISOString(),
   }),
 ];
 
@@ -427,14 +428,14 @@ export const mockInactiveRepositories: Repository[] = [
  */
 export function createMockRepositories(
   count: number,
-  overrides: Partial<Repository> = {}
+  overrides: Partial<Repository> = {},
 ): Repository[] {
   return Array.from({ length: count }, (_, i) =>
     createMockRepository({
       id: `repo-${i + 1}`,
       name: `test-repo-${i + 1}`,
       ...overrides,
-    })
+    }),
   );
 }
 
@@ -447,7 +448,7 @@ export function createMockRepositories(
  */
 export const mockHighAuthenticityScore: AuthenticityScore = {
   score: 85,
-  category: 'High',
+  category: "High",
   breakdown: {
     originalityScore: 22,
     activityScore: 20,
@@ -469,7 +470,7 @@ export const mockHighAuthenticityScore: AuthenticityScore = {
  */
 export const mockMediumAuthenticityScore: AuthenticityScore = {
   score: 62,
-  category: 'Medium',
+  category: "Medium",
   breakdown: {
     originalityScore: 15,
     activityScore: 18,
@@ -491,14 +492,17 @@ export const mockMediumAuthenticityScore: AuthenticityScore = {
  */
 export const mockLowAuthenticityScore: AuthenticityScore = {
   score: 35,
-  category: 'Low',
+  category: "Low",
   breakdown: {
     originalityScore: 8,
     activityScore: 10,
     engagementScore: 7,
     codeOwnershipScore: 10,
   },
-  flags: ['Low activity in original repositories', 'High fork-to-original ratio'],
+  flags: [
+    "Low activity in original repositories",
+    "High fork-to-original ratio",
+  ],
   metadata: {
     totalRepos: 12,
     originalRepos: 3,
@@ -513,14 +517,18 @@ export const mockLowAuthenticityScore: AuthenticityScore = {
  */
 export const mockSuspiciousAuthenticityScore: AuthenticityScore = {
   score: 15,
-  category: 'Suspicious',
+  category: "Suspicious",
   breakdown: {
     originalityScore: 3,
     activityScore: 5,
     engagementScore: 2,
     codeOwnershipScore: 5,
   },
-  flags: ['Majority of repositories are forks', 'Very low engagement', 'Suspicious activity pattern'],
+  flags: [
+    "Majority of repositories are forks",
+    "Very low engagement",
+    "Suspicious activity pattern",
+  ],
   metadata: {
     totalRepos: 15,
     originalRepos: 1,
@@ -534,7 +542,7 @@ export const mockSuspiciousAuthenticityScore: AuthenticityScore = {
  * Factory function to create a custom authenticity score with overrides
  */
 export function createMockAuthenticityScore(
-  overrides: Partial<AuthenticityScore> = {}
+  overrides: Partial<AuthenticityScore> = {},
 ): AuthenticityScore {
   return {
     ...mockHighAuthenticityScore,
@@ -562,11 +570,14 @@ export interface ContributionRepository {
  * Pre-configured mock: Contribution repositories collection
  */
 export const mockContributionRepositories: ContributionRepository[] = [
-  { repository: { name: 'awesome-project' }, contributions: { totalCount: 127 } },
-  { repository: { name: 'web-app' }, contributions: { totalCount: 89 } },
-  { repository: { name: 'mobile-client' }, contributions: { totalCount: 56 } },
-  { repository: { name: 'api-server' }, contributions: { totalCount: 43 } },
-  { repository: { name: 'documentation' }, contributions: { totalCount: 21 } },
+  {
+    repository: { name: "awesome-project" },
+    contributions: { totalCount: 127 },
+  },
+  { repository: { name: "web-app" }, contributions: { totalCount: 89 } },
+  { repository: { name: "mobile-client" }, contributions: { totalCount: 56 } },
+  { repository: { name: "api-server" }, contributions: { totalCount: 43 } },
+  { repository: { name: "documentation" }, contributions: { totalCount: 21 } },
 ];
 
 /**
@@ -574,7 +585,7 @@ export const mockContributionRepositories: ContributionRepository[] = [
  */
 export function createMockContributionRepository(
   name: string,
-  commits: number
+  commits: number,
 ): ContributionRepository {
   return {
     repository: { name },
@@ -591,7 +602,7 @@ export function createMockContributionRepository(
  */
 export const mockHighActivityMetric: ActivityMetric = {
   score: 85,
-  level: 'High',
+  level: "High",
   breakdown: {
     recentCommits: 30,
     consistency: 28,
@@ -609,7 +620,7 @@ export const mockHighActivityMetric: ActivityMetric = {
  */
 export const mockModerateActivityMetric: ActivityMetric = {
   score: 60,
-  level: 'Moderate',
+  level: "Moderate",
   breakdown: {
     recentCommits: 20,
     consistency: 18,
@@ -627,7 +638,7 @@ export const mockModerateActivityMetric: ActivityMetric = {
  */
 export const mockLowActivityMetric: ActivityMetric = {
   score: 30,
-  level: 'Low',
+  level: "Low",
   breakdown: {
     recentCommits: 10,
     consistency: 8,
@@ -645,7 +656,7 @@ export const mockLowActivityMetric: ActivityMetric = {
  */
 export const mockExceptionalImpactMetric: ImpactMetric = {
   score: 95,
-  level: 'Exceptional',
+  level: "Exceptional",
   breakdown: {
     stars: 33,
     forks: 18,
@@ -667,7 +678,7 @@ export const mockExceptionalImpactMetric: ImpactMetric = {
  */
 export const mockStrongImpactMetric: ImpactMetric = {
   score: 75,
-  level: 'Strong',
+  level: "Strong",
   breakdown: {
     stars: 28,
     forks: 15,
@@ -689,7 +700,7 @@ export const mockStrongImpactMetric: ImpactMetric = {
  */
 export const mockExcellentQualityMetric: QualityMetric = {
   score: 90,
-  level: 'Excellent',
+  level: "Excellent",
   breakdown: {
     originality: 19,
     documentation: 18,
@@ -714,7 +725,7 @@ export const mockExcellentQualityMetric: QualityMetric = {
  */
 export const mockRapidGrowthMetric: GrowthMetric = {
   score: 75,
-  level: 'Rapid Growth',
+  level: "Rapid Growth",
   breakdown: {
     activityGrowth: 28,
     impactGrowth: 25,
@@ -734,7 +745,7 @@ export const mockRapidGrowthMetric: GrowthMetric = {
  */
 export const mockStableGrowthMetric: GrowthMetric = {
   score: 10,
-  level: 'Stable',
+  level: "Stable",
   breakdown: {
     activityGrowth: 5,
     impactGrowth: 3,

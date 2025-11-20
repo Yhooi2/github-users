@@ -1,6 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { StatsOverview } from './StatsOverview';
-import type { YearlyCommitStats, LanguageStats, CommitActivity } from '@/lib/statistics';
+import type {
+  CommitActivity,
+  LanguageStats,
+  YearlyCommitStats,
+} from "@/lib/statistics";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { StatsOverview } from "./StatsOverview";
 
 // Mock data generators
 const yearlyCommitsData: YearlyCommitStats[] = [
@@ -10,11 +14,11 @@ const yearlyCommitsData: YearlyCommitStats[] = [
 ];
 
 const languagesData: LanguageStats[] = [
-  { name: 'TypeScript', size: 500000, percentage: 45.5, repositoryCount: 8 },
-  { name: 'JavaScript', size: 300000, percentage: 27.3, repositoryCount: 12 },
-  { name: 'Python', size: 150000, percentage: 13.6, repositoryCount: 5 },
-  { name: 'CSS', size: 100000, percentage: 9.1, repositoryCount: 10 },
-  { name: 'HTML', size: 50000, percentage: 4.5, repositoryCount: 8 },
+  { name: "TypeScript", size: 500000, percentage: 45.5, repositoryCount: 8 },
+  { name: "JavaScript", size: 300000, percentage: 27.3, repositoryCount: 12 },
+  { name: "Python", size: 150000, percentage: 13.6, repositoryCount: 5 },
+  { name: "CSS", size: 100000, percentage: 9.1, repositoryCount: 10 },
+  { name: "HTML", size: 50000, percentage: 4.5, repositoryCount: 8 },
 ];
 
 const activityData: CommitActivity = {
@@ -27,7 +31,7 @@ const activityData: CommitActivity = {
 const minimalYearlyCommits: YearlyCommitStats[] = [{ year: 2025, commits: 50 }];
 
 const minimalLanguages: LanguageStats[] = [
-  { name: 'JavaScript', size: 10000, percentage: 100, repositoryCount: 1 },
+  { name: "JavaScript", size: 10000, percentage: 100, repositoryCount: 1 },
 ];
 
 const minimalActivity: CommitActivity = {
@@ -38,16 +42,16 @@ const minimalActivity: CommitActivity = {
 };
 
 const manyLanguages: LanguageStats[] = [
-  { name: 'TypeScript', size: 500000, percentage: 35.0, repositoryCount: 8 },
-  { name: 'JavaScript', size: 300000, percentage: 21.0, repositoryCount: 12 },
-  { name: 'Python', size: 200000, percentage: 14.0, repositoryCount: 5 },
-  { name: 'Java', size: 150000, percentage: 10.5, repositoryCount: 4 },
-  { name: 'Go', size: 100000, percentage: 7.0, repositoryCount: 3 },
-  { name: 'Rust', size: 80000, percentage: 5.6, repositoryCount: 2 },
-  { name: 'C++', size: 50000, percentage: 3.5, repositoryCount: 2 },
-  { name: 'Ruby', size: 30000, percentage: 2.1, repositoryCount: 1 },
-  { name: 'PHP', size: 10000, percentage: 0.7, repositoryCount: 1 },
-  { name: 'Shell', size: 10000, percentage: 0.7, repositoryCount: 3 },
+  { name: "TypeScript", size: 500000, percentage: 35.0, repositoryCount: 8 },
+  { name: "JavaScript", size: 300000, percentage: 21.0, repositoryCount: 12 },
+  { name: "Python", size: 200000, percentage: 14.0, repositoryCount: 5 },
+  { name: "Java", size: 150000, percentage: 10.5, repositoryCount: 4 },
+  { name: "Go", size: 100000, percentage: 7.0, repositoryCount: 3 },
+  { name: "Rust", size: 80000, percentage: 5.6, repositoryCount: 2 },
+  { name: "C++", size: 50000, percentage: 3.5, repositoryCount: 2 },
+  { name: "Ruby", size: 30000, percentage: 2.1, repositoryCount: 1 },
+  { name: "PHP", size: 10000, percentage: 0.7, repositoryCount: 1 },
+  { name: "Shell", size: 10000, percentage: 0.7, repositoryCount: 3 },
 ];
 
 const highActivityData: CommitActivity = {
@@ -58,12 +62,12 @@ const highActivityData: CommitActivity = {
 };
 
 const meta = {
-  title: 'Components/Statistics/StatsOverview',
+  title: "Components/Statistics/StatsOverview",
   component: StatsOverview,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof StatsOverview>;
 
 export default meta;
@@ -88,7 +92,7 @@ export const OverviewTab: Story = {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'overview',
+    defaultTab: "overview",
   },
 };
 
@@ -100,7 +104,7 @@ export const CommitsTab: Story = {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'commits',
+    defaultTab: "commits",
   },
 };
 
@@ -112,7 +116,7 @@ export const LanguagesTab: Story = {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'languages',
+    defaultTab: "languages",
   },
 };
 
@@ -124,7 +128,7 @@ export const ActivityTab: Story = {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'activity',
+    defaultTab: "activity",
   },
 };
 
@@ -137,7 +141,7 @@ export const WithoutOverview: Story = {
     languages: languagesData,
     activity: activityData,
     showOverview: false,
-    defaultTab: 'commits',
+    defaultTab: "commits",
   },
 };
 
@@ -217,7 +221,7 @@ export const LoadingWithMessage: Story = {
     languages: null,
     activity: null,
     loading: true,
-    loadingMessage: 'Fetching GitHub statistics...',
+    loadingMessage: "Fetching GitHub statistics...",
   },
 };
 
@@ -229,7 +233,7 @@ export const Error: Story = {
     yearlyCommits: null,
     languages: null,
     activity: null,
-    error: new Error('Failed to fetch statistics'),
+    error: new Error("Failed to fetch statistics"),
   },
 };
 
@@ -241,9 +245,10 @@ export const CustomError: Story = {
     yearlyCommits: null,
     languages: null,
     activity: null,
-    error: new Error('Network timeout'),
-    errorTitle: 'Connection Error',
-    errorDescription: 'Unable to load statistics from GitHub. Please try again.',
+    error: new Error("Network timeout"),
+    errorTitle: "Connection Error",
+    errorDescription:
+      "Unable to load statistics from GitHub. Please try again.",
   },
 };
 
@@ -277,11 +282,11 @@ export const MobileView: Story = {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'overview',
+    defaultTab: "overview",
   },
   parameters: {
     viewport: {
-      defaultViewport: 'mobile1',
+      defaultViewport: "mobile1",
     },
   },
 };
@@ -294,11 +299,11 @@ export const TabletView: Story = {
     yearlyCommits: yearlyCommitsData,
     languages: languagesData,
     activity: activityData,
-    defaultTab: 'overview',
+    defaultTab: "overview",
   },
   parameters: {
     viewport: {
-      defaultViewport: 'tablet',
+      defaultViewport: "tablet",
     },
   },
 };

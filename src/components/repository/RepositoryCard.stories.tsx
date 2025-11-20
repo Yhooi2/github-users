@@ -1,27 +1,28 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { RepositoryCard } from './RepositoryCard';
-import { createMockRepository } from '@/test/mocks/github-data';
+import { createMockRepository } from "@/test/mocks/github-data";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { RepositoryCard } from "./RepositoryCard";
 
 // Use centralized mock factory (Week 4 P3: Mock data consolidation)
 const mockRepository = createMockRepository({
-  id: '1',
-  name: 'awesome-project',
-  description: 'A comprehensive React application with TypeScript, Vite, and modern tooling',
-  url: 'https://github.com/user/awesome-project',
+  id: "1",
+  name: "awesome-project",
+  description:
+    "A comprehensive React application with TypeScript, Vite, and modern tooling",
+  url: "https://github.com/user/awesome-project",
   stargazerCount: 1234,
   forkCount: 89,
-  createdAt: '2023-01-15T10:30:00Z',
-  updatedAt: '2024-11-05T14:22:00Z',
-  pushedAt: '2024-11-05T14:22:00Z',
+  createdAt: "2023-01-15T10:30:00Z",
+  updatedAt: "2024-11-05T14:22:00Z",
+  pushedAt: "2024-11-05T14:22:00Z",
   diskUsage: 5000,
   watchers: { totalCount: 45 },
   issues: { totalCount: 12 },
   repositoryTopics: {
     nodes: [
-      { topic: { name: 'react' } },
-      { topic: { name: 'typescript' } },
-      { topic: { name: 'vite' } },
-      { topic: { name: 'graphql' } },
+      { topic: { name: "react" } },
+      { topic: { name: "typescript" } },
+      { topic: { name: "vite" } },
+      { topic: { name: "graphql" } },
     ],
   },
   defaultBranchRef: {
@@ -32,22 +33,22 @@ const mockRepository = createMockRepository({
   languages: {
     totalSize: 5000,
     edges: [
-      { size: 4000, node: { name: 'TypeScript' } },
-      { size: 1000, node: { name: 'CSS' } },
+      { size: 4000, node: { name: "TypeScript" } },
+      { size: 1000, node: { name: "CSS" } },
     ],
   },
 });
 
 const meta = {
-  title: 'Components/Repository/RepositoryCard',
+  title: "Components/Repository/RepositoryCard",
   component: RepositoryCard,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div style={{ width: '600px', maxWidth: '100%' }}>
+      <div style={{ width: "600px", maxWidth: "100%" }}>
         <Story />
       </div>
     ),
@@ -73,8 +74,8 @@ export const PopularRepository: Story = {
   args: {
     repository: {
       ...mockRepository,
-      name: 'react',
-      description: 'A JavaScript library for building user interfaces',
+      name: "react",
+      description: "A JavaScript library for building user interfaces",
       stargazerCount: 234567,
       forkCount: 45678,
       watchers: { totalCount: 8900 },
@@ -89,12 +90,12 @@ export const ForkedRepository: Story = {
   args: {
     repository: {
       ...mockRepository,
-      name: 'forked-project',
+      name: "forked-project",
       isFork: true,
       parent: {
-        name: 'original-project',
-        owner: { login: 'original-owner' },
-        url: 'https://github.com/original-owner/original-project',
+        name: "original-project",
+        owner: { login: "original-owner" },
+        url: "https://github.com/original-owner/original-project",
       },
     },
   },
@@ -107,8 +108,9 @@ export const ArchivedRepository: Story = {
   args: {
     repository: {
       ...mockRepository,
-      name: 'legacy-app',
-      description: 'This repository has been archived and is no longer maintained',
+      name: "legacy-app",
+      description:
+        "This repository has been archived and is no longer maintained",
       isArchived: true,
       stargazerCount: 456,
       forkCount: 23,
@@ -137,14 +139,14 @@ export const ManyTopics: Story = {
       ...mockRepository,
       repositoryTopics: {
         nodes: [
-          { topic: { name: 'react' } },
-          { topic: { name: 'typescript' } },
-          { topic: { name: 'vite' } },
-          { topic: { name: 'graphql' } },
-          { topic: { name: 'apollo' } },
-          { topic: { name: 'testing' } },
-          { topic: { name: 'storybook' } },
-          { topic: { name: 'vitest' } },
+          { topic: { name: "react" } },
+          { topic: { name: "typescript" } },
+          { topic: { name: "vite" } },
+          { topic: { name: "graphql" } },
+          { topic: { name: "apollo" } },
+          { topic: { name: "testing" } },
+          { topic: { name: "storybook" } },
+          { topic: { name: "vitest" } },
         ],
       },
     },
@@ -180,14 +182,14 @@ export const PythonRepository: Story = {
   args: {
     repository: {
       ...mockRepository,
-      name: 'python-ml-toolkit',
-      description: 'Machine learning toolkit with scikit-learn and TensorFlow',
-      primaryLanguage: { name: 'Python' },
+      name: "python-ml-toolkit",
+      description: "Machine learning toolkit with scikit-learn and TensorFlow",
+      primaryLanguage: { name: "Python" },
       repositoryTopics: {
         nodes: [
-          { topic: { name: 'python' } },
-          { topic: { name: 'machine-learning' } },
-          { topic: { name: 'tensorflow' } },
+          { topic: { name: "python" } },
+          { topic: { name: "machine-learning" } },
+          { topic: { name: "tensorflow" } },
         ],
       },
     },
@@ -201,14 +203,15 @@ export const GoRepository: Story = {
   args: {
     repository: {
       ...mockRepository,
-      name: 'go-api-server',
-      description: 'High-performance REST API server built with Go and Gin framework',
-      primaryLanguage: { name: 'Go' },
+      name: "go-api-server",
+      description:
+        "High-performance REST API server built with Go and Gin framework",
+      primaryLanguage: { name: "Go" },
       repositoryTopics: {
         nodes: [
-          { topic: { name: 'go' } },
-          { topic: { name: 'api' } },
-          { topic: { name: 'rest' } },
+          { topic: { name: "go" } },
+          { topic: { name: "api" } },
+          { topic: { name: "rest" } },
         ],
       },
     },

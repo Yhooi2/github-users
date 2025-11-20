@@ -1,30 +1,36 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
-import { Button } from './button';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Button } from "./button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
 const meta: Meta<typeof Tabs> = {
-  title: 'UI/Tabs',
+  title: "UI/Tabs",
   component: Tabs,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A tabs component for organizing content into separate views, built on Radix UI Tabs.',
+          "A tabs component for organizing content into separate views, built on Radix UI Tabs.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     defaultValue: {
-      description: 'The value of the tab to be selected by default',
-      control: 'text',
+      description: "The value of the tab to be selected by default",
+      control: "text",
     },
     orientation: {
-      description: 'The orientation of the tabs',
-      control: 'radio',
-      options: ['horizontal', 'vertical'],
+      description: "The orientation of the tabs",
+      control: "radio",
+      options: ["horizontal", "vertical"],
     },
   },
 };
@@ -67,11 +73,14 @@ export const WithCards: Story = {
         <Card>
           <CardHeader>
             <CardTitle>Overview</CardTitle>
-            <CardDescription>General information and statistics</CardDescription>
+            <CardDescription>
+              General information and statistics
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm">
-              This is the overview tab showing general information about the user.
+              This is the overview tab showing general information about the
+              user.
             </p>
           </CardContent>
         </Card>
@@ -178,7 +187,7 @@ export const TwoTabs: Story = {
         <TabsTrigger value="preview">Preview</TabsTrigger>
       </TabsList>
       <TabsContent value="code">
-        <div className="bg-muted rounded-md p-4">
+        <div className="rounded-md bg-muted p-4">
           <code className="text-sm">const hello = 'world';</code>
         </div>
       </TabsContent>
@@ -233,7 +242,9 @@ export const WithForm: Story = {
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
-            <CardDescription>Make changes to your account here.</CardDescription>
+            <CardDescription>
+              Make changes to your account here.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
@@ -243,7 +254,7 @@ export const WithForm: Story = {
               <input
                 id="name"
                 defaultValue="Pedro Duarte"
-                className="border-input placeholder:text-muted-foreground flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm placeholder:text-muted-foreground"
               />
             </div>
             <div className="space-y-1">
@@ -253,7 +264,7 @@ export const WithForm: Story = {
               <input
                 id="username"
                 defaultValue="@peduarte"
-                className="border-input placeholder:text-muted-foreground flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm placeholder:text-muted-foreground"
               />
             </div>
             <Button className="mt-2">Save changes</Button>
@@ -274,7 +285,7 @@ export const WithForm: Story = {
               <input
                 id="current"
                 type="password"
-                className="border-input placeholder:text-muted-foreground flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm placeholder:text-muted-foreground"
               />
             </div>
             <div className="space-y-1">
@@ -284,7 +295,7 @@ export const WithForm: Story = {
               <input
                 id="new"
                 type="password"
-                className="border-input placeholder:text-muted-foreground flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm placeholder:text-muted-foreground"
               />
             </div>
             <Button className="mt-2">Save password</Button>
@@ -367,19 +378,19 @@ export const RichContent: Story = {
           <CardContent className="pt-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <p className="text-muted-foreground text-sm">Total Users</p>
+                <p className="text-sm text-muted-foreground">Total Users</p>
                 <p className="text-2xl font-bold">10,234</p>
               </div>
               <div className="space-y-1">
-                <p className="text-muted-foreground text-sm">Active Users</p>
+                <p className="text-sm text-muted-foreground">Active Users</p>
                 <p className="text-2xl font-bold">8,567</p>
               </div>
               <div className="space-y-1">
-                <p className="text-muted-foreground text-sm">New This Week</p>
+                <p className="text-sm text-muted-foreground">New This Week</p>
                 <p className="text-2xl font-bold">234</p>
               </div>
               <div className="space-y-1">
-                <p className="text-muted-foreground text-sm">Churn Rate</p>
+                <p className="text-sm text-muted-foreground">Churn Rate</p>
                 <p className="text-2xl font-bold">2.4%</p>
               </div>
             </div>
@@ -389,8 +400,10 @@ export const RichContent: Story = {
       <TabsContent value="chart">
         <Card>
           <CardContent className="pt-6">
-            <div className="bg-muted flex h-[200px] items-center justify-center rounded-md">
-              <p className="text-muted-foreground">Chart visualization placeholder</p>
+            <div className="flex h-[200px] items-center justify-center rounded-md bg-muted">
+              <p className="text-muted-foreground">
+                Chart visualization placeholder
+              </p>
             </div>
           </CardContent>
         </Card>

@@ -1,27 +1,27 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   Table,
-  TableHeader,
   TableBody,
+  TableCaption,
+  TableCell,
   TableFooter,
   TableHead,
+  TableHeader,
   TableRow,
-  TableCell,
-  TableCaption,
-} from './table';
+} from "./table";
 
 const meta: Meta<typeof Table> = {
-  title: 'UI/Table',
+  title: "UI/Table",
   component: Table,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
-        component: 'A responsive table component for displaying tabular data.',
+        component: "A responsive table component for displaying tabular data.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -221,7 +221,9 @@ export const WideTable: Story = {
           <TableCell>10001</TableCell>
           <TableCell>Active</TableCell>
           <TableCell className="text-right">
-            <button className="text-primary text-sm hover:underline">Edit</button>
+            <button className="text-sm text-primary hover:underline">
+              Edit
+            </button>
           </TableCell>
         </TableRow>
         <TableRow>
@@ -233,7 +235,9 @@ export const WideTable: Story = {
           <TableCell>SW1A</TableCell>
           <TableCell>Inactive</TableCell>
           <TableCell className="text-right">
-            <button className="text-primary text-sm hover:underline">Edit</button>
+            <button className="text-sm text-primary hover:underline">
+              Edit
+            </button>
           </TableCell>
         </TableRow>
       </TableBody>

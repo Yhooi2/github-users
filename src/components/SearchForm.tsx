@@ -1,13 +1,13 @@
 import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Button } from "./ui/button";
-import { toast } from "sonner";
 
 type Props = {
-    userName: string,
-    setUserName:  React.Dispatch<React.SetStateAction<string>>,
-}
+  userName: string;
+  setUserName: React.Dispatch<React.SetStateAction<string>>;
+};
 
 /**
  * Search form component for GitHub username input
@@ -32,44 +32,58 @@ type Props = {
  * }
  * ```
  */
-function SearchForm({userName, setUserName}: Props) {
-    const [text, setText] = useState(userName);
+function SearchForm({ userName, setUserName }: Props) {
+  const [text, setText] = useState(userName);
 
-    /**
-     * Handles form submission with validation
-     *
-     * Validates that the input matches GitHub username format:
-     * - Only alphanumeric characters and hyphens
-     * - Cannot start or end with hyphen
-     * - Maximum 39 characters
-     * Shows a toast error notification if validation fails.
-     *
-     * @param e - Form submission event
-     */
-    function handleSubmit(e : React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        const trimmed = text.trim();
+  /**
+   * Handles form submission with validation
+   *
+   * Validates that the input matches GitHub username format:
+   * - Only alphanumeric characters and hyphens
+   * - Cannot start or end with hyphen
+   * - Maximum 39 characters
+   * Shows a toast error notification if validation fails.
+   *
+   * @param e - Form submission event
+   */
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const trimmed = text.trim();
 
-        if (trimmed.length === 0) {
-            toast.error("Please enter a valid username")
-            return;
-        }
-
-        // GitHub username validation: alphanumeric + hyphens, 1-39 chars, cannot start/end with hyphen
-        const githubUsernameRegex = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
-        if (!githubUsernameRegex.test(trimmed)) {
-            toast.error("Invalid GitHub username format")
-            return;
-        }
-
-        setUserName(trimmed);
+    if (trimmed.length === 0) {
+      toast.error("Please enter a valid username");
+      return;
     }
 
-    return <form onSubmit={handleSubmit} className="mb-8 flex w-full items-center gap-2 lg:w-1/3">
-        <Label htmlFor="search" className="sr-only">Search</Label>
-        <Input type="text" id="search" value={text} placeholder="Search GitHub User..." onChange={(e) => setText(e.target.value)} className="bg-background flex-grow" />
-        <Button type="submit">Search</Button>
+    // GitHub username validation: alphanumeric + hyphens, 1-39 chars, cannot start/end with hyphen
+    const githubUsernameRegex = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
+    if (!githubUsernameRegex.test(trimmed)) {
+      toast.error("Invalid GitHub username format");
+      return;
+    }
+
+    setUserName(trimmed);
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="mb-8 flex w-full items-center gap-2 lg:w-1/3"
+    >
+      <Label htmlFor="search" className="sr-only">
+        Search
+      </Label>
+      <Input
+        type="text"
+        id="search"
+        value={text}
+        placeholder="Search GitHub User..."
+        onChange={(e) => setText(e.target.value)}
+        className="flex-grow bg-background"
+      />
+      <Button type="submit">Search</Button>
     </form>
+  );
 }
 
-export default SearchForm
+export default SearchForm;

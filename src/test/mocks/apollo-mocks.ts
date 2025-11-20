@@ -1,8 +1,9 @@
-import { MockedResponse } from '@apollo/client/testing'
-import { GET_USER_INFO } from '@/apollo/queriers'
-import { GET_USER_PROFILE } from '@/apollo/queries/userProfile'
-import { createMockUser } from './github-data'
-import { GitHubUser } from '@/apollo/github-api.types'
+import { getQueryDates, getThreeYearRanges } from "@/apollo/date-helpers";
+import { GitHubUser } from "@/apollo/github-api.types";
+import { GET_USER_INFO } from "@/apollo/queriers";
+import { GET_USER_PROFILE } from "@/apollo/queries/userProfile";
+import { MockedResponse } from "@apollo/client/testing";
+import { createMockUser } from "./github-data";
 
 /**
  * Factory functions for creating Apollo MockedProvider responses
@@ -36,12 +37,12 @@ import { GitHubUser } from '@/apollo/github-api.types'
  * Rate limit override options for mock responses
  */
 export interface RateLimitOverrides {
-  remaining?: number
-  limit?: number
-  reset?: number
-  used?: number
-  isDemo?: boolean
-  userLogin?: string
+  remaining?: number;
+  limit?: number;
+  reset?: number;
+  used?: number;
+  isDemo?: boolean;
+  userLogin?: string;
 }
 
 /**
@@ -51,15 +52,15 @@ export interface RateLimitOverrides {
  * Unspecified variables will use defaults or expect.any(String) for dates.
  */
 export interface QueryVariablesOverrides {
-  login?: string
-  from?: string
-  to?: string
-  year1From?: string
-  year1To?: string
-  year2From?: string
-  year2To?: string
-  year3From?: string
-  year3To?: string
+  login?: string;
+  from?: string;
+  to?: string;
+  year1From?: string;
+  year1To?: string;
+  year2From?: string;
+  year2To?: string;
+  year3From?: string;
+  year3To?: string;
 }
 
 /**
@@ -104,13 +105,34 @@ export interface QueryVariablesOverrides {
  * )
  * ```
  */
+function buildDefaultVariables(
+  loginOverride?: string,
+  overrides: QueryVariablesOverrides = {},
+) {
+  const queryDates = getQueryDates(365);
+  const yearRanges = getThreeYearRanges();
+  const login = overrides.login ?? loginOverride ?? "octocat";
+
+  return {
+    login,
+    from: overrides.from ?? queryDates.from,
+    to: overrides.to ?? queryDates.to,
+    year1From: overrides.year1From ?? yearRanges.year1.from,
+    year1To: overrides.year1To ?? yearRanges.year1.to,
+    year2From: overrides.year2From ?? yearRanges.year2.from,
+    year2To: overrides.year2To ?? yearRanges.year2.to,
+    year3From: overrides.year3From ?? yearRanges.year3.from,
+    year3To: overrides.year3To ?? yearRanges.year3.to,
+  };
+}
+
 export function createUserInfoMock(
   userOverrides: Partial<GitHubUser> = {},
   rateLimitOverrides: RateLimitOverrides = {},
-  variablesOverrides: QueryVariablesOverrides = {}
+  variablesOverrides: QueryVariablesOverrides = {},
 ): MockedResponse {
   // Create mock user with overrides
-  const mockUserData = createMockUser(userOverrides)
+  const mockUserData = createMockUser(userOverrides);
 
   // Default rate limit (demo mode)
   const defaultRateLimit = {
@@ -120,24 +142,14 @@ export function createUserInfoMock(
     used: 0,
     isDemo: true,
     ...rateLimitOverrides,
-  }
+  };
 
   // Use variableMatchers to match any variables
   // This allows the mock to match regardless of actual date values
   return {
     request: {
       query: GET_USER_INFO,
-    },
-    variableMatchers: {
-      login: () => true,  // Match any login
-      from: () => true,  // Match any date
-      to: () => true,
-      year1From: () => true,
-      year1To: () => true,
-      year2From: () => true,
-      year2To: () => true,
-      year3From: () => true,
-      year3To: () => true,
+      variables: buildDefaultVariables(userOverrides.login, variablesOverrides),
     },
     result: {
       data: {
@@ -145,7 +157,7 @@ export function createUserInfoMock(
         rateLimit: defaultRateLimit,
       },
     },
-  }
+  };
 }
 
 /**
@@ -172,21 +184,13 @@ export function createUserInfoMock(
  * ```
  */
 export function createUserInfoErrorMock(
-  errorMessage: string = 'GraphQL Error',
-  variablesOverrides: QueryVariablesOverrides = {}
+  errorMessage: string = "GraphQL Error",
+  variablesOverrides: QueryVariablesOverrides = {},
 ): MockedResponse {
-  const defaultVariables = {
-    login: 'testuser',
-    from: undefined,
-    to: undefined,
-    year1From: undefined,
-    year1To: undefined,
-    year2From: undefined,
-    year2To: undefined,
-    year3From: undefined,
-    year3To: undefined,
-    ...variablesOverrides,
-  }
+  const defaultVariables = buildDefaultVariables(
+    variablesOverrides.login,
+    variablesOverrides,
+  );
 
   return {
     request: {
@@ -194,7 +198,7 @@ export function createUserInfoErrorMock(
       variables: defaultVariables,
     },
     error: new Error(errorMessage),
-  }
+  };
 }
 
 /**
@@ -220,9 +224,9 @@ export function createUserInfoErrorMock(
  * ```
  */
 export function createUserInfoNetworkErrorMock(
-  variablesOverrides: QueryVariablesOverrides = {}
+  variablesOverrides: QueryVariablesOverrides = {},
 ): MockedResponse {
-  return createUserInfoErrorMock('Network request failed', variablesOverrides)
+  return createUserInfoErrorMock("Network request failed", variablesOverrides);
 }
 
 /**
@@ -248,21 +252,10 @@ export function createUserInfoNetworkErrorMock(
  * ```
  */
 export function createUserNotFoundMock(
-  login: string = 'nonexistentuser',
-  variablesOverrides: QueryVariablesOverrides = {}
+  login: string = "nonexistentuser",
+  variablesOverrides: QueryVariablesOverrides = {},
 ): MockedResponse {
-  const defaultVariables = {
-    login,
-    from: undefined,
-    to: undefined,
-    year1From: undefined,
-    year1To: undefined,
-    year2From: undefined,
-    year2To: undefined,
-    year3From: undefined,
-    year3To: undefined,
-    ...variablesOverrides,
-  }
+  const defaultVariables = buildDefaultVariables(login, variablesOverrides);
 
   return {
     request: {
@@ -281,7 +274,7 @@ export function createUserNotFoundMock(
         },
       },
     },
-  }
+  };
 }
 
 /**
@@ -321,8 +314,8 @@ export function createUserNotFoundMock(
  * ```
  */
 export function createCacheTransitionMocks(
-  login: string = 'torvalds',
-  authenticatedUser: string = 'authenticateduser'
+  login: string = "torvalds",
+  authenticatedUser: string = "authenticateduser",
 ): [MockedResponse, MockedResponse] {
   // Demo mode mock
   const demoMock = createUserInfoMock(
@@ -332,8 +325,8 @@ export function createCacheTransitionMocks(
       limit: 5000,
       used: 0,
       isDemo: true,
-    }
-  )
+    },
+  );
 
   // Auth mode mock (lower rate limit to show usage)
   const authMock = createUserInfoMock(
@@ -344,10 +337,10 @@ export function createCacheTransitionMocks(
       used: 1,
       isDemo: false,
       userLogin: authenticatedUser,
-    }
-  )
+    },
+  );
 
-  return [demoMock, authMock]
+  return [demoMock, authMock];
 }
 
 /**
@@ -380,14 +373,14 @@ export function createCacheTransitionMocks(
 export function createUserInfoMockWithDelay(
   delayMs: number,
   userOverrides: Partial<GitHubUser> = {},
-  rateLimitOverrides: RateLimitOverrides = {}
+  rateLimitOverrides: RateLimitOverrides = {},
 ): MockedResponse {
-  const baseMock = createUserInfoMock(userOverrides, rateLimitOverrides)
+  const baseMock = createUserInfoMock(userOverrides, rateLimitOverrides);
 
   return {
     ...baseMock,
     delay: delayMs,
-  }
+  };
 }
 
 /**
@@ -414,9 +407,9 @@ export function createUserInfoMockWithDelay(
  */
 export function createUserProfileMock(
   userOverrides: Partial<GitHubUser> = {},
-  variablesOverrides: { login?: string } = {}
+  _variablesOverrides: { login?: string } = {},
 ): MockedResponse {
-  const mockUserData = createMockUser(userOverrides)
+  const mockUserData = createMockUser(userOverrides);
 
   // Use variableMatchers to match any login value
   return {
@@ -424,7 +417,7 @@ export function createUserProfileMock(
       query: GET_USER_PROFILE,
     },
     variableMatchers: {
-      login: () => true,  // Match any login
+      login: () => true, // Match any login
     },
     result: {
       data: {
@@ -450,5 +443,5 @@ export function createUserProfileMock(
         },
       },
     },
-  }
+  };
 }

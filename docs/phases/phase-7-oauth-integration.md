@@ -15,6 +15,7 @@
 ### What This Phase Adds
 
 **Demo Mode (Phase 0-6):**
+
 - ✅ Server-side token (5000 req/hour shared)
 - ✅ Rate limit monitoring
 - ✅ Warning banner at <10% remaining
@@ -22,6 +23,7 @@
 - ✅ Full functionality for all users
 
 **OAuth Mode (Phase 7):**
+
 - 🆕 User signs in with GitHub account
 - 🆕 Personal rate limit (5000 req/hour per user)
 - 🆕 Scalability (unlimited users)
@@ -30,12 +32,14 @@
 ### Why Optional?
 
 **Demo mode is sufficient for:**
+
 - Initial launch and user validation
 - Small to medium user base (<100 concurrent users)
 - Public repository analysis only
 - Quick time-to-market
 
 **OAuth becomes necessary when:**
+
 - Demo rate limit frequently exhausted
 - User base grows beyond shared rate limit capacity
 - Users request profile saving/comparison features
@@ -64,6 +68,7 @@
 ```
 
 **Benefits:**
+
 - Low barrier to entry (no signup wall)
 - Users see value before committing
 - Natural conversion funnel
@@ -76,6 +81,7 @@
 ### Step 7.1: Setup GitHub OAuth App
 
 **GitHub Settings:**
+
 1. Go to [GitHub Settings → Developer Settings → OAuth Apps](https://github.com/settings/developers)
 2. Click **"New OAuth App"**
 3. Configure:
@@ -86,6 +92,7 @@
 5. Copy **Client ID** and generate **Client Secret**
 
 **Environment Variables:**
+
 ```bash
 # .env (server-side)
 GITHUB_OAUTH_CLIENT_ID=Iv1.xxxxxxxxxxxx
@@ -94,6 +101,7 @@ GITHUB_TOKEN=ghp_xxx  # Keep for demo mode fallback
 ```
 
 **Security:**
+
 - ✅ Never expose Client Secret in client bundle
 - ✅ Store OAuth tokens server-side only
 - ✅ Use `httpOnly` cookies for session management
@@ -108,24 +116,24 @@ GITHUB_TOKEN=ghp_xxx  # Keep for demo mode fallback
 
 ```typescript
 export default async function handler(req, res) {
-  const clientId = process.env.GITHUB_OAUTH_CLIENT_ID
+  const clientId = process.env.GITHUB_OAUTH_CLIENT_ID;
 
   if (!clientId) {
-    return res.status(500).json({ error: 'OAuth not configured' })
+    return res.status(500).json({ error: "OAuth not configured" });
   }
 
   // GitHub OAuth authorization URL
   const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: `${process.env.VERCEL_URL || 'http://localhost:3000'}/api/auth/callback`,
-    scope: 'read:user user:email', // Read-only access to public profile
+    redirect_uri: `${process.env.VERCEL_URL || "http://localhost:3000"}/api/auth/callback`,
+    scope: "read:user user:email", // Read-only access to public profile
     state: generateRandomState(), // CSRF protection
-  })
+  });
 
-  const authUrl = `https://github.com/login/oauth/authorize?${params}`
+  const authUrl = `https://github.com/login/oauth/authorize?${params}`;
 
   // Redirect to GitHub
-  res.redirect(authUrl)
+  res.redirect(authUrl);
 }
 ```
 
@@ -134,13 +142,13 @@ export default async function handler(req, res) {
 **File:** `api/auth/callback.ts`
 
 ```typescript
-import { kv } from '@vercel/kv'
+import { kv } from "@vercel/kv";
 
 export default async function handler(req, res) {
-  const { code, state } = req.query
+  const { code, state } = req.query;
 
   if (!code) {
-    return res.redirect('/?error=no_code')
+    return res.redirect("/?error=no_code");
   }
 
   // Verify state (CSRF protection)
@@ -148,51 +156,61 @@ export default async function handler(req, res) {
 
   try {
     // Exchange code for access token
-    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+    const tokenResponse = await fetch(
+      "https://github.com/login/oauth/access_token",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
+          client_secret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
+          code,
+        }),
       },
-      body: JSON.stringify({
-        client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
-        client_secret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
-        code,
-      }),
-    })
+    );
 
-    const { access_token } = await tokenResponse.json()
+    const { access_token } = await tokenResponse.json();
 
     if (!access_token) {
-      throw new Error('Failed to obtain access token')
+      throw new Error("Failed to obtain access token");
     }
 
     // Get user info
-    const userResponse = await fetch('https://api.github.com/user', {
+    const userResponse = await fetch("https://api.github.com/user", {
       headers: {
-        'Authorization': `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
-    })
+    });
 
-    const user = await userResponse.json()
+    const user = await userResponse.json();
 
     // Store session in Vercel KV
-    const sessionId = generateSessionId()
-    await kv.set(`session:${sessionId}`, {
-      userId: user.id,
-      login: user.login,
-      accessToken: access_token,
-      createdAt: Date.now(),
-    }, { ex: 86400 * 30 }) // 30 days TTL
+    const sessionId = generateSessionId();
+    await kv.set(
+      `session:${sessionId}`,
+      {
+        userId: user.id,
+        login: user.login,
+        accessToken: access_token,
+        createdAt: Date.now(),
+      },
+      { ex: 86400 * 30 },
+    ); // 30 days TTL
 
     // Set httpOnly cookie
-    res.setHeader('Set-Cookie', `session=${sessionId}; HttpOnly; Secure; SameSite=Lax; Max-Age=${86400 * 30}; Path=/`)
+    res.setHeader(
+      "Set-Cookie",
+      `session=${sessionId}; HttpOnly; Secure; SameSite=Lax; Max-Age=${86400 * 30}; Path=/`,
+    );
 
     // Redirect to app
-    res.redirect('/?auth=success')
+    res.redirect("/?auth=success");
   } catch (error) {
-    console.error('OAuth callback error:', error)
-    res.redirect('/?error=auth_failed')
+    console.error("OAuth callback error:", error);
+    res.redirect("/?error=auth_failed");
   }
 }
 ```
@@ -202,20 +220,23 @@ export default async function handler(req, res) {
 **File:** `api/auth/logout.ts`
 
 ```typescript
-import { kv } from '@vercel/kv'
+import { kv } from "@vercel/kv";
 
 export default async function handler(req, res) {
-  const sessionId = extractSessionFromCookie(req.headers.cookie)
+  const sessionId = extractSessionFromCookie(req.headers.cookie);
 
   if (sessionId) {
     // Delete session from KV
-    await kv.del(`session:${sessionId}`)
+    await kv.del(`session:${sessionId}`);
   }
 
   // Clear cookie
-  res.setHeader('Set-Cookie', 'session=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/')
+  res.setHeader(
+    "Set-Cookie",
+    "session=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/",
+  );
 
-  res.redirect('/?auth=logged_out')
+  res.redirect("/?auth=logged_out");
 }
 ```
 
@@ -226,89 +247,94 @@ export default async function handler(req, res) {
 **File:** `api/github-proxy.ts`
 
 ```typescript
-import { kv } from '@vercel/kv'
+import { kv } from "@vercel/kv";
 
 export default async function handler(req, res) {
   // Extract session from cookie
-  const sessionId = extractSessionFromCookie(req.headers.cookie)
+  const sessionId = extractSessionFromCookie(req.headers.cookie);
 
-  let token = process.env.GITHUB_TOKEN // Default to demo mode token
-  let isDemo = true
+  let token = process.env.GITHUB_TOKEN; // Default to demo mode token
+  let isDemo = true;
 
   // If user is authenticated, use their token
   if (sessionId) {
-    const session = await kv.get(`session:${sessionId}`)
+    const session = await kv.get(`session:${sessionId}`);
     if (session && session.accessToken) {
-      token = session.accessToken
-      isDemo = false
+      token = session.accessToken;
+      isDemo = false;
     }
   }
 
   if (!token) {
-    return res.status(500).json({ error: 'No token available' })
+    return res.status(500).json({ error: "No token available" });
   }
 
-  const { query, variables, cacheKey } = req.body
+  const { query, variables, cacheKey } = req.body;
 
   // Check cache (use session-specific cache for authenticated users)
-  const finalCacheKey = isDemo ? cacheKey : `user:${sessionId}:${cacheKey}`
+  const finalCacheKey = isDemo ? cacheKey : `user:${sessionId}:${cacheKey}`;
   if (finalCacheKey) {
-    const cached = await kv.get(finalCacheKey)
+    const cached = await kv.get(finalCacheKey);
     if (cached) {
-      console.log(`Cache HIT: ${finalCacheKey}`)
-      return res.status(200).json(cached)
+      console.log(`Cache HIT: ${finalCacheKey}`);
+      return res.status(200).json(cached);
     }
   }
 
   // GitHub API request
   try {
-    const response = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
+    const response = await fetch("https://api.github.com/graphql", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ query, variables }),
-    })
+    });
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.statusText}`)
+      throw new Error(`GitHub API error: ${response.statusText}`);
     }
 
-    const data = await response.json()
+    const data = await response.json();
 
     if (data.errors) {
-      return res.status(400).json(data)
+      return res.status(400).json(data);
     }
 
     // Extract rate limit
     const rateLimit = {
-      remaining: parseInt(response.headers.get('X-RateLimit-Remaining') || '0', 10),
-      limit: parseInt(response.headers.get('X-RateLimit-Limit') || '5000', 10),
-      reset: parseInt(response.headers.get('X-RateLimit-Reset') || '0', 10),
-      used: parseInt(response.headers.get('X-RateLimit-Used') || '0', 10),
+      remaining: parseInt(
+        response.headers.get("X-RateLimit-Remaining") || "0",
+        10,
+      ),
+      limit: parseInt(response.headers.get("X-RateLimit-Limit") || "5000", 10),
+      reset: parseInt(response.headers.get("X-RateLimit-Reset") || "0", 10),
+      used: parseInt(response.headers.get("X-RateLimit-Used") || "0", 10),
       isDemo, // Indicate if using demo token
-    }
+    };
 
     const responseData = {
       ...data,
       rateLimit,
-    }
+    };
 
     // Cache result (shorter TTL for authenticated users: 10 min vs 30 min)
     if (finalCacheKey) {
-      const ttl = isDemo ? 1800 : 600 // Demo: 30min, User: 10min
-      await kv.set(finalCacheKey, responseData, { ex: ttl })
-      console.log(`Cache SET: ${finalCacheKey} (TTL: ${ttl}s, Demo: ${isDemo})`)
+      const ttl = isDemo ? 1800 : 600; // Demo: 30min, User: 10min
+      await kv.set(finalCacheKey, responseData, { ex: ttl });
+      console.log(
+        `Cache SET: ${finalCacheKey} (TTL: ${ttl}s, Demo: ${isDemo})`,
+      );
     }
 
-    return res.status(200).json(responseData)
+    return res.status(200).json(responseData);
   } catch (error) {
-    console.error('GitHub proxy error:', error)
+    console.error("GitHub proxy error:", error);
     return res.status(500).json({
-      error: 'Failed to fetch from GitHub',
-      message: error.message
-    })
+      error: "Failed to fetch from GitHub",
+      message: error.message,
+    });
   }
 }
 ```
@@ -505,6 +531,7 @@ export function UserMenu({
 ## ✅ Deliverables
 
 **Backend:**
+
 - [ ] GitHub OAuth App registered
 - [ ] Environment variables configured (`GITHUB_OAUTH_CLIENT_ID`, `GITHUB_OAUTH_CLIENT_SECRET`)
 - [ ] `/api/auth/login` endpoint created
@@ -515,6 +542,7 @@ export function UserMenu({
 - [ ] Updated `api/github-proxy.ts` to use user tokens
 
 **Frontend:**
+
 - [ ] `RateLimitBanner` updated with `isDemo` and logout support
 - [ ] `UserMenu` component created for auth indicator
 - [ ] `App.tsx` updated with auth handlers
@@ -523,6 +551,7 @@ export function UserMenu({
 - [ ] Tests for `UserMenu` component
 
 **Testing:**
+
 - [ ] OAuth flow tested locally with `vercel dev`
 - [ ] Session persistence tested (cookies, KV storage)
 - [ ] Rate limit behavior tested (demo vs authenticated)
@@ -530,6 +559,7 @@ export function UserMenu({
 - [ ] Token refresh handling (if needed)
 
 **Security:**
+
 - [ ] Client Secret NOT in client bundle
 - [ ] Session tokens stored server-side only
 - [ ] `httpOnly` cookies used for sessions
@@ -537,6 +567,7 @@ export function UserMenu({
 - [ ] OAuth scope limited to `read:user user:email`
 
 **Documentation:**
+
 - [ ] Update CLAUDE.md with OAuth setup instructions
 - [ ] Add OAuth troubleshooting guide
 - [ ] Document demo vs authenticated mode behavior
@@ -570,19 +601,19 @@ vercel dev
 
 ```typescript
 // Mock rate limit responses for testing
-describe('Rate Limit Behavior', () => {
-  it('uses demo token when not authenticated', async () => {
+describe("Rate Limit Behavior", () => {
+  it("uses demo token when not authenticated", async () => {
     // Verify demo mode uses GITHUB_TOKEN
-  })
+  });
 
-  it('uses user token when authenticated', async () => {
+  it("uses user token when authenticated", async () => {
     // Verify authenticated mode uses session token
-  })
+  });
 
-  it('falls back to demo token if session expired', async () => {
+  it("falls back to demo token if session expired", async () => {
     // Test graceful degradation
-  })
-})
+  });
+});
 ```
 
 ---
@@ -590,6 +621,7 @@ describe('Rate Limit Behavior', () => {
 ## 📊 Success Criteria
 
 **Functional:**
+
 - [ ] Users can sign in with GitHub OAuth
 - [ ] Authenticated users get personal rate limits
 - [ ] Demo mode still works for unauthenticated users
@@ -598,18 +630,21 @@ describe('Rate Limit Behavior', () => {
 - [ ] Rate limit banner shows correct mode (demo vs auth)
 
 **Security:**
+
 - [ ] No secrets exposed in client bundle
 - [ ] Sessions stored securely server-side
 - [ ] CSRF protection implemented
 - [ ] OAuth tokens never sent to client
 
 **UX:**
+
 - [ ] Seamless transition from demo to authenticated
 - [ ] Clear indication of auth status
 - [ ] No functionality loss in demo mode
 - [ ] "Try before you auth" flow works smoothly
 
 **Performance:**
+
 - [ ] OAuth flow completes in <3 seconds
 - [ ] Session lookup adds <50ms latency
 - [ ] KV session storage performant
@@ -621,6 +656,7 @@ describe('Rate Limit Behavior', () => {
 **If OAuth fails in production:**
 
 1. **Disable OAuth Endpoints:**
+
    ```bash
    # Remove OAuth endpoints temporarily
    mv api/auth api/auth.disabled
@@ -641,17 +677,20 @@ describe('Rate Limit Behavior', () => {
 ## 🚀 Future Enhancements (Post-Phase 7)
 
 **Phase 8: User Profiles (Optional)**
+
 - Save favorite GitHub users
 - Compare users side-by-side
 - Historical tracking of metrics over time
 - Email notifications for changes
 
 **Phase 9: Private Repositories (Optional)**
+
 - Request `repo` scope (with user consent)
 - Analyze private repositories
 - Team analytics
 
 **Phase 10: Admin Dashboard (Optional)**
+
 - Monitor rate limit usage across all users
 - Analytics on app usage
 - Performance metrics
@@ -661,14 +700,17 @@ describe('Rate Limit Behavior', () => {
 ## 📚 Resources
 
 **GitHub OAuth:**
+
 - [GitHub OAuth Documentation](https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps)
 - [OAuth Best Practices](https://datatracker.ietf.org/doc/html/rfc6749)
 
 **Vercel:**
+
 - [Serverless Functions](https://vercel.com/docs/functions)
 - [Vercel KV Sessions](https://vercel.com/docs/storage/vercel-kv/using-with-sessions)
 
 **Security:**
+
 - [httpOnly Cookies](https://owasp.org/www-community/HttpOnly)
 - [CSRF Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
 

@@ -21,6 +21,7 @@
 ### Step 1: Create GitHub Personal Access Token
 
 1. **Go to GitHub Settings:**
+
    ```
    https://github.com/settings/tokens/new
    ```
@@ -88,7 +89,7 @@ Open your browser and test:
   - ✅ Should see requests to `/api/github-proxy` (NOT `api.github.com`)
 - [ ] **Token security:**
   - Open DevTools → Sources tab
-  - Search for "ghp_" in all files
+  - Search for "ghp\_" in all files
   - ✅ Should find **0 results** (token is secure!)
 - [ ] **Rate limit:** Check if rate limit banner appears (when <10% remaining)
 
@@ -113,6 +114,7 @@ vercel link
 ```
 
 Follow prompts:
+
 - **Setup and deploy?** → Yes
 - **Which scope?** → Select your account/team
 - **Link to existing project?** → No (create new)
@@ -141,6 +143,7 @@ vercel --prod
 #### Via Vercel Dashboard (Recommended):
 
 1. **Go to your project:**
+
    ```
    https://vercel.com/dashboard
    → Select your project
@@ -195,7 +198,7 @@ Run through this checklist:
   - NO requests to `api.github.com` directly ✅
 - [ ] **Security check:**
   - Open DevTools → Sources
-  - Search all files for "ghp_"
+  - Search all files for "ghp\_"
   - ✅ **0 results** = Token is secure!
 - [ ] **Rate limit monitoring:**
   - Make several searches
@@ -217,6 +220,7 @@ Vercel KV provides caching to reduce API rate limit usage:
 #### 7.1: Create KV Database
 
 1. **Go to Vercel Dashboard:**
+
    ```
    https://vercel.com/dashboard
    → Storage → Create Database
@@ -247,6 +251,7 @@ vercel --prod
 #### 7.4: Verify Caching
 
 Check Vercel Function logs:
+
 - First request: `Cache SET: user:octocat:profile`
 - Second request: `Cache HIT: user:octocat:profile`
 
@@ -259,6 +264,7 @@ Check Vercel Function logs:
 ### Problem: "GITHUB_TOKEN not configured" Error
 
 **Solution:**
+
 1. Verify token is added in Vercel Dashboard → Environment Variables
 2. Ensure token is added to **Production** environment
 3. Redeploy after adding token
@@ -266,6 +272,7 @@ Check Vercel Function logs:
 ### Problem: Token Visible in DevTools
 
 **Solution:**
+
 1. Check you're NOT using `VITE_GITHUB_TOKEN`
 2. Verify requests go to `/api/github-proxy` (not `api.github.com`)
 3. Clear browser cache and reload
@@ -273,6 +280,7 @@ Check Vercel Function logs:
 ### Problem: Rate Limit Errors
 
 **Solution:**
+
 1. Wait for rate limit to reset (shown in banner)
 2. Setup Vercel KV for caching (Step 7)
 3. Verify cache is working (check Function logs)
@@ -280,6 +288,7 @@ Check Vercel Function logs:
 ### Problem: "API Error 401 Unauthorized"
 
 **Solution:**
+
 1. Check GitHub token is valid: https://github.com/settings/tokens
 2. Verify token has `read:user` scope
 3. Regenerate token if expired
@@ -304,6 +313,7 @@ curl -H "Authorization: Bearer ghp_your_token_here" \
 ### View Function Logs
 
 **Vercel Dashboard:**
+
 ```
 https://vercel.com/dashboard
 → Your Project → Functions
@@ -312,6 +322,7 @@ https://vercel.com/dashboard
 ```
 
 **Look for:**
+
 - ✅ `Cache HIT: user:username:profile` (caching working)
 - ✅ `Cache SET: user:username:profile` (new data cached)
 - ⚠️ `KV cache read failed` (KV issue, but app still works)
@@ -319,12 +330,14 @@ https://vercel.com/dashboard
 ### Performance Metrics
 
 **Vercel Analytics:**
+
 ```
 https://vercel.com/dashboard
 → Your Project → Analytics
 ```
 
 **Monitor:**
+
 - LCP (Largest Contentful Paint) - Target: <2.5s
 - FID (First Input Delay) - Target: <100ms
 - CLS (Cumulative Layout Shift) - Target: <0.1
@@ -355,11 +368,13 @@ https://vercel.com/dashboard
 ## 🆘 Need Help?
 
 **Common Issues:**
+
 - Environment variables not working → Check Vercel Dashboard → Settings → Environment Variables
 - Token expired → Regenerate at https://github.com/settings/tokens
 - Rate limit exhausted → Setup KV cache (Step 7) or wait for reset
 
 **Documentation:**
+
 - Vercel Deployment: https://vercel.com/docs/deployments
 - Vercel Environment Variables: https://vercel.com/docs/environment-variables
 - GitHub GraphQL API: https://docs.github.com/en/graphql

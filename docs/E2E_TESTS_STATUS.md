@@ -8,13 +8,17 @@
 ## 🎯 Что было сделано
 
 ### 1. ✅ Обновлен существующий E2E тест
+
 Файл: `e2e/user-search.spec.ts`
+
 - Исправлен title check: `/Vite \+ React \+ TS/` → `/Github Users Info/`
 
 ### 2. ✅ Создан комплексный E2E test suite
+
 Файл: `e2e/rate-limits.spec.ts` (**318 строк, 10 сценариев**)
 
 **Сценарии:**
+
 - Real API Integration (6 тестов)
 - Rate Limit Banner (2 теста)
 - Error Handling (2 теста)
@@ -22,6 +26,7 @@
 ### 3. ✅ Создана подробная документация
 
 **Файлы:**
+
 - `docs/TESTING_STRATEGY_COMPARISON_RU.md` (400+ строк) - сравнение Hook Mocking vs E2E
 - `docs/E2E_TEST_IMPLEMENTATION_SUMMARY.md` - резюме реализации
 - `docs/E2E_TESTS_STATUS.md` (этот документ) - финальный статус
@@ -33,19 +38,21 @@
 ### Проблема
 
 E2E тесты используют **современный синтаксис Playwright** (v1.27+):
+
 ```typescript
 // ❌ Новый синтаксис (не работает в проекте)
-const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-const searchButton = page.getByRole('button', { name: /search/i })
-await searchInput.fill('octocat')
-await searchButton.click()
+const searchInput = page.getByPlaceholderText(/Search GitHub User/i);
+const searchButton = page.getByRole("button", { name: /search/i });
+await searchInput.fill("octocat");
+await searchButton.click();
 ```
 
 Но проект использует **старый синтаксис селекторов**:
+
 ```typescript
 // ✅ Старый синтаксис (используется в существующих тестах)
-await page.fill('input[placeholder*="GitHub username"]', 'octocat')
-await page.click('button:has-text("Search")')
+await page.fill('input[placeholder*="GitHub username"]', "octocat");
+await page.click('button:has-text("Search")');
 ```
 
 ### Ошибка в тестах
@@ -55,6 +62,7 @@ TypeError: page.getByPlaceholderText is not a function
 ```
 
 Это происходит НЕ из-за версии Playwright (установлена 1.56.1), а из-за:
+
 - Несовместимости с браузером
 - Или проблем с установкой браузеров Playwright
 
@@ -74,17 +82,18 @@ TypeError: page.getByPlaceholderText is not a function
 
 ```typescript
 // БЫЛО:
-const searchInput = page.getByPlaceholderText(/Search GitHub User/i)
-const searchButton = page.getByRole('button', { name: /search/i })
-await searchInput.fill('octocat')
-await searchButton.click()
+const searchInput = page.getByPlaceholderText(/Search GitHub User/i);
+const searchButton = page.getByRole("button", { name: /search/i });
+await searchInput.fill("octocat");
+await searchButton.click();
 
 // ДОЛЖНО БЫТЬ:
-await page.fill('input[placeholder*="Search GitHub User"]', 'octocat')
-await page.click('button:has-text("Search")')
+await page.fill('input[placeholder*="Search GitHub User"]', "octocat");
+await page.click('button:has-text("Search")');
 ```
 
 Также заменить:
+
 - `page.getByText(/The Octocat/i)` → `page.locator('text=The Octocat')`
 - `page.getByRole('alert')` → `page.locator('[role="alert"]')`
 - И т.д. для всех 10 тестов
@@ -112,6 +121,7 @@ npx playwright --version
 Несмотря на блокер, работа принесла большую пользу:
 
 ### ✅ 10 готовых E2E тестовых сценариев
+
 - Проверка real API integration
 - Проверка GraphQL endpoints
 - Проверка Apollo Client
@@ -121,6 +131,7 @@ npx playwright --version
 - Rate limit display
 
 ### ✅ Документация (800+ строк)
+
 - **TESTING_STRATEGY_COMPARISON_RU.md** - подробное сравнение
   - Что Hook Mocking НЕ проверяет
   - Что E2E тесты проверяют
@@ -137,10 +148,12 @@ npx playwright --version
   - Конкретные инструкции для fix
 
 ### ✅ Компонентные тесты работают
+
 - `UserProfile.hook-mocked.test.tsx` (6/6 тестов ✅)
 - `UserProfile.mockedprovider.test.tsx` (создан с utilities)
 
 ### ✅ Utilities готовы к использованию
+
 - `renderWithMockedProvider()` - wrapper для MockedProvider
 - `createUserInfoMock()` - factory для моков
 - `createUserProfileMock()` - factory для профиля
@@ -218,6 +231,7 @@ Unit Tests (70%)
 ## 💡 Ключевые выводы
 
 ### ❌ Hook Mocking НЕ находит:
+
 - Синтаксические ошибки в GraphQL queries
 - Network layer проблемы (auth, headers)
 - Apollo Client cache bugs
@@ -225,6 +239,7 @@ Unit Tests (70%)
 - Integration проблемы
 
 ### ✅ E2E тесты находят:
+
 - **ВСЁ ВЫШЕПЕРЕЧИСЛЕННОЕ**
 - Real API integration bugs
 - Full user flow проблемы
@@ -236,6 +251,7 @@ Unit Tests (70%)
 **Hook Mocking ≠ E2E тесты**
 
 Для полной уверенности в качестве нужны **оба подхода**:
+
 - Hook Mocking для быстрых component tests
 - E2E для проверки real integration
 
@@ -244,6 +260,7 @@ Unit Tests (70%)
 ## 📝 Commit History
 
 **Commit 1:** `9be7e50`
+
 ```
 feat: Add comprehensive E2E tests and testing strategy documentation
 
@@ -253,6 +270,7 @@ feat: Add comprehensive E2E tests and testing strategy documentation
 ```
 
 **Commit 2:** (Следующий, после fix селекторов)
+
 ```
 fix: Update E2E tests to use compatible selector syntax
 
@@ -268,18 +286,21 @@ fix: Update E2E tests to use compatible selector syntax
 ### Если тесты всё ещё не работают после обновления селекторов:
 
 1. **Проверить dev server:**
+
    ```bash
    curl http://localhost:5173
    # Должен вернуть HTML с title "Github Users Info"
    ```
 
 2. **Проверить Playwright:**
+
    ```bash
    npx playwright --version
    # Должна быть 1.56.1
    ```
 
 3. **Попробовать переустановить браузеры:**
+
    ```bash
    npx playwright install chromium --force
    ```

@@ -1,22 +1,26 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsible';
-import { Button } from './button';
-import { ChevronDown } from 'lucide-react';
-import * as React from 'react';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ChevronDown } from "lucide-react";
+import * as React from "react";
+import { Button } from "./button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./collapsible";
 
 const meta: Meta<typeof Collapsible> = {
-  title: 'UI/Collapsible',
+  title: "UI/Collapsible",
   component: Collapsible,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A collapsible component for showing and hiding content. Built on Radix UI with smooth animations.',
+          "A collapsible component for showing and hiding content. Built on Radix UI with smooth animations.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -30,7 +34,9 @@ export const Default: Story = {
     return (
       <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-[350px]">
         <div className="flex items-center justify-between space-x-4 rounded-lg border p-4">
-          <h4 className="text-sm font-semibold">@peduarte starred 3 repositories</h4>
+          <h4 className="text-sm font-semibold">
+            @peduarte starred 3 repositories
+          </h4>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm">
               <ChevronDown className="size-4" />
@@ -39,9 +45,15 @@ export const Default: Story = {
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent className="space-y-2 px-4 py-2">
-          <div className="rounded-md border px-4 py-2 font-mono text-sm">@radix-ui/primitives</div>
-          <div className="rounded-md border px-4 py-2 font-mono text-sm">@radix-ui/colors</div>
-          <div className="rounded-md border px-4 py-2 font-mono text-sm">@stitches/react</div>
+          <div className="rounded-md border px-4 py-2 font-mono text-sm">
+            @radix-ui/primitives
+          </div>
+          <div className="rounded-md border px-4 py-2 font-mono text-sm">
+            @radix-ui/colors
+          </div>
+          <div className="rounded-md border px-4 py-2 font-mono text-sm">
+            @stitches/react
+          </div>
         </CollapsibleContent>
       </Collapsible>
     );
@@ -61,8 +73,12 @@ export const DefaultOpen: Story = {
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent className="space-y-2 px-4 py-2">
-        <div className="rounded-md border px-4 py-2 text-sm">facebook/react</div>
-        <div className="rounded-md border px-4 py-2 text-sm">vercel/next.js</div>
+        <div className="rounded-md border px-4 py-2 text-sm">
+          facebook/react
+        </div>
+        <div className="rounded-md border px-4 py-2 text-sm">
+          vercel/next.js
+        </div>
       </CollapsibleContent>
     </Collapsible>
   ),
@@ -79,11 +95,13 @@ export const RepositoryDetails: Story = {
           <div className="flex items-center justify-between p-4">
             <div>
               <h4 className="text-sm font-semibold">facebook/react</h4>
-              <p className="text-muted-foreground text-xs">A declarative JavaScript library</p>
+              <p className="text-xs text-muted-foreground">
+                A declarative JavaScript library
+              </p>
             </div>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm">
-                {isOpen ? 'Hide' : 'Show'} details
+                {isOpen ? "Hide" : "Show"} details
               </Button>
             </CollapsibleTrigger>
           </div>
@@ -125,8 +143,8 @@ export const SimpleTextTrigger: Story = {
       </div>
       <CollapsibleContent className="rounded-lg border p-4 text-sm">
         <p>
-          This is additional information that can be shown or hidden using the collapsible
-          component. It supports any React content.
+          This is additional information that can be shown or hidden using the
+          collapsible component. It supports any React content.
         </p>
       </CollapsibleContent>
     </Collapsible>
@@ -181,7 +199,9 @@ export const Disabled: Story = {
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent className="space-y-2 px-4 py-2">
-        <div className="rounded-md border px-4 py-2 text-sm">Hidden content</div>
+        <div className="rounded-md border px-4 py-2 text-sm">
+          Hidden content
+        </div>
       </CollapsibleContent>
     </Collapsible>
   ),

@@ -13,6 +13,7 @@
 ### ✅ ЗАВЕРШЕНО
 
 **Week 4 P3: Mock Data Consolidation** - 100% Complete
+
 - ✅ 16/16 файлов мигрированы на централизованную mock factory
 - ✅ 277/277 тестов проходят
 - ✅ ~500 строк дублирующегося кода удалено
@@ -20,30 +21,36 @@
 - 📝 Коммиты: fa9f6ee, ab6c20c, c89d02b, 63c60c4, f74d078
 
 **P0 Задачи: Analytics API Tests** - 100% Complete ✅
+
 - ✅ `api/analytics/logger.test.ts` - 22 теста проходят
 - ✅ `api/analytics/oauth-usage.test.ts` - 30 теста проходят
 - ✅ Всего: 52 теста покрывают 847 строк критичного кода
 
 **P0 Задачи: OAuth Security Tests** - 100% Complete ✅
+
 - ✅ `api/auth/login.test.ts` - CSRF protection tests
 - ✅ `api/auth/callback.test.ts` - Token exchange tests
 - ✅ `api/auth/logout.test.ts` - Session cleanup tests
 - ✅ Всего: 25 тестов проходят
 
 **Week 3-4 P2: Integration & E2E Tests** - Complete ✅
+
 - ✅ E2E cache transition tests (e13aaba)
 - ✅ E2E session expiration tests (50329cf)
 - ✅ Integration tests (4c0d6ec)
 
 **Week 2 P1: All Tasks** - Complete ✅
+
 - ✅ 30 tests + 12 helpers + 8 stories
 
 **Week 1 P0: Critical Tests** - Complete ✅
+
 - ✅ 64 tests for critical paths
 
 ### ⚠️ ИЗВЕСТНЫЕ ПРОБЛЕМЫ
 
 **Integration Test: cache-transition.integration.test.tsx** - Temporarily Skipped (P2)
+
 - ❌ 3 tests skipped (Apollo InMemoryCache architecture mismatch)
 - 🔍 **Root Cause (Deep Dive Complete):**
   - Apollo Client InMemoryCache normalizes data across **ALL queries in project**
@@ -85,13 +92,13 @@ Environment:   jsdom
 
 ### Код без тестов (точные цифры)
 
-| Категория | Файлов | Строк кода | Приоритет |
-|-----------|--------|------------|-----------|
-| **API Endpoints** | 3 | 847 | 🔴 P0 КРИТИЧНО |
-| **Hooks** | 1 | 177 | 🟠 P1 ВЫСОКИЙ |
-| **Components** | 7 | 517 | 🟡 P1-P3 |
-| **Lib/Utils** | 1 | 106 | 🟡 P2 СРЕДНИЙ |
-| **ИТОГО** | **12** | **1647** | |
+| Категория         | Файлов | Строк кода | Приоритет      |
+| ----------------- | ------ | ---------- | -------------- |
+| **API Endpoints** | 3      | 847        | 🔴 P0 КРИТИЧНО |
+| **Hooks**         | 1      | 177        | 🟠 P1 ВЫСОКИЙ  |
+| **Components**    | 7      | 517        | 🟡 P1-P3       |
+| **Lib/Utils**     | 1      | 106        | 🟡 P2 СРЕДНИЙ  |
+| **ИТОГО**         | **12** | **1647**   |                |
 
 ---
 
@@ -104,6 +111,7 @@ Environment:   jsdom
 **Используется:** Production, OAuth flow, analytics dashboard
 
 **Функции без тестов:**
+
 ```typescript
 - logOAuthLogin(event: OAuthLoginEvent): Promise<void>
 - logOAuthLogout(event: OAuthLogoutEvent): Promise<void>
@@ -113,6 +121,7 @@ Environment:   jsdom
 ```
 
 **ПОЧЕМУ КРИТИЧНО:**
+
 - Работает с Vercel KV (external dependency)
 - Сложная логика: zadd, expire, zremrangebyscore
 - **НЕТ проверки error handling** - если KV падает, что происходит?
@@ -121,6 +130,7 @@ Environment:   jsdom
 - Используется в production БЕЗ ТЕСТОВ
 
 **РИСКИ:**
+
 1. Потеря аналитических данных (silent failure)
 2. Неправильная сериализация → crash
 3. cleanup удаляет важные данные
@@ -131,65 +141,78 @@ Environment:   jsdom
 **Обязательные тесты (минимум 15 тестов):**
 
 ```typescript
-describe('logOAuthLogin', () => {
-  it('успешно логирует OAuth login в KV', async () => {
-    const event = { userId: 123, login: 'user', sessionId: 'abc', timestamp: Date.now() }
-    await logOAuthLogin(event)
-    expect(kv.zadd).toHaveBeenCalledWith(
-      'analytics:oauth:logins',
-      { score: event.timestamp, member: JSON.stringify(event) }
-    )
-  })
+describe("logOAuthLogin", () => {
+  it("успешно логирует OAuth login в KV", async () => {
+    const event = {
+      userId: 123,
+      login: "user",
+      sessionId: "abc",
+      timestamp: Date.now(),
+    };
+    await logOAuthLogin(event);
+    expect(kv.zadd).toHaveBeenCalledWith("analytics:oauth:logins", {
+      score: event.timestamp,
+      member: JSON.stringify(event),
+    });
+  });
 
-  it('устанавливает правильный TTL (30 дней)', async () => {
-    await logOAuthLogin(mockEvent)
-    expect(kv.expire).toHaveBeenCalledWith('analytics:oauth:logins', 30 * 24 * 60 * 60)
-  })
+  it("устанавливает правильный TTL (30 дней)", async () => {
+    await logOAuthLogin(mockEvent);
+    expect(kv.expire).toHaveBeenCalledWith(
+      "analytics:oauth:logins",
+      30 * 24 * 60 * 60,
+    );
+  });
 
-  it('НЕ падает если KV недоступен', async () => {
-    vi.mocked(kv.zadd).mockRejectedValue(new Error('KV timeout'))
-    await expect(logOAuthLogin(mockEvent)).resolves.not.toThrow()
-  })
+  it("НЕ падает если KV недоступен", async () => {
+    vi.mocked(kv.zadd).mockRejectedValue(new Error("KV timeout"));
+    await expect(logOAuthLogin(mockEvent)).resolves.not.toThrow();
+  });
 
-  it('логирует ошибку если KV недоступен', async () => {
-    const consoleSpy = vi.spyOn(console, 'error')
-    vi.mocked(kv.zadd).mockRejectedValue(new Error('KV timeout'))
-    await logOAuthLogin(mockEvent)
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to log OAuth login'))
-  })
+  it("логирует ошибку если KV недоступен", async () => {
+    const consoleSpy = vi.spyOn(console, "error");
+    vi.mocked(kv.zadd).mockRejectedValue(new Error("KV timeout"));
+    await logOAuthLogin(mockEvent);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Failed to log OAuth login"),
+    );
+  });
 
-  it('корректно сериализует event с вложенными объектами', async () => {
-    const complexEvent = { ...mockEvent, metadata: { ip: '1.2.3.4', ua: 'Chrome' } }
-    await logOAuthLogin(complexEvent)
-    const serialized = vi.mocked(kv.zadd).mock.calls[0][1].member
-    expect(JSON.parse(serialized)).toEqual(complexEvent)
-  })
-})
+  it("корректно сериализует event с вложенными объектами", async () => {
+    const complexEvent = {
+      ...mockEvent,
+      metadata: { ip: "1.2.3.4", ua: "Chrome" },
+    };
+    await logOAuthLogin(complexEvent);
+    const serialized = vi.mocked(kv.zadd).mock.calls[0][1].member;
+    expect(JSON.parse(serialized)).toEqual(complexEvent);
+  });
+});
 
-describe('cleanupOldAnalytics', () => {
-  it('удаляет только данные старше daysToKeep', async () => {
-    const now = Date.now()
-    const daysToKeep = 30
-    const cutoffTime = now - (daysToKeep * 24 * 60 * 60 * 1000)
+describe("cleanupOldAnalytics", () => {
+  it("удаляет только данные старше daysToKeep", async () => {
+    const now = Date.now();
+    const daysToKeep = 30;
+    const cutoffTime = now - daysToKeep * 24 * 60 * 60 * 1000;
 
-    await cleanupOldAnalytics(daysToKeep)
+    await cleanupOldAnalytics(daysToKeep);
 
     expect(kv.zremrangebyscore).toHaveBeenCalledWith(
-      'analytics:oauth:logins',
-      '-inf',
-      cutoffTime
-    )
-  })
+      "analytics:oauth:logins",
+      "-inf",
+      cutoffTime,
+    );
+  });
 
-  it('НЕ удаляет свежие данные', async () => {
+  it("НЕ удаляет свежие данные", async () => {
     // Добавляем тест что данные за последние 30 дней НЕ удаляются
-  })
+  });
 
-  it('обрабатывает ошибку KV gracefully', async () => {
-    vi.mocked(kv.zremrangebyscore).mockRejectedValue(new Error('KV error'))
-    await expect(cleanupOldAnalytics(30)).resolves.not.toThrow()
-  })
-})
+  it("обрабатывает ошибку KV gracefully", async () => {
+    vi.mocked(kv.zremrangebyscore).mockRejectedValue(new Error("KV error"));
+    await expect(cleanupOldAnalytics(30)).resolves.not.toThrow();
+  });
+});
 ```
 
 **Оценка:** 4-6 часов
@@ -204,6 +227,7 @@ describe('cleanupOldAnalytics', () => {
 **Используется:** Production, Analytics Dashboard (публичный API)
 
 **Функции без тестов:**
+
 ```typescript
 - getPeriodMs(period: 'hour' | 'day' | 'week' | 'month'): number
 - getActiveSessions(): Promise<number>
@@ -214,6 +238,7 @@ describe('cleanupOldAnalytics', () => {
 ```
 
 **ПОЧЕМУ КРИТИЧНО:**
+
 - **Публичный API endpoint** - может быть вызван из dashboard
 - Сложная агрегация данных из KV
 - **НЕТ authorization check** - кто может видеть метрики?
@@ -221,6 +246,7 @@ describe('cleanupOldAnalytics', () => {
 - **НЕТ валидации query параметров**
 
 **РИСКИ:**
+
 1. Утечка user данных (если нет auth check)
 2. Некорректные метрики → неправильные бизнес-решения
 3. Медленные запросы → timeout'ы
@@ -231,56 +257,60 @@ describe('cleanupOldAnalytics', () => {
 **Обязательные тесты (минимум 20 тестов):**
 
 ```typescript
-describe('getPeriodMs', () => {
-  it('возвращает правильные миллисекунды для hour', () => {
-    expect(getPeriodMs('hour')).toBe(60 * 60 * 1000)
-  })
+describe("getPeriodMs", () => {
+  it("возвращает правильные миллисекунды для hour", () => {
+    expect(getPeriodMs("hour")).toBe(60 * 60 * 1000);
+  });
 
-  it('возвращает правильные миллисекунды для day', () => {
-    expect(getPeriodMs('day')).toBe(24 * 60 * 60 * 1000)
-  })
+  it("возвращает правильные миллисекунды для day", () => {
+    expect(getPeriodMs("day")).toBe(24 * 60 * 60 * 1000);
+  });
 
-  it('возвращает правильные миллисекунды для week', () => {
-    expect(getPeriodMs('week')).toBe(7 * 24 * 60 * 60 * 1000)
-  })
+  it("возвращает правильные миллисекунды для week", () => {
+    expect(getPeriodMs("week")).toBe(7 * 24 * 60 * 60 * 1000);
+  });
 
-  it('возвращает правильные миллисекунды для month', () => {
-    expect(getPeriodMs('month')).toBe(30 * 24 * 60 * 60 * 1000)
-  })
+  it("возвращает правильные миллисекунды для month", () => {
+    expect(getPeriodMs("month")).toBe(30 * 24 * 60 * 60 * 1000);
+  });
 
-  it('бросает ошибку для невалидного периода', () => {
-    expect(() => getPeriodMs('invalid' as any)).toThrow('Invalid period')
-  })
-})
+  it("бросает ошибку для невалидного периода", () => {
+    expect(() => getPeriodMs("invalid" as any)).toThrow("Invalid period");
+  });
+});
 
-describe('getActiveSessions', () => {
-  it('возвращает количество активных сессий', async () => {
-    vi.mocked(kv.keys).mockResolvedValue(['session:1', 'session:2', 'session:3'])
-    const count = await getActiveSessions()
-    expect(count).toBe(3)
-  })
+describe("getActiveSessions", () => {
+  it("возвращает количество активных сессий", async () => {
+    vi.mocked(kv.keys).mockResolvedValue([
+      "session:1",
+      "session:2",
+      "session:3",
+    ]);
+    const count = await getActiveSessions();
+    expect(count).toBe(3);
+  });
 
-  it('возвращает 0 если нет сессий', async () => {
-    vi.mocked(kv.keys).mockResolvedValue([])
-    const count = await getActiveSessions()
-    expect(count).toBe(0)
-  })
+  it("возвращает 0 если нет сессий", async () => {
+    vi.mocked(kv.keys).mockResolvedValue([]);
+    const count = await getActiveSessions();
+    expect(count).toBe(0);
+  });
 
-  it('обрабатывает ошибку KV', async () => {
-    vi.mocked(kv.keys).mockRejectedValue(new Error('KV error'))
-    const count = await getActiveSessions()
-    expect(count).toBe(0)
-  })
-})
+  it("обрабатывает ошибку KV", async () => {
+    vi.mocked(kv.keys).mockRejectedValue(new Error("KV error"));
+    const count = await getActiveSessions();
+    expect(count).toBe(0);
+  });
+});
 
-describe('handler', () => {
-  it('возвращает метрики для валидного периода', async () => {
-    const req = mockRequest({ query: { period: 'day' } })
-    const res = mockResponse()
+describe("handler", () => {
+  it("возвращает метрики для валидного периода", async () => {
+    const req = mockRequest({ query: { period: "day" } });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       activeSessions: expect.any(Number),
       totalLogins: expect.any(Number),
@@ -288,52 +318,52 @@ describe('handler', () => {
       avgSessionDuration: expect.any(Number),
       rateLimit: expect.objectContaining({
         remaining: expect.any(Number),
-        limit: expect.any(Number)
-      })
-    })
-  })
+        limit: expect.any(Number),
+      }),
+    });
+  });
 
-  it('возвращает 400 для невалидного периода', async () => {
-    const req = mockRequest({ query: { period: 'invalid' } })
-    const res = mockResponse()
+  it("возвращает 400 для невалидного периода", async () => {
+    const req = mockRequest({ query: { period: "invalid" } });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Invalid period. Must be hour, day, week, or month'
-    })
-  })
+      error: "Invalid period. Must be hour, day, week, or month",
+    });
+  });
 
-  it('возвращает 500 если KV недоступен', async () => {
-    vi.mocked(kv.keys).mockRejectedValue(new Error('KV down'))
-    const req = mockRequest({ query: { period: 'day' } })
-    const res = mockResponse()
+  it("возвращает 500 если KV недоступен", async () => {
+    vi.mocked(kv.keys).mockRejectedValue(new Error("KV down"));
+    const req = mockRequest({ query: { period: "day" } });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Failed to fetch analytics data'
-    })
-  })
+      error: "Failed to fetch analytics data",
+    });
+  });
 
   // КРИТИЧНО: Проверка authorization
-  it('требует валидную session для доступа к метрикам', async () => {
+  it("требует валидную session для доступа к метрикам", async () => {
     const req = mockRequest({
-      query: { period: 'day' },
-      headers: {}  // No session cookie
-    })
-    const res = mockResponse()
+      query: { period: "day" },
+      headers: {}, // No session cookie
+    });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(401)
+    expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Unauthorized. Please sign in to view analytics.'
-    })
-  })
-})
+      error: "Unauthorized. Please sign in to view analytics.",
+    });
+  });
+});
 ```
 
 **Оценка:** 6-8 часов
@@ -348,6 +378,7 @@ describe('handler', () => {
 **Используется:** Production, User Settings feature
 
 **Функции без тестов:**
+
 ```typescript
 - extractSessionFromCookie(cookie?: string): string | null
 - getUserFromSession(sessionId: string): Promise<User | null>
@@ -359,6 +390,7 @@ describe('handler', () => {
 ```
 
 **ПОЧЕМУ КРИТИЧНО:**
+
 - Работа с **user-specific данными** (privacy concern)
 - CRUD операции с KV
 - Authentication logic (session extraction)
@@ -366,6 +398,7 @@ describe('handler', () => {
 - **НЕТ проверки authorization**
 
 **РИСКИ:**
+
 1. Session hijacking (неправильная extractSessionFromCookie)
 2. Утечка настроек других пользователей
 3. Установка некорректных preferences
@@ -376,154 +409,163 @@ describe('handler', () => {
 **Обязательные тесты (минимум 18 тестов):**
 
 ```typescript
-describe('extractSessionFromCookie', () => {
-  it('извлекает session ID из валидного cookie', () => {
-    const cookie = 'session=abc123; Path=/; HttpOnly'
-    expect(extractSessionFromCookie(cookie)).toBe('abc123')
-  })
+describe("extractSessionFromCookie", () => {
+  it("извлекает session ID из валидного cookie", () => {
+    const cookie = "session=abc123; Path=/; HttpOnly";
+    expect(extractSessionFromCookie(cookie)).toBe("abc123");
+  });
 
-  it('возвращает null если cookie нет', () => {
-    expect(extractSessionFromCookie(undefined)).toBeNull()
-  })
+  it("возвращает null если cookie нет", () => {
+    expect(extractSessionFromCookie(undefined)).toBeNull();
+  });
 
-  it('возвращает null если session cookie нет', () => {
-    const cookie = 'other=value; Path=/'
-    expect(extractSessionFromCookie(cookie)).toBeNull()
-  })
+  it("возвращает null если session cookie нет", () => {
+    const cookie = "other=value; Path=/";
+    expect(extractSessionFromCookie(cookie)).toBeNull();
+  });
 
-  it('обрабатывает множество cookies', () => {
-    const cookie = 'other=value; session=abc123; another=test'
-    expect(extractSessionFromCookie(cookie)).toBe('abc123')
-  })
-})
+  it("обрабатывает множество cookies", () => {
+    const cookie = "other=value; session=abc123; another=test";
+    expect(extractSessionFromCookie(cookie)).toBe("abc123");
+  });
+});
 
-describe('GET /api/user/settings', () => {
-  it('возвращает defaults для нового пользователя', async () => {
-    const req = mockRequest({ method: 'GET', sessionId: 'abc123' })
-    const res = mockResponse()
-    vi.mocked(kv.get).mockResolvedValue(null)  // No existing settings
+describe("GET /api/user/settings", () => {
+  it("возвращает defaults для нового пользователя", async () => {
+    const req = mockRequest({ method: "GET", sessionId: "abc123" });
+    const res = mockResponse();
+    vi.mocked(kv.get).mockResolvedValue(null); // No existing settings
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
-      defaultAnalyticsPeriod: 'week',
-      defaultView: 'grid',
+      defaultAnalyticsPeriod: "week",
+      defaultView: "grid",
       itemsPerPage: 10,
       emailNotifications: false,
       autoRefreshDashboard: true,
-      refreshInterval: 300000  // 5 minutes
-    })
-  })
+      refreshInterval: 300000, // 5 minutes
+    });
+  });
 
-  it('возвращает сохранённые настройки', async () => {
+  it("возвращает сохранённые настройки", async () => {
     const savedSettings = {
-      defaultAnalyticsPeriod: 'month',
-      defaultView: 'list',
-      itemsPerPage: 25
-    }
-    vi.mocked(kv.get).mockResolvedValue(savedSettings)
+      defaultAnalyticsPeriod: "month",
+      defaultView: "list",
+      itemsPerPage: 25,
+    };
+    vi.mocked(kv.get).mockResolvedValue(savedSettings);
 
-    const req = mockRequest({ method: 'GET', sessionId: 'abc123' })
-    const res = mockResponse()
+    const req = mockRequest({ method: "GET", sessionId: "abc123" });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.json).toHaveBeenCalledWith(savedSettings)
-  })
-})
+    expect(res.json).toHaveBeenCalledWith(savedSettings);
+  });
+});
 
-describe('PUT /api/user/settings', () => {
-  it('сохраняет все настройки', async () => {
+describe("PUT /api/user/settings", () => {
+  it("сохраняет все настройки", async () => {
     const newSettings = {
-      defaultAnalyticsPeriod: 'day',
-      defaultView: 'grid',
-      itemsPerPage: 50
-    }
+      defaultAnalyticsPeriod: "day",
+      defaultView: "grid",
+      itemsPerPage: 50,
+    };
 
     const req = mockRequest({
-      method: 'PUT',
+      method: "PUT",
       body: newSettings,
-      sessionId: 'abc123'
-    })
-    const res = mockResponse()
+      sessionId: "abc123",
+    });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(kv.set).toHaveBeenCalledWith('settings:abc123', newSettings)
-    expect(res.status).toHaveBeenCalledWith(200)
-  })
+    expect(kv.set).toHaveBeenCalledWith("settings:abc123", newSettings);
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
 
-  it('валидирует defaultAnalyticsPeriod', async () => {
+  it("валидирует defaultAnalyticsPeriod", async () => {
     const invalidSettings = {
-      defaultAnalyticsPeriod: 'invalid'  // Should be hour/day/week/month
-    }
+      defaultAnalyticsPeriod: "invalid", // Should be hour/day/week/month
+    };
 
-    const req = mockRequest({ method: 'PUT', body: invalidSettings, sessionId: 'abc123' })
-    const res = mockResponse()
+    const req = mockRequest({
+      method: "PUT",
+      body: invalidSettings,
+      sessionId: "abc123",
+    });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Invalid defaultAnalyticsPeriod. Must be hour, day, week, or month'
-    })
-  })
+      error:
+        "Invalid defaultAnalyticsPeriod. Must be hour, day, week, or month",
+    });
+  });
 
-  it('валидирует itemsPerPage (min 10, max 100)', async () => {
-    const invalidSettings = { itemsPerPage: 5 }  // Too low
+  it("валидирует itemsPerPage (min 10, max 100)", async () => {
+    const invalidSettings = { itemsPerPage: 5 }; // Too low
 
-    const req = mockRequest({ method: 'PUT', body: invalidSettings, sessionId: 'abc123' })
-    const res = mockResponse()
+    const req = mockRequest({
+      method: "PUT",
+      body: invalidSettings,
+      sessionId: "abc123",
+    });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(400)
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Invalid itemsPerPage. Must be between 10 and 100'
-    })
-  })
-})
+      error: "Invalid itemsPerPage. Must be between 10 and 100",
+    });
+  });
+});
 
-describe('DELETE /api/user/settings', () => {
-  it('удаляет все настройки пользователя', async () => {
-    const req = mockRequest({ method: 'DELETE', sessionId: 'abc123' })
-    const res = mockResponse()
+describe("DELETE /api/user/settings", () => {
+  it("удаляет все настройки пользователя", async () => {
+    const req = mockRequest({ method: "DELETE", sessionId: "abc123" });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(kv.del).toHaveBeenCalledWith('settings:abc123')
-    expect(res.status).toHaveBeenCalledWith(200)
-  })
-})
+    expect(kv.del).toHaveBeenCalledWith("settings:abc123");
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+});
 
-describe('Authorization', () => {
-  it('возвращает 401 без session cookie', async () => {
-    const req = mockRequest({ method: 'GET', headers: {} })  // No cookie
-    const res = mockResponse()
+describe("Authorization", () => {
+  it("возвращает 401 без session cookie", async () => {
+    const req = mockRequest({ method: "GET", headers: {} }); // No cookie
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(401)
+    expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Unauthorized. Please sign in.'
-    })
-  })
+      error: "Unauthorized. Please sign in.",
+    });
+  });
 
-  it('возвращает 401 с невалидной session', async () => {
-    vi.mocked(kv.get).mockResolvedValue(null)  // Session not found in KV
+  it("возвращает 401 с невалидной session", async () => {
+    vi.mocked(kv.get).mockResolvedValue(null); // Session not found in KV
 
-    const req = mockRequest({ method: 'GET', sessionId: 'invalid123' })
-    const res = mockResponse()
+    const req = mockRequest({ method: "GET", sessionId: "invalid123" });
+    const res = mockResponse();
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(401)
+    expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Invalid session. Please sign in again.'
-    })
-  })
-})
+      error: "Invalid session. Please sign in again.",
+    });
+  });
+});
 ```
 
 **Оценка:** 4-6 часов
@@ -534,6 +576,7 @@ describe('Authorization', () => {
 ### Проблема #4: 18 упавших тестов - ИСПРАВИТЬ
 
 **Файлы:**
+
 1. `src/components/layout/UserMenu.test.tsx` - Avatar не рендерит img
 2. `src/components/analytics/OAuthMetricsDashboard.test.tsx` - Radix Select не работает в jsdom
 3. `src/hooks/user-contribution-history.test.tsx` - Apollo deprecated API
@@ -594,6 +637,7 @@ const mocks = [
 **Используется:** Phase 1 Timeline feature
 
 **Функционал:**
+
 - Fetch user profile (GET_USER_PROFILE)
 - Generate year ranges from account creation
 - Parallel fetch contributions for each year (Promise.all)
@@ -601,12 +645,14 @@ const mocks = [
 - Return timeline data sorted by year
 
 **ПОЧЕМУ ВАЖНО:**
+
 - Сложная multi-step логика
 - Parallel queries (может упасть частично)
 - Зависимость от Apollo Client
 - Критичен для Timeline feature
 
 **РИСКИ:**
+
 - Неправильная обработка createdAt → crash
 - Параллельные запросы могут упасть → undefined timeline
 - Неправильная сортировка → UX проблема
@@ -616,62 +662,62 @@ const mocks = [
 **Обязательные тесты (минимум 12 тестов):**
 
 ```typescript
-describe('useUserAnalytics', () => {
-  it('возвращает loading=true на старте', () => {
-    const { result } = renderHook(() => useUserAnalytics('torvalds'))
-    expect(result.current.loading).toBe(true)
-  })
+describe("useUserAnalytics", () => {
+  it("возвращает loading=true на старте", () => {
+    const { result } = renderHook(() => useUserAnalytics("torvalds"));
+    expect(result.current.loading).toBe(true);
+  });
 
-  it('загружает profile + contributions для всех лет', async () => {
+  it("загружает profile + contributions для всех лет", async () => {
     // Mock user created 2020-01-01
     // Should fetch contributions for 2020, 2021, 2022, 2023, 2024
-    const { result } = renderHook(() => useUserAnalytics('torvalds'))
+    const { result } = renderHook(() => useUserAnalytics("torvalds"));
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false)
-    })
+      expect(result.current.loading).toBe(false);
+    });
 
-    expect(result.current.timeline).toHaveLength(5)
-    expect(result.current.timeline[0].year).toBe(2024)  // Sorted desc
-  })
+    expect(result.current.timeline).toHaveLength(5);
+    expect(result.current.timeline[0].year).toBe(2024); // Sorted desc
+  });
 
-  it('разделяет owned repos и contributions', async () => {
-    const { result } = renderHook(() => useUserAnalytics('torvalds'))
+  it("разделяет owned repos и contributions", async () => {
+    const { result } = renderHook(() => useUserAnalytics("torvalds"));
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false)
-    })
+      expect(result.current.loading).toBe(false);
+    });
 
-    const year2024 = result.current.timeline[0]
-    expect(year2024.ownedRepos).toBeDefined()
-    expect(year2024.contributions).toBeDefined()
-  })
+    const year2024 = result.current.timeline[0];
+    expect(year2024.ownedRepos).toBeDefined();
+    expect(year2024.contributions).toBeDefined();
+  });
 
-  it('обрабатывает частичные ошибки в параллельных запросах', async () => {
+  it("обрабатывает частичные ошибки в параллельных запросах", async () => {
     // Mock: 2020-2023 succeed, 2024 fails
-    const { result } = renderHook(() => useUserAnalytics('torvalds'))
+    const { result } = renderHook(() => useUserAnalytics("torvalds"));
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false)
-    })
+      expect(result.current.loading).toBe(false);
+    });
 
     // Should have data for 2020-2023
-    expect(result.current.timeline).toHaveLength(4)
+    expect(result.current.timeline).toHaveLength(4);
     // Should have error for 2024
-    expect(result.current.error).toContain('Failed to load data for 2024')
-  })
+    expect(result.current.error).toContain("Failed to load data for 2024");
+  });
 
-  it('обрабатывает пустой createdAt gracefully', async () => {
+  it("обрабатывает пустой createdAt gracefully", async () => {
     // Mock user without createdAt
-    const { result } = renderHook(() => useUserAnalytics('newuser'))
+    const { result } = renderHook(() => useUserAnalytics("newuser"));
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false)
-    })
+      expect(result.current.loading).toBe(false);
+    });
 
-    expect(result.current.timeline).toEqual([])
-  })
-})
+    expect(result.current.timeline).toEqual([]);
+  });
+});
 ```
 
 **Оценка:** 4-6 часов
@@ -686,6 +732,7 @@ describe('useUserAnalytics', () => {
 **Используется:** Критичен для error handling
 
 **ПОЧЕМУ ВАЖНО:**
+
 - Class component (сложнее тестировать)
 - Критичен для UX (ловит все ошибки)
 - **БЕЗ тестов = не знаем что он работает**
@@ -791,6 +838,7 @@ describe('ErrorBoundary', () => {
 **Используется:** useUserAnalytics hook, Timeline components
 
 **Функции:**
+
 ```typescript
 - generateYearRanges(createdAt: string): YearRange[]
 - formatDate(date: string, format: string): string
@@ -799,6 +847,7 @@ describe('ErrorBoundary', () => {
 ```
 
 **ПОЧЕМУ ВАЖНО:**
+
 - Дата-логика склонна к edge cases
 - Leap years, timezones, DST
 - Используется в критичном hook
@@ -808,48 +857,48 @@ describe('ErrorBoundary', () => {
 **Обязательные тесты (минимум 10 тестов):**
 
 ```typescript
-describe('generateYearRanges', () => {
-  it('генерирует диапазоны от createdAt до текущего года', () => {
-    const createdAt = '2020-01-01T00:00:00Z'
-    const ranges = generateYearRanges(createdAt)
+describe("generateYearRanges", () => {
+  it("генерирует диапазоны от createdAt до текущего года", () => {
+    const createdAt = "2020-01-01T00:00:00Z";
+    const ranges = generateYearRanges(createdAt);
 
-    expect(ranges[0].year).toBe(2024)  // Current year first
-    expect(ranges[ranges.length - 1].year).toBe(2020)
-    expect(ranges).toHaveLength(5)
-  })
+    expect(ranges[0].year).toBe(2024); // Current year first
+    expect(ranges[ranges.length - 1].year).toBe(2020);
+    expect(ranges).toHaveLength(5);
+  });
 
-  it('обрабатывает leap year корректно', () => {
-    const createdAt = '2020-02-29T00:00:00Z'  // Leap year
-    const ranges = generateYearRanges(createdAt)
+  it("обрабатывает leap year корректно", () => {
+    const createdAt = "2020-02-29T00:00:00Z"; // Leap year
+    const ranges = generateYearRanges(createdAt);
 
-    expect(ranges.find(r => r.year === 2020)).toBeDefined()
-  })
+    expect(ranges.find((r) => r.year === 2020)).toBeDefined();
+  });
 
-  it('обрабатывает timezone корректно', () => {
-    const createdAt = '2020-12-31T23:59:59Z'  // End of year
-    const ranges = generateYearRanges(createdAt)
+  it("обрабатывает timezone корректно", () => {
+    const createdAt = "2020-12-31T23:59:59Z"; // End of year
+    const ranges = generateYearRanges(createdAt);
 
-    expect(ranges.find(r => r.year === 2020)).toBeDefined()
-  })
+    expect(ranges.find((r) => r.year === 2020)).toBeDefined();
+  });
 
-  it('обрабатывает пустую строку', () => {
-    expect(generateYearRanges('')).toEqual([])
-  })
+  it("обрабатывает пустую строку", () => {
+    expect(generateYearRanges("")).toEqual([]);
+  });
 
-  it('обрабатывает null', () => {
-    expect(generateYearRanges(null as any)).toEqual([])
-  })
-})
+  it("обрабатывает null", () => {
+    expect(generateYearRanges(null as any)).toEqual([]);
+  });
+});
 
-describe('formatDate', () => {
-  it('форматирует дату в MM/DD/YYYY', () => {
-    expect(formatDate('2024-01-15', 'MM/DD/YYYY')).toBe('01/15/2024')
-  })
+describe("formatDate", () => {
+  it("форматирует дату в MM/DD/YYYY", () => {
+    expect(formatDate("2024-01-15", "MM/DD/YYYY")).toBe("01/15/2024");
+  });
 
-  it('форматирует дату в DD.MM.YYYY', () => {
-    expect(formatDate('2024-01-15', 'DD.MM.YYYY')).toBe('15.01.2024')
-  })
-})
+  it("форматирует дату в DD.MM.YYYY", () => {
+    expect(formatDate("2024-01-15", "DD.MM.YYYY")).toBe("15.01.2024");
+  });
+});
 ```
 
 **Оценка:** 2-3 часа
@@ -861,12 +910,12 @@ describe('formatDate', () => {
 
 ### Неделя 1: P0 - КРИТИЧНО (14-20 часов)
 
-| День | Задача | Часы | Статус |
-|------|--------|------|--------|
-| День 1-2 | api/analytics/logger.test.ts | 4-6 | ☐ |
-| День 3-4 | api/analytics/oauth-usage.test.ts | 6-8 | ☐ |
-| День 5 | api/user/settings.test.ts | 4-6 | ☐ |
-| День 5 (вечер) | Исправить 18 упавших тестов | 2-4 | ☐ |
+| День           | Задача                            | Часы | Статус |
+| -------------- | --------------------------------- | ---- | ------ |
+| День 1-2       | api/analytics/logger.test.ts      | 4-6  | ☐      |
+| День 3-4       | api/analytics/oauth-usage.test.ts | 6-8  | ☐      |
+| День 5         | api/user/settings.test.ts         | 4-6  | ☐      |
+| День 5 (вечер) | Исправить 18 упавших тестов       | 2-4  | ☐      |
 
 **Checkpoint:** В конце недели 1 - все критичные API имеют тесты, pass rate 100%
 
@@ -874,12 +923,12 @@ describe('formatDate', () => {
 
 ### Неделя 2: P1 - ВЫСОКИЙ (9-13 часов)
 
-| День | Задача | Часы | Статус |
-|------|--------|------|--------|
-| День 6-7 | src/hooks/useUserAnalytics.test.tsx | 4-6 | ☐ |
-| День 8 | ErrorBoundary.test.tsx | 2-3 | ☐ |
-| День 9 | dropdown-menu.test.tsx | 3-4 | ☐ |
-| День 10 | Buffer / code review | 2 | ☐ |
+| День     | Задача                              | Часы | Статус |
+| -------- | ----------------------------------- | ---- | ------ |
+| День 6-7 | src/hooks/useUserAnalytics.test.tsx | 4-6  | ☐      |
+| День 8   | ErrorBoundary.test.tsx              | 2-3  | ☐      |
+| День 9   | dropdown-menu.test.tsx              | 3-4  | ☐      |
+| День 10  | Buffer / code review                | 2    | ☐      |
 
 **Checkpoint:** В конце недели 2 - все критичные hooks и components имеют тесты
 
@@ -887,12 +936,12 @@ describe('formatDate', () => {
 
 ### Неделя 3: P2 - СРЕДНИЙ (8-14 часов)
 
-| День | Задача | Часы | Статус |
-|------|--------|------|--------|
-| День 11 | date-utils.test.ts | 2-3 | ☐ |
-| День 12-13 | Integration tests: Analytics Pipeline | 6-8 | ☐ |
-| День 14 | UI components (button, input, etc) | 2-3 | ☐ |
-| День 15 | Финальный review, документация | 2 | ☐ |
+| День       | Задача                                | Часы | Статус |
+| ---------- | ------------------------------------- | ---- | ------ |
+| День 11    | date-utils.test.ts                    | 2-3  | ☐      |
+| День 12-13 | Integration tests: Analytics Pipeline | 6-8  | ☐      |
+| День 14    | UI components (button, input, etc)    | 2-3  | ☐      |
+| День 15    | Финальный review, документация        | 2    | ☐      |
 
 **Checkpoint:** В конце недели 3 - все компоненты имеют тесты, integration tests покрывают критичные пути
 
@@ -901,6 +950,7 @@ describe('formatDate', () => {
 ## ✅ SUCCESS CRITERIA
 
 ### По завершении P0 (Неделя 1)
+
 - ✅ api/analytics/logger.ts - 100% coverage (15+ tests)
 - ✅ api/analytics/oauth-usage.ts - 100% coverage (20+ tests)
 - ✅ api/user/settings.ts - 100% coverage (18+ tests)
@@ -909,6 +959,7 @@ describe('formatDate', () => {
 - ✅ **API coverage: 100%** (7/7 endpoints с тестами)
 
 ### По завершении P1 (Неделя 2)
+
 - ✅ useUserAnalytics.ts - 100% coverage (12+ tests)
 - ✅ ErrorBoundary.tsx - 100% coverage (6+ tests)
 - ✅ dropdown-menu.tsx - 100% coverage (8+ tests)
@@ -916,6 +967,7 @@ describe('formatDate', () => {
 - ✅ **Components coverage: 95%+** (60+/64 components с тестами)
 
 ### По завершении P2 (Неделя 3)
+
 - ✅ date-utils.ts - 100% coverage (10+ tests)
 - ✅ Analytics Pipeline - integration тесты (5+ scenarios)
 - ✅ UI components - coverage (4+ components)
@@ -923,6 +975,7 @@ describe('formatDate', () => {
 - ✅ **Integration coverage: 80%+** (critical paths covered)
 
 ### FINAL METRICS (после 3 недель)
+
 ```
 Test Files:    100+ total (100 passed, 0 failed)
 Tests:         1900+ total (1900 passed, 0 failed)
@@ -937,47 +990,52 @@ Coverage:      Statements 90%+, Branches 85%+, Functions 90%+
 ### ✅ Что делать ПРАВИЛЬНО
 
 1. **Специфичные assertions:**
+
 ```typescript
 // ХОРОШО
-expect(redirectCall).toContain('client_id=test_client_id')
-expect(redirectCall).toContain('scope=read%3Auser+user%3Aemail')
+expect(redirectCall).toContain("client_id=test_client_id");
+expect(redirectCall).toContain("scope=read%3Auser+user%3Aemail");
 
 // ПЛОХО
-expect(redirectCall).toBeTruthy()
+expect(redirectCall).toBeTruthy();
 ```
 
 2. **Описательные названия тестов:**
+
 ```typescript
 // ХОРОШО
-it('должен редиректить на GitHub с правильными параметрами', async () => {})
+it("должен редиректить на GitHub с правильными параметрами", async () => {});
 
 // ПЛОХО
-it('works', async () => {})
+it("works", async () => {});
 ```
 
 3. **Централизованные mock данные:**
+
 ```typescript
 // ХОРОШО
-import { createMockRepository } from '@/test/mocks/github-data'
-const repo = createMockRepository({ stars: 100 })
+import { createMockRepository } from "@/test/mocks/github-data";
+const repo = createMockRepository({ stars: 100 });
 
 // ПЛОХО
-const repo = { id: '1', name: 'repo', stars: 100, /* ...40 lines... */ }
+const repo = { id: "1", name: "repo", stars: 100 /* ...40 lines... */ };
 ```
 
 4. **Edge cases ОБЯЗАТЕЛЬНО:**
+
 ```typescript
-describe('функция', () => {
-  it('handles null', () => {})
-  it('handles undefined', () => {})
-  it('handles empty array', () => {})
-  it('handles zero', () => {})
-})
+describe("функция", () => {
+  it("handles null", () => {});
+  it("handles undefined", () => {});
+  it("handles empty array", () => {});
+  it("handles zero", () => {});
+});
 ```
 
 ### ❌ Что НЕ делать
 
 1. **НЕ использовать deprecated API:**
+
 ```typescript
 // ПЛОХО
 <MockedProvider addTypename={false} canonizeResults={false}>
@@ -987,22 +1045,24 @@ describe('функция', () => {
 ```
 
 2. **НЕ тестировать Radix UI напрямую в jsdom:**
+
 ```typescript
 // ПЛОХО (упадёт)
-await userEvent.click(screen.getByRole('button'))
-await waitFor(() => screen.getByRole('option'))
+await userEvent.click(screen.getByRole("button"));
+await waitFor(() => screen.getByRole("option"));
 
 // ХОРОШО (mock)
-vi.mock('@/components/ui/select')
+vi.mock("@/components/ui/select");
 ```
 
 3. **НЕ дублировать mock данные:**
+
 ```typescript
 // ПЛОХО - дублируется в 10 файлах
-const mockRepo = { id: '1', name: 'test', /* ... */ }
+const mockRepo = { id: "1", name: "test" /* ... */ };
 
 // ХОРОШО - используй factory
-import { createMockRepository } from '@/test/mocks'
+import { createMockRepository } from "@/test/mocks";
 ```
 
 ---

@@ -70,30 +70,33 @@ Tests use mocked endpoints to avoid external dependencies:
 
 ```typescript
 // Mock GitHub OAuth token exchange
-await page.route('https://github.com/login/oauth/access_token', async (route) => {
-  await route.fulfill({
-    status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify({
-      access_token: 'gho_mockAccessToken123456',
-      token_type: 'bearer',
-      scope: 'read:user,user:email',
-    }),
-  })
-})
+await page.route(
+  "https://github.com/login/oauth/access_token",
+  async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        access_token: "gho_mockAccessToken123456",
+        token_type: "bearer",
+        scope: "read:user,user:email",
+      }),
+    });
+  },
+);
 
 // Mock GitHub user API
-await page.route('https://api.github.com/user', async (route) => {
+await page.route("https://api.github.com/user", async (route) => {
   await route.fulfill({
     status: 200,
-    contentType: 'application/json',
+    contentType: "application/json",
     body: JSON.stringify({
-      login: 'testuser',
+      login: "testuser",
       id: 12345,
-      avatar_url: 'https://avatars.githubusercontent.com/u/12345?v=4',
+      avatar_url: "https://avatars.githubusercontent.com/u/12345?v=4",
     }),
-  })
-})
+  });
+});
 ```
 
 ### Running Tests
@@ -138,17 +141,17 @@ Helper functions for logging OAuth events to Vercel KV.
 logOAuthLogin({
   timestamp: Date.now(),
   userId: 12345,
-  login: 'username',
-  sessionId: 'abc123',
-})
+  login: "username",
+  sessionId: "abc123",
+});
 
 // Log OAuth logout event
 logOAuthLogout({
   timestamp: Date.now(),
   userId: 12345,
-  login: 'username',
-  sessionId: 'abc123',
-})
+  login: "username",
+  sessionId: "abc123",
+});
 
 // Log rate limit snapshot
 logRateLimitSnapshot({
@@ -157,14 +160,14 @@ logRateLimitSnapshot({
   limit: 5000,
   used: 1,
   isDemo: false,
-  userLogin: 'username',
-})
+  userLogin: "username",
+});
 
 // Update session last activity
-updateSessionActivity('sessionId123')
+updateSessionActivity("sessionId123");
 
 // Cleanup old analytics data (cron job)
-cleanupOldAnalytics()
+cleanupOldAnalytics();
 ```
 
 **Storage:**
@@ -225,25 +228,25 @@ Real-time dashboard for displaying OAuth analytics.
 
 ```typescript
 interface OAuthMetricsDashboardProps {
-  initialPeriod?: 'hour' | 'day' | 'week' | 'month'
-  refreshInterval?: number  // Auto-refresh in ms (0 to disable)
-  adminMode?: boolean       // Show detailed data
+  initialPeriod?: "hour" | "day" | "week" | "month";
+  refreshInterval?: number; // Auto-refresh in ms (0 to disable)
+  adminMode?: boolean; // Show detailed data
 }
 ```
 
 **Usage:**
 
 ```tsx
-import { OAuthMetricsDashboard } from '@/components/analytics/OAuthMetricsDashboard'
+import { OAuthMetricsDashboard } from "@/components/analytics/OAuthMetricsDashboard";
 
 function AdminPage() {
   return (
     <OAuthMetricsDashboard
       initialPeriod="day"
-      refreshInterval={30000}  // 30 seconds
+      refreshInterval={30000} // 30 seconds
       adminMode={true}
     />
-  )
+  );
 }
 ```
 
@@ -268,26 +271,26 @@ Login and logout endpoints automatically log events:
 
 ```typescript
 // api/auth/callback.ts
-import { logOAuthLogin } from '../analytics/logger'
+import { logOAuthLogin } from "../analytics/logger";
 
 await logOAuthLogin({
   timestamp: Date.now(),
   userId: user.id,
   login: user.login,
   sessionId,
-})
+});
 ```
 
 ```typescript
 // api/auth/logout.ts
-import { logOAuthLogout } from '../analytics/logger'
+import { logOAuthLogout } from "../analytics/logger";
 
 await logOAuthLogout({
   timestamp: Date.now(),
   userId: sessionData.userId,
   login: sessionData.login,
   sessionId,
-})
+});
 ```
 
 #### GitHub Proxy Integration
@@ -296,7 +299,10 @@ Proxy logs rate limit snapshots and updates session activity:
 
 ```typescript
 // api/github-proxy.ts
-import { logRateLimitSnapshot, updateSessionActivity } from './analytics/logger'
+import {
+  logRateLimitSnapshot,
+  updateSessionActivity,
+} from "./analytics/logger";
 
 // Log rate limit
 await logRateLimitSnapshot({
@@ -306,33 +312,38 @@ await logRateLimitSnapshot({
   used: rateLimit.used,
   isDemo,
   userLogin,
-})
+});
 
 // Update session activity (authenticated users only)
 if (!isDemo && sessionId) {
-  await updateSessionActivity(sessionId)
+  await updateSessionActivity(sessionId);
 }
 ```
 
 ### Metrics Explanation
 
 **Active Sessions**
+
 - Total number of valid sessions in Vercel KV
 - Scanned from `session:*` keys
 
 **Total Logins/Logouts**
+
 - Count of login/logout events in selected period
 - Stored in sorted sets by timestamp
 
 **Unique Users**
+
 - Distinct user IDs from active sessions
 - Calculated from session data
 
 **Average Session Duration**
+
 - Time between session creation and last activity
 - Averaged across all active sessions
 
 **Rate Limit Statistics**
+
 - **Avg Usage**: Average API requests used
 - **Peak Usage**: Maximum API requests used
 - **Avg Remaining**: Average quota remaining
@@ -438,18 +449,18 @@ Reset settings to defaults.
 
 ```typescript
 interface UserSettings {
-  userId: number
-  login: string
+  userId: number;
+  login: string;
   preferences: {
-    defaultAnalyticsPeriod?: 'hour' | 'day' | 'week' | 'month'
-    defaultView?: 'card' | 'table'
-    itemsPerPage?: number          // 1-100
-    emailNotifications?: boolean
-    autoRefreshDashboard?: boolean
-    refreshInterval?: number        // 5000-300000 (5s - 5min)
-  }
-  createdAt: number
-  updatedAt: number
+    defaultAnalyticsPeriod?: "hour" | "day" | "week" | "month";
+    defaultView?: "card" | "table";
+    itemsPerPage?: number; // 1-100
+    emailNotifications?: boolean;
+    autoRefreshDashboard?: boolean;
+    refreshInterval?: number; // 5000-300000 (5s - 5min)
+  };
+  createdAt: number;
+  updatedAt: number;
 }
 ```
 
@@ -508,29 +519,29 @@ All settings are validated:
 
 ```typescript
 // Fetch settings
-const response = await fetch('/api/user/settings', {
-  credentials: 'include'  // Include session cookie
-})
-const settings = await response.json()
+const response = await fetch("/api/user/settings", {
+  credentials: "include", // Include session cookie
+});
+const settings = await response.json();
 
 // Update settings (PATCH)
-await fetch('/api/user/settings', {
-  method: 'PATCH',
-  headers: { 'Content-Type': 'application/json' },
-  credentials: 'include',
+await fetch("/api/user/settings", {
+  method: "PATCH",
+  headers: { "Content-Type": "application/json" },
+  credentials: "include",
   body: JSON.stringify({
     preferences: {
       itemsPerPage: 25,
-      autoRefreshDashboard: true
-    }
-  })
-})
+      autoRefreshDashboard: true,
+    },
+  }),
+});
 
 // Reset to defaults
-await fetch('/api/user/settings', {
-  method: 'DELETE',
-  credentials: 'include'
-})
+await fetch("/api/user/settings", {
+  method: "DELETE",
+  credentials: "include",
+});
 ```
 
 ### Future Enhancements
@@ -550,28 +561,33 @@ Planned features for user settings:
 ### Unit Tests
 
 **Analytics Dashboard:**
+
 - 20+ tests (`OAuthMetricsDashboard.test.tsx`)
 - Coverage: Fetching, display, period changes, auto-refresh, errors
 - Mock fetch API for all tests
 
 **User Settings API:**
+
 - Not yet implemented (future work)
 - Should cover: GET, PUT, PATCH, DELETE, validation, errors
 
 ### E2E Tests
 
 **OAuth Flow:**
+
 - 13 scenarios (`e2e/oauth-flow.spec.ts`)
 - Coverage: Login, logout, session persistence, error handling
 - Mock GitHub endpoints
 
 **Analytics Dashboard:**
+
 - Not yet implemented (recommended)
 - Should cover: Loading, period selection, auto-refresh, admin mode
 
 ### Storybook
 
 **Analytics Dashboard:**
+
 - 10 stories covering all states
 - Default, hour/week/month, high/low usage, loading, error, admin mode
 
@@ -635,11 +651,11 @@ Setup cron job to cleanup old analytics:
 
 ```typescript
 // api/cron/cleanup-analytics.ts
-import { cleanupOldAnalytics } from '../analytics/logger'
+import { cleanupOldAnalytics } from "../analytics/logger";
 
 export default async function handler() {
-  await cleanupOldAnalytics()
-  return { success: true }
+  await cleanupOldAnalytics();
+  return { success: true };
 }
 ```
 
@@ -647,10 +663,12 @@ Configure in `vercel.json`:
 
 ```json
 {
-  "crons": [{
-    "path": "/api/cron/cleanup-analytics",
-    "schedule": "0 0 * * *"
-  }]
+  "crons": [
+    {
+      "path": "/api/cron/cleanup-analytics",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }
 ```
 
@@ -673,6 +691,7 @@ Monitor these metrics in production:
 **Problem:** Analytics endpoint returns 503
 
 **Solution:**
+
 - Check Vercel KV is configured
 - Verify KV environment variables
 - Check KV connection in Vercel dashboard
@@ -682,6 +701,7 @@ Monitor these metrics in production:
 **Problem:** Settings reset after page reload
 
 **Solution:**
+
 - Check session cookie is set
 - Verify user is authenticated
 - Check KV write permissions
@@ -692,6 +712,7 @@ Monitor these metrics in production:
 **Problem:** Vercel KV storage filling up
 
 **Solution:**
+
 - Run cleanup job: `cleanupOldAnalytics()`
 - Reduce analytics retention period
 - Implement data archival strategy

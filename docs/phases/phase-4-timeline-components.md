@@ -9,10 +9,12 @@
 ## 🤖 Recommended Agents
 
 **Before starting:**
+
 - **Explore agent:** "Find RepositoryCard component and understand its props"
 - **Plan agent:** "Create timeline components implementation plan"
 
 **During implementation:**
+
 - **general-purpose agent:** "Implement Step 4.1 - ActivityTimeline component"
 - **general-purpose agent:** "Implement Step 4.2 - TimelineYear with collapse"
 - **general-purpose agent:** "Implement Step 4.3 - YearExpandedView"
@@ -20,10 +22,12 @@
 - **test-runner-fixer agent:** "Run tests for all timeline components"
 
 **After implementation:**
+
 - **code-review-specialist agent:** "Verify smooth collapse animations (<200ms)"
 - **debug-specialist agent:** "Fix any rendering issues with year expansion"
 
 **Testing:**
+
 ```bash
 Explore agent: "Verify timeline works with 2-10+ year old accounts"
 ```
@@ -35,11 +39,13 @@ Explore agent: "Verify timeline works with 2-10+ year old accounts"
 Build year-by-year activity timeline with collapsible years and project details.
 
 **Current State:**
+
 - RepositoryCard component exists (can reuse)
 - Recharts already configured
 - No timeline visualization
 
 **Target State:**
+
 - ActivityTimeline component (full history)
 - TimelineYear (collapsible rows)
 - YearExpandedView (detailed breakdown)
@@ -196,6 +202,7 @@ export function TimelineYear({ year, maxCommits }: TimelineYearProps) {
 ```
 
 **CSS for smooth expand (using Tailwind):**
+
 - `animate-in` - Built-in animation
 - `fade-in` - Opacity transition
 - `slide-in-from-top-2` - Slide down effect
@@ -342,17 +349,17 @@ export function RepositoryCard({ repository, type, commits }: RepositoryCardProp
 **File:** `src/components/timeline/ActivityTimeline.stories.tsx`
 
 ```typescript
-import type { Meta, StoryObj } from '@storybook/react'
-import { ActivityTimeline } from './ActivityTimeline'
+import type { Meta, StoryObj } from "@storybook/react";
+import { ActivityTimeline } from "./ActivityTimeline";
 
 const meta: Meta<typeof ActivityTimeline> = {
-  title: 'Timeline/ActivityTimeline',
+  title: "Timeline/ActivityTimeline",
   component: ActivityTimeline,
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof ActivityTimeline>
+export default meta;
+type Story = StoryObj<typeof ActivityTimeline>;
 
 const mockTimeline = [
   {
@@ -360,8 +367,12 @@ const mockTimeline = [
     totalCommits: 450,
     totalIssues: 30,
     totalPRs: 25,
-    ownedRepos: [/* mock repos */],
-    contributions: [/* mock repos */],
+    ownedRepos: [
+      /* mock repos */
+    ],
+    contributions: [
+      /* mock repos */
+    ],
   },
   {
     year: 2024,
@@ -371,26 +382,26 @@ const mockTimeline = [
     ownedRepos: [],
     contributions: [],
   },
-]
+];
 
 export const Default: Story = {
   args: {
     timeline: mockTimeline,
   },
-}
+};
 
 export const Loading: Story = {
   args: {
     timeline: [],
     loading: true,
   },
-}
+};
 
 export const Empty: Story = {
   args: {
     timeline: [],
   },
-}
+};
 ```
 
 **Test:** Follow same pattern - test expand/collapse, rendering, accessibility
@@ -407,18 +418,20 @@ export const Empty: Story = {
 - [ ] Stories + Tests for all components
 - [ ] Works with all account ages (2-10+ years)
 - [ ] Responsive (mobile: 1 col, desktop: 2 cols for repos)
-- [ ] >90% test coverage
+- [ ] > 90% test coverage
 
 ---
 
 ## 📊 Performance Expectations
 
 **Rendering:**
+
 - Timeline (10 years): <100ms initial render
 - Year expand: <100ms (smooth animation)
 - Year collapse: <100ms
 
 **Optimization:**
+
 - Use `React.memo` for TimelineYear
 - Lazy render expanded content
 - Virtual scrolling if >50 years (unlikely)
@@ -428,6 +441,7 @@ export const Empty: Story = {
 ## 🎨 Animation Strategy
 
 **CSS Transitions (95%):**
+
 ```css
 /* Already handled by Tailwind utilities */
 .transition-all duration-500  /* Progress bar */
@@ -442,6 +456,7 @@ export const Empty: Story = {
 ## 🧪 Testing Strategy
 
 **Test Cases:**
+
 - Render timeline with multiple years
 - Expand/collapse year
 - Show correct stats per year
@@ -458,6 +473,7 @@ export const Empty: Story = {
 **If timeline fails:**
 
 1. **Hide timeline:**
+
    ```typescript
    {FEATURE_FLAGS.TIMELINE_VIEW && <ActivityTimeline />}
    ```
@@ -475,14 +491,17 @@ export const Empty: Story = {
 ## 📚 Resources
 
 **Components:**
+
 - [Collapsible](https://ui.shadcn.com/docs/components/collapsible) - Alternative to custom collapse
 - [Accordion](https://ui.shadcn.com/docs/components/accordion) - If using Radix UI primitives
 
 **Animations:**
+
 - [Tailwind Animations](https://tailwindcss.com/docs/animation)
 - [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions)
 
 **Existing Components to Reuse:**
+
 - `RepositoryCard` - Already exists
 - `Badge` - shadcn/ui
 - `Card` - shadcn/ui

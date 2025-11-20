@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
-import type { Repository } from '@/apollo/github-api.types';
-import type { RepositoryFilter } from '@/types/filters';
-import { filterRepositories } from '@/lib/repository-filters';
+import type { Repository } from "@/apollo/github-api.types";
+import { filterRepositories } from "@/lib/repository-filters";
+import type { RepositoryFilter } from "@/types/filters";
+import { useCallback, useMemo, useState } from "react";
 
 /**
  * React hook for managing repository filter state and applying filters
@@ -47,28 +47,31 @@ export function useRepositoryFilters(repositories: Repository[]) {
    * @param key - Filter key to update
    * @param value - New value for the filter (undefined to remove)
    */
-  const updateFilter = useCallback(<K extends keyof RepositoryFilter>(
-    key: K,
-    value: RepositoryFilter[K]
-  ) => {
-    setFilters((prev) => {
-      if (value === undefined || value === '' || value === false) {
-        // Remove filter if value is undefined, empty string, or false
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [key]: _removed, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [key]: value };
-    });
-  }, []);
+  const updateFilter = useCallback(
+    <K extends keyof RepositoryFilter>(key: K, value: RepositoryFilter[K]) => {
+      setFilters((prev) => {
+        if (value === undefined || value === "" || value === false) {
+          // Remove filter if value is undefined, empty string, or false
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { [key]: _removed, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [key]: value };
+      });
+    },
+    [],
+  );
 
   /**
    * Sets multiple filters at once
    * @param newFilters - Partial filter object to merge with existing filters
    */
-  const setMultipleFilters = useCallback((newFilters: Partial<RepositoryFilter>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  }, []);
+  const setMultipleFilters = useCallback(
+    (newFilters: Partial<RepositoryFilter>) => {
+      setFilters((prev) => ({ ...prev, ...newFilters }));
+    },
+    [],
+  );
 
   /**
    * Clears all active filters

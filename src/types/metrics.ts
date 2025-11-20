@@ -10,7 +10,7 @@ export type AuthenticityScore = {
   /** Overall score from 0-100 */
   score: number;
   /** Category based on score */
-  category: 'High' | 'Medium' | 'Low' | 'Suspicious';
+  category: "High" | "Medium" | "Low" | "Suspicious";
   /** Detailed breakdown by component */
   breakdown: {
     originalityScore: number;
@@ -88,7 +88,7 @@ export type LanguageDiversity = {
   score: number; // 0-100
   uniqueLanguages: number;
   primaryLanguage: string | null;
-  distribution: 'Diverse' | 'Moderate' | 'Focused' | 'Single';
+  distribution: "Diverse" | "Moderate" | "Focused" | "Single";
 };
 
 /**
@@ -118,7 +118,7 @@ export type ActivityMetric = {
   /** Overall score from 0-100 */
   score: number;
   /** Activity level based on score */
-  level: 'High' | 'Moderate' | 'Low';
+  level: "High" | "Moderate" | "Low";
   /** Detailed breakdown by component */
   breakdown: {
     recentCommits: number;
@@ -141,7 +141,7 @@ export type ImpactMetric = {
   /** Overall score from 0-100 */
   score: number;
   /** Impact level based on score */
-  level: 'Exceptional' | 'Strong' | 'Moderate' | 'Low' | 'Minimal';
+  level: "Exceptional" | "Strong" | "Moderate" | "Low" | "Minimal";
   /** Detailed breakdown by component */
   breakdown: {
     stars: number;
@@ -168,7 +168,7 @@ export type QualityMetric = {
   /** Overall score from 0-100 */
   score: number;
   /** Quality level based on score */
-  level: 'Excellent' | 'Strong' | 'Good' | 'Fair' | 'Weak';
+  level: "Excellent" | "Strong" | "Good" | "Fair" | "Weak";
   /** Detailed breakdown by component */
   breakdown: {
     originality: number;
@@ -199,7 +199,7 @@ export type GrowthMetric = {
   /** Overall score from -100 to +100 */
   score: number;
   /** Growth level based on score */
-  level: 'Rapid Growth' | 'Growing' | 'Stable' | 'Declining' | 'Rapid Decline';
+  level: "Rapid Growth" | "Growing" | "Stable" | "Declining" | "Rapid Decline";
   /** Detailed breakdown by component */
   breakdown: {
     activityGrowth: number;

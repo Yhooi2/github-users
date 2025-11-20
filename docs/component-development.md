@@ -3,6 +3,7 @@
 > Полное руководство по разработке React компонентов с shadcn/ui, Storybook и TypeScript
 
 **📚 Related Documentation:**
+
 - [Components Guide](./components-guide.md) - Complete reference for all existing components
 - [Testing Guide](./testing-guide.md) - Testing strategy and best practices
 - [TypeScript Guide](./typescript-guide.md) - TypeScript patterns and configuration
@@ -24,15 +25,15 @@
 
 ### Tech Stack
 
-| Инструмент | Версия | Назначение |
-|-----------|--------|------------|
-| **React** | 19.2.0 | UI framework |
-| **TypeScript** | 5.8.3 | Type safety |
-| **Vite** | 7.1.2 | Build tool & dev server |
-| **shadcn/ui** | Latest | Component library |
-| **Tailwind CSS** | 4.1.12 | Styling |
-| **Storybook** | 10.0.3 | Component documentation |
-| **Vitest** | 4.0.6 | Unit testing |
+| Инструмент       | Версия | Назначение              |
+| ---------------- | ------ | ----------------------- |
+| **React**        | 19.2.0 | UI framework            |
+| **TypeScript**   | 5.8.3  | Type safety             |
+| **Vite**         | 7.1.2  | Build tool & dev server |
+| **shadcn/ui**    | Latest | Component library       |
+| **Tailwind CSS** | 4.1.12 | Styling                 |
+| **Storybook**    | 10.0.3 | Component documentation |
+| **Vitest**       | 4.0.6  | Unit testing            |
 
 ### Component Architecture
 
@@ -58,12 +59,14 @@ src/components/
 #### 1. Design & Planning
 
 **Вопросы перед началом:**
+
 - Какие props нужны компоненту?
 - Будет ли компонент stateful или stateless?
 - Нужны ли shadcn/ui компоненты?
 - Как будет тестироваться?
 
 **Пример планирования:**
+
 ```typescript
 // SearchForm Component Planning
 // Props: userName (string), setUserName (function)
@@ -80,7 +83,7 @@ src/components/
 touch src/components/MyComponent.tsx
 ```
 
-```typescript
+````typescript
 // src/components/MyComponent.tsx
 type Props = {
   title: string
@@ -112,7 +115,7 @@ function MyComponent({ title, onAction }: Props) {
 }
 
 export default MyComponent
-```
+````
 
 #### 3. Add Storybook Stories
 
@@ -427,26 +430,26 @@ const meta: Meta<typeof Component> = {
 ```typescript
 export const Default: Story = {
   args: {
-    title: 'Hello World',
+    title: "Hello World",
     onClick: () => {},
   },
-}
+};
 ```
 
 #### 2. Multiple Variants
 
 ```typescript
 export const Primary: Story = {
-  args: { variant: 'primary' },
-}
+  args: { variant: "primary" },
+};
 
 export const Secondary: Story = {
-  args: { variant: 'secondary' },
-}
+  args: { variant: "secondary" },
+};
 
 export const Disabled: Story = {
   args: { disabled: true },
-}
+};
 ```
 
 #### 3. Render Function
@@ -592,6 +595,7 @@ npx http-server storybook-static
 ### Testing Strategy
 
 **Что тестировать:**
+
 - ✅ Рендеринг с разными props
 - ✅ User interactions (clicks, typing)
 - ✅ State changes
@@ -600,6 +604,7 @@ npx http-server storybook-static
 - ✅ Accessibility
 
 **Что не тестировать:**
+
 - ❌ Styling (используй Storybook для визуальных тестов)
 - ❌ Implementation details
 - ❌ Third-party libraries
@@ -742,10 +747,10 @@ function List<T>({ items, renderItem }: Props<T>) {
 
 ```typescript
 type Props = {
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-}
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
 ```
 
 ### Ref Types
@@ -894,26 +899,32 @@ function Component({ prop1, prop2 }: Props) {
 ```typescript
 // ✅ Хорошо: Explicit props
 type Props = {
-  title: string
-  onClose: () => void
-}
+  title: string;
+  onClose: () => void;
+};
 
 // ❌ Плохо: Слишком много props
 type Props = {
-  prop1, prop2, prop3, prop4, prop5, prop6, prop7 // Слишком много!
-}
+  prop1;
+  prop2;
+  prop3;
+  prop4;
+  prop5;
+  prop6;
+  prop7; // Слишком много!
+};
 
 // ✅ Решение: Группируй связанные props
 type UserData = {
-  name: string
-  email: string
-  avatar: string
-}
+  name: string;
+  email: string;
+  avatar: string;
+};
 
 type Props = {
-  user: UserData
-  onUpdate: (user: UserData) => void
-}
+  user: UserData;
+  onUpdate: (user: UserData) => void;
+};
 ```
 
 ### 3. State Management
@@ -941,13 +952,13 @@ function Component({ isOpen, setIsOpen }: Props) {
 ```typescript
 // ✅ useMemo для expensive вычислений
 const sortedItems = useMemo(() => {
-  return items.sort((a, b) => a.value - b.value)
-}, [items])
+  return items.sort((a, b) => a.value - b.value);
+}, [items]);
 
 // ✅ useCallback для callbacks
 const handleClick = useCallback(() => {
-  doSomething(value)
-}, [value])
+  doSomething(value);
+}, [value]);
 
 // ⚠️ Не оптимизируй преждевременно
 // React 19 Compiler автоматически оптимизирует
@@ -1006,11 +1017,13 @@ class ErrorBoundary extends React.Component {
 ## Checklist для нового компонента
 
 ### Перед началом
+
 - [ ] Определить props interface
 - [ ] Проверить есть ли похожие компоненты
 - [ ] Выбрать shadcn/ui компоненты если нужны
 
 ### Разработка
+
 - [ ] Создать TypeScript типы
 - [ ] Написать JSDoc комментарии
 - [ ] Добавить prop validation
@@ -1018,6 +1031,7 @@ class ErrorBoundary extends React.Component {
 - [ ] Добавить accessibility attributes
 
 ### Storybook
+
 - [ ] Создать `.stories.tsx` файл
 - [ ] Добавить meta configuration
 - [ ] Создать минимум 3 stories (Default, Variants, Interactive)
@@ -1025,6 +1039,7 @@ class ErrorBoundary extends React.Component {
 - [ ] Проверить autodocs page
 
 ### Testing
+
 - [ ] Создать `.test.tsx` файл
 - [ ] Написать rendering tests
 - [ ] Написать interaction tests
@@ -1032,6 +1047,7 @@ class ErrorBoundary extends React.Component {
 - [ ] Проверить coverage (85%+)
 
 ### Code Quality
+
 - [ ] TypeScript без ошибок
 - [ ] ESLint без warnings
 - [ ] Prettier форматирование

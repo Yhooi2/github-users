@@ -7,7 +7,7 @@
 **Всего тестов:** ~1698  
 **Успешно прошли:** 1676 (98.8%)  
 **Упали:** 18 (1.1%)  
-**Пропущено:** 2 (0.1%)  
+**Пропущено:** 2 (0.1%)
 
 **Покрытие кода:** Не удалось сгенерировать (требуется @vitest/coverage-v8)  
 **Код без тестов:** ~1647 строк (12 файлов)
@@ -18,15 +18,15 @@
 
 ### Распределение по категориям
 
-| Категория | Файлов | Примечания |
-|-----------|--------|------------|
-| API Tests | 4 | OAuth endpoints + github-proxy |
-| Component Tests | 54 | UI, Layout, User, Statistics, Repository, Timeline |
-| Hook Tests | 4 | useAuthenticityScore, useRepositoryFilters, useRepositorySorting, user-contribution-history |
-| Lib/Utils Tests | 9 | statistics, authenticity, metrics (impact, quality, activity, growth) |
-| Integration Tests | 3 | phase1-timeline, backend-caching, github-proxy |
-| E2E Tests | 7 | user-search, oauth-flow, analytics-dashboard, accessibility, full-flow |
-| Type Tests | 3 | metrics.test.ts, filters.test.ts, github-data.test.ts |
+| Категория         | Файлов | Примечания                                                                                  |
+| ----------------- | ------ | ------------------------------------------------------------------------------------------- |
+| API Tests         | 4      | OAuth endpoints + github-proxy                                                              |
+| Component Tests   | 54     | UI, Layout, User, Statistics, Repository, Timeline                                          |
+| Hook Tests        | 4      | useAuthenticityScore, useRepositoryFilters, useRepositorySorting, user-contribution-history |
+| Lib/Utils Tests   | 9      | statistics, authenticity, metrics (impact, quality, activity, growth)                       |
+| Integration Tests | 3      | phase1-timeline, backend-caching, github-proxy                                              |
+| E2E Tests         | 7      | user-search, oauth-flow, analytics-dashboard, accessibility, full-flow                      |
+| Type Tests        | 3      | metrics.test.ts, filters.test.ts, github-data.test.ts                                       |
 
 ### Типы тестов
 
@@ -41,7 +41,9 @@
 ### 2.1 API Endpoints без тестов (847 строк)
 
 #### api/analytics/logger.ts (188 строк) - КРИТИЧНО
+
 **Функционал:**
+
 - `logOAuthLogin()` - логирование OAuth входов в Vercel KV
 - `logOAuthLogout()` - логирование OAuth выходов
 - `logRateLimitSnapshot()` - снапшоты rate limit
@@ -49,6 +51,7 @@
 - `cleanupOldAnalytics()` - очистка старых данных
 
 **Почему критично:**
+
 - Работа с Vercel KV (внешняя зависимость)
 - Сложная логика (zadd, expire, zremrangebyscore)
 - Нет проверки корректности JSON serialization
@@ -56,6 +59,7 @@
 - Используется в production для аналитики OAuth
 
 **Риски:**
+
 - Неправильная сериализация данных → потеря аналитики
 - Ошибки KV не обрабатываются корректно
 - Функция cleanup может удалить не те данные
@@ -65,12 +69,15 @@
 ---
 
 #### api/analytics/oauth-usage.ts (374 строки) - КРИТИЧНО
+
 **Функционал:**
+
 - Endpoint `GET /api/analytics/oauth-usage`
 - Query параметры: period (hour/day/week/month), detailed (true/false)
 - Метрики: activeSessions, totalLogins, uniqueUsers, avgSessionDuration, rateLimit stats
 
 **Функции без тестов:**
+
 - `getPeriodMs()` - конвертация периода в миллисекунды
 - `getActiveSessions()` - сканирование KV для активных сессий
 - `getOAuthEvents()` - получение login/logout событий
@@ -79,6 +86,7 @@
 - `handler()` - главный endpoint handler
 
 **Почему критично:**
+
 - Публичный API endpoint (может быть использован dashboard'ом)
 - Сложная логика агрегации данных
 - Работа с KV scan (может быть медленно/ненадежно)
@@ -86,6 +94,7 @@
 - Нет проверки authorization (кто может видеть метрики?)
 
 **Риски:**
+
 - Некорректные метрики → неправильные бизнес-решения
 - Медленные запросы → timeout'ы
 - Утечка данных пользователей (если нет auth check)
@@ -96,23 +105,28 @@
 ---
 
 #### api/user/settings.ts (285 строк) - КРИТИЧНО
+
 **Функционал:**
+
 - Endpoint `GET/PUT/PATCH/DELETE /api/user/settings`
 - User preferences: defaultAnalyticsPeriod, defaultView, itemsPerPage, emailNotifications, autoRefreshDashboard, refreshInterval
 - Session authentication
 
 **Функции без тестов:**
+
 - `extractSessionFromCookie()` - извлечение session ID из cookie
 - `getUserFromSession()` - получение user данных из KV
 - `handler()` - CRUD операции с настройками
 
 **Почему критично:**
+
 - Работа с user-specific данными (privacy concern)
 - Сложная валидация (period, view, itemsPerPage, refreshInterval)
 - CRUD операции с KV
 - Authentication logic (session extraction)
 
 **Риски:**
+
 - Неправильная валидация → можно установить некорректные настройки
 - Session hijacking (если extractSessionFromCookie неправильно работает)
 - Утечка настроек других пользователей
@@ -125,7 +139,9 @@
 ### 2.2 Hooks без тестов (177 строк)
 
 #### src/hooks/useUserAnalytics.ts (177 строк) - ВЫСОКИЙ ПРИОРИТЕТ
+
 **Функционал:**
+
 - Fetch user profile (GET_USER_PROFILE)
 - Generate year ranges from account creation
 - Parallel fetch contributions for each year
@@ -133,12 +149,14 @@
 - Return timeline data sorted by year
 
 **Почему важно:**
+
 - Сложная логика (multi-step flow)
 - Parallel queries (Promise.all)
 - Зависимость от Apollo Client
 - Используется в Phase 1 Timeline feature
 
 **Риски:**
+
 - Неправильная обработка createdAt → crash
 - Параллельные запросы могут упасть → undefined timeline
 - Неправильная сортировка → UX проблема
@@ -150,17 +168,21 @@
 ### 2.3 Utilities без тестов (106 строк)
 
 #### src/lib/date-utils.ts (106 строк) - СРЕДНИЙ ПРИОРИТЕТ
+
 **Функции:**
+
 - `generateYearRanges()` - генерация диапазонов лет
 - `formatDate()` - форматирование дат для UI
 - `getYear()` - извлечение года
 - `isCurrentYear()` - проверка текущего года
 
 **Почему важно:**
+
 - Используется в useUserAnalytics hook
 - Дата-логика склонна к edge cases (leap years, timezones, DST)
 
 **Риски:**
+
 - Неправильный диапазон лет → неполная timeline
 - Timezone issues → неправильные даты в UI
 
@@ -170,15 +192,15 @@
 
 ### 2.4 Components без тестов (517 строк)
 
-| Component | Lines | Приоритет | Причина |
-|-----------|-------|-----------|---------|
-| **ErrorBoundary.tsx** | 73 | **P1** | Критичный для error handling, class component (сложнее тестировать) |
-| **dropdown-menu.tsx** | 198 | **P1** | Используется в UserMenu (OAuth flow) |
-| **dialog.tsx** | 120 | P2 | Может использоваться в модалах |
-| **button.tsx** | 60 | P2 | Базовый UI компонент (shadcn) |
-| **input.tsx** | 21 | P3 | Простой wrapper (shadcn) |
-| **label.tsx** | 22 | P3 | Простой wrapper (shadcn) |
-| **sonner.tsx** | 23 | P3 | Wrapper для toast библиотеки |
+| Component             | Lines | Приоритет | Причина                                                             |
+| --------------------- | ----- | --------- | ------------------------------------------------------------------- |
+| **ErrorBoundary.tsx** | 73    | **P1**    | Критичный для error handling, class component (сложнее тестировать) |
+| **dropdown-menu.tsx** | 198   | **P1**    | Используется в UserMenu (OAuth flow)                                |
+| **dialog.tsx**        | 120   | P2        | Может использоваться в модалах                                      |
+| **button.tsx**        | 60    | P2        | Базовый UI компонент (shadcn)                                       |
+| **input.tsx**         | 21    | P3        | Простой wrapper (shadcn)                                            |
+| **label.tsx**         | 22    | P3        | Простой wrapper (shadcn)                                            |
+| **sonner.tsx**        | 23    | P3        | Wrapper для toast библиотеки                                        |
 
 ---
 
@@ -214,43 +236,48 @@
 ### 4.1 Сильные стороны
 
 ✅ **Хорошая структура:**
+
 ```typescript
-describe('OAuth Login Endpoint', () => {
-  describe('успешные сценарии', () => {
-    it('должен редиректить на GitHub с правильными параметрами', async () => {
+describe("OAuth Login Endpoint", () => {
+  describe("успешные сценарии", () => {
+    it("должен редиректить на GitHub с правильными параметрами", async () => {
       // Хорошая структура: описательные названия
-    })
-  })
-})
+    });
+  });
+});
 ```
 
 ✅ **Специфичные assertions:**
+
 ```typescript
-expect(redirectCall).toContain('client_id=test_client_id')
-expect(redirectCall).toContain('scope=read%3Auser+user%3Aemail')
-expect(redirectCall).toContain('state=')
+expect(redirectCall).toContain("client_id=test_client_id");
+expect(redirectCall).toContain("scope=read%3Auser+user%3Aemail");
+expect(redirectCall).toContain("state=");
 ```
 
 ✅ **Mock данные централизованы:**
+
 - `src/test/mocks/github-data.ts` - 1000+ строк mock данных
 - Фабричные функции: `createMockRepository()`, `createMockUser()`
 - Предустановленные варианты: `mockForkedRepository`, `mockArchivedRepository`
 
 ✅ **Edge cases покрыты:**
+
 ```typescript
-describe('calculateCommitsByRepository', () => {
-  it('should handle empty contributions array', () => {
-    expect(calculateCommitsByRepository([])).toEqual([])
-  })
-  
-  it('should handle null contributions', () => {
-    const result = calculateCommitsByRepository(null as any)
-    expect(result).toEqual([])
-  })
-})
+describe("calculateCommitsByRepository", () => {
+  it("should handle empty contributions array", () => {
+    expect(calculateCommitsByRepository([])).toEqual([]);
+  });
+
+  it("should handle null contributions", () => {
+    const result = calculateCommitsByRepository(null as any);
+    expect(result).toEqual([]);
+  });
+});
 ```
 
 ✅ **Comprehensive E2E tests:**
+
 - 7 E2E spec файлов (user-search, oauth-flow, accessibility, performance)
 - Проверка всего flow от начала до конца
 
@@ -259,19 +286,23 @@ describe('calculateCommitsByRepository', () => {
 ### 4.2 Слабые стороны
 
 ❌ **Apollo MockedProvider warnings:**
+
 - Используется deprecated API (`addTypename`, `canonizeResults`)
 - Нужно обновить конфигурацию во всех тестах
 
 ❌ **Radix UI components не тестируются:**
+
 - Select, Dropdown, Dialog падают в jsdom
 - Требуют мока или переход на happy-dom
 
 ❌ **Недостаточно integration тестов:**
+
 - Только 3 integration теста
 - Нет тестов полного OAuth flow с KV
 - Нет тестов аналитики (logger → oauth-usage pipeline)
 
 ❌ **Дублирование mock данных:**
+
 - Много файлов создают свои mock данные вместо использования centralized mocks
 - Пример: `createMockRepo()` дублируется в разных тестах
 
@@ -291,13 +322,13 @@ Environment:   jsdom
 
 ### 5.2 Покрытие по категориям
 
-| Категория | Файлов с тестами | Файлов без тестов | Покрытие |
-|-----------|------------------|-------------------|----------|
-| API | 4 | 3 | ~57% |
-| Components | 54 | 7 | ~88% |
-| Hooks | 4 | 1 | ~80% |
-| Lib/Utils | 9 | 1 | ~90% |
-| Types | 3 | 0 | 100% |
+| Категория  | Файлов с тестами | Файлов без тестов | Покрытие |
+| ---------- | ---------------- | ----------------- | -------- |
+| API        | 4                | 3                 | ~57%     |
+| Components | 54               | 7                 | ~88%     |
+| Hooks      | 4                | 1                 | ~80%     |
+| Lib/Utils  | 9                | 1                 | ~90%     |
+| Types      | 3                | 0                 | 100%     |
 
 ### 5.3 Строки кода без тестов
 
@@ -434,18 +465,21 @@ Components         | 517
 ## 7. План действий (Roadmap)
 
 ### Неделя 1 (P0)
+
 - [ ] День 1-2: Тесты для api/analytics/logger.ts
 - [ ] День 3-4: Тесты для api/analytics/oauth-usage.ts
 - [ ] День 5: Тесты для api/user/settings.ts
 - [ ] День 5 (вечер): Исправить 18 упавших тестов
 
 ### Неделя 2 (P1)
+
 - [ ] День 1-2: Тесты для useUserAnalytics.ts
 - [ ] День 3: Тесты для ErrorBoundary
 - [ ] День 4: Тесты для dropdown-menu
 - [ ] День 5: Buffer time / доработки
 
 ### Неделя 3 (P2)
+
 - [ ] День 1: Тесты для date-utils.ts
 - [ ] День 2-4: Integration тесты для Analytics Pipeline
 - [ ] День 5: Code review, документация
@@ -454,14 +488,14 @@ Components         | 517
 
 ## 8. Оценка трудозатрат
 
-| Задача | Приоритет | Часы | Дней |
-|--------|-----------|------|------|
-| P0 - Критичные API тесты | 🔴 | 14-20 | 3-4 |
-| P0 - Исправить упавшие тесты | 🔴 | 2-4 | 1 |
-| P1 - Hooks + Components | 🟠 | 9-13 | 2-3 |
-| P2 - Utils + Integration | 🟡 | 8-11 | 2-3 |
-| P3 - UI + Refactoring | ⚪ | 4-6 | 1-2 |
-| **ИТОГО** | | **37-54** | **9-13** |
+| Задача                       | Приоритет | Часы      | Дней     |
+| ---------------------------- | --------- | --------- | -------- |
+| P0 - Критичные API тесты     | 🔴        | 14-20     | 3-4      |
+| P0 - Исправить упавшие тесты | 🔴        | 2-4       | 1        |
+| P1 - Hooks + Components      | 🟠        | 9-13      | 2-3      |
+| P2 - Utils + Integration     | 🟡        | 8-11      | 2-3      |
+| P3 - UI + Refactoring        | ⚪        | 4-6       | 1-2      |
+| **ИТОГО**                    |           | **37-54** | **9-13** |
 
 **Realistic estimate:** 2-3 недели при full-time работе (8ч/день)
 
@@ -470,27 +504,32 @@ Components         | 517
 ## 9. Вывод
 
 ### Сильные стороны проекта:
+
 ✅ Высокий pass rate (98.8%)  
 ✅ Хорошая структура тестов (describe/it)  
 ✅ Специфичные assertions  
 ✅ Централизованные mock данные  
-✅ Comprehensive E2E tests  
+✅ Comprehensive E2E tests
 
 ### Критичные пробелы:
+
 ❌ **847 строк критичного API кода без тестов** (analytics + settings)  
 ❌ 18 упавших тестов (UserMenu, OAuthMetricsDashboard, Apollo warnings)  
 ❌ Недостаточно integration тестов  
-❌ Radix UI components падают в jsdom  
+❌ Radix UI components падают в jsdom
 
 ### Главный риск:
+
 **Analytics и Settings endpoints работают в production без тестов.**  
 Это может привести к:
+
 - Потере аналитических данных
 - Некорректным метрикам
 - Security issues (утечка user данных)
 - Неправильной работе OAuth flow
 
 ### Рекомендация:
+
 **Начать с P0 задач немедленно.** Особенно критичны тесты для API endpoints, т.к. они работают с user data и external dependencies (Vercel KV).
 
 ---

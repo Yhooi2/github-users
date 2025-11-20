@@ -8,6 +8,7 @@
 **Storybook Stories**: 82+
 
 **📚 Related Documentation:**
+
 - [Component Development Workflow](./component-development.md) - Step-by-step guide for creating new components
 - [Testing Guide](./testing-guide.md) - Testing strategy and patterns
 - [Architecture Overview](./architecture.md) - System design and component architecture
@@ -129,6 +130,7 @@ Layout components provide consistent structure and common UI patterns across the
 **Description**: Reusable statistics card wrapper with icon, label, and value display.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Icon component from lucide-react */
@@ -141,13 +143,14 @@ type Props = {
   iconColor?: string;
   /** Optional additional description */
   description?: string;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { StatsCard } from '@/components/layout/StatsCard';
-import { Star } from 'lucide-react';
+import { StatsCard } from "@/components/layout/StatsCard";
+import { Star } from "lucide-react";
 
 <StatsCard
   icon={Star}
@@ -155,7 +158,7 @@ import { Star } from 'lucide-react';
   value="1.2K"
   iconColor="text-yellow-500"
   description="Across all repositories"
-/>
+/>;
 ```
 
 **Storybook**: `src/components/layout/StatsCard.stories.tsx`
@@ -169,6 +172,7 @@ import { Star } from 'lucide-react';
 **Description**: Content section wrapper with optional title, description, and action button.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Section title */
@@ -181,13 +185,14 @@ type Props = {
   action?: React.ReactNode;
   /** CSS class name */
   className?: string;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { Section } from '@/components/layout/Section';
-import { Button } from '@/components/ui/button';
+import { Section } from "@/components/layout/Section";
+import { Button } from "@/components/ui/button";
 
 <Section
   title="Repositories"
@@ -195,7 +200,7 @@ import { Button } from '@/components/ui/button';
   action={<Button variant="outline">View All</Button>}
 >
   {/* Content */}
-</Section>
+</Section>;
 ```
 
 **Storybook**: `src/components/layout/Section.stories.tsx`
@@ -209,6 +214,7 @@ import { Button } from '@/components/ui/button';
 **Description**: Main tab navigation for user profile sections (Overview, Repositories, Analytics).
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Active tab value */
@@ -217,16 +223,17 @@ type Props = {
   onTabChange?: (value: string) => void;
   /** Content for each tab */
   children?: React.ReactNode;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { MainTabs } from '@/components/layout/MainTabs';
+import { MainTabs } from "@/components/layout/MainTabs";
 
 <MainTabs defaultTab="overview" onTabChange={(tab) => console.log(tab)}>
   {/* Tab content */}
-</MainTabs>
+</MainTabs>;
 ```
 
 **Storybook**: `src/components/layout/MainTabs.stories.tsx`
@@ -240,6 +247,7 @@ import { MainTabs } from '@/components/layout/MainTabs';
 **Description**: Empty state placeholder with icon, title, description, and optional action.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Icon component from lucide-react */
@@ -250,21 +258,22 @@ type Props = {
   description?: string;
   /** Optional action button */
   action?: React.ReactNode;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { EmptyState } from '@/components/layout/EmptyState';
-import { Inbox } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { EmptyState } from "@/components/layout/EmptyState";
+import { Inbox } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 <EmptyState
   icon={Inbox}
   title="No repositories found"
   description="Try adjusting your filters"
   action={<Button variant="outline">Clear Filters</Button>}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/layout/EmptyState.stories.tsx`
@@ -278,6 +287,7 @@ import { Button } from '@/components/ui/button';
 **Description**: Error state display with title, message, and retry action.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Error title */
@@ -286,18 +296,19 @@ type Props = {
   message?: string;
   /** Retry callback */
   onRetry?: () => void;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { ErrorState } from '@/components/layout/ErrorState';
+import { ErrorState } from "@/components/layout/ErrorState";
 
 <ErrorState
   title="Failed to load data"
   message="Network error occurred. Please try again."
   onRetry={() => window.location.reload()}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/layout/ErrorState.stories.tsx`
@@ -311,16 +322,18 @@ import { ErrorState } from '@/components/layout/ErrorState';
 **Description**: Loading skeleton with customizable variant (card, list, table).
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Loading variant */
-  variant?: 'card' | 'list' | 'table' | 'default';
+  variant?: "card" | "list" | "table" | "default";
   /** Number of skeleton items */
   count?: number;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
 import { LoadingState } from '@/components/layout/LoadingState';
 
@@ -344,13 +357,15 @@ import { LoadingState } from '@/components/layout/LoadingState';
 **Props**: None (uses next-themes context)
 
 **Usage**:
-```tsx
-import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
-<ThemeToggle />
+```tsx
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+
+<ThemeToggle />;
 ```
 
 **Features**:
+
 - Three modes: light, dark, system
 - Smooth transitions
 - Persists preference to localStorage
@@ -379,6 +394,7 @@ User profile components display GitHub user information, statistics, and contrib
 **Description**: User profile header with avatar, name, username, bio, location, and authenticity score.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** User avatar URL */
@@ -397,12 +413,13 @@ type Props = {
   createdAt: string;
   /** Authenticity score (0-100) */
   authenticityScore?: number;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { UserHeader } from '@/components/user/UserHeader';
+import { UserHeader } from "@/components/user/UserHeader";
 
 <UserHeader
   avatarUrl="https://github.com/avatar.png"
@@ -413,7 +430,7 @@ import { UserHeader } from '@/components/user/UserHeader';
   url="https://github.com/johndoe"
   createdAt="2020-01-01T00:00:00Z"
   authenticityScore={85}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/user/UserHeader.stories.tsx`
@@ -427,6 +444,7 @@ import { UserHeader } from '@/components/user/UserHeader';
 **Description**: User statistics grid (followers, following, repos, gists).
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Number of followers */
@@ -437,19 +455,15 @@ type Props = {
   repositories: number;
   /** Number of public gists */
   gists: number;
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { UserStats } from '@/components/user/UserStats';
 
-<UserStats
-  followers={1234}
-  following={567}
-  repositories={89}
-  gists={12}
-/>
+```tsx
+import { UserStats } from "@/components/user/UserStats";
+
+<UserStats followers={1234} following={567} repositories={89} gists={12} />;
 ```
 
 **Storybook**: `src/components/user/UserStats.stories.tsx`
@@ -463,11 +477,12 @@ import { UserStats } from '@/components/user/UserStats';
 **Description**: Authenticity score breakdown with detailed metrics and flags.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Authenticity score data */
   score: AuthenticityScore;
-}
+};
 
 type AuthenticityScore = {
   overallScore: number;
@@ -482,14 +497,15 @@ type AuthenticityScore = {
     hasInactiveRepos: boolean;
     hasLowEngagement: boolean;
   };
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { UserAuthenticity } from '@/components/user/UserAuthenticity';
 
-<UserAuthenticity score={authenticityScore} />
+```tsx
+import { UserAuthenticity } from "@/components/user/UserAuthenticity";
+
+<UserAuthenticity score={authenticityScore} />;
 ```
 
 **Storybook**: `src/components/user/UserAuthenticity.stories.tsx`
@@ -503,6 +519,7 @@ import { UserAuthenticity } from '@/components/user/UserAuthenticity';
 **Description**: 3-year commit contribution history chart using Recharts.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Yearly contribution data */
@@ -510,12 +527,13 @@ type Props = {
     year: number;
     commits: number;
   }>;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { ContributionHistory } from '@/components/user/ContributionHistory';
+import { ContributionHistory } from "@/components/user/ContributionHistory";
 
 <ContributionHistory
   data={[
@@ -523,7 +541,7 @@ import { ContributionHistory } from '@/components/user/ContributionHistory';
     { year: 2024, commits: 380 },
     { year: 2025, commits: 150 },
   ]}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/user/ContributionHistory.stories.tsx`
@@ -537,11 +555,12 @@ import { ContributionHistory } from '@/components/user/ContributionHistory';
 **Description**: Recent commit activity by repository.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Repository commit contributions */
   contributions: RepositoryContributions[];
-}
+};
 
 type RepositoryContributions = {
   repository: {
@@ -550,14 +569,15 @@ type RepositoryContributions = {
   contributions: {
     totalCount: number;
   };
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { RecentActivity } from '@/components/user/RecentActivity';
 
-<RecentActivity contributions={contributionsByRepo} />
+```tsx
+import { RecentActivity } from "@/components/user/RecentActivity";
+
+<RecentActivity contributions={contributionsByRepo} />;
 ```
 
 **Storybook**: `src/components/user/RecentActivity.stories.tsx`
@@ -571,21 +591,24 @@ import { RecentActivity } from '@/components/user/RecentActivity';
 **Description**: Main user profile container that orchestrates all user components.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** GitHub username to fetch */
   userName: string;
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { UserProfile } from '@/components/user/UserProfile';
 
-<UserProfile userName="octocat" />
+```tsx
+import { UserProfile } from "@/components/user/UserProfile";
+
+<UserProfile userName="octocat" />;
 ```
 
 **Features**:
+
 - Integrates with `useQueryUser` hook
 - Handles loading, error, and success states
 - Displays all user information in tabs (Overview, Repositories, Analytics)
@@ -613,6 +636,7 @@ Repository components handle repository display, filtering, sorting, and paginat
 **Description**: Individual repository card with metadata, stats, and language indicator.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Repository data from GitHub API */
@@ -621,10 +645,11 @@ type Props = {
   compact?: boolean;
   /** Click handler */
   onClick?: (repository: Repository) => void;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
 import { RepositoryCard } from '@/components/repository/RepositoryCard';
 
@@ -648,6 +673,7 @@ import { RepositoryCard } from '@/components/repository/RepositoryCard';
 **Description**: Grid layout container for repository cards.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Array of repositories */
@@ -656,17 +682,18 @@ type Props = {
   onRepositoryClick?: (repository: Repository) => void;
   /** Loading state */
   loading?: boolean;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { RepositoryList } from '@/components/repository/RepositoryList';
+import { RepositoryList } from "@/components/repository/RepositoryList";
 
 <RepositoryList
   repositories={repos}
   onRepositoryClick={(repo) => console.log(repo)}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/repository/RepositoryList.stories.tsx`
@@ -680,26 +707,29 @@ import { RepositoryList } from '@/components/repository/RepositoryList';
 **Description**: Table layout for repositories with sortable columns.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Array of repositories */
   repositories: Repository[];
   /** Row click handler */
   onRepositoryClick?: (repository: Repository) => void;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { RepositoryTable } from '@/components/repository/RepositoryTable';
+import { RepositoryTable } from "@/components/repository/RepositoryTable";
 
 <RepositoryTable
   repositories={repos}
-  onRepositoryClick={(repo) => window.open(repo.url, '_blank')}
-/>
+  onRepositoryClick={(repo) => window.open(repo.url, "_blank")}
+/>;
 ```
 
 **Columns**:
+
 - Name (with language indicator)
 - Description
 - Stars
@@ -718,6 +748,7 @@ import { RepositoryTable } from '@/components/repository/RepositoryTable';
 **Description**: Advanced filtering UI for repositories.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Current filters */
@@ -726,7 +757,7 @@ type Props = {
   onFiltersChange: (filters: RepositoryFilter) => void;
   /** Available languages for filter */
   availableLanguages: string[];
-}
+};
 
 type RepositoryFilter = {
   language?: string;
@@ -738,18 +769,19 @@ type RepositoryFilter = {
   searchQuery?: string;
   topics?: string[];
   lastActivityDays?: number;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { RepositoryFilters } from '@/components/repository/RepositoryFilters';
+import { RepositoryFilters } from "@/components/repository/RepositoryFilters";
 
 <RepositoryFilters
   filters={filters}
   onFiltersChange={setFilters}
-  availableLanguages={['TypeScript', 'JavaScript', 'Python']}
-/>
+  availableLanguages={["TypeScript", "JavaScript", "Python"]}
+/>;
 ```
 
 **Storybook**: `src/components/repository/RepositoryFilters.stories.tsx`
@@ -763,6 +795,7 @@ import { RepositoryFilters } from '@/components/repository/RepositoryFilters';
 **Description**: Sorting controls for repositories.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Current sort option */
@@ -771,21 +804,29 @@ type Props = {
   sortDirection: SortDirection;
   /** Sort change handler */
   onSortChange: (field: SortField, direction: SortDirection) => void;
-}
+};
 
-type SortField = 'stars' | 'forks' | 'commits' | 'updated' | 'created' | 'name' | 'size';
-type SortDirection = 'asc' | 'desc';
+type SortField =
+  | "stars"
+  | "forks"
+  | "commits"
+  | "updated"
+  | "created"
+  | "name"
+  | "size";
+type SortDirection = "asc" | "desc";
 ```
 
 **Usage**:
+
 ```tsx
-import { RepositorySorting } from '@/components/repository/RepositorySorting';
+import { RepositorySorting } from "@/components/repository/RepositorySorting";
 
 <RepositorySorting
   sortBy="stars"
   sortDirection="desc"
   onSortChange={(field, dir) => console.log(field, dir)}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/repository/RepositorySorting.stories.tsx`
@@ -799,23 +840,22 @@ import { RepositorySorting } from '@/components/repository/RepositorySorting';
 **Description**: Empty state for when no repositories match filters.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Whether filters are active */
   hasFilters?: boolean;
   /** Clear filters callback */
   onClearFilters?: () => void;
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { RepositoryEmpty } from '@/components/repository/RepositoryEmpty';
 
-<RepositoryEmpty
-  hasFilters={true}
-  onClearFilters={() => setFilters({})}
-/>
+```tsx
+import { RepositoryEmpty } from "@/components/repository/RepositoryEmpty";
+
+<RepositoryEmpty hasFilters={true} onClearFilters={() => setFilters({})} />;
 ```
 
 **Storybook**: `src/components/repository/RepositoryEmpty.stories.tsx`
@@ -829,6 +869,7 @@ import { RepositoryEmpty } from '@/components/repository/RepositoryEmpty';
 **Description**: Pagination controls for repository lists.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Total number of repositories */
@@ -841,12 +882,13 @@ type Props = {
   onPageChange: (page: number) => void;
   /** Page size change handler */
   onPageSizeChange: (pageSize: number) => void;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { RepositoryPagination } from '@/components/repository/RepositoryPagination';
+import { RepositoryPagination } from "@/components/repository/RepositoryPagination";
 
 <RepositoryPagination
   total={100}
@@ -854,7 +896,7 @@ import { RepositoryPagination } from '@/components/repository/RepositoryPaginati
   pageSize={10}
   onPageChange={setPage}
   onPageSizeChange={setPageSize}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/repository/RepositoryPagination.stories.tsx`
@@ -880,6 +922,7 @@ Statistics components visualize user contribution data using Recharts library.
 **Description**: Bar chart showing commit activity over 3 years.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Yearly commit data */
@@ -887,12 +930,13 @@ type Props = {
     year: number;
     commits: number;
   }>;
-}
+};
 ```
 
 **Usage**:
+
 ```tsx
-import { CommitChart } from '@/components/statistics/CommitChart';
+import { CommitChart } from "@/components/statistics/CommitChart";
 
 <CommitChart
   data={[
@@ -900,7 +944,7 @@ import { CommitChart } from '@/components/statistics/CommitChart';
     { year: 2024, commits: 380 },
     { year: 2025, commits: 150 },
   ]}
-/>
+/>;
 ```
 
 **Storybook**: `src/components/statistics/CommitChart.stories.tsx`
@@ -914,25 +958,27 @@ import { CommitChart } from '@/components/statistics/CommitChart';
 **Description**: Pie chart showing language usage distribution.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Language statistics */
   data: LanguageStats[];
-}
+};
 
 type LanguageStats = {
   name: string;
   size: number;
   percentage: number;
   repositoryCount: number;
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { LanguageChart } from '@/components/statistics/LanguageChart';
 
-<LanguageChart data={languageStats} />
+```tsx
+import { LanguageChart } from "@/components/statistics/LanguageChart";
+
+<LanguageChart data={languageStats} />;
 ```
 
 **Storybook**: `src/components/statistics/LanguageChart.stories.tsx`
@@ -946,6 +992,7 @@ import { LanguageChart } from '@/components/statistics/LanguageChart';
 **Description**: Line chart showing contribution activity timeline.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Activity data points */
@@ -953,14 +1000,15 @@ type Props = {
     date: string;
     commits: number;
   }>;
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { ActivityChart } from '@/components/statistics/ActivityChart';
 
-<ActivityChart data={activityData} />
+```tsx
+import { ActivityChart } from "@/components/statistics/ActivityChart";
+
+<ActivityChart data={activityData} />;
 ```
 
 **Storybook**: `src/components/statistics/ActivityChart.stories.tsx`
@@ -974,6 +1022,7 @@ import { ActivityChart } from '@/components/statistics/ActivityChart';
 **Description**: Summary dashboard combining multiple statistics.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Contribution statistics */
@@ -983,14 +1032,15 @@ type Props = {
     stars: number;
     forks: number;
   };
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { StatsOverview } from '@/components/statistics/StatsOverview';
 
-<StatsOverview stats={overviewStats} />
+```tsx
+import { StatsOverview } from "@/components/statistics/StatsOverview";
+
+<StatsOverview stats={overviewStats} />;
 ```
 
 **Storybook**: `src/components/statistics/StatsOverview.stories.tsx`
@@ -1006,21 +1056,24 @@ import { StatsOverview } from '@/components/statistics/StatsOverview';
 **Description**: GitHub user search form with validation.
 
 **Props**:
+
 ```typescript
 type Props = {
   /** Username setter */
   setUserName: (userName: string) => void;
-}
+};
 ```
 
 **Usage**:
-```tsx
-import { SearchForm } from '@/components/SearchForm';
 
-<SearchForm setUserName={setUserName} />
+```tsx
+import { SearchForm } from "@/components/SearchForm";
+
+<SearchForm setUserName={setUserName} />;
 ```
 
 **Features**:
+
 - Input validation (non-empty)
 - Enter key submission
 - Error toast for empty input
@@ -1035,20 +1088,24 @@ import { SearchForm } from '@/components/SearchForm';
 ### Common Patterns
 
 #### 1. Props Type Naming
+
 All components use capitalized `Props` type:
+
 ```typescript
 type Props = {
   // ...
 };
 
-export function MyComponent({ }: Props) {
+export function MyComponent({}: Props) {
   // ...
 }
 ```
 
 #### 2. JSDoc Documentation
+
 All components have JSDoc comments:
-```typescript
+
+````typescript
 /**
  * Component description
  *
@@ -1057,18 +1114,20 @@ All components have JSDoc comments:
  * <MyComponent prop="value" />
  * ```
  */
-export function MyComponent({ }: Props) {
+export function MyComponent({}: Props) {
   // ...
 }
-```
+````
 
 #### 3. Accessibility
+
 - Semantic HTML elements
 - ARIA labels and roles
 - Keyboard navigation support
 - Screen reader friendly
 
 #### 4. Theming
+
 All components support dark/light mode via CSS variables and Tailwind classes.
 
 ---
@@ -1078,6 +1137,7 @@ All components support dark/light mode via CSS variables and Tailwind classes.
 ### Test Strategy
 
 **Unit Tests**: All components have unit tests
+
 - Rendering tests
 - Props validation
 - User interaction
@@ -1085,12 +1145,14 @@ All components support dark/light mode via CSS variables and Tailwind classes.
 - Accessibility
 
 **Integration Tests**: Components with hooks/Apollo
+
 - Data fetching
 - Loading states
 - Error handling
 - Cache updates
 
 **Storybook Stories**: All components documented
+
 - Default state
 - All variants
 - Edge cases

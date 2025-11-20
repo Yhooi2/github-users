@@ -1,20 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Tooltip, TooltipTrigger, TooltipContent } from './tooltip';
-import { Button } from './button';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Button } from "./button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 const meta: Meta<typeof Tooltip> = {
-  title: 'UI/Tooltip',
+  title: "UI/Tooltip",
   component: Tooltip,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A tooltip component that displays information when hovering over or focusing on an element.',
+          "A tooltip component that displays information when hovering over or focusing on an element.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -142,8 +142,8 @@ export const LongContent: Story = {
       </TooltipTrigger>
       <TooltipContent className="max-w-xs">
         <p>
-          This is a longer tooltip with more detailed information. It wraps to multiple lines when
-          the content is too long to fit on a single line.
+          This is a longer tooltip with more detailed information. It wraps to
+          multiple lines when the content is too long to fit on a single line.
         </p>
       </TooltipContent>
     </Tooltip>
@@ -195,7 +195,7 @@ export const KeyboardShortcut: Story = {
       <TooltipContent>
         <div className="flex items-center gap-2">
           <span>Save changes</span>
-          <kbd className="bg-muted rounded px-1.5 py-0.5 text-xs">⌘S</kbd>
+          <kbd className="rounded bg-muted px-1.5 py-0.5 text-xs">⌘S</kbd>
         </div>
       </TooltipContent>
     </Tooltip>
@@ -211,7 +211,7 @@ export const RepositoryLanguage: Story = {
         <TooltipTrigger asChild>
           <div className="flex items-center gap-1">
             <span className="size-3 rounded-full bg-blue-500" />
-            <span className="text-muted-foreground text-xs">JavaScript</span>
+            <span className="text-xs text-muted-foreground">JavaScript</span>
           </div>
         </TooltipTrigger>
         <TooltipContent>
@@ -230,7 +230,7 @@ export const StatsTooltips: Story = {
         <TooltipTrigger asChild>
           <div className="cursor-help">
             <div className="text-2xl font-bold">234k</div>
-            <div className="text-muted-foreground text-xs">Stars</div>
+            <div className="text-xs text-muted-foreground">Stars</div>
           </div>
         </TooltipTrigger>
         <TooltipContent>
@@ -242,7 +242,7 @@ export const StatsTooltips: Story = {
         <TooltipTrigger asChild>
           <div className="cursor-help">
             <div className="text-2xl font-bold">48k</div>
-            <div className="text-muted-foreground text-xs">Forks</div>
+            <div className="text-xs text-muted-foreground">Forks</div>
           </div>
         </TooltipTrigger>
         <TooltipContent>
@@ -254,7 +254,7 @@ export const StatsTooltips: Story = {
         <TooltipTrigger asChild>
           <div className="cursor-help">
             <div className="text-2xl font-bold">1.8k</div>
-            <div className="text-muted-foreground text-xs">Issues</div>
+            <div className="text-xs text-muted-foreground">Issues</div>
           </div>
         </TooltipTrigger>
         <TooltipContent>

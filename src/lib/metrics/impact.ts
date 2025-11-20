@@ -1,4 +1,4 @@
-import type { YearData } from '@/hooks/useUserAnalytics';
+import type { YearData } from "@/hooks/useUserAnalytics";
 
 /**
  * Impact metric result with detailed breakdown
@@ -21,7 +21,7 @@ export interface ImpactMetric {
   /** Overall score from 0-100 */
   score: number;
   /** Impact level based on score */
-  level: 'Exceptional' | 'Strong' | 'Moderate' | 'Low' | 'Minimal';
+  level: "Exceptional" | "Strong" | "Moderate" | "Low" | "Minimal";
   /** Detailed breakdown by component */
   breakdown: {
     stars: number;
@@ -58,21 +58,42 @@ export function calculateImpactScore(timeline: YearData[]): ImpactMetric {
   if (!timeline.length) {
     return {
       score: 0,
-      level: 'Minimal',
-      breakdown: { stars: 0, forks: 0, contributors: 0, reach: 0, engagement: 0 },
-      details: { totalStars: 0, totalForks: 0, totalWatchers: 0, totalPRs: 0, totalIssues: 0 },
+      level: "Minimal",
+      breakdown: {
+        stars: 0,
+        forks: 0,
+        contributors: 0,
+        reach: 0,
+        engagement: 0,
+      },
+      details: {
+        totalStars: 0,
+        totalForks: 0,
+        totalWatchers: 0,
+        totalPRs: 0,
+        totalIssues: 0,
+      },
     };
   }
 
   // Aggregate all repositories (both owned and contributed)
-  const allRepos = timeline.flatMap((y) => [...y.ownedRepos, ...y.contributions]);
+  const allRepos = timeline.flatMap((y) => [
+    ...y.ownedRepos,
+    ...y.contributions,
+  ]);
 
   // A. Stars (0-35 points)
-  const totalStars = allRepos.reduce((sum, r) => sum + r.repository.stargazerCount, 0);
+  const totalStars = allRepos.reduce(
+    (sum, r) => sum + r.repository.stargazerCount,
+    0,
+  );
   const starPoints = calculateStarPoints(totalStars);
 
   // B. Forks (0-20 points)
-  const totalForks = allRepos.reduce((sum, r) => sum + r.repository.forkCount, 0);
+  const totalForks = allRepos.reduce(
+    (sum, r) => sum + r.repository.forkCount,
+    0,
+  );
   const forkPoints = calculateForkPoints(totalForks);
 
   // C. Contributors (0-15 points) - estimated from forks
@@ -89,7 +110,13 @@ export function calculateImpactScore(timeline: YearData[]): ImpactMetric {
   const totalIssues = timeline.reduce((sum, y) => sum + y.totalIssues, 0);
   const engagementPoints = Math.min(((totalPRs + totalIssues) / 200) * 10, 10);
 
-  const score = Math.round(starPoints + forkPoints + contributorPoints + reachPoints + engagementPoints);
+  const score = Math.round(
+    starPoints +
+      forkPoints +
+      contributorPoints +
+      reachPoints +
+      engagementPoints,
+  );
 
   return {
     score,
@@ -145,10 +172,10 @@ function calculateForkPoints(forks: number): number {
  * @param score - Impact score (0-100)
  * @returns Impact level label
  */
-export function getImpactLabel(score: number): ImpactMetric['level'] {
-  if (score >= 81) return 'Exceptional';
-  if (score >= 61) return 'Strong';
-  if (score >= 41) return 'Moderate';
-  if (score >= 21) return 'Low';
-  return 'Minimal';
+export function getImpactLabel(score: number): ImpactMetric["level"] {
+  if (score >= 81) return "Exceptional";
+  if (score >= 61) return "Strong";
+  if (score >= 41) return "Moderate";
+  if (score >= 21) return "Low";
+  return "Minimal";
 }

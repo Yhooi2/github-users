@@ -1,13 +1,13 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import type { SortBy, SortDirection } from '@/types/filters';
-import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+} from "@/components/ui/select";
+import type { SortBy, SortDirection } from "@/types/filters";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 type Props = {
   /**
@@ -70,14 +70,14 @@ export function RepositorySorting({
   compact = false,
 }: Props) {
   const sortOptions: { value: SortBy; label: string }[] = [
-    { value: 'stars', label: 'Stars' },
-    { value: 'forks', label: 'Forks' },
-    { value: 'watchers', label: 'Watchers' },
-    { value: 'commits', label: 'Commits' },
-    { value: 'size', label: 'Size' },
-    { value: 'updated', label: 'Last Updated' },
-    { value: 'created', label: 'Created Date' },
-    { value: 'name', label: 'Name' },
+    { value: "stars", label: "Stars" },
+    { value: "forks", label: "Forks" },
+    { value: "watchers", label: "Watchers" },
+    { value: "commits", label: "Commits" },
+    { value: "size", label: "Size" },
+    { value: "updated", label: "Last Updated" },
+    { value: "created", label: "Created Date" },
+    { value: "name", label: "Name" },
   ];
 
   const handleToggleDirection = () => {
@@ -85,16 +85,19 @@ export function RepositorySorting({
       onToggleDirection();
     } else {
       // Fallback if onToggleDirection not provided
-      onSortDirectionChange(sortDirection === 'asc' ? 'desc' : 'asc');
+      onSortDirectionChange(sortDirection === "asc" ? "desc" : "asc");
     }
   };
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-muted-foreground text-sm">Sort by:</span>
+      <span className="text-sm text-muted-foreground">Sort by:</span>
 
-      <Select value={sortBy} onValueChange={(value) => onSortByChange(value as SortBy)}>
-        <SelectTrigger size={compact ? 'sm' : 'default'} className="w-[160px]">
+      <Select
+        value={sortBy}
+        onValueChange={(value) => onSortByChange(value as SortBy)}
+      >
+        <SelectTrigger size={compact ? "sm" : "default"} className="w-[160px]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -108,22 +111,22 @@ export function RepositorySorting({
 
       <div className="flex items-center gap-1">
         <Button
-          variant={sortDirection === 'asc' ? 'default' : 'outline'}
-          size={compact ? 'sm' : 'default'}
-          onClick={() => onSortDirectionChange('asc')}
+          variant={sortDirection === "asc" ? "default" : "outline"}
+          size={compact ? "sm" : "default"}
+          onClick={() => onSortDirectionChange("asc")}
           aria-label="Sort ascending"
-          aria-pressed={sortDirection === 'asc'}
+          aria-pressed={sortDirection === "asc"}
         >
           <ArrowUp className="h-4 w-4" />
           {!compact && <span className="ml-1">Asc</span>}
         </Button>
 
         <Button
-          variant={sortDirection === 'desc' ? 'default' : 'outline'}
-          size={compact ? 'sm' : 'default'}
-          onClick={() => onSortDirectionChange('desc')}
+          variant={sortDirection === "desc" ? "default" : "outline"}
+          size={compact ? "sm" : "default"}
+          onClick={() => onSortDirectionChange("desc")}
           aria-label="Sort descending"
-          aria-pressed={sortDirection === 'desc'}
+          aria-pressed={sortDirection === "desc"}
         >
           <ArrowDown className="h-4 w-4" />
           {!compact && <span className="ml-1">Desc</span>}
@@ -131,7 +134,7 @@ export function RepositorySorting({
 
         <Button
           variant="ghost"
-          size={compact ? 'sm' : 'default'}
+          size={compact ? "sm" : "default"}
           onClick={handleToggleDirection}
           aria-label="Toggle sort direction"
           title="Toggle sort direction"

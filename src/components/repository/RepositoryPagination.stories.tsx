@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { RepositoryPagination } from './RepositoryPagination';
-import { useState } from 'react';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+import { RepositoryPagination } from "./RepositoryPagination";
 
 // Wrapper component to manage pagination state
 function RepositoryPaginationWrapper(props: {
@@ -24,7 +24,9 @@ function RepositoryPaginationWrapper(props: {
       pageSize={pageSize}
       totalItems={totalItems}
       onPageChange={setCurrentPage}
-      onPageSizeChange={props.showPageSizeSelector !== false ? setPageSize : undefined}
+      onPageSizeChange={
+        props.showPageSizeSelector !== false ? setPageSize : undefined
+      }
       compact={props.compact}
       disabled={props.disabled}
     />
@@ -32,12 +34,12 @@ function RepositoryPaginationWrapper(props: {
 }
 
 const meta = {
-  title: 'Components/Repository/RepositoryPagination',
+  title: "Components/Repository/RepositoryPagination",
   component: RepositoryPaginationWrapper,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof RepositoryPaginationWrapper>;
 
 export default meta;

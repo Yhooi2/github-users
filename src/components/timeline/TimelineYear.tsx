@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
-import type { YearData } from '@/hooks/useUserAnalytics'
-import { YearExpandedView } from './YearExpandedView'
+import type { YearData } from "@/hooks/useUserAnalytics";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
+import { YearExpandedView } from "./YearExpandedView";
 
 export interface TimelineYearProps {
-  year: YearData
-  maxCommits: number
+  year: YearData;
+  maxCommits: number;
 }
 
 /**
@@ -20,15 +20,16 @@ export interface TimelineYearProps {
  * ```
  */
 export function TimelineYear({ year, maxCommits }: TimelineYearProps) {
-  const [expanded, setExpanded] = useState(false)
-  const widthPercent = maxCommits > 0 ? (year.totalCommits / maxCommits) * 100 : 0
+  const [expanded, setExpanded] = useState(false);
+  const widthPercent =
+    maxCommits > 0 ? (year.totalCommits / maxCommits) * 100 : 0;
 
   return (
     <div className="overflow-hidden rounded-lg border">
       {/* Year bar (clickable) */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="hover:bg-muted w-full p-4 text-left transition-colors"
+        className="w-full p-4 text-left transition-colors hover:bg-muted"
         aria-expanded={expanded}
         aria-label={`Toggle ${year.year} details`}
       >
@@ -38,19 +39,21 @@ export function TimelineYear({ year, maxCommits }: TimelineYearProps) {
             <span className="text-lg font-semibold">{year.year}</span>
 
             {/* Visual bar */}
-            <div className="bg-muted h-8 min-w-[100px] flex-1 rounded">
+            <div className="h-8 min-w-[100px] flex-1 rounded bg-muted">
               <div
-                className="bg-primary h-full rounded transition-all duration-500"
+                className="h-full rounded bg-primary transition-all duration-500"
                 style={{ width: `${widthPercent}%` }}
                 aria-label={`${widthPercent.toFixed(0)}% of maximum commits`}
               />
             </div>
 
             {/* Stats */}
-            <div className="text-muted-foreground flex gap-4 text-sm">
+            <div className="flex gap-4 text-sm text-muted-foreground">
               <span>{year.totalCommits} commits</span>
               <span>{year.totalPRs} PRs</span>
-              <span>{year.ownedRepos.length + year.contributions.length} repos</span>
+              <span>
+                {year.ownedRepos.length + year.contributions.length} repos
+              </span>
             </div>
           </div>
 
@@ -65,10 +68,10 @@ export function TimelineYear({ year, maxCommits }: TimelineYearProps) {
 
       {/* Expanded details */}
       {expanded && (
-        <div className="animate-in fade-in slide-in-from-top-2 border-t p-4 duration-200">
+        <div className="animate-in border-t p-4 duration-200 fade-in slide-in-from-top-2">
           <YearExpandedView year={year} />
         </div>
       )}
     </div>
-  )
+  );
 }

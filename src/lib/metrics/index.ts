@@ -13,25 +13,25 @@ export {
   calculateActivityScore,
   getActivityLabel,
   type ActivityMetric,
-} from './activity';
+} from "./activity";
 
 // Impact Metric
 export {
   calculateImpactScore,
   getImpactLabel,
   type ImpactMetric,
-} from './impact';
+} from "./impact";
 
 // Quality Metric
 export {
   calculateQualityScore,
   getQualityLabel,
   type QualityMetric,
-} from './quality';
+} from "./quality";
 
 // Growth Metric
 export {
   calculateGrowthScore,
   getGrowthLabel,
   type GrowthMetric,
-} from './growth';
+} from "./growth";

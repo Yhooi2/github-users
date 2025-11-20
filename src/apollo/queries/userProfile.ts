@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from "@apollo/client";
 
 /**
  * GraphQL query to fetch user profile information
@@ -45,48 +45,48 @@ export const GET_USER_PROFILE = gql`
       }
     }
   }
-`
+`;
 
 /**
  * TypeScript type for user profile data
  */
 export interface UserProfile {
-  id: string
-  login: string
-  name: string | null
-  avatarUrl: string
-  bio: string | null
-  url: string
-  location: string | null
-  createdAt: string
-  email: string | null
-  company: string | null
-  websiteUrl: string | null
-  twitterUsername: string | null
+  id: string;
+  login: string;
+  name: string | null;
+  avatarUrl: string;
+  bio: string | null;
+  url: string;
+  location: string | null;
+  createdAt: string;
+  email: string | null;
+  company: string | null;
+  websiteUrl: string | null;
+  twitterUsername: string | null;
   followers: {
-    totalCount: number
-  }
+    totalCount: number;
+  };
   following: {
-    totalCount: number
-  }
+    totalCount: number;
+  };
   gists: {
-    totalCount: number
-  }
+    totalCount: number;
+  };
   repositories: {
-    totalCount: number
-  }
+    totalCount: number;
+  };
 }
 
 /**
  * GraphQL response type for GetUserProfile query
  */
 export interface GetUserProfileResponse {
-  user: UserProfile
+  user: UserProfile;
 }
 
 /**
  * GraphQL variables for GetUserProfile query
  */
 export interface GetUserProfileVariables {
-  login: string
+  login: string;
 }

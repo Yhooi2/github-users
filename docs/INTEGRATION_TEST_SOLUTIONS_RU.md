@@ -225,32 +225,33 @@ it('должен отобра жать данные из MockedProvider', async 
 
 ```typescript
 // e2e/user-search.spec.ts
-test('should search for GitHub user and display profile', async ({ page }) => {
-  await page.goto('/')
+test("should search for GitHub user and display profile", async ({ page }) => {
+  await page.goto("/");
 
   // Поиск пользователя
-  await page.fill('input[placeholder*="Search"]', 'torvalds')
-  await page.click('button:has-text("Search")')
+  await page.fill('input[placeholder*="Search"]', "torvalds");
+  await page.click('button:has-text("Search")');
 
   // Проверка отображения профиля
-  await expect(page.getByText('Linus Torvalds')).toBeVisible()
-  await expect(page.getByText(/Creator of Linux/i)).toBeVisible()
-})
+  await expect(page.getByText("Linus Torvalds")).toBeVisible();
+  await expect(page.getByText(/Creator of Linux/i)).toBeVisible();
+});
 
-test('should handle user not found', async ({ page }) => {
-  await page.goto('/')
+test("should handle user not found", async ({ page }) => {
+  await page.goto("/");
 
-  await page.fill('input[placeholder*="Search"]', 'nonexistentuser12345')
-  await page.click('button:has-text("Search")')
+  await page.fill('input[placeholder*="Search"]', "nonexistentuser12345");
+  await page.click('button:has-text("Search")');
 
-  await expect(page.getByText(/User Not Found/i)).toBeVisible()
-})
+  await expect(page.getByText(/User Not Found/i)).toBeVisible();
+});
 ```
 
 ### Результаты
 
 ✅ **14 E2E сценариев прошли**
 ✅ **Покрытие:**
+
 - User search flow
 - Error handling (not found, network errors)
 - Responsive design
@@ -267,14 +268,14 @@ test('should handle user not found', async ({ page }) => {
 
 ## 📊 Сравнение подходов
 
-| Критерий | Hook Mocking | Apollo MockedProvider | E2E (Playwright) |
-|----------|--------------|----------------------|------------------|
-| **Простота** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **Скорость** | ⭐⭐⭐⭐⭐ (350ms) | ⭐⭐⭐ (3-6s) | ⭐⭐ (10-30s) |
-| **Надёжность** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **Покрытие** | Component-level | Component-level | Full app |
-| **Maintenance** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| **Реалистичность** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Критерий           | Hook Mocking       | Apollo MockedProvider | E2E (Playwright) |
+| ------------------ | ------------------ | --------------------- | ---------------- |
+| **Простота**       | ⭐⭐⭐⭐⭐         | ⭐⭐⭐                | ⭐⭐⭐⭐         |
+| **Скорость**       | ⭐⭐⭐⭐⭐ (350ms) | ⭐⭐⭐ (3-6s)         | ⭐⭐ (10-30s)    |
+| **Надёжность**     | ⭐⭐⭐⭐⭐         | ⭐⭐⭐                | ⭐⭐⭐⭐⭐       |
+| **Покрытие**       | Component-level    | Component-level       | Full app         |
+| **Maintenance**    | ⭐⭐⭐⭐⭐         | ⭐⭐⭐                | ⭐⭐⭐           |
+| **Реалистичность** | ⭐⭐⭐             | ⭐⭐⭐⭐              | ⭐⭐⭐⭐⭐       |
 
 ---
 
@@ -283,6 +284,7 @@ test('should handle user not found', async ({ page }) => {
 ### Для component-level тестов
 
 **Используйте Hook Mocking** (Решение 1)
+
 - Самый простой и надёжный подход
 - Быстрое выполнение, высокая надёжность
 - Идеально для unit/integration тестов компонентов
@@ -290,6 +292,7 @@ test('should handle user not found', async ({ page }) => {
 ### Для full App integration
 
 **Используйте E2E тесты** (Решение 3)
+
 - Playwright уже настроен, 14 тестов проходят
 - Тестирует реальные user flows без мокирования
 - Лучшее покрытие критических путей
@@ -297,6 +300,7 @@ test('should handle user not found', async ({ page }) => {
 ### Для Apollo Client тестирования
 
 **Используйте MockedProvider** (Решение 2) только для:
+
 - Компонентов с одним GraphQL запросом
 - Тестирования Apollo cache behaviour
 - Проверки query/variables matching
@@ -335,16 +339,16 @@ it('тест', () => {
 
 ```typescript
 // ✅ РЕКОМЕНДУЕТСЯ для full app flows
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test('полный user flow', async ({ page }) => {
-  await page.goto('/')
-  await page.fill('input[type="text"]', 'torvalds')
-  await page.click('button:has-text("Search")')
+test("полный user flow", async ({ page }) => {
+  await page.goto("/");
+  await page.fill('input[type="text"]', "torvalds");
+  await page.click('button:has-text("Search")');
 
   // Проверяем реальное приложение
-  await expect(page.getByText('Linus Torvalds')).toBeVisible()
-})
+  await expect(page.getByText("Linus Torvalds")).toBeVisible();
+});
 ```
 
 ### Пример 3: MockedProvider (для простых случаев)
@@ -453,21 +457,21 @@ const mock = {
   request: {
     query: GET_USER_INFO,
     variables: {
-      login: 'test',
-      from: '2024-01-01...',  // Точное значение меняется!
-    }
-  }
-}
+      login: "test",
+      from: "2024-01-01...", // Точное значение меняется!
+    },
+  },
+};
 
 // ✅ РЕШЕНИЕ - используйте variableMatchers
 const mock = {
   request: { query: GET_USER_INFO },
   variableMatchers: {
-    login: () => true,  // Совпадает с любым login
-    from: () => true,   // Совпадает с любой датой
+    login: () => true, // Совпадает с любым login
+    from: () => true, // Совпадает с любой датой
   },
-  result: { data: mockData }
-}
+  result: { data: mockData },
+};
 ```
 
 ### 3. Игнорирование асинхронности в MockedProvider

@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
-import type { Repository } from '@/apollo/github-api.types';
-import type { AuthenticityScore } from '@/types/metrics';
-import { calculateAuthenticityScore } from '@/lib/authenticity';
+import type { Repository } from "@/apollo/github-api.types";
+import { calculateAuthenticityScore } from "@/lib/authenticity";
+import type { AuthenticityScore } from "@/types/metrics";
+import { useMemo } from "react";
 
 /**
  * React hook for calculating GitHub user authenticity score
@@ -31,6 +31,11 @@ import { calculateAuthenticityScore } from '@/lib/authenticity';
  * }
  * ```
  */
-export function useAuthenticityScore(repositories: Repository[]): AuthenticityScore {
-  return useMemo(() => calculateAuthenticityScore(repositories), [repositories]);
+export function useAuthenticityScore(
+  repositories: Repository[],
+): AuthenticityScore {
+  return useMemo(
+    () => calculateAuthenticityScore(repositories),
+    [repositories],
+  );
 }

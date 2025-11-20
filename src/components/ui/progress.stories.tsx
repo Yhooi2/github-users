@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Progress } from './progress';
-import * as React from 'react';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import * as React from "react";
+import { Progress } from "./progress";
 
 const meta: Meta<typeof Progress> = {
-  title: 'UI/Progress',
+  title: "UI/Progress",
   component: Progress,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
-        component: 'A progress bar component for showing completion status.',
+        component: "A progress bar component for showing completion status.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;

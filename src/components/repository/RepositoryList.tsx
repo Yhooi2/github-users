@@ -1,7 +1,7 @@
-import { RepositoryCard } from './RepositoryCard';
-import { RepositoryEmpty } from './RepositoryEmpty';
-import { LoadingState, ErrorState } from '@/components/layout';
-import type { Repository } from '@/apollo/github-api.types';
+import type { Repository } from "@/apollo/github-api.types";
+import { ErrorState, LoadingState } from "@/components/layout";
+import { RepositoryCard } from "./RepositoryCard";
+import { RepositoryEmpty } from "./RepositoryEmpty";
 
 type Props = {
   /**
@@ -98,7 +98,7 @@ export function RepositoryList({
   if (error) {
     return (
       <ErrorState
-        title={errorTitle || 'Failed to load repositories'}
+        title={errorTitle || "Failed to load repositories"}
         message={errorDescription || error.message}
       />
     );

@@ -27,6 +27,7 @@
 ### Что добавляет эта фаза?
 
 **Текущее состояние (Демо-режим, Фазы 0-6):**
+
 - ✅ Серверный токен (5000 запросов/час для всех пользователей)
 - ✅ Мониторинг лимита запросов
 - ✅ Предупреждение при остатке <10%
@@ -34,6 +35,7 @@
 - ✅ Полная функциональность для всех пользователей
 
 **Режим OAuth (Фаза 7):**
+
 - 🆕 Вход пользователей через GitHub аккаунт
 - 🆕 Персональный лимит запросов (5000 запросов/час на пользователя)
 - 🆕 Масштабируемость (неограниченное количество пользователей)
@@ -42,12 +44,14 @@
 ### Почему эта фаза опциональна?
 
 **Демо-режим достаточен для:**
+
 - Первоначального запуска и валидации продукта
 - Малой и средней базы пользователей (<100 одновременных пользователей)
 - Анализа только публичных репозиториев
 - Быстрого выхода на рынок
 
 **OAuth становится необходимым когда:**
+
 - Лимит демо-режима часто исчерпывается
 - База пользователей растёт сверх возможностей общего лимита
 - Пользователи запрашивают функции сохранения профилей и сравнения
@@ -99,6 +103,7 @@
 ```
 
 **Преимущества подхода:**
+
 - ✅ Низкий барьер входа (нет стены регистрации)
 - ✅ Пользователи видят ценность до регистрации
 - ✅ Естественная воронка конверсии
@@ -113,6 +118,7 @@
 #### Этап 1.1: Настройка GitHub OAuth App (1 час)
 
 **Действия:**
+
 1. Перейти в [GitHub Settings → Developer Settings → OAuth Apps](https://github.com/settings/developers)
 2. Нажать **"New OAuth App"**
 3. Заполнить форму:
@@ -123,6 +129,7 @@
 5. Скопировать **Client ID** и сгенерировать **Client Secret**
 
 **Переменные окружения:**
+
 ```bash
 # .env (только на сервере!)
 GITHUB_OAUTH_CLIENT_ID=Iv1.xxxxxxxxxxxx
@@ -131,6 +138,7 @@ GITHUB_TOKEN=ghp_xxx  # Оставить для демо-режима
 ```
 
 **Критерии завершения:**
+
 - [x] OAuth App создано
 - [x] Client ID и Secret скопированы
 - [x] Переменные окружения настроены локально
@@ -142,104 +150,108 @@ GITHUB_TOKEN=ghp_xxx  # Оставить для демо-режима
 **Файл:** `api/auth/login.ts`
 
 **Что нужно реализовать:**
+
 1. Генерация безопасного `state` параметра (CSRF защита)
 2. Формирование URL авторизации GitHub
 3. Редирект пользователя на GitHub
 
 **Код:**
+
 ```typescript
-import { randomBytes } from 'crypto'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { randomBytes } from "crypto";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 // Генерация случайного state для CSRF защиты
 function generateRandomState(): string {
-  return randomBytes(32).toString('hex')
+  return randomBytes(32).toString("hex");
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const clientId = process.env.GITHUB_OAUTH_CLIENT_ID
+  const clientId = process.env.GITHUB_OAUTH_CLIENT_ID;
 
   if (!clientId) {
-    return res.status(500).json({ error: 'OAuth not configured' })
+    return res.status(500).json({ error: "OAuth not configured" });
   }
 
   // Генерация state и сохранение в cookie (для проверки в callback)
-  const state = generateRandomState()
+  const state = generateRandomState();
 
   // Сохраняем state в httpOnly cookie для проверки в callback
   res.setHeader(
-    'Set-Cookie',
-    `oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Max-Age=600; Path=/`
-  )
+    "Set-Cookie",
+    `oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Max-Age=600; Path=/`,
+  );
 
   // Определение redirect URI (работает локально и в продакшене)
   const baseUrl = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000'
+    : "http://localhost:3000";
 
   // Параметры OAuth авторизации
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: `${baseUrl}/api/auth/callback`,
-    scope: 'read:user user:email', // Только чтение профиля
+    scope: "read:user user:email", // Только чтение профиля
     state, // CSRF защита
-  })
+  });
 
-  const authUrl = `https://github.com/login/oauth/authorize?${params}`
+  const authUrl = `https://github.com/login/oauth/authorize?${params}`;
 
   // Редирект на GitHub
-  res.redirect(authUrl)
+  res.redirect(authUrl);
 }
 ```
 
 **Тесты:**
+
 ```typescript
 // api/auth/login.test.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import handler from './login'
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import handler from "./login";
 
-describe('OAuth Login Endpoint', () => {
-  it('должен редиректить на GitHub с правильными параметрами', async () => {
+describe("OAuth Login Endpoint", () => {
+  it("должен редиректить на GitHub с правильными параметрами", async () => {
     // Mock request/response
-    const req = {} as any
+    const req = {} as any;
     const res = {
       redirect: vi.fn(),
       setHeader: vi.fn(),
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    } as any
+    } as any;
 
-    process.env.GITHUB_OAUTH_CLIENT_ID = 'test_client_id'
+    process.env.GITHUB_OAUTH_CLIENT_ID = "test_client_id";
 
-    await handler(req, res)
+    await handler(req, res);
 
     expect(res.setHeader).toHaveBeenCalledWith(
-      'Set-Cookie',
-      expect.stringContaining('oauth_state=')
-    )
+      "Set-Cookie",
+      expect.stringContaining("oauth_state="),
+    );
     expect(res.redirect).toHaveBeenCalledWith(
-      expect.stringContaining('https://github.com/login/oauth/authorize')
-    )
-  })
+      expect.stringContaining("https://github.com/login/oauth/authorize"),
+    );
+  });
 
-  it('должен вернуть ошибку если OAuth не настроен', async () => {
-    delete process.env.GITHUB_OAUTH_CLIENT_ID
+  it("должен вернуть ошибку если OAuth не настроен", async () => {
+    delete process.env.GITHUB_OAUTH_CLIENT_ID;
 
-    const req = {} as any
+    const req = {} as any;
     const res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    } as any
+    } as any;
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(500)
-    expect(res.json).toHaveBeenCalledWith({ error: 'OAuth not configured' })
-  })
-})
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "OAuth not configured" });
+  });
+});
 ```
 
 **Критерии завершения:**
+
 - [x] Endpoint создан
 - [x] State генерируется и сохраняется
 - [x] Редирект на GitHub работает
@@ -252,6 +264,7 @@ describe('OAuth Login Endpoint', () => {
 **Файл:** `api/auth/callback.ts`
 
 **Что нужно реализовать:**
+
 1. Проверка `state` параметра (CSRF защита)
 2. Обмен кода на access token
 3. Получение информации о пользователе
@@ -259,201 +272,210 @@ describe('OAuth Login Endpoint', () => {
 5. Установка httpOnly cookie
 
 **Код:**
+
 ```typescript
-import { kv } from '@vercel/kv'
-import { randomBytes } from 'crypto'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { kv } from "@vercel/kv";
+import { randomBytes } from "crypto";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 // Генерация уникального ID сессии
 function generateSessionId(): string {
-  return randomBytes(32).toString('hex')
+  return randomBytes(32).toString("hex");
 }
 
 // Извлечение cookie из запроса
-function extractCookie(cookieHeader: string | undefined, name: string): string | null {
-  if (!cookieHeader) return null
+function extractCookie(
+  cookieHeader: string | undefined,
+  name: string,
+): string | null {
+  if (!cookieHeader) return null;
 
-  const cookies = cookieHeader.split(';').map(c => c.trim())
-  const cookie = cookies.find(c => c.startsWith(`${name}=`))
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const cookie = cookies.find((c) => c.startsWith(`${name}=`));
 
-  return cookie ? cookie.split('=')[1] : null
+  return cookie ? cookie.split("=")[1] : null;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { code, state } = req.query
+  const { code, state } = req.query;
 
   // Валидация параметров
-  if (!code || typeof code !== 'string') {
-    return res.redirect('/?error=no_code')
+  if (!code || typeof code !== "string") {
+    return res.redirect("/?error=no_code");
   }
 
-  if (!state || typeof state !== 'string') {
-    return res.redirect('/?error=no_state')
+  if (!state || typeof state !== "string") {
+    return res.redirect("/?error=no_state");
   }
 
   // Проверка state (CSRF защита)
-  const savedState = extractCookie(req.headers.cookie, 'oauth_state')
+  const savedState = extractCookie(req.headers.cookie, "oauth_state");
 
   if (!savedState || savedState !== state) {
-    console.error('CSRF validation failed:', { savedState, receivedState: state })
-    return res.redirect('/?error=csrf_failed')
+    console.error("CSRF validation failed:", {
+      savedState,
+      receivedState: state,
+    });
+    return res.redirect("/?error=csrf_failed");
   }
 
   try {
     // Обмен кода на access token
-    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+    const tokenResponse = await fetch(
+      "https://github.com/login/oauth/access_token",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
+          client_secret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
+          code,
+        }),
       },
-      body: JSON.stringify({
-        client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
-        client_secret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
-        code,
-      }),
-    })
+    );
 
-    const tokenData = await tokenResponse.json()
-    const { access_token } = tokenData
+    const tokenData = await tokenResponse.json();
+    const { access_token } = tokenData;
 
     if (!access_token) {
-      console.error('Failed to obtain access token:', tokenData)
-      throw new Error('No access token received')
+      console.error("Failed to obtain access token:", tokenData);
+      throw new Error("No access token received");
     }
 
     // Получение информации о пользователе
-    const userResponse = await fetch('https://api.github.com/user', {
+    const userResponse = await fetch("https://api.github.com/user", {
       headers: {
-        'Authorization': `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
-    })
+    });
 
     if (!userResponse.ok) {
-      throw new Error(`Failed to fetch user info: ${userResponse.statusText}`)
+      throw new Error(`Failed to fetch user info: ${userResponse.statusText}`);
     }
 
-    const user = await userResponse.json()
+    const user = await userResponse.json();
 
     // Создание сессии
-    const sessionId = generateSessionId()
+    const sessionId = generateSessionId();
     const sessionData = {
       userId: user.id,
       login: user.login,
       avatarUrl: user.avatar_url,
       accessToken: access_token,
       createdAt: Date.now(),
-    }
+    };
 
     // Сохранение сессии в Vercel KV (TTL: 30 дней)
-    await kv.set(`session:${sessionId}`, sessionData, { ex: 86400 * 30 })
+    await kv.set(`session:${sessionId}`, sessionData, { ex: 86400 * 30 });
 
-    console.log(`Session created for user: ${user.login} (ID: ${sessionId})`)
+    console.log(`Session created for user: ${user.login} (ID: ${sessionId})`);
 
     // Установка httpOnly cookie
-    const cookieMaxAge = 86400 * 30 // 30 дней
-    res.setHeader(
-      'Set-Cookie',
-      [
-        `session=${sessionId}; HttpOnly; Secure; SameSite=Lax; Max-Age=${cookieMaxAge}; Path=/`,
-        'oauth_state=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/', // Очистка state cookie
-      ]
-    )
+    const cookieMaxAge = 86400 * 30; // 30 дней
+    res.setHeader("Set-Cookie", [
+      `session=${sessionId}; HttpOnly; Secure; SameSite=Lax; Max-Age=${cookieMaxAge}; Path=/`,
+      "oauth_state=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/", // Очистка state cookie
+    ]);
 
     // Редирект обратно в приложение
-    res.redirect('/?auth=success')
+    res.redirect("/?auth=success");
   } catch (error) {
-    console.error('OAuth callback error:', error)
-    res.redirect('/?error=auth_failed')
+    console.error("OAuth callback error:", error);
+    res.redirect("/?error=auth_failed");
   }
 }
 ```
 
 **Тесты:**
+
 ```typescript
 // api/auth/callback.test.ts
-import { describe, it, expect, vi } from 'vitest'
-import handler from './callback'
+import { describe, it, expect, vi } from "vitest";
+import handler from "./callback";
 
 // Mock @vercel/kv
-vi.mock('@vercel/kv', () => ({
+vi.mock("@vercel/kv", () => ({
   kv: {
     set: vi.fn(),
     get: vi.fn(),
     del: vi.fn(),
   },
-}))
+}));
 
 // Mock fetch
-global.fetch = vi.fn()
+global.fetch = vi.fn();
 
-describe('OAuth Callback Endpoint', () => {
-  it('должен обменять код на токен и создать сессию', async () => {
-    const mockAccessToken = 'gho_test_token'
+describe("OAuth Callback Endpoint", () => {
+  it("должен обменять код на токен и создать сессию", async () => {
+    const mockAccessToken = "gho_test_token";
     const mockUser = {
       id: 12345,
-      login: 'testuser',
-      avatar_url: 'https://avatars.githubusercontent.com/u/12345',
-    }
+      login: "testuser",
+      avatar_url: "https://avatars.githubusercontent.com/u/12345",
+    };
 
     // Mock fetch responses
-    ;(global.fetch as any)
+    (global.fetch as any)
       .mockResolvedValueOnce({
         json: async () => ({ access_token: mockAccessToken }),
       })
       .mockResolvedValueOnce({
         ok: true,
         json: async () => mockUser,
-      })
+      });
 
     const req = {
-      query: { code: 'test_code', state: 'test_state' },
-      headers: { cookie: 'oauth_state=test_state' },
-    } as any
+      query: { code: "test_code", state: "test_state" },
+      headers: { cookie: "oauth_state=test_state" },
+    } as any;
 
     const res = {
       redirect: vi.fn(),
       setHeader: vi.fn(),
-    } as any
+    } as any;
 
-    await handler(req, res)
+    await handler(req, res);
 
     // Проверяем что токен был обменян
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://github.com/login/oauth/access_token',
-      expect.any(Object)
-    )
+      "https://github.com/login/oauth/access_token",
+      expect.any(Object),
+    );
 
     // Проверяем что пользователь был получен
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://api.github.com/user',
+      "https://api.github.com/user",
       expect.objectContaining({
         headers: { Authorization: `Bearer ${mockAccessToken}` },
-      })
-    )
+      }),
+    );
 
     // Проверяем редирект на успех
-    expect(res.redirect).toHaveBeenCalledWith('/?auth=success')
-  })
+    expect(res.redirect).toHaveBeenCalledWith("/?auth=success");
+  });
 
-  it('должен отклонить запрос с неверным state (CSRF)', async () => {
+  it("должен отклонить запрос с неверным state (CSRF)", async () => {
     const req = {
-      query: { code: 'test_code', state: 'wrong_state' },
-      headers: { cookie: 'oauth_state=correct_state' },
-    } as any
+      query: { code: "test_code", state: "wrong_state" },
+      headers: { cookie: "oauth_state=correct_state" },
+    } as any;
 
     const res = {
       redirect: vi.fn(),
-    } as any
+    } as any;
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(res.redirect).toHaveBeenCalledWith('/?error=csrf_failed')
-  })
-})
+    expect(res.redirect).toHaveBeenCalledWith("/?error=csrf_failed");
+  });
+});
 ```
 
 **Критерии завершения:**
+
 - [x] Endpoint создан
 - [x] CSRF защита работает
 - [x] Сессия сохраняется в KV
@@ -467,77 +489,82 @@ describe('OAuth Callback Endpoint', () => {
 **Файл:** `api/auth/logout.ts`
 
 **Код:**
+
 ```typescript
-import { kv } from '@vercel/kv'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { kv } from "@vercel/kv";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 // Извлечение session cookie
-function extractSessionFromCookie(cookieHeader: string | undefined): string | null {
-  if (!cookieHeader) return null
+function extractSessionFromCookie(
+  cookieHeader: string | undefined,
+): string | null {
+  if (!cookieHeader) return null;
 
-  const cookies = cookieHeader.split(';').map(c => c.trim())
-  const sessionCookie = cookies.find(c => c.startsWith('session='))
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const sessionCookie = cookies.find((c) => c.startsWith("session="));
 
-  return sessionCookie ? sessionCookie.split('=')[1] : null
+  return sessionCookie ? sessionCookie.split("=")[1] : null;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const sessionId = extractSessionFromCookie(req.headers.cookie)
+  const sessionId = extractSessionFromCookie(req.headers.cookie);
 
   if (sessionId) {
     try {
       // Удаление сессии из KV
-      await kv.del(`session:${sessionId}`)
-      console.log(`Session deleted: ${sessionId}`)
+      await kv.del(`session:${sessionId}`);
+      console.log(`Session deleted: ${sessionId}`);
     } catch (error) {
-      console.error('Failed to delete session:', error)
+      console.error("Failed to delete session:", error);
     }
   }
 
   // Очистка cookie
   res.setHeader(
-    'Set-Cookie',
-    'session=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/'
-  )
+    "Set-Cookie",
+    "session=; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Path=/",
+  );
 
   // Редирект на главную
-  res.redirect('/?auth=logged_out')
+  res.redirect("/?auth=logged_out");
 }
 ```
 
 **Тесты:**
+
 ```typescript
 // api/auth/logout.test.ts
-import { describe, it, expect, vi } from 'vitest'
-import { kv } from '@vercel/kv'
-import handler from './logout'
+import { describe, it, expect, vi } from "vitest";
+import { kv } from "@vercel/kv";
+import handler from "./logout";
 
-vi.mock('@vercel/kv')
+vi.mock("@vercel/kv");
 
-describe('Logout Endpoint', () => {
-  it('должен удалить сессию и очистить cookie', async () => {
+describe("Logout Endpoint", () => {
+  it("должен удалить сессию и очистить cookie", async () => {
     const req = {
-      headers: { cookie: 'session=test_session_id' },
-    } as any
+      headers: { cookie: "session=test_session_id" },
+    } as any;
 
     const res = {
       redirect: vi.fn(),
       setHeader: vi.fn(),
-    } as any
+    } as any;
 
-    await handler(req, res)
+    await handler(req, res);
 
-    expect(kv.del).toHaveBeenCalledWith('session:test_session_id')
+    expect(kv.del).toHaveBeenCalledWith("session:test_session_id");
     expect(res.setHeader).toHaveBeenCalledWith(
-      'Set-Cookie',
-      expect.stringContaining('Max-Age=0')
-    )
-    expect(res.redirect).toHaveBeenCalledWith('/?auth=logged_out')
-  })
-})
+      "Set-Cookie",
+      expect.stringContaining("Max-Age=0"),
+    );
+    expect(res.redirect).toHaveBeenCalledWith("/?auth=logged_out");
+  });
+});
 ```
 
 **Критерии завершения:**
+
 - [x] Endpoint создан
 - [x] Сессия удаляется из KV
 - [x] Cookie очищается
@@ -550,6 +577,7 @@ describe('Logout Endpoint', () => {
 **Файл:** `api/github-proxy.ts`
 
 **Изменения:**
+
 1. Добавить чтение сессии из cookie
 2. Использовать токен пользователя если авторизован
 3. Fallback на демо-токен для неавторизованных
@@ -557,237 +585,253 @@ describe('Logout Endpoint', () => {
 5. Добавить флаг `isDemo` в ответ
 
 **Обновлённый код:**
+
 ```typescript
-import { kv } from '@vercel/kv'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { kv } from "@vercel/kv";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 // Извлечение session ID из cookie
-function extractSessionFromCookie(cookieHeader: string | undefined): string | null {
-  if (!cookieHeader) return null
+function extractSessionFromCookie(
+  cookieHeader: string | undefined,
+): string | null {
+  if (!cookieHeader) return null;
 
-  const cookies = cookieHeader.split(';').map(c => c.trim())
-  const sessionCookie = cookies.find(c => c.startsWith('session='))
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const sessionCookie = cookies.find((c) => c.startsWith("session="));
 
-  return sessionCookie ? sessionCookie.split('=')[1] : null
+  return sessionCookie ? sessionCookie.split("=")[1] : null;
 }
 
 // Тип сессии
 interface Session {
-  userId: number
-  login: string
-  avatarUrl: string
-  accessToken: string
-  createdAt: number
+  userId: number;
+  login: string;
+  avatarUrl: string;
+  accessToken: string;
+  createdAt: number;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   // Извлечение сессии из cookie
-  const sessionId = extractSessionFromCookie(req.headers.cookie)
+  const sessionId = extractSessionFromCookie(req.headers.cookie);
 
   // По умолчанию — демо-режим с серверным токеном
-  let token = process.env.GITHUB_TOKEN
-  let isDemo = true
-  let userLogin: string | undefined
+  let token = process.env.GITHUB_TOKEN;
+  let isDemo = true;
+  let userLogin: string | undefined;
 
   // Если есть сессия — пытаемся использовать пользовательский токен
   if (sessionId) {
     try {
-      const session = await kv.get<Session>(`session:${sessionId}`)
+      const session = await kv.get<Session>(`session:${sessionId}`);
       if (session && session.accessToken) {
-        token = session.accessToken
-        isDemo = false
-        userLogin = session.login
-        console.log(`Using authenticated token for user: ${userLogin}`)
+        token = session.accessToken;
+        isDemo = false;
+        userLogin = session.login;
+        console.log(`Using authenticated token for user: ${userLogin}`);
       }
     } catch (error) {
-      console.error('Failed to load session:', error)
+      console.error("Failed to load session:", error);
       // Fallback на демо-режим
     }
   }
 
   if (!token) {
-    return res.status(500).json({ error: 'No token available' })
+    return res.status(500).json({ error: "No token available" });
   }
 
-  const { query, variables, cacheKey } = req.body
+  const { query, variables, cacheKey } = req.body;
 
   if (!query) {
-    return res.status(400).json({ error: 'Query is required' })
+    return res.status(400).json({ error: "Query is required" });
   }
 
   // Формирование ключа кеша (разный для демо и авторизованных)
   const finalCacheKey = cacheKey
-    ? (isDemo ? `demo:${cacheKey}` : `user:${sessionId}:${cacheKey}`)
-    : null
+    ? isDemo
+      ? `demo:${cacheKey}`
+      : `user:${sessionId}:${cacheKey}`
+    : null;
 
   // Проверка кеша
   if (finalCacheKey) {
     try {
-      const cached = await kv.get(finalCacheKey)
+      const cached = await kv.get(finalCacheKey);
       if (cached) {
-        console.log(`Cache HIT: ${finalCacheKey}`)
-        return res.status(200).json(cached)
+        console.log(`Cache HIT: ${finalCacheKey}`);
+        return res.status(200).json(cached);
       }
     } catch (error) {
-      console.error('Cache read error:', error)
+      console.error("Cache read error:", error);
     }
   }
 
   // Запрос к GitHub API
   try {
-    const response = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
+    const response = await fetch("https://api.github.com/graphql", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ query, variables }),
-    })
+    });
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `GitHub API error: ${response.status} ${response.statusText}`,
+      );
     }
 
-    const data = await response.json()
+    const data = await response.json();
 
     // Проверка на ошибки GraphQL
     if (data.errors) {
-      console.error('GraphQL errors:', data.errors)
-      return res.status(400).json(data)
+      console.error("GraphQL errors:", data.errors);
+      return res.status(400).json(data);
     }
 
     // Извлечение rate limit из заголовков
     const rateLimit = {
-      remaining: parseInt(response.headers.get('X-RateLimit-Remaining') || '0', 10),
-      limit: parseInt(response.headers.get('X-RateLimit-Limit') || '5000', 10),
-      reset: parseInt(response.headers.get('X-RateLimit-Reset') || '0', 10),
-      used: parseInt(response.headers.get('X-RateLimit-Used') || '0', 10),
+      remaining: parseInt(
+        response.headers.get("X-RateLimit-Remaining") || "0",
+        10,
+      ),
+      limit: parseInt(response.headers.get("X-RateLimit-Limit") || "5000", 10),
+      reset: parseInt(response.headers.get("X-RateLimit-Reset") || "0", 10),
+      used: parseInt(response.headers.get("X-RateLimit-Used") || "0", 10),
       isDemo, // Флаг режима
       userLogin, // Логин пользователя (если авторизован)
-    }
+    };
 
     const responseData = {
       ...data,
       rateLimit,
-    }
+    };
 
     // Сохранение в кеш
     if (finalCacheKey) {
       try {
         // Демо: 30 минут, Пользователь: 10 минут
-        const ttl = isDemo ? 1800 : 600
-        await kv.set(finalCacheKey, responseData, { ex: ttl })
-        console.log(`Cache SET: ${finalCacheKey} (TTL: ${ttl}s, Demo: ${isDemo})`)
+        const ttl = isDemo ? 1800 : 600;
+        await kv.set(finalCacheKey, responseData, { ex: ttl });
+        console.log(
+          `Cache SET: ${finalCacheKey} (TTL: ${ttl}s, Demo: ${isDemo})`,
+        );
       } catch (error) {
-        console.error('Cache write error:', error)
+        console.error("Cache write error:", error);
       }
     }
 
-    return res.status(200).json(responseData)
+    return res.status(200).json(responseData);
   } catch (error) {
-    console.error('GitHub proxy error:', error)
+    console.error("GitHub proxy error:", error);
     return res.status(500).json({
-      error: 'Failed to fetch from GitHub',
-      message: error instanceof Error ? error.message : 'Unknown error',
-    })
+      error: "Failed to fetch from GitHub",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 }
 ```
 
 **Тесты:**
+
 ```typescript
 // api/github-proxy.test.ts
-import { describe, it, expect, vi } from 'vitest'
-import { kv } from '@vercel/kv'
-import handler from './github-proxy'
+import { describe, it, expect, vi } from "vitest";
+import { kv } from "@vercel/kv";
+import handler from "./github-proxy";
 
-vi.mock('@vercel/kv')
+vi.mock("@vercel/kv");
 
-describe('GitHub Proxy with OAuth', () => {
-  it('должен использовать демо-токен для неавторизованных', async () => {
+describe("GitHub Proxy with OAuth", () => {
+  it("должен использовать демо-токен для неавторизованных", async () => {
     const req = {
-      method: 'POST',
-      body: { query: 'test query' },
+      method: "POST",
+      body: { query: "test query" },
       headers: {},
-    } as any
+    } as any;
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ data: 'test' }),
+      json: async () => ({ data: "test" }),
       headers: new Map([
-        ['X-RateLimit-Remaining', '5000'],
-        ['X-RateLimit-Limit', '5000'],
+        ["X-RateLimit-Remaining", "5000"],
+        ["X-RateLimit-Limit", "5000"],
       ]),
-    })
-    global.fetch = mockFetch
+    });
+    global.fetch = mockFetch;
 
     const res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    } as any
+    } as any;
 
-    await handler(req, res)
+    await handler(req, res);
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.github.com/graphql',
+      "https://api.github.com/graphql",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: expect.stringContaining(process.env.GITHUB_TOKEN || ''),
+          Authorization: expect.stringContaining(
+            process.env.GITHUB_TOKEN || "",
+          ),
         }),
-      })
-    )
-  })
+      }),
+    );
+  });
 
-  it('должен использовать пользовательский токен для авторизованных', async () => {
+  it("должен использовать пользовательский токен для авторизованных", async () => {
     const mockSession = {
       userId: 123,
-      login: 'testuser',
-      accessToken: 'user_token_123',
+      login: "testuser",
+      accessToken: "user_token_123",
       createdAt: Date.now(),
-    }
+    };
 
-    vi.mocked(kv.get).mockResolvedValue(mockSession)
+    vi.mocked(kv.get).mockResolvedValue(mockSession);
 
     const req = {
-      method: 'POST',
-      body: { query: 'test query' },
-      headers: { cookie: 'session=valid_session_id' },
-    } as any
+      method: "POST",
+      body: { query: "test query" },
+      headers: { cookie: "session=valid_session_id" },
+    } as any;
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ data: 'test' }),
+      json: async () => ({ data: "test" }),
       headers: new Map([
-        ['X-RateLimit-Remaining', '4999'],
-        ['X-RateLimit-Limit', '5000'],
+        ["X-RateLimit-Remaining", "4999"],
+        ["X-RateLimit-Limit", "5000"],
       ]),
-    })
-    global.fetch = mockFetch
+    });
+    global.fetch = mockFetch;
 
     const res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    } as any
+    } as any;
 
-    await handler(req, res)
+    await handler(req, res);
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.github.com/graphql',
+      "https://api.github.com/graphql",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: 'Bearer user_token_123',
+          Authorization: "Bearer user_token_123",
         }),
-      })
-    )
-  })
-})
+      }),
+    );
+  });
+});
 ```
 
 **Критерии завершения:**
+
 - [x] Proxy обновлён
 - [x] Поддержка демо и OAuth режимов
 - [x] Раздельное кеширование
@@ -803,11 +847,13 @@ describe('GitHub Proxy with OAuth', () => {
 **Файл:** `src/components/layout/UserMenu.tsx`
 
 **Функциональность:**
+
 - Показывает кнопку "Sign in" для неавторизованных
 - Показывает аватар и меню для авторизованных
 - Dropdown меню с опцией "Sign out"
 
 **Код:**
+
 ```typescript
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -877,56 +923,58 @@ export function UserMenu({
 ```
 
 **Storybook:**
+
 ```typescript
 // src/components/layout/UserMenu.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react'
-import { UserMenu } from './UserMenu'
+import type { Meta, StoryObj } from "@storybook/react";
+import { UserMenu } from "./UserMenu";
 
 const meta: Meta<typeof UserMenu> = {
-  title: 'Layout/UserMenu',
+  title: "Layout/UserMenu",
   component: UserMenu,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof UserMenu>
+export default meta;
+type Story = StoryObj<typeof UserMenu>;
 
 export const Unauthenticated: Story = {
   args: {
     isAuthenticated: false,
-    onSignIn: () => console.log('Sign in clicked'),
-    onSignOut: () => console.log('Sign out clicked'),
+    onSignIn: () => console.log("Sign in clicked"),
+    onSignOut: () => console.log("Sign out clicked"),
   },
-}
+};
 
 export const Authenticated: Story = {
   args: {
     isAuthenticated: true,
     user: {
-      login: 'octocat',
-      avatarUrl: 'https://avatars.githubusercontent.com/u/583231?v=4',
+      login: "octocat",
+      avatarUrl: "https://avatars.githubusercontent.com/u/583231?v=4",
     },
-    onSignIn: () => console.log('Sign in clicked'),
-    onSignOut: () => console.log('Sign out clicked'),
+    onSignIn: () => console.log("Sign in clicked"),
+    onSignOut: () => console.log("Sign out clicked"),
   },
-}
+};
 
 export const LongUsername: Story = {
   args: {
     isAuthenticated: true,
     user: {
-      login: 'very-long-username-example',
-      avatarUrl: 'https://avatars.githubusercontent.com/u/583231?v=4',
+      login: "very-long-username-example",
+      avatarUrl: "https://avatars.githubusercontent.com/u/583231?v=4",
     },
-    onSignIn: () => console.log('Sign in clicked'),
-    onSignOut: () => console.log('Sign out clicked'),
+    onSignIn: () => console.log("Sign in clicked"),
+    onSignOut: () => console.log("Sign out clicked"),
   },
-}
+};
 ```
 
 **Тесты:**
+
 ```typescript
 // src/components/layout/UserMenu.test.tsx
 import { describe, it, expect, vi } from 'vitest'
@@ -1008,6 +1056,7 @@ describe('UserMenu', () => {
 ```
 
 **Критерии завершения:**
+
 - [x] Компонент создан
 - [x] Storybook stories написаны (3 варианта)
 - [x] Тесты написаны и проходят (4 теста)
@@ -1020,11 +1069,13 @@ describe('UserMenu', () => {
 **Файл:** `src/components/layout/RateLimitBanner.tsx`
 
 **Изменения:**
+
 - Добавить prop `isDemo`
 - Добавить prop `onLogoutClick`
 - Изменить текст и поведение в зависимости от режима
 
 **Обновлённый код:**
+
 ```typescript
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -1101,6 +1152,7 @@ export function RateLimitBanner({
 ```
 
 **Обновлённые Storybook Stories:**
+
 ```typescript
 // Добавить новые варианты в существующий файл
 export const AuthenticatedLowLimit: Story = {
@@ -1109,10 +1161,10 @@ export const AuthenticatedLowLimit: Story = {
     limit: 5000,
     reset: Math.floor(Date.now() / 1000) + 1800,
     isDemo: false, // Авторизован
-    onAuthClick: () => console.log('Auth clicked'),
-    onLogoutClick: () => console.log('Logout clicked'),
+    onAuthClick: () => console.log("Auth clicked"),
+    onLogoutClick: () => console.log("Logout clicked"),
   },
-}
+};
 
 export const DemoLowLimit: Story = {
   args: {
@@ -1120,13 +1172,14 @@ export const DemoLowLimit: Story = {
     limit: 5000,
     reset: Math.floor(Date.now() / 1000) + 1800,
     isDemo: true, // Демо
-    onAuthClick: () => console.log('Auth clicked'),
-    onLogoutClick: () => console.log('Logout clicked'),
+    onAuthClick: () => console.log("Auth clicked"),
+    onLogoutClick: () => console.log("Logout clicked"),
   },
-}
+};
 ```
 
 **Обновлённые тесты:**
+
 ```typescript
 // Добавить новые тесты в существующий файл
 
@@ -1178,6 +1231,7 @@ it('скрывается в auth режиме если лимит >10%', () => {
 ```
 
 **Критерии завершения:**
+
 - [x] Компонент обновлён
 - [x] Storybook stories добавлены
 - [x] Тесты обновлены и проходят
@@ -1190,12 +1244,14 @@ it('скрывается в auth режиме если лимит >10%', () => {
 **Файл:** `src/App.tsx`
 
 **Изменения:**
+
 1. Добавить состояние авторизации
 2. Добавить обработчики входа/выхода
 3. Интегрировать UserMenu
 4. Обновить RateLimitBanner с новыми props
 
 **Обновлённый код:**
+
 ```typescript
 import { useState, useEffect } from 'react'
 import { UserMenu } from '@/components/layout/UserMenu'
@@ -1337,6 +1393,7 @@ export function App() {
 ```
 
 **Критерии завершения:**
+
 - [x] App.tsx обновлён
 - [x] UserMenu интегрирован
 - [x] Обработчики входа/выхода работают
@@ -1350,65 +1407,69 @@ export function App() {
 **Файл:** `src/apollo/useQueryUser.ts`
 
 **Изменения:**
+
 - Извлекать `rateLimit` из ответа
 - Вызывать callback `onRateLimitUpdate`
 
 **Обновлённый код:**
+
 ```typescript
 // ... существующий код ...
 
 export interface UseQueryUserOptions {
   onRateLimitUpdate?: (rateLimit: {
-    remaining: number
-    limit: number
-    reset: number
-    isDemo: boolean
-    userLogin?: string
-  }) => void
+    remaining: number;
+    limit: number;
+    reset: number;
+    isDemo: boolean;
+    userLogin?: string;
+  }) => void;
 }
 
 export default function useQueryUser(
   login: string,
-  options?: UseQueryUserOptions
+  options?: UseQueryUserOptions,
 ) {
   // ... существующий код для dates ...
 
   const { data, loading, error } = useQuery(GET_USER_INFO, {
     variables,
     skip: !login,
-    errorPolicy: 'all',
+    errorPolicy: "all",
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
       // Извлечение rate limit из ответа
       if (data.rateLimit && options?.onRateLimitUpdate) {
-        options.onRateLimitUpdate(data.rateLimit)
+        options.onRateLimitUpdate(data.rateLimit);
       }
     },
-  })
+  });
 
   // ... остальной код ...
 }
 ```
 
 **Обновлённый GraphQL Type:**
+
 ```typescript
 // src/apollo/github-api.types.ts
 
 // Добавить в интерфейс ответа
 export interface GitHubUserInfoResponse {
-  user: GitHubUser | null
+  user: GitHubUser | null;
   rateLimit: {
-    remaining: number
-    limit: number
-    reset: number
-    used: number
-    isDemo: boolean
-    userLogin?: string
-  }
+    remaining: number;
+    limit: number;
+    reset: number;
+    used: number;
+    isDemo: boolean;
+    userLogin?: string;
+  };
 }
 ```
 
 **Критерии завершения:**
+
 - [x] Hook обновлён
 - [x] Rate limit передаётся в App
 - [x] Типы обновлены
@@ -1421,21 +1482,24 @@ export interface GitHubUserInfoResponse {
 **Файл:** `src/apollo/ApolloAppProvider.tsx`
 
 **Изменения:**
+
 - Включить credentials в httpLink (для отправки cookies)
 
 **Обновлённый код:**
+
 ```typescript
 // ... существующий код ...
 
 const httpLink = createHttpLink({
-  uri: '/api/github-proxy',
-  credentials: 'include', // NEW: Включить cookies
-})
+  uri: "/api/github-proxy",
+  credentials: "include", // NEW: Включить cookies
+});
 
 // ... остальной код без изменений ...
 ```
 
 **Тесты:**
+
 ```typescript
 // Добавить тест в ApolloAppProvider.test.tsx
 
@@ -1452,6 +1516,7 @@ it('должен включать credentials для cookies', () => {
 ```
 
 **Критерии завершения:**
+
 - [x] Apollo Client обновлён
 - [x] Credentials включены
 - [x] Тесты проходят
@@ -1463,6 +1528,7 @@ it('должен включать credentials для cookies', () => {
 #### Этап 3.1: Интеграционное Тестирование (3 часа)
 
 **Задачи:**
+
 1. Тестирование OAuth flow локально
 2. Тестирование демо/auth переключения
 3. Тестирование rate limit поведения
@@ -1472,18 +1538,18 @@ it('должен включать credentials для cookies', () => {
 
 ```typescript
 // e2e/oauth-flow.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('OAuth Flow', () => {
-  test('пользователь может войти через GitHub', async ({ page, context }) => {
+test.describe("OAuth Flow", () => {
+  test("пользователь может войти через GitHub", async ({ page, context }) => {
     // 1. Открыть приложение
-    await page.goto('http://localhost:3000')
+    await page.goto("http://localhost:3000");
 
     // 2. Кликнуть "Sign in with GitHub"
-    await page.click('text=Sign in with GitHub')
+    await page.click("text=Sign in with GitHub");
 
     // 3. Ожидать редиректа на GitHub
-    await page.waitForURL(/github\.com\/login\/oauth\/authorize/)
+    await page.waitForURL(/github\.com\/login\/oauth\/authorize/);
 
     // 4. [Manual step] Авторизовать приложение на GitHub
     // Примечание: автоматизация требует настройки тестового OAuth app
@@ -1493,44 +1559,45 @@ test.describe('OAuth Flow', () => {
 
     // 6. Проверить что UserMenu показывает аватар
     // await expect(page.locator('img[alt*="avatar"]')).toBeVisible()
-  })
+  });
 
-  test('демо-режим работает без входа', async ({ page }) => {
-    await page.goto('http://localhost:3000')
+  test("демо-режим работает без входа", async ({ page }) => {
+    await page.goto("http://localhost:3000");
 
     // Проверить что banner показывает "Demo mode"
-    await expect(page.locator('text=Demo mode active')).toBeVisible()
+    await expect(page.locator("text=Demo mode active")).toBeVisible();
 
     // Поиск пользователя должен работать
-    await page.fill('input[type="text"]', 'octocat')
-    await page.click('button[type="submit"]')
+    await page.fill('input[type="text"]', "octocat");
+    await page.click('button[type="submit"]');
 
     // Проверить что данные загрузились
-    await expect(page.locator('text=@octocat')).toBeVisible()
-  })
+    await expect(page.locator("text=@octocat")).toBeVisible();
+  });
 
-  test('пользователь может выйти', async ({ page, context }) => {
+  test("пользователь может выйти", async ({ page, context }) => {
     // Предполагаем что пользователь уже вошёл
     // (требуется настройка сессии в beforeEach)
 
-    await page.goto('http://localhost:3000')
+    await page.goto("http://localhost:3000");
 
     // Открыть меню пользователя
-    await page.click('button[aria-label="User menu"]')
+    await page.click('button[aria-label="User menu"]');
 
     // Кликнуть "Sign out"
-    await page.click('text=Sign out')
+    await page.click("text=Sign out");
 
     // Проверить редирект с ?auth=logged_out
-    await page.waitForURL(/\?auth=logged_out/)
+    await page.waitForURL(/\?auth=logged_out/);
 
     // Проверить что вернулись в демо-режим
-    await expect(page.locator('text=Demo mode active')).toBeVisible()
-  })
-})
+    await expect(page.locator("text=Demo mode active")).toBeVisible();
+  });
+});
 ```
 
 **Критерии завершения:**
+
 - [x] Интеграционные тесты написаны
 - [x] OAuth flow протестирован локально
 - [x] Все сценарии проходят
@@ -1546,46 +1613,54 @@ test.describe('OAuth Flow', () => {
 ## Security Checklist
 
 ### Secrets Protection
+
 - [ ] Client Secret НЕ в client bundle (проверить через DevTools → Sources)
 - [ ] Access tokens НЕ в client bundle
 - [ ] Access tokens НЕ в localStorage/sessionStorage
 - [ ] Токены передаются только через httpOnly cookies
 
 ### CSRF Protection
+
 - [ ] State parameter генерируется случайно
 - [ ] State сохраняется в httpOnly cookie
 - [ ] State проверяется в callback
 - [ ] State удаляется после использования
 
 ### Cookie Security
+
 - [ ] Cookies используют HttpOnly flag
 - [ ] Cookies используют Secure flag (HTTPS only)
 - [ ] Cookies используют SameSite=Lax
 - [ ] Session TTL разумный (30 дней)
 
 ### OAuth Scope
+
 - [ ] Запрашивается минимальный scope (read:user, user:email)
 - [ ] НЕ запрашивается write access без необходимости
 - [ ] Scope документирован в UI
 
 ### Session Management
+
 - [ ] Сессии хранятся server-side (Vercel KV)
 - [ ] Сессии имеют TTL (auto-expire)
 - [ ] Logout удаляет сессию из KV
 - [ ] Expired sessions обрабатываются gracefully
 
 ### Rate Limit
+
 - [ ] Demo mode fallback работает
 - [ ] User rate limit изолирован
 - [ ] Кеш не смешивается между demo/user
 
 ### Error Handling
+
 - [ ] OAuth errors не раскрывают sensitive info
 - [ ] Error messages generic для пользователя
 - [ ] Detailed errors только в server logs
 ```
 
 **Инструменты для проверки:**
+
 ```bash
 # 1. Проверить что токены не в bundle
 npm run build
@@ -1603,6 +1678,7 @@ curl -I https://your-app.vercel.app
 ```
 
 **Критерии завершения:**
+
 - [x] Все пункты чек-листа проверены
 - [x] Найденные уязвимости исправлены
 - [x] Security report создан
@@ -1612,6 +1688,7 @@ curl -I https://your-app.vercel.app
 #### Этап 3.3: Production Testing (2 часа)
 
 **Задачи:**
+
 1. Deploy на Vercel staging
 2. Настроить переменные окружения
 3. Тестирование на реальных данных
@@ -1667,6 +1744,7 @@ vercel logs --follow
    - Проверить что сессия удалена
 
 **Критерии завершения:**
+
 - [x] Deploy успешен
 - [x] Все тест-сценарии пройдены в production
 - [x] Логи проверены на ошибки
@@ -1679,17 +1757,20 @@ vercel logs --follow
 **Файлы для обновления:**
 
 1. **CLAUDE.md:**
-```markdown
+
+````markdown
 ## OAuth Integration (Phase 7)
 
 ### Architecture
 
 **Demo Mode (default):**
+
 - Uses server-side token (`GITHUB_TOKEN`)
 - Shared rate limit (5000 req/hour)
 - No authentication required
 
 **OAuth Mode (optional):**
+
 - User signs in with GitHub OAuth
 - Personal rate limit (5000 req/hour per user)
 - Stored in Vercel KV (30-day session TTL)
@@ -1715,11 +1796,13 @@ KV_URL=...
 KV_REST_API_URL=...
 KV_REST_API_TOKEN=...
 ```
+````
 
 ### User Experience
 
 Users can use the app immediately in demo mode. When rate limit runs low (<10%), they're prompted to sign in for a personal rate limit. This "try before you auth" approach reduces friction and increases conversion.
-```
+
+````
 
 2. **README.md:**
 ```markdown
@@ -1738,15 +1821,17 @@ GitHub User Analytics works in two modes:
 - Future features: save favorites, compare users
 
 Click "Sign in with GitHub" when prompted to upgrade.
-```
+````
 
 3. **PHASE_7_COMPLETION_SUMMARY.md:**
+
 ```markdown
 # Phase 7: OAuth Integration - Completion Summary
 
 ## ✅ Completed
 
 ### Backend (Day 1)
+
 - [x] GitHub OAuth App configured
 - [x] `/api/auth/login` endpoint (CSRF protection)
 - [x] `/api/auth/callback` endpoint (session management)
@@ -1755,6 +1840,7 @@ Click "Sign in with GitHub" when prompted to upgrade.
 - [x] Session storage in Vercel KV (30-day TTL)
 
 ### Frontend (Day 2)
+
 - [x] `UserMenu` component (avatar, dropdown)
 - [x] Updated `RateLimitBanner` (isDemo support)
 - [x] Updated `App.tsx` (auth state management)
@@ -1763,6 +1849,7 @@ Click "Sign in with GitHub" when prompted to upgrade.
 - [x] Tests for all components (100% coverage)
 
 ### Testing (Day 3)
+
 - [x] Integration tests (OAuth flow)
 - [x] Security audit (passed all checks)
 - [x] Production testing (all scenarios passed)
@@ -1799,6 +1886,7 @@ None
 ```
 
 **Критерии завершения:**
+
 - [x] Все документы обновлены
 - [x] README понятен новым пользователям
 - [x] Troubleshooting guide создан
@@ -1811,12 +1899,14 @@ None
 ### Unit Tests
 
 **Backend:**
+
 - [ ] `api/auth/login.test.ts` — проверка OAuth URL, state generation
 - [ ] `api/auth/callback.test.ts` — CSRF protection, token exchange, session creation
 - [ ] `api/auth/logout.test.ts` — session deletion, cookie clearing
 - [ ] `api/github-proxy.test.ts` — demo vs auth mode, token selection
 
 **Frontend:**
+
 - [ ] `UserMenu.test.tsx` — rendering, click handlers
 - [ ] `RateLimitBanner.test.tsx` — isDemo flag, conditional rendering
 - [ ] `App.test.tsx` — auth state management, URL param handling
@@ -1824,6 +1914,7 @@ None
 ### Integration Tests
 
 **Playwright E2E:**
+
 - [ ] OAuth flow (login → callback → authenticated state)
 - [ ] Demo mode (search without auth)
 - [ ] Rate limit behavior (demo vs auth)
@@ -1832,6 +1923,7 @@ None
 ### Manual Testing Checklist
 
 **Локально (vercel dev):**
+
 - [ ] OAuth login работает
 - [ ] Callback обрабатывается корректно
 - [ ] Сессия сохраняется (refresh страницы)
@@ -1840,6 +1932,7 @@ None
 - [ ] Demo fallback работает
 
 **Production (vercel.app):**
+
 - [ ] OAuth flow работает с https
 - [ ] Cookies устанавливаются корректно
 - [ ] KV storage работает (session persistence)
@@ -1895,25 +1988,30 @@ None
 ### Если OAuth не работает в production:
 
 **Шаг 1: Быстрое отключение (5 минут)**
+
 ```bash
 # Временно отключить OAuth endpoints
 mv api/auth api/auth.disabled
 vercel --prod
 ```
+
 **Результат:** Все пользователи автоматически переходят в demo mode. Функциональность не теряется.
 
 **Шаг 2: Диагностика (30 минут)**
+
 - Проверить логи Vercel Functions
 - Проверить переменные окружения
 - Проверить Vercel KV connectivity
 - Проверить GitHub OAuth App settings
 
 **Шаг 3: Починка offline (1-2 часа)**
+
 - Тестирование в локальном `vercel dev`
 - Исправление найденных проблем
 - Тестирование в staging
 
 **Шаг 4: Re-deploy (5 минут)**
+
 ```bash
 # Вернуть OAuth endpoints
 mv api/auth.disabled api/auth
@@ -1921,6 +2019,7 @@ vercel --prod
 ```
 
 **Шаг 5: Мониторинг (24 часа)**
+
 - Следить за ошибками в логах
 - Проверять успешность OAuth flow
 - Собирать feedback от пользователей
@@ -1928,6 +2027,7 @@ vercel --prod
 ### Fallback стратегия
 
 **Постоянный фолбэк встроен в код:**
+
 - Demo mode **всегда** доступен
 - OAuth — это enhancement, не requirement
 - Если сессия expired → automatic fallback to demo
@@ -1945,6 +2045,7 @@ vercel --prod
 **Влияние:** Средне (OAuth не работает, demo работает)
 
 **Митигация:**
+
 - Graceful degradation на demo mode
 - Error handling в session lookup
 - Retry logic для KV operations
@@ -1958,6 +2059,7 @@ vercel --prod
 **Влияние:** Высокое (новые пользователи не могут войти)
 
 **Митигация:**
+
 - Monitor OAuth endpoint usage
 - Implement backoff для failed attempts
 - Cache OAuth responses где возможно
@@ -1971,6 +2073,7 @@ vercel --prod
 **Влияние:** Критическое (access к user account)
 
 **Митигация:**
+
 - HttpOnly cookies (защита от XSS)
 - Secure flag (HTTPS only)
 - SameSite=Lax (защита от CSRF)
@@ -1985,6 +2088,7 @@ vercel --prod
 **Влияние:** Критическое (CSRF attack)
 
 **Митигация:**
+
 - ✅ State parameter generation (crypto.randomBytes)
 - ✅ State validation в callback
 - ✅ State stored в httpOnly cookie
@@ -1999,6 +2103,7 @@ vercel --prod
 **Влияние:** Критическое (GitHub token compromise)
 
 **Митигация:**
+
 - ✅ Все secrets server-side only
 - ✅ Never in client bundle
 - ✅ Not in git (.env.local in .gitignore)
@@ -2009,12 +2114,12 @@ vercel --prod
 
 ## 📊 Timeline Summary
 
-| Day | Hours | Phase | Deliverables |
-|-----|-------|-------|-------------|
-| **Day 1** | 8h | Backend | OAuth endpoints, session management, proxy update |
-| **Day 2** | 8h | Frontend | UserMenu, RateLimitBanner, App.tsx, Storybook, tests |
-| **Day 3** | 8h | Testing | Integration tests, security audit, production testing, docs |
-| **TOTAL** | **24h** | **3 days** | Fully functional OAuth integration |
+| Day       | Hours   | Phase      | Deliverables                                                |
+| --------- | ------- | ---------- | ----------------------------------------------------------- |
+| **Day 1** | 8h      | Backend    | OAuth endpoints, session management, proxy update           |
+| **Day 2** | 8h      | Frontend   | UserMenu, RateLimitBanner, App.tsx, Storybook, tests        |
+| **Day 3** | 8h      | Testing    | Integration tests, security audit, production testing, docs |
+| **TOTAL** | **24h** | **3 days** | Fully functional OAuth integration                          |
 
 ---
 

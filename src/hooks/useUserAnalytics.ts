@@ -1,40 +1,40 @@
-import { useState, useEffect } from 'react'
-import { useQuery, useApolloClient, ApolloError } from '@apollo/client'
 import {
   GET_USER_PROFILE,
-  type UserProfile,
   type GetUserProfileResponse,
   type GetUserProfileVariables,
-} from '@/apollo/queries/userProfile'
+  type UserProfile,
+} from "@/apollo/queries/userProfile";
 import {
   GET_YEAR_CONTRIBUTIONS,
-  type RepositoryContribution,
   type GetYearContributionsResponse,
   type GetYearContributionsVariables,
-} from '@/apollo/queries/yearContributions'
-import { generateYearRanges } from '@/lib/date-utils'
+  type RepositoryContribution,
+} from "@/apollo/queries/yearContributions";
+import { generateYearRanges } from "@/lib/date-utils";
+import { ApolloError, useApolloClient, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
 
 /**
  * Year data with contributions and repositories
  */
 export interface YearData {
-  year: number
-  totalCommits: number
-  totalIssues: number
-  totalPRs: number
-  totalReviews: number
-  ownedRepos: RepositoryContribution[]
-  contributions: RepositoryContribution[]
+  year: number;
+  totalCommits: number;
+  totalIssues: number;
+  totalPRs: number;
+  totalReviews: number;
+  ownedRepos: RepositoryContribution[];
+  contributions: RepositoryContribution[];
 }
 
 /**
  * Hook return type
  */
 export interface UseUserAnalyticsReturn {
-  profile: UserProfile | null
-  timeline: YearData[]
-  loading: boolean
-  error: ApolloError | undefined
+  profile: UserProfile | null;
+  timeline: YearData[];
+  loading: boolean;
+  error: ApolloError | undefined;
 }
 
 /**
@@ -71,9 +71,9 @@ export interface UseUserAnalyticsReturn {
  * ```
  */
 export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
-  const client = useApolloClient()
-  const [timeline, setTimeline] = useState<YearData[]>([])
-  const [yearLoading, setYearLoading] = useState(true)
+  const client = useApolloClient();
+  const [timeline, setTimeline] = useState<YearData[]>([]);
+  const [yearLoading, setYearLoading] = useState(true);
 
   // Step 1: Get user profile
   const {
@@ -87,35 +87,35 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
       skip: !username,
       // Cache key for backend proxy
       context: { cacheKey: `user:${username}:profile` },
-    }
-  )
+    },
+  );
 
   // Handle empty username case
   useEffect(() => {
     if (!username) {
-      setYearLoading(false)
+      setYearLoading(false);
     }
-  }, [username])
+  }, [username]);
 
   // Step 2: Fetch yearly data when profile loads
   useEffect(() => {
     if (!profileData || profileLoading || !username) {
-      return
+      return;
     }
 
     async function fetchYears() {
       // Null guard: Ensure user exists and has valid createdAt
       if (!profileData?.user?.createdAt) {
-        console.error('No user found or invalid createdAt')
-        setYearLoading(false)
-        return
+        console.error("No user found or invalid createdAt");
+        setYearLoading(false);
+        return;
       }
 
       try {
-        setYearLoading(true)
+        setYearLoading(true);
 
-        const createdAt = profileData.user.createdAt
-        const yearRanges = generateYearRanges(createdAt)
+        const createdAt = profileData.user.createdAt;
+        const yearRanges = generateYearRanges(createdAt);
 
         // Step 3: Parallel queries for each year
         const yearPromises = yearRanges.map(async ({ year, from, to }) => {
@@ -128,18 +128,18 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
               variables: { login: username, from, to },
               // Cache key for backend proxy
               context: { cacheKey: `user:${username}:year:${year}` },
-            })
+            });
 
-            const collection = result.data.user.contributionsCollection
-            const repos = collection.commitContributionsByRepository
+            const collection = result.data.user.contributionsCollection;
+            const repos = collection.commitContributionsByRepository;
 
             // Step 4: Separate owned repos from contributions
             const ownedRepos = repos.filter(
-              (r) => r.repository.owner.login === username
-            )
+              (r) => r.repository.owner.login === username,
+            );
             const contributions = repos.filter(
-              (r) => r.repository.owner.login !== username
-            )
+              (r) => r.repository.owner.login !== username,
+            );
 
             return {
               year,
@@ -149,38 +149,40 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
               totalReviews: collection.totalPullRequestReviewContributions,
               ownedRepos,
               contributions,
-            }
+            };
           } catch (error) {
             // Log individual year query failure but don't stop other queries
-            console.warn(`Failed to fetch data for year ${year}:`, error)
-            return null
+            console.warn(`Failed to fetch data for year ${year}:`, error);
+            return null;
           }
-        })
+        });
 
         // Wait for all year queries to complete (gracefully handle partial failures)
-        const yearResults = await Promise.all(yearPromises)
+        const yearResults = await Promise.all(yearPromises);
 
         // Filter out failed queries (null values)
-        const years = yearResults.filter((year): year is YearData => year !== null)
+        const years = yearResults.filter(
+          (year): year is YearData => year !== null,
+        );
 
         // Step 5: Sort by year (newest first)
-        const sortedYears = years.sort((a, b) => b.year - a.year)
+        const sortedYears = years.sort((a, b) => b.year - a.year);
 
-        setTimeline(sortedYears)
-        setYearLoading(false)
+        setTimeline(sortedYears);
+        setYearLoading(false);
       } catch (error) {
-        console.error('Year data fetch error:', error)
-        setYearLoading(false)
+        console.error("Year data fetch error:", error);
+        setYearLoading(false);
       }
     }
 
-    fetchYears()
-  }, [profileData, profileLoading, username, client])
+    fetchYears();
+  }, [profileData, profileLoading, username, client]);
 
   return {
     profile: profileData?.user ?? null,
     timeline,
     loading: profileLoading || yearLoading,
     error: profileError,
-  }
+  };
 }

@@ -1,13 +1,13 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
-  Search,
-  FileQuestion,
-  Inbox,
-  FolderOpen,
   Database,
+  FileQuestion,
+  FolderOpen,
+  Inbox,
+  Search,
   User,
-} from 'lucide-react';
-import type { ComponentType, SVGProps } from 'react';
+} from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
 
 type EmptyStateProps = {
   /**
@@ -27,7 +27,7 @@ type EmptyStateProps = {
    * - 'database': Database icon
    * - 'user': User icon
    */
-  icon?: 'search' | 'question' | 'inbox' | 'folder' | 'database' | 'user';
+  icon?: "search" | "question" | "inbox" | "folder" | "database" | "user";
   /**
    * Optional action button callback
    */
@@ -46,7 +46,10 @@ type EmptyStateProps = {
   secondaryActionText?: string;
 };
 
-const iconMap: Record<NonNullable<EmptyStateProps['icon']>, ComponentType<SVGProps<SVGSVGElement>>> = {
+const iconMap: Record<
+  NonNullable<EmptyStateProps["icon"]>,
+  ComponentType<SVGProps<SVGSVGElement>>
+> = {
   search: Search,
   question: FileQuestion,
   inbox: Inbox,
@@ -72,11 +75,11 @@ const iconMap: Record<NonNullable<EmptyStateProps['icon']>, ComponentType<SVGPro
 export function EmptyState({
   title,
   description,
-  icon = 'inbox',
+  icon = "inbox",
   onAction,
-  actionText = 'Take Action',
+  actionText = "Take Action",
   onSecondaryAction,
-  secondaryActionText = 'Learn More',
+  secondaryActionText = "Learn More",
 }: EmptyStateProps) {
   const Icon = iconMap[icon];
 
@@ -86,12 +89,14 @@ export function EmptyState({
       role="status"
       aria-label="Empty state"
     >
-      <div className="bg-muted mb-4 rounded-full p-6">
-        <Icon className="text-muted-foreground h-12 w-12" aria-hidden="true" />
+      <div className="mb-4 rounded-full bg-muted p-6">
+        <Icon className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
       </div>
 
       <h3 className="mb-2 text-xl font-semibold">{title}</h3>
-      <p className="text-muted-foreground mb-6 max-w-md text-sm">{description}</p>
+      <p className="mb-6 max-w-md text-sm text-muted-foreground">
+        {description}
+      </p>
 
       {(onAction || onSecondaryAction) && (
         <div className="flex gap-3">

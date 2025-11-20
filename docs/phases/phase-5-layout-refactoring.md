@@ -9,20 +9,24 @@
 ## 🤖 Recommended Agents
 
 **Before starting:**
+
 - **Explore agent:** "Find MainTabs usage in App.tsx"
 - **Plan agent:** "Create layout refactoring checklist"
 
 **During implementation:**
+
 - **general-purpose agent:** "Implement Step 5.1 - remove MainTabs from App.tsx"
 - **general-purpose agent:** "Implement Step 5.2 - create ProjectSection component"
 - **general-purpose agent:** "Implement Step 5.3 - enhance ProjectCard with badges"
 - **test-runner-fixer agent:** "Run E2E tests for new layout"
 
 **After implementation:**
+
 - **code-review-specialist agent:** "Verify responsive layout (mobile/desktop)"
 - **code-review-specialist agent:** "Check no layout shifts (CLS < 0.1)"
 
 **Testing:**
+
 ```bash
 Explore agent: "Confirm MainTabs component is no longer imported in App.tsx"
 ```
@@ -34,11 +38,13 @@ Explore agent: "Confirm MainTabs component is no longer imported in App.tsx"
 Remove tabs, create single-page progressive disclosure layout.
 
 **Current State:**
+
 - MainTabs component with tab navigation
 - Separate views for Profile, Stats, Repositories
 - User must click tabs to see different content
 
 **Target State:**
+
 - Single-page vertical scroll
 - Progressive disclosure (important info first)
 - Owned vs Contributions visually separated
@@ -61,6 +67,7 @@ App.tsx
 ```
 
 **Order by importance:**
+
 1. Profile (who is this user?)
 2. Quick Assessment (summary metrics)
 3. Activity Timeline (historical view)
@@ -75,6 +82,7 @@ App.tsx
 **File:** `src/App.tsx`
 
 **Before:**
+
 ```typescript
 <Tabs defaultValue="profile">
   <TabsList>
@@ -89,6 +97,7 @@ App.tsx
 ```
 
 **After:**
+
 ```typescript
 <div className="min-h-screen bg-background">
   <div className="container mx-auto space-y-8 p-4">
@@ -292,6 +301,7 @@ export default App
 ### Step 5.5: Decision on Statistics Tab
 
 **Current Statistics Tab includes:**
+
 - CommitChart (line/bar/area)
 - LanguageChart (pie/donut)
 - ActivityChart (bar)
@@ -348,11 +358,13 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
 ## 📊 Performance Expectations
 
 **Layout Performance:**
+
 - Initial render: <100ms
 - Scroll performance: 60fps
 - No layout shifts (CLS < 0.1)
 
 **User Experience:**
+
 - Progressive loading (sections appear as data loads)
 - Skeleton states for all sections
 - Smooth transitions between sections
@@ -362,6 +374,7 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
 ## 🎨 Visual Hierarchy
 
 **Information Architecture:**
+
 ```
 Level 1: Search (always visible)
 Level 2: User Identity (profile header)
@@ -371,6 +384,7 @@ Level 5: Detailed Projects (repositories)
 ```
 
 **Spacing:**
+
 - Between sections: `space-y-8` (2rem)
 - Within sections: `space-y-4` (1rem)
 - Container padding: `p-4` mobile, `p-6` desktop
@@ -380,23 +394,25 @@ Level 5: Detailed Projects (repositories)
 ## 🧪 Testing Strategy
 
 **E2E Tests:**
+
 ```typescript
-test('single-page layout shows all sections', async ({ page }) => {
-  await page.goto('/')
-  await page.fill('[data-testid="search-input"]', 'torvalds')
-  await page.click('[data-testid="search-button"]')
+test("single-page layout shows all sections", async ({ page }) => {
+  await page.goto("/");
+  await page.fill('[data-testid="search-input"]', "torvalds");
+  await page.click('[data-testid="search-button"]');
 
   // All sections visible on one page
-  await expect(page.locator('text=Quick Assessment')).toBeVisible()
-  await expect(page.locator('text=Activity Timeline')).toBeVisible()
-  await expect(page.locator('text=Top Projects')).toBeVisible()
+  await expect(page.locator("text=Quick Assessment")).toBeVisible();
+  await expect(page.locator("text=Activity Timeline")).toBeVisible();
+  await expect(page.locator("text=Top Projects")).toBeVisible();
 
   // No tabs
-  await expect(page.locator('[role="tablist"]')).not.toBeVisible()
-})
+  await expect(page.locator('[role="tablist"]')).not.toBeVisible();
+});
 ```
 
 **Visual Regression:**
+
 - Screenshot tests for desktop layout
 - Screenshot tests for mobile layout
 - Compare before/after refactoring
@@ -408,11 +424,13 @@ test('single-page layout shows all sections', async ({ page }) => {
 **If layout fails:**
 
 1. **Revert to tabs:**
+
    ```bash
    git revert <commit-hash>
    ```
 
 2. **Feature flag:**
+
    ```typescript
    {FEATURE_FLAGS.NEW_LAYOUT ? <NewLayout /> : <OldTabsLayout />}
    ```
@@ -427,14 +445,17 @@ test('single-page layout shows all sections', async ({ page }) => {
 ## 📚 Resources
 
 **Layout Patterns:**
+
 - [Progressive Disclosure](https://www.nngroup.com/articles/progressive-disclosure/)
 - [Information Architecture](https://www.nngroup.com/articles/information-architecture-101/)
 
 **Responsive Design:**
+
 - [Tailwind Responsive Design](https://tailwindcss.com/docs/responsive-design)
 - [Mobile-First](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Responsive/Mobile_first)
 
 **Accessibility:**
+
 - [Skip Links](https://webaim.org/techniques/skipnav/)
 - [Landmark Regions](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/)
 

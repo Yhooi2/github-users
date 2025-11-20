@@ -1,44 +1,43 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { EmptyState } from './EmptyState';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { EmptyState } from "./EmptyState";
 
 const meta: Meta<typeof EmptyState> = {
-  title: 'Layout/EmptyState',
+  title: "Layout/EmptyState",
   component: EmptyState,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     docs: {
       description: {
         component:
-          'EmptyState displays a friendly message when no data is available, with optional actions.',
+          "EmptyState displays a friendly message when no data is available, with optional actions.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     title: {
-      control: 'text',
-      description: 'Title/heading for empty state',
+      control: "text",
+      description: "Title/heading for empty state",
     },
     description: {
-      control: 'text',
-      description: 'Description/message',
+      control: "text",
+      description: "Description/message",
     },
     icon: {
-      control: 'select',
-      options: ['search', 'question', 'inbox', 'folder', 'database', 'user'],
-      description: 'Icon variant to display',
+      control: "select",
+      options: ["search", "question", "inbox", "folder", "database", "user"],
+      description: "Icon variant to display",
     },
     actionText: {
-      control: 'text',
-      description: 'Action button text',
+      control: "text",
+      description: "Action button text",
     },
     secondaryActionText: {
-      control: 'text',
-      description: 'Secondary action button text',
+      control: "text",
+      description: "Secondary action button text",
     },
   },
-  args: {
-  },
+  args: {},
 };
 
 export default meta;
@@ -49,9 +48,9 @@ type Story = StoryObj<typeof EmptyState>;
  */
 export const Default: Story = {
   args: {
-    title: 'No Data Available',
-    description: 'There is currently no data to display here.',
-    icon: 'inbox',
+    title: "No Data Available",
+    description: "There is currently no data to display here.",
+    icon: "inbox",
   },
 };
 
@@ -60,10 +59,11 @@ export const Default: Story = {
  */
 export const NoRepositories: Story = {
   args: {
-    title: 'No Repositories Found',
-    description: 'This user has no public repositories or all repositories are filtered out.',
-    icon: 'folder',
-    actionText: 'Clear Filters',
+    title: "No Repositories Found",
+    description:
+      "This user has no public repositories or all repositories are filtered out.",
+    icon: "folder",
+    actionText: "Clear Filters",
   },
 };
 
@@ -72,10 +72,11 @@ export const NoRepositories: Story = {
  */
 export const NoSearchResults: Story = {
   args: {
-    title: 'No Results Found',
-    description: 'Try adjusting your search query or filters to find what you\'re looking for.',
-    icon: 'search',
-    actionText: 'Clear Search',
+    title: "No Results Found",
+    description:
+      "Try adjusting your search query or filters to find what you're looking for.",
+    icon: "search",
+    actionText: "Clear Search",
   },
 };
 
@@ -84,10 +85,11 @@ export const NoSearchResults: Story = {
  */
 export const UserNotFound: Story = {
   args: {
-    title: 'User Not Found',
-    description: 'The GitHub user you\'re looking for doesn\'t exist or has been deleted.',
-    icon: 'user',
-    actionText: 'Search Again',
+    title: "User Not Found",
+    description:
+      "The GitHub user you're looking for doesn't exist or has been deleted.",
+    icon: "user",
+    actionText: "Search Again",
   },
 };
 
@@ -96,10 +98,11 @@ export const UserNotFound: Story = {
  */
 export const NoData: Story = {
   args: {
-    title: 'No Data to Display',
-    description: 'Start by searching for a GitHub user to view their profile and statistics.',
-    icon: 'database',
-    actionText: 'Get Started',
+    title: "No Data to Display",
+    description:
+      "Start by searching for a GitHub user to view their profile and statistics.",
+    icon: "database",
+    actionText: "Get Started",
   },
 };
 
@@ -108,10 +111,10 @@ export const NoData: Story = {
  */
 export const WithAction: Story = {
   args: {
-    title: 'Nothing Here Yet',
-    description: 'Get started by performing an action.',
-    icon: 'inbox',
-    actionText: 'Create New',
+    title: "Nothing Here Yet",
+    description: "Get started by performing an action.",
+    icon: "inbox",
+    actionText: "Create New",
   },
 };
 
@@ -120,11 +123,12 @@ export const WithAction: Story = {
  */
 export const WithBothActions: Story = {
   args: {
-    title: 'No Repositories Match',
-    description: 'Adjust your filters to see more results or learn about repository filtering.',
-    icon: 'search',
-    actionText: 'Reset Filters',
-    secondaryActionText: 'Learn More',
+    title: "No Repositories Match",
+    description:
+      "Adjust your filters to see more results or learn about repository filtering.",
+    icon: "search",
+    actionText: "Reset Filters",
+    secondaryActionText: "Learn More",
   },
 };
 
@@ -133,11 +137,11 @@ export const WithBothActions: Story = {
  */
 export const CustomActionText: Story = {
   args: {
-    title: 'Empty Inbox',
-    description: 'You have no pending notifications or updates.',
-    icon: 'inbox',
-    actionText: 'Refresh',
-    secondaryActionText: 'Manage Settings',
+    title: "Empty Inbox",
+    description: "You have no pending notifications or updates.",
+    icon: "inbox",
+    actionText: "Refresh",
+    secondaryActionText: "Manage Settings",
   },
 };
 
@@ -146,10 +150,10 @@ export const CustomActionText: Story = {
  */
 export const QuestionIcon: Story = {
   args: {
-    title: 'Page Not Found',
-    description: 'The page you\'re looking for doesn\'t exist or has been moved.',
-    icon: 'question',
-    actionText: 'Go Home',
+    title: "Page Not Found",
+    description: "The page you're looking for doesn't exist or has been moved.",
+    icon: "question",
+    actionText: "Go Home",
   },
 };
 
@@ -158,12 +162,12 @@ export const QuestionIcon: Story = {
  */
 export const LongDescription: Story = {
   args: {
-    title: 'No Contributions Found',
+    title: "No Contributions Found",
     description:
-      'We couldn\'t find any contributions from this user in the selected time period. This could mean the user was inactive during this time, or their contributions are private. Try selecting a different time range or checking if the user has public activity.',
-    icon: 'search',
-    actionText: 'Change Time Range',
-    secondaryActionText: 'View Profile',
+      "We couldn't find any contributions from this user in the selected time period. This could mean the user was inactive during this time, or their contributions are private. Try selecting a different time range or checking if the user has public activity.",
+    icon: "search",
+    actionText: "Change Time Range",
+    secondaryActionText: "View Profile",
   },
 };
 
@@ -172,9 +176,9 @@ export const LongDescription: Story = {
  */
 export const WithoutActions: Story = {
   args: {
-    title: 'End of Results',
-    description: 'You\'ve reached the end of the available data.',
-    icon: 'inbox',
+    title: "End of Results",
+    description: "You've reached the end of the available data.",
+    icon: "inbox",
   },
 };
 
@@ -183,8 +187,8 @@ export const WithoutActions: Story = {
  */
 export const Minimal: Story = {
   args: {
-    title: 'Empty',
-    description: 'Nothing to show.',
-    icon: 'inbox',
+    title: "Empty",
+    description: "Nothing to show.",
+    icon: "inbox",
   },
 };

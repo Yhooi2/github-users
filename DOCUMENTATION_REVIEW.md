@@ -1,4 +1,5 @@
 # Documentation Review & Refactoring Report
+
 **Date**: November 17, 2025
 **File Reviewed**: `.claude/CLAUDE.md`
 **Status**: ✅ Complete
@@ -16,6 +17,7 @@ Completed comprehensive review, refactoring, and verification of the CLAUDE.md p
 **Issue**: Documentation described outdated architecture with client-side authentication.
 
 **Documented (Incorrect)**:
+
 ```
 Link Chain: errorLink → authLink → httpLink
 httpLink points to: https://api.github.com/graphql
@@ -23,6 +25,7 @@ Token: import.meta.env.VITE_GITHUB_TOKEN → localStorage.getItem('github_token'
 ```
 
 **Actual (Current)**:
+
 ```
 Link Chain: errorLink → httpLink
 httpLink points to: /api/github-proxy
@@ -32,6 +35,7 @@ Token: Handled server-side by backend proxy
 **Impact**: HIGH - This is a fundamental architectural change for security. Token no longer exposed in client bundle.
 
 **Fix Applied**:
+
 - Updated Apollo Client Setup section (lines 153-170)
 - Updated Environment Variables section (lines 224-239)
 - Added migration note explaining the security improvement
@@ -43,15 +47,18 @@ Token: Handled server-side by backend proxy
 **Issue**: Documentation referenced deprecated branch structure.
 
 **Documented (Incorrect)**:
+
 - Main branch: `alt-main`
 - Working branch: `ui-main`
 
 **Actual (Current)**:
+
 - Default branch: `main`
 
 **Impact**: MEDIUM - Could cause confusion when creating PRs
 
 **Fix Applied**:
+
 - Updated Git Workflow section (lines 405-420)
 - Added note about deprecated branch structure
 - Updated migration strategy references
@@ -63,15 +70,18 @@ Token: Handled server-side by backend proxy
 **Issue**: Documentation mandated generic `Props` type, but actual codebase uses both patterns.
 
 **Documented (Inconsistent)**:
+
 - "Props use capitalized `Props` type"
 
 **Actual (Mixed)**:
+
 - Some components: `Props` (SearchForm.tsx:7)
 - Some components: `UserAuthenticityProps` (UserAuthenticity.tsx:9)
 
 **Impact**: MEDIUM - Inconsistent guidance for developers
 
 **Fix Applied**:
+
 - Updated Type Conventions section (lines 300-307)
 - Changed to "prefer descriptive, component-specific names"
 - Acknowledged both patterns exist, recommended specific naming for new code
@@ -83,16 +93,19 @@ Token: Handled server-side by backend proxy
 **Issue**: Only 3 test files mentioned, actual codebase has 58+ test files.
 
 **Documented (Incomplete)**:
+
 - 3 test files listed
 - "99.85% pass rate (1302/1304 tests)"
 
 **Actual**:
+
 - 58+ test files across all layers
 - Unable to verify test count without running tests
 
 **Impact**: MEDIUM - Developers unaware of extensive test coverage
 
 **Fix Applied**:
+
 - Expanded Unit Tests section (lines 243-273)
 - Categorized tests by layer: Apollo, Components, Hooks, Utilities, Types
 - Listed key test files in each category
@@ -104,14 +117,17 @@ Token: Handled server-side by backend proxy
 **Issue**: Only 2 story files mentioned, actual codebase has 47+ story files.
 
 **Documented (Incomplete)**:
+
 - 2 story files listed
 
 **Actual**:
+
 - 47+ story files across all component categories
 
 **Impact**: MEDIUM - Doesn't reflect comprehensive Storybook documentation
 
 **Fix Applied**:
+
 - Expanded Stories Coverage section (lines 341-359)
 - Categorized by component type (UI, Layout, User, Statistics, Repository, Form)
 - Listed specific story files
@@ -123,15 +139,18 @@ Token: Handled server-side by backend proxy
 **Issue**: Header said "4 MCP servers" but list contained 6 items.
 
 **Documented (Inconsistent)**:
+
 - Header: "4 MCP servers"
 - List: 6 items
 
 **Actual**:
+
 - 6 MCP servers active
 
 **Impact**: LOW - Confusing count discrepancy
 
 **Fix Applied**:
+
 - Updated to "6 MCP servers" (line 365)
 - Added Context7 and Graphiti to active list
 - Added usage notes for each server
@@ -143,14 +162,17 @@ Token: Handled server-side by backend proxy
 **Issue**: Missing `@chromatic-com/storybook` and other addons.
 
 **Documented (Incomplete)**:
+
 - 4 addons listed
 
 **Actual**:
+
 - 7 addons installed
 
 **Impact**: LOW - Incomplete addon reference
 
 **Fix Applied**:
+
 - Added all 7 addons (lines 332-339)
 - Added descriptions for each addon
 
@@ -161,14 +183,17 @@ Token: Handled server-side by backend proxy
 **Issue**: Only 2 files mentioned, directory contains 20+ files.
 
 **Documented (Incomplete)**:
+
 - 2 doc files listed
 
 **Actual**:
+
 - 20+ comprehensive documentation files
 
 **Impact**: LOW - Developers unaware of extensive docs
 
 **Fix Applied**:
+
 - Expanded Documentation section (lines 481-518)
 - Categorized into: Core, Technical Guides, Technology-Specific, Strategy & Planning
 - Listed all 20+ documentation files
@@ -182,6 +207,7 @@ Token: Handled server-side by backend proxy
 **Impact**: LOW - Missing reference to key authenticity component
 
 **Fix Applied**:
+
 - Added UserAuthenticity component to Main Components (lines 204-207)
 - Shows authenticity scoring feature
 
@@ -234,6 +260,7 @@ Token: Handled server-side by backend proxy
 ### 1. **Enhanced Categorization**
 
 Organized information into clear categories:
+
 - Test files categorized by layer (Apollo, Components, Hooks, Utilities, Types)
 - Story files categorized by component type
 - Documentation files categorized by purpose
@@ -253,15 +280,19 @@ Organized information into clear categories:
 ### 4. **Improved Specificity**
 
 Before:
+
 ```markdown
 **Stories:**
+
 - `button.stories.tsx` - Button variants
 - `SearchForm.stories.tsx` - Form states
 ```
 
 After:
+
 ```markdown
 **Stories Coverage:**
+
 - 47+ story files across all components
 - **UI Components**: button, card, badge, table, select, etc.
 - **Layout Components**: EmptyState, LoadingState, ErrorState, ThemeToggle, StatsCard, MainTabs
@@ -281,14 +312,14 @@ After:
 
 ## Statistics
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| Story files documented | 2 | 47+ | +2250% |
-| Test files documented | 3 | 58+ | +1833% |
-| MCP servers count | 4 (inconsistent) | 6 (accurate) | +50% |
-| Storybook addons | 4 | 7 | +75% |
-| Documentation files listed | 2 | 20+ | +900% |
-| Critical errors fixed | - | 9 | - |
+| Metric                     | Before           | After        | Change |
+| -------------------------- | ---------------- | ------------ | ------ |
+| Story files documented     | 2                | 47+          | +2250% |
+| Test files documented      | 3                | 58+          | +1833% |
+| MCP servers count          | 4 (inconsistent) | 6 (accurate) | +50%   |
+| Storybook addons           | 4                | 7            | +75%   |
+| Documentation files listed | 2                | 20+          | +900%  |
+| Critical errors fixed      | -                | 9            | -      |
 
 ---
 
@@ -337,6 +368,7 @@ After:
 The CLAUDE.md documentation has been successfully refactored to accurately reflect the current implementation. The most critical fix was correcting the Apollo Client architecture documentation to reflect the security-first backend proxy approach. All file paths, package versions, and configuration details have been verified against the actual codebase.
 
 The documentation now provides:
+
 - ✅ Accurate architectural descriptions
 - ✅ Comprehensive test and story file coverage
 - ✅ Correct git workflow

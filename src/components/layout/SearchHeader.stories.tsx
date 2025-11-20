@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SearchHeader } from './SearchHeader';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { SearchHeader } from "./SearchHeader";
 
 /**
  * SearchHeader displays the main application header with:
@@ -11,26 +11,26 @@ import { SearchHeader } from './SearchHeader';
  * a single-page progressive disclosure layout.
  */
 const meta = {
-  title: 'Layout/SearchHeader',
+  title: "Layout/SearchHeader",
   component: SearchHeader,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
         component:
-          'Main header component for the GitHub User Analytics application. Provides search functionality and theme switching.',
+          "Main header component for the GitHub User Analytics application. Provides search functionality and theme switching.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     userName: {
-      control: 'text',
-      description: 'Current username in the search field',
+      control: "text",
+      description: "Current username in the search field",
     },
     onSearch: {
-      action: 'searched',
-      description: 'Callback when search is submitted',
+      action: "searched",
+      description: "Callback when search is submitted",
     },
   },
   args: {
@@ -46,7 +46,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   args: {
-    userName: '',
+    userName: "",
   },
 };
 
@@ -55,7 +55,7 @@ export const Default: Story = {
  */
 export const WithUsername: Story = {
   args: {
-    userName: 'torvalds',
+    userName: "torvalds",
   },
 };
 
@@ -64,12 +64,12 @@ export const WithUsername: Story = {
  */
 export const AfterSearch: Story = {
   args: {
-    userName: 'gaearon',
+    userName: "gaearon",
   },
   parameters: {
     docs: {
       description: {
-        story: 'Shows the header after a user has performed a search.',
+        story: "Shows the header after a user has performed a search.",
       },
     },
   },
@@ -80,12 +80,12 @@ export const AfterSearch: Story = {
  */
 export const LongUsername: Story = {
   args: {
-    userName: 'a-very-long-github-username-that-might-overflow',
+    userName: "a-very-long-github-username-that-might-overflow",
   },
   parameters: {
     docs: {
       description: {
-        story: 'Tests the header behavior with a very long username.',
+        story: "Tests the header behavior with a very long username.",
       },
     },
   },
@@ -96,15 +96,15 @@ export const LongUsername: Story = {
  */
 export const Mobile: Story = {
   args: {
-    userName: '',
+    userName: "",
   },
   parameters: {
     viewport: {
-      defaultViewport: 'mobile1',
+      defaultViewport: "mobile1",
     },
     docs: {
       description: {
-        story: 'Header on mobile devices (320px width).',
+        story: "Header on mobile devices (320px width).",
       },
     },
   },
@@ -115,15 +115,15 @@ export const Mobile: Story = {
  */
 export const Tablet: Story = {
   args: {
-    userName: 'facebook',
+    userName: "facebook",
   },
   parameters: {
     viewport: {
-      defaultViewport: 'tablet',
+      defaultViewport: "tablet",
     },
     docs: {
       description: {
-        story: 'Header on tablet devices (768px width).',
+        story: "Header on tablet devices (768px width).",
       },
     },
   },

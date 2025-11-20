@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import type { RepositoryFilter } from '@/types/filters';
-import { X, Filter, ChevronDown, ChevronUp } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/select";
+import type { RepositoryFilter } from "@/types/filters";
+import { ChevronDown, ChevronUp, Filter, X } from "lucide-react";
+import { useState } from "react";
 
 type Props = {
   /**
@@ -25,7 +25,7 @@ type Props = {
    */
   onFilterChange: <K extends keyof RepositoryFilter>(
     key: K,
-    value: RepositoryFilter[K]
+    value: RepositoryFilter[K],
   ) => void;
   /**
    * Callback to clear all filters
@@ -95,8 +95,10 @@ export function RepositoryFilters({
           id="search-query"
           type="text"
           placeholder="Search repositories..."
-          value={filters.searchQuery || ''}
-          onChange={(e) => onFilterChange('searchQuery', e.target.value || undefined)}
+          value={filters.searchQuery || ""}
+          onChange={(e) =>
+            onFilterChange("searchQuery", e.target.value || undefined)
+          }
         />
       </div>
 
@@ -105,9 +107,9 @@ export function RepositoryFilters({
         <div className="space-y-2">
           <Label htmlFor="language-filter">Language</Label>
           <Select
-            value={filters.language || 'all'}
+            value={filters.language || "all"}
             onValueChange={(value) =>
-              onFilterChange('language', value === 'all' ? undefined : value)
+              onFilterChange("language", value === "all" ? undefined : value)
             }
           >
             <SelectTrigger id="language-filter" className="w-full">
@@ -133,10 +135,12 @@ export function RepositoryFilters({
           type="number"
           min="0"
           placeholder="0"
-          value={filters.minStars || ''}
+          value={filters.minStars || ""}
           onChange={(e) => {
-            const value = e.target.value ? parseInt(e.target.value, 10) : undefined;
-            onFilterChange('minStars', value);
+            const value = e.target.value
+              ? parseInt(e.target.value, 10)
+              : undefined;
+            onFilterChange("minStars", value);
           }}
         />
       </div>
@@ -148,7 +152,10 @@ export function RepositoryFilters({
             id="original-only"
             checked={filters.originalOnly || false}
             onCheckedChange={(checked) =>
-              onFilterChange('originalOnly', checked === true ? true : undefined)
+              onFilterChange(
+                "originalOnly",
+                checked === true ? true : undefined,
+              )
             }
           />
           <Label htmlFor="original-only" className="cursor-pointer">
@@ -161,7 +168,7 @@ export function RepositoryFilters({
             id="forks-only"
             checked={filters.forksOnly || false}
             onCheckedChange={(checked) =>
-              onFilterChange('forksOnly', checked === true ? true : undefined)
+              onFilterChange("forksOnly", checked === true ? true : undefined)
             }
           />
           <Label htmlFor="forks-only" className="cursor-pointer">
@@ -174,7 +181,10 @@ export function RepositoryFilters({
             id="hide-archived"
             checked={filters.hideArchived || false}
             onCheckedChange={(checked) =>
-              onFilterChange('hideArchived', checked === true ? true : undefined)
+              onFilterChange(
+                "hideArchived",
+                checked === true ? true : undefined,
+              )
             }
           />
           <Label htmlFor="hide-archived" className="cursor-pointer">
@@ -187,7 +197,7 @@ export function RepositoryFilters({
             id="has-topics"
             checked={filters.hasTopics || false}
             onCheckedChange={(checked) =>
-              onFilterChange('hasTopics', checked === true ? true : undefined)
+              onFilterChange("hasTopics", checked === true ? true : undefined)
             }
           />
           <Label htmlFor="has-topics" className="cursor-pointer">
@@ -200,7 +210,7 @@ export function RepositoryFilters({
             id="has-license"
             checked={filters.hasLicense || false}
             onCheckedChange={(checked) =>
-              onFilterChange('hasLicense', checked === true ? true : undefined)
+              onFilterChange("hasLicense", checked === true ? true : undefined)
             }
           />
           <Label htmlFor="has-license" className="cursor-pointer">
@@ -232,7 +242,7 @@ export function RepositoryFilters({
   return (
     <Card>
       <CardHeader
-        className="hover:bg-accent/50 cursor-pointer transition-colors"
+        className="cursor-pointer transition-colors hover:bg-accent/50"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <CardTitle className="flex items-center justify-between">
@@ -242,7 +252,10 @@ export function RepositoryFilters({
           </span>
           <div className="flex items-center gap-2">
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" aria-label={`${activeFilterCount} active filters`}>
+              <Badge
+                variant="secondary"
+                aria-label={`${activeFilterCount} active filters`}
+              >
                 {activeFilterCount}
               </Badge>
             )}

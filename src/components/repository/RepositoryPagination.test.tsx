@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { RepositoryPagination } from './RepositoryPagination';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { RepositoryPagination } from "./RepositoryPagination";
 
-describe('RepositoryPagination', () => {
+describe("RepositoryPagination", () => {
   const defaultProps = {
     currentPage: 1,
     totalPages: 10,
@@ -16,219 +16,256 @@ describe('RepositoryPagination', () => {
     vi.clearAllMocks();
   });
 
-  describe('Rendering', () => {
-    it('should render pagination controls', () => {
+  describe("Rendering", () => {
+    it("should render pagination controls", () => {
       render(<RepositoryPagination {...defaultProps} />);
 
-      expect(screen.getByLabelText('Go to first page')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument();
-      expect(screen.getByText('Page 1 of 10')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to next page')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to last page')).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to first page")).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to previous page")).toBeInTheDocument();
+      expect(screen.getByText("Page 1 of 10")).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to next page")).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to last page")).toBeInTheDocument();
     });
 
-    it('should render items info', () => {
+    it("should render items info", () => {
       render(<RepositoryPagination {...defaultProps} />);
 
       expect(screen.getByText(/Showing/)).toBeInTheDocument();
-      expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('200')).toBeInTheDocument();
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.getByText("20")).toBeInTheDocument();
+      expect(screen.getByText("200")).toBeInTheDocument();
     });
 
-    it('should render page size selector when onPageSizeChange provided', () => {
+    it("should render page size selector when onPageSizeChange provided", () => {
       const mockOnPageSizeChange = vi.fn();
-      render(<RepositoryPagination {...defaultProps} onPageSizeChange={mockOnPageSizeChange} />);
+      render(
+        <RepositoryPagination
+          {...defaultProps}
+          onPageSizeChange={mockOnPageSizeChange}
+        />,
+      );
 
-      expect(screen.getByText('Items per page:')).toBeInTheDocument();
+      expect(screen.getByText("Items per page:")).toBeInTheDocument();
     });
 
-    it('should not render page size selector when onPageSizeChange not provided', () => {
+    it("should not render page size selector when onPageSizeChange not provided", () => {
       render(<RepositoryPagination {...defaultProps} />);
 
-      expect(screen.queryByText('Items per page:')).not.toBeInTheDocument();
+      expect(screen.queryByText("Items per page:")).not.toBeInTheDocument();
     });
 
-    it('should have navigation role', () => {
+    it("should have navigation role", () => {
       render(<RepositoryPagination {...defaultProps} />);
 
-      const nav = screen.getByRole('navigation', { name: 'Pagination' });
+      const nav = screen.getByRole("navigation", { name: "Pagination" });
       expect(nav).toBeInTheDocument();
     });
   });
 
-  describe('First Page State', () => {
-    it('should disable first and previous buttons on first page', () => {
+  describe("First Page State", () => {
+    it("should disable first and previous buttons on first page", () => {
       render(<RepositoryPagination {...defaultProps} currentPage={1} />);
 
-      expect(screen.getByLabelText('Go to first page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to previous page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to next page')).not.toBeDisabled();
-      expect(screen.getByLabelText('Go to last page')).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to first page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to previous page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to next page")).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to last page")).not.toBeDisabled();
     });
 
-    it('should show correct items range on first page', () => {
+    it("should show correct items range on first page", () => {
       render(<RepositoryPagination {...defaultProps} currentPage={1} />);
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('20')).toBeInTheDocument();
-      expect(screen.getByText('200')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.getByText("20")).toBeInTheDocument();
+      expect(screen.getByText("200")).toBeInTheDocument();
     });
   });
 
-  describe('Middle Page State', () => {
-    it('should enable all buttons on middle page', () => {
+  describe("Middle Page State", () => {
+    it("should enable all buttons on middle page", () => {
       render(<RepositoryPagination {...defaultProps} currentPage={5} />);
 
-      expect(screen.getByLabelText('Go to first page')).not.toBeDisabled();
-      expect(screen.getByLabelText('Go to previous page')).not.toBeDisabled();
-      expect(screen.getByLabelText('Go to next page')).not.toBeDisabled();
-      expect(screen.getByLabelText('Go to last page')).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to first page")).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to previous page")).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to next page")).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to last page")).not.toBeDisabled();
     });
 
-    it('should show correct page number', () => {
+    it("should show correct page number", () => {
       render(<RepositoryPagination {...defaultProps} currentPage={5} />);
 
-      expect(screen.getByText('Page 5 of 10')).toBeInTheDocument();
+      expect(screen.getByText("Page 5 of 10")).toBeInTheDocument();
     });
 
-    it('should show correct items range on middle page', () => {
+    it("should show correct items range on middle page", () => {
       render(<RepositoryPagination {...defaultProps} currentPage={5} />);
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('81')).toBeInTheDocument();
-      expect(screen.getByText('100')).toBeInTheDocument();
-      expect(screen.getByText('200')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("81")).toBeInTheDocument();
+      expect(screen.getByText("100")).toBeInTheDocument();
+      expect(screen.getByText("200")).toBeInTheDocument();
     });
   });
 
-  describe('Last Page State', () => {
-    it('should disable next and last buttons on last page', () => {
-      render(<RepositoryPagination {...defaultProps} currentPage={10} totalPages={10} />);
+  describe("Last Page State", () => {
+    it("should disable next and last buttons on last page", () => {
+      render(
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={10}
+          totalPages={10}
+        />,
+      );
 
-      expect(screen.getByLabelText('Go to first page')).not.toBeDisabled();
-      expect(screen.getByLabelText('Go to previous page')).not.toBeDisabled();
-      expect(screen.getByLabelText('Go to next page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to last page')).toBeDisabled();
+      expect(screen.getByLabelText("Go to first page")).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to previous page")).not.toBeDisabled();
+      expect(screen.getByLabelText("Go to next page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to last page")).toBeDisabled();
     });
 
-    it('should show correct items range on last page', () => {
-      render(<RepositoryPagination {...defaultProps} currentPage={10} totalPages={10} />);
+    it("should show correct items range on last page", () => {
+      render(
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={10}
+          totalPages={10}
+        />,
+      );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('181')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("181")).toBeInTheDocument();
       // '200' appears twice (endItem and totalItems)
-      expect(screen.getAllByText('200').length).toBe(2);
+      expect(screen.getAllByText("200").length).toBe(2);
     });
   });
 
-  describe('Single Page', () => {
-    it('should disable next and last buttons with single page', () => {
+  describe("Single Page", () => {
+    it("should disable next and last buttons with single page", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={1}
           totalPages={1}
           totalItems={15}
-        />
+        />,
       );
 
-      expect(screen.getByLabelText('Go to next page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to last page')).toBeDisabled();
+      expect(screen.getByLabelText("Go to next page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to last page")).toBeDisabled();
     });
 
-    it('should show Page 1 of 1 for single page', () => {
+    it("should show Page 1 of 1 for single page", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={1}
           totalPages={1}
           totalItems={15}
-        />
+        />,
       );
 
-      expect(screen.getByText('Page 1 of 1')).toBeInTheDocument();
+      expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
     });
   });
 
-  describe('Empty State', () => {
-    it('should handle zero items', () => {
+  describe("Empty State", () => {
+    it("should handle zero items", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={1}
           totalPages={0}
           totalItems={0}
-        />
+        />,
       );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(2); // "0 to 0 of 0"
-      expect(screen.getByText('Page 1 of 1')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getAllByText("0").length).toBeGreaterThanOrEqual(2); // "0 to 0 of 0"
+      expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
     });
 
-    it('should disable all navigation buttons when no items', () => {
+    it("should disable all navigation buttons when no items", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={1}
           totalPages={0}
           totalItems={0}
-        />
+        />,
       );
 
-      expect(screen.getByLabelText('Go to first page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to previous page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to next page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to last page')).toBeDisabled();
+      expect(screen.getByLabelText("Go to first page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to previous page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to next page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to last page")).toBeDisabled();
     });
   });
 
-  describe('Navigation', () => {
-    it('should call onPageChange with 1 when first button clicked', async () => {
+  describe("Navigation", () => {
+    it("should call onPageChange with 1 when first button clicked", async () => {
       const user = userEvent.setup();
       const mockOnPageChange = vi.fn();
 
       render(
-        <RepositoryPagination {...defaultProps} currentPage={5} onPageChange={mockOnPageChange} />
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={5}
+          onPageChange={mockOnPageChange}
+        />,
       );
 
-      await user.click(screen.getByLabelText('Go to first page'));
+      await user.click(screen.getByLabelText("Go to first page"));
 
       expect(mockOnPageChange).toHaveBeenCalledWith(1);
       expect(mockOnPageChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should call onPageChange with previous page when previous button clicked', async () => {
+    it("should call onPageChange with previous page when previous button clicked", async () => {
       const user = userEvent.setup();
       const mockOnPageChange = vi.fn();
 
       render(
-        <RepositoryPagination {...defaultProps} currentPage={5} onPageChange={mockOnPageChange} />
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={5}
+          onPageChange={mockOnPageChange}
+        />,
       );
 
-      await user.click(screen.getByLabelText('Go to previous page'));
+      await user.click(screen.getByLabelText("Go to previous page"));
 
       expect(mockOnPageChange).toHaveBeenCalledWith(4);
       expect(mockOnPageChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should call onPageChange with next page when next button clicked', async () => {
+    it("should call onPageChange with next page when next button clicked", async () => {
       const user = userEvent.setup();
       const mockOnPageChange = vi.fn();
 
       render(
-        <RepositoryPagination {...defaultProps} currentPage={5} onPageChange={mockOnPageChange} />
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={5}
+          onPageChange={mockOnPageChange}
+        />,
       );
 
-      await user.click(screen.getByLabelText('Go to next page'));
+      await user.click(screen.getByLabelText("Go to next page"));
 
       expect(mockOnPageChange).toHaveBeenCalledWith(6);
       expect(mockOnPageChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should call onPageChange with last page when last button clicked', async () => {
+    it("should call onPageChange with last page when last button clicked", async () => {
       const user = userEvent.setup();
       const mockOnPageChange = vi.fn();
 
@@ -238,34 +275,38 @@ describe('RepositoryPagination', () => {
           currentPage={5}
           totalPages={10}
           onPageChange={mockOnPageChange}
-        />
+        />,
       );
 
-      await user.click(screen.getByLabelText('Go to last page'));
+      await user.click(screen.getByLabelText("Go to last page"));
 
       expect(mockOnPageChange).toHaveBeenCalledWith(10);
       expect(mockOnPageChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should not call onPageChange when clicking disabled buttons', async () => {
+    it("should not call onPageChange when clicking disabled buttons", async () => {
       const user = userEvent.setup();
       const mockOnPageChange = vi.fn();
 
       render(
-        <RepositoryPagination {...defaultProps} currentPage={1} onPageChange={mockOnPageChange} />
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={1}
+          onPageChange={mockOnPageChange}
+        />,
       );
 
-      await user.click(screen.getByLabelText('Go to first page'));
-      await user.click(screen.getByLabelText('Go to previous page'));
+      await user.click(screen.getByLabelText("Go to first page"));
+      await user.click(screen.getByLabelText("Go to previous page"));
 
       expect(mockOnPageChange).not.toHaveBeenCalled();
     });
   });
 
-  describe('Page Size Change', () => {
+  describe("Page Size Change", () => {
     // Note: @radix-ui/react-select has issues with hasPointerCapture in jsdom
     // Interactive tests with Select are skipped
-    it.skip('should call onPageSizeChange when page size changes', async () => {
+    it("should call onPageSizeChange when page size changes", async () => {
       const user = userEvent.setup();
       const mockOnPageSizeChange = vi.fn();
       const mockOnPageChange = vi.fn();
@@ -275,20 +316,20 @@ describe('RepositoryPagination', () => {
           {...defaultProps}
           onPageChange={mockOnPageChange}
           onPageSizeChange={mockOnPageSizeChange}
-        />
+        />,
       );
 
-      const select = screen.getByRole('combobox');
+      const select = screen.getByRole("combobox");
       await user.click(select);
 
       // Select 50 items per page
-      const option50 = screen.getByRole('option', { name: '50' });
+      const option50 = screen.getByRole("option", { name: "50" });
       await user.click(option50);
 
       expect(mockOnPageSizeChange).toHaveBeenCalledWith(50);
     });
 
-    it.skip('should reset to page 1 when page size changes', async () => {
+    it("should reset to page 1 when page size changes", async () => {
       const user = userEvent.setup();
       const mockOnPageSizeChange = vi.fn();
       const mockOnPageChange = vi.fn();
@@ -299,76 +340,78 @@ describe('RepositoryPagination', () => {
           currentPage={5}
           onPageChange={mockOnPageChange}
           onPageSizeChange={mockOnPageSizeChange}
-        />
+        />,
       );
 
-      const select = screen.getByRole('combobox');
+      const select = screen.getByRole("combobox");
       await user.click(select);
 
-      const option50 = screen.getByRole('option', { name: '50' });
+      const option50 = screen.getByRole("option", { name: "50" });
       await user.click(option50);
 
       expect(mockOnPageChange).toHaveBeenCalledWith(1);
     });
 
-    it('should render custom page size options', () => {
+    it("should render custom page size options", () => {
       const customOptions = [5, 15, 25];
       render(
         <RepositoryPagination
           {...defaultProps}
           onPageSizeChange={vi.fn()}
           pageSizeOptions={customOptions}
-        />
+        />,
       );
 
       // All options should be available (need to open select to see them in the test)
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
     });
   });
 
-  describe('Compact Mode', () => {
-    it('should not render items info in compact mode', () => {
+  describe("Compact Mode", () => {
+    it("should not render items info in compact mode", () => {
       render(<RepositoryPagination {...defaultProps} compact />);
 
       expect(screen.queryByText(/Showing/)).not.toBeInTheDocument();
     });
 
-    it('should not render button labels in compact mode', () => {
+    it("should not render button labels in compact mode", () => {
       render(<RepositoryPagination {...defaultProps} compact />);
 
-      expect(screen.queryByText('First')).not.toBeInTheDocument();
-      expect(screen.queryByText('Previous')).not.toBeInTheDocument();
-      expect(screen.queryByText('Next')).not.toBeInTheDocument();
-      expect(screen.queryByText('Last')).not.toBeInTheDocument();
+      expect(screen.queryByText("First")).not.toBeInTheDocument();
+      expect(screen.queryByText("Previous")).not.toBeInTheDocument();
+      expect(screen.queryByText("Next")).not.toBeInTheDocument();
+      expect(screen.queryByText("Last")).not.toBeInTheDocument();
     });
 
-    it('should still render page indicator in compact mode', () => {
+    it("should still render page indicator in compact mode", () => {
       render(<RepositoryPagination {...defaultProps} compact />);
 
-      expect(screen.getByText('Page 1 of 10')).toBeInTheDocument();
+      expect(screen.getByText("Page 1 of 10")).toBeInTheDocument();
     });
 
-    it('should render icons in compact mode', () => {
+    it("should render icons in compact mode", () => {
       render(<RepositoryPagination {...defaultProps} compact />);
 
-      expect(screen.getByLabelText('Go to first page')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to next page')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to last page')).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to first page")).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to previous page")).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to next page")).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to last page")).toBeInTheDocument();
     });
   });
 
-  describe('Disabled State', () => {
-    it('should disable all buttons when disabled prop is true', () => {
-      render(<RepositoryPagination {...defaultProps} currentPage={5} disabled />);
+  describe("Disabled State", () => {
+    it("should disable all buttons when disabled prop is true", () => {
+      render(
+        <RepositoryPagination {...defaultProps} currentPage={5} disabled />,
+      );
 
-      expect(screen.getByLabelText('Go to first page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to previous page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to next page')).toBeDisabled();
-      expect(screen.getByLabelText('Go to last page')).toBeDisabled();
+      expect(screen.getByLabelText("Go to first page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to previous page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to next page")).toBeDisabled();
+      expect(screen.getByLabelText("Go to last page")).toBeDisabled();
     });
 
-    it('should not call onPageChange when disabled', async () => {
+    it("should not call onPageChange when disabled", async () => {
       const user = userEvent.setup();
       const mockOnPageChange = vi.fn();
 
@@ -378,140 +421,177 @@ describe('RepositoryPagination', () => {
           currentPage={5}
           onPageChange={mockOnPageChange}
           disabled
-        />
+        />,
       );
 
-      await user.click(screen.getByLabelText('Go to next page'));
+      await user.click(screen.getByLabelText("Go to next page"));
 
       expect(mockOnPageChange).not.toHaveBeenCalled();
     });
 
-    it('should disable page size selector when disabled', () => {
-      render(<RepositoryPagination {...defaultProps} onPageSizeChange={vi.fn()} disabled />);
+    it("should disable page size selector when disabled", () => {
+      render(
+        <RepositoryPagination
+          {...defaultProps}
+          onPageSizeChange={vi.fn()}
+          disabled
+        />,
+      );
 
-      expect(screen.getByRole('combobox')).toBeDisabled();
+      expect(screen.getByRole("combobox")).toBeDisabled();
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle partial last page correctly', () => {
+  describe("Edge Cases", () => {
+    it("should handle partial last page correctly", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={11}
           totalPages={11}
           totalItems={205}
-        />
+        />,
       );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('201')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("201")).toBeInTheDocument();
       // '205' appears twice (endItem and totalItems)
-      expect(screen.getAllByText('205').length).toBe(2);
+      expect(screen.getAllByText("205").length).toBe(2);
     });
 
-    it('should handle exactly one page worth of items', () => {
+    it("should handle exactly one page worth of items", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={1}
           totalPages={1}
           totalItems={20}
-        />
+        />,
       );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('1')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("1")).toBeInTheDocument();
       // '20' appears twice (endItem and totalItems)
-      expect(screen.getAllByText('20').length).toBe(2);
+      expect(screen.getAllByText("20").length).toBe(2);
     });
 
-    it('should handle large page numbers', () => {
+    it("should handle large page numbers", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={999}
           totalPages={1000}
           totalItems={20000}
-        />
+        />,
       );
 
-      expect(screen.getByText('Page 999 of 1000')).toBeInTheDocument();
+      expect(screen.getByText("Page 999 of 1000")).toBeInTheDocument();
     });
 
-    it('should handle page 2 of 2 pages', () => {
+    it("should handle page 2 of 2 pages", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={2}
           totalPages={2}
           totalItems={40}
-        />
+        />,
       );
 
-      expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
-      expect(screen.getByLabelText('Go to next page')).toBeDisabled();
+      expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+      expect(screen.getByLabelText("Go to next page")).toBeDisabled();
     });
 
-    it('should handle zero total pages gracefully', () => {
+    it("should handle zero total pages gracefully", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={1}
           totalPages={0}
           totalItems={0}
-        />
+        />,
       );
 
-      expect(screen.getByText('Page 1 of 1')).toBeInTheDocument();
+      expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
     });
   });
 
-  describe('Accessibility', () => {
-    it('should have proper ARIA labels for all buttons', () => {
+  describe("Accessibility", () => {
+    it("should have proper ARIA labels for all buttons", () => {
       render(<RepositoryPagination {...defaultProps} />);
 
-      expect(screen.getByLabelText('Go to first page')).toHaveAttribute('title', 'First page');
-      expect(screen.getByLabelText('Go to previous page')).toHaveAttribute(
-        'title',
-        'Previous page'
+      expect(screen.getByLabelText("Go to first page")).toHaveAttribute(
+        "title",
+        "First page",
       );
-      expect(screen.getByLabelText('Go to next page')).toHaveAttribute('title', 'Next page');
-      expect(screen.getByLabelText('Go to last page')).toHaveAttribute('title', 'Last page');
+      expect(screen.getByLabelText("Go to previous page")).toHaveAttribute(
+        "title",
+        "Previous page",
+      );
+      expect(screen.getByLabelText("Go to next page")).toHaveAttribute(
+        "title",
+        "Next page",
+      );
+      expect(screen.getByLabelText("Go to last page")).toHaveAttribute(
+        "title",
+        "Last page",
+      );
     });
 
-    it('should have aria-current on page indicator', () => {
+    it("should have aria-current on page indicator", () => {
       render(<RepositoryPagination {...defaultProps} />);
 
-      const pageIndicator = screen.getByText('Page 1 of 10');
-      expect(pageIndicator).toHaveAttribute('aria-current', 'page');
+      const pageIndicator = screen.getByText("Page 1 of 10");
+      expect(pageIndicator).toHaveAttribute("aria-current", "page");
     });
 
-    it('should have navigation role', () => {
+    it("should have navigation role", () => {
       render(<RepositoryPagination {...defaultProps} />);
 
-      expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("navigation", { name: "Pagination" }),
+      ).toBeInTheDocument();
     });
   });
 
-  describe('Item Count Calculations', () => {
-    it('should calculate start and end items correctly for page 1', () => {
-      render(<RepositoryPagination {...defaultProps} currentPage={1} pageSize={20} />);
+  describe("Item Count Calculations", () => {
+    it("should calculate start and end items correctly for page 1", () => {
+      render(
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={1}
+          pageSize={20}
+        />,
+      );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('20')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.getByText("20")).toBeInTheDocument();
     });
 
-    it('should calculate start and end items correctly for page 2', () => {
-      render(<RepositoryPagination {...defaultProps} currentPage={2} pageSize={20} />);
+    it("should calculate start and end items correctly for page 2", () => {
+      render(
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={2}
+          pageSize={20}
+        />,
+      );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('21')).toBeInTheDocument();
-      expect(screen.getByText('40')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("21")).toBeInTheDocument();
+      expect(screen.getByText("40")).toBeInTheDocument();
     });
 
-    it('should not exceed total items on last page', () => {
+    it("should not exceed total items on last page", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
@@ -519,36 +599,48 @@ describe('RepositoryPagination', () => {
           totalPages={10}
           pageSize={25}
           totalItems={230}
-        />
+        />,
       );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('226')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("226")).toBeInTheDocument();
       // '230' appears twice (endItem and totalItems)
-      expect(screen.getAllByText('230').length).toBe(2);
+      expect(screen.getAllByText("230").length).toBe(2);
     });
 
-    it('should handle page size of 10', () => {
-      render(<RepositoryPagination {...defaultProps} currentPage={3} pageSize={10} />);
+    it("should handle page size of 10", () => {
+      render(
+        <RepositoryPagination
+          {...defaultProps}
+          currentPage={3}
+          pageSize={10}
+        />,
+      );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('21')).toBeInTheDocument();
-      expect(screen.getByText('30')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("21")).toBeInTheDocument();
+      expect(screen.getByText("30")).toBeInTheDocument();
     });
 
-    it('should handle page size of 50', () => {
+    it("should handle page size of 50", () => {
       render(
         <RepositoryPagination
           {...defaultProps}
           currentPage={2}
           pageSize={50}
           totalItems={200}
-        />
+        />,
       );
 
-      expect(screen.getByText(/repositories/, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('51')).toBeInTheDocument();
-      expect(screen.getByText('100')).toBeInTheDocument();
+      expect(
+        screen.getByText(/repositories/, { exact: false }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("51")).toBeInTheDocument();
+      expect(screen.getByText("100")).toBeInTheDocument();
     });
   });
 });

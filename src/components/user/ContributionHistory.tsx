@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { GitCommit } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GitCommit } from "lucide-react";
 
 type ContributionHistoryProps = {
   contributions: {
@@ -14,11 +14,23 @@ type ContributionHistoryProps = {
   };
 };
 
-export function ContributionHistory({ contributions, yearLabels }: ContributionHistoryProps) {
+export function ContributionHistory({
+  contributions,
+  yearLabels,
+}: ContributionHistoryProps) {
   const years = [
-    { label: yearLabels.year1, commits: contributions.year1.totalCommitContributions },
-    { label: yearLabels.year2, commits: contributions.year2.totalCommitContributions },
-    { label: yearLabels.year3, commits: contributions.year3.totalCommitContributions },
+    {
+      label: yearLabels.year1,
+      commits: contributions.year1.totalCommitContributions,
+    },
+    {
+      label: yearLabels.year2,
+      commits: contributions.year2.totalCommitContributions,
+    },
+    {
+      label: yearLabels.year3,
+      commits: contributions.year3.totalCommitContributions,
+    },
   ];
 
   return (
@@ -33,11 +45,11 @@ export function ContributionHistory({ contributions, yearLabels }: ContributionH
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {years.map((year) => (
             <div key={year.label} className="space-y-2 text-center">
-              <div className="text-muted-foreground text-sm">{year.label}</div>
+              <div className="text-sm text-muted-foreground">{year.label}</div>
               <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {year.commits.toLocaleString()}
               </div>
-              <div className="text-muted-foreground text-xs">commits</div>
+              <div className="text-xs text-muted-foreground">commits</div>
             </div>
           ))}
         </div>

@@ -44,11 +44,13 @@ You are an expert test automation engineer and debugging specialist with deep ex
 **Architecture**: This is a Next.js 15 app with clean architecture (UI → Hooks/Actions → Use Cases → Repositories → Database).
 
 **Test Types**:
+
 - `.spec.ts(x)`: Unit tests with mocked dependencies
 - `.test.ts(x)`: Integration tests that can access SQLite database
 - `.e2e.ts`: Playwright end-to-end tests (NOTE: Not yet configured in this project)
 
 **Key Testing Patterns**:
+
 - Use React Testing Library best practices: `getByRole`, `getByText`, `getByLabelText` over `getByTestId`
 - Use `userEvent` for interactions, not `fireEvent`
 - Use `findBy*` for async content
@@ -57,6 +59,7 @@ You are an expert test automation engineer and debugging specialist with deep ex
 - Integration tests run with `fileParallelism: false` due to SQLite constraints
 
 **Common Issues to Watch For**:
+
 - Missing `vi.mock()` calls for server actions or repositories in unit tests
 - Forgetting to await async operations
 - Database state leaking between integration tests
@@ -83,6 +86,7 @@ You are an expert test automation engineer and debugging specialist with deep ex
 ## Self-Verification
 
 Before declaring tests fixed:
+
 - [ ] All test files pass
 - [ ] No skipped or pending tests that should be running
 - [ ] Fixes address root cause, not just symptoms

@@ -7,6 +7,9 @@
  * @module assessment
  */
 
-export { MetricCard, type MetricCardProps } from './MetricCard';
-export { QuickAssessment, type QuickAssessmentProps } from './QuickAssessment';
-export { MetricExplanationModal, type MetricExplanationModalProps } from './MetricExplanationModal';
+export { MetricCard, type MetricCardProps } from "./MetricCard";
+export {
+  MetricExplanationModal,
+  type MetricExplanationModalProps,
+} from "./MetricExplanationModal";
+export { QuickAssessment, type QuickAssessmentProps } from "./QuickAssessment";

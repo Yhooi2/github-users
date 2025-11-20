@@ -1,6 +1,7 @@
-import { render, RenderOptions } from '@testing-library/react';
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
-import { ThemeProvider } from 'next-themes';
+import { InMemoryCache } from "@apollo/client";
+import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { render, RenderOptions } from "@testing-library/react";
+import { ThemeProvider } from "next-themes";
 
 /**
  * Custom render function for integration tests with Apollo MockedProvider
@@ -33,15 +34,17 @@ import { ThemeProvider } from 'next-themes';
 export function renderWithMockedProvider(
   ui: React.ReactElement,
   mocks: MockedResponse[] = [],
-  options: Omit<RenderOptions, 'wrapper'> = {}
+  options: Omit<RenderOptions, "wrapper"> = {},
 ) {
+  const cache = new InMemoryCache();
+
   return render(
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={mocks} cache={cache}>
         {ui}
       </MockedProvider>
     </ThemeProvider>,
-    options
+    options,
   );
 }
 

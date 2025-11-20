@@ -37,3 +37,6 @@ test-results
 playwright-report
 .nyc_output
 .vercel
+
+# Local MCP server config with secrets
+.roo/mcp.json

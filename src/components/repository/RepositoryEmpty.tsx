@@ -1,4 +1,4 @@
-import { EmptyState } from '@/components/layout';
+import { EmptyState } from "@/components/layout";
 
 type Props = {
   /**
@@ -38,19 +38,15 @@ type Props = {
  * ```
  */
 export function RepositoryEmpty({
-  title = 'No Repositories Found',
-  description = 'No repositories match the current filters. Try adjusting your search criteria.',
-  hasFilters = true
+  title = "No Repositories Found",
+  description = "No repositories match the current filters. Try adjusting your search criteria.",
+  hasFilters = true,
 }: Props) {
   const finalDescription = hasFilters
     ? description
-    : 'This user hasn\'t created any public repositories yet.';
+    : "This user hasn't created any public repositories yet.";
 
   return (
-    <EmptyState
-      title={title}
-      description={finalDescription}
-      icon="folder"
-    />
+    <EmptyState title={title} description={finalDescription} icon="folder" />
   );
 }

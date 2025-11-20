@@ -1,19 +1,24 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./accordion";
 
 const meta: Meta<typeof Accordion> = {
-  title: 'UI/Accordion',
+  title: "UI/Accordion",
   component: Accordion,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'An accordion component for displaying collapsible content panels. Supports single and multiple expansion modes.',
+          "An accordion component for displaying collapsible content panels. Supports single and multiple expansion modes.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -72,7 +77,8 @@ export const Multiple: Story = {
       <AccordionItem value="item-3">
         <AccordionTrigger>Styling</AccordionTrigger>
         <AccordionContent>
-          Uses Tailwind CSS for styling with class-variance-authority for variants.
+          Uses Tailwind CSS for styling with class-variance-authority for
+          variants.
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -98,20 +104,22 @@ export const RepositoryFAQ: Story = {
       <AccordionItem value="issues">
         <AccordionTrigger>How do I report issues?</AccordionTrigger>
         <AccordionContent>
-          Visit the Issues tab and create a new issue with a clear description of the problem,
-          steps to reproduce, and your environment details.
+          Visit the Issues tab and create a new issue with a clear description
+          of the problem, steps to reproduce, and your environment details.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="license">
         <AccordionTrigger>What license is this under?</AccordionTrigger>
         <AccordionContent>
-          This project is licensed under the MIT License. See the LICENSE file for details.
+          This project is licensed under the MIT License. See the LICENSE file
+          for details.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="support">
         <AccordionTrigger>Where can I get support?</AccordionTrigger>
         <AccordionContent>
-          For support, please use GitHub Discussions or join our Discord community.
+          For support, please use GitHub Discussions or join our Discord
+          community.
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -121,21 +129,30 @@ export const RepositoryFAQ: Story = {
 // Story 4: Default open item
 export const DefaultOpen: Story = {
   render: () => (
-    <Accordion type="single" collapsible defaultValue="item-2" className="w-[450px]">
+    <Accordion
+      type="single"
+      collapsible
+      defaultValue="item-2"
+      className="w-[450px]"
+    >
       <AccordionItem value="item-1">
         <AccordionTrigger>Installation</AccordionTrigger>
-        <AccordionContent>Run npm install to install dependencies.</AccordionContent>
+        <AccordionContent>
+          Run npm install to install dependencies.
+        </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>Getting Started</AccordionTrigger>
         <AccordionContent>
-          This panel is open by default. Start by running npm run dev to launch the development
-          server.
+          This panel is open by default. Start by running npm run dev to launch
+          the development server.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
         <AccordionTrigger>Deployment</AccordionTrigger>
-        <AccordionContent>Build the project with npm run build.</AccordionContent>
+        <AccordionContent>
+          Build the project with npm run build.
+        </AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
@@ -148,7 +165,7 @@ export const RichContent: Story = {
       <AccordionItem value="code">
         <AccordionTrigger>Code Example</AccordionTrigger>
         <AccordionContent>
-          <pre className="bg-muted rounded p-3 text-xs">
+          <pre className="rounded bg-muted p-3 text-xs">
             <code>{`import { Accordion } from '@/components/ui/accordion'
 
 <Accordion type="single" collapsible>
@@ -196,16 +213,28 @@ export const APIDocumentation: Story = {
         <AccordionContent>
           <div className="space-y-2">
             <div>
-              <code className="bg-muted rounded px-2 py-1 text-xs">GET /api/users</code>
-              <p className="text-muted-foreground mt-1 text-xs">Fetch all users</p>
+              <code className="rounded bg-muted px-2 py-1 text-xs">
+                GET /api/users
+              </code>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Fetch all users
+              </p>
             </div>
             <div>
-              <code className="bg-muted rounded px-2 py-1 text-xs">GET /api/users/:id</code>
-              <p className="text-muted-foreground mt-1 text-xs">Fetch user by ID</p>
+              <code className="rounded bg-muted px-2 py-1 text-xs">
+                GET /api/users/:id
+              </code>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Fetch user by ID
+              </p>
             </div>
             <div>
-              <code className="bg-muted rounded px-2 py-1 text-xs">POST /api/users</code>
-              <p className="text-muted-foreground mt-1 text-xs">Create new user</p>
+              <code className="rounded bg-muted px-2 py-1 text-xs">
+                POST /api/users
+              </code>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Create new user
+              </p>
             </div>
           </div>
         </AccordionContent>
@@ -213,7 +242,8 @@ export const APIDocumentation: Story = {
       <AccordionItem value="authentication">
         <AccordionTrigger>Authentication</AccordionTrigger>
         <AccordionContent>
-          All API requests require authentication via Bearer token in the Authorization header.
+          All API requests require authentication via Bearer token in the
+          Authorization header.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="rate-limits">
@@ -229,8 +259,8 @@ export const APIDocumentation: Story = {
       <AccordionItem value="errors">
         <AccordionTrigger>Error Handling</AccordionTrigger>
         <AccordionContent>
-          API returns standard HTTP status codes with JSON error objects containing message and
-          error code.
+          API returns standard HTTP status codes with JSON error objects
+          containing message and error code.
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -243,7 +273,9 @@ export const DisabledItem: Story = {
     <Accordion type="single" collapsible className="w-[450px]">
       <AccordionItem value="item-1">
         <AccordionTrigger>Available Feature</AccordionTrigger>
-        <AccordionContent>This feature is available and working.</AccordionContent>
+        <AccordionContent>
+          This feature is available and working.
+        </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2" disabled>
         <AccordionTrigger>Coming Soon</AccordionTrigger>
@@ -263,7 +295,9 @@ export const Compact: Story = {
     <Accordion type="single" collapsible className="w-[400px]">
       <AccordionItem value="item-1">
         <AccordionTrigger className="py-2">Quick Start</AccordionTrigger>
-        <AccordionContent className="pb-2">npm install && npm run dev</AccordionContent>
+        <AccordionContent className="pb-2">
+          npm install && npm run dev
+        </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger className="py-2">Build</AccordionTrigger>
@@ -292,7 +326,9 @@ export const NestedContent: Story = {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="typescript">
-              <AccordionTrigger className="text-sm">TypeScript</AccordionTrigger>
+              <AccordionTrigger className="text-sm">
+                TypeScript
+              </AccordionTrigger>
               <AccordionContent className="text-sm">
                 Typed superset of JavaScript for better developer experience.
               </AccordionContent>
@@ -302,7 +338,9 @@ export const NestedContent: Story = {
       </AccordionItem>
       <AccordionItem value="backend">
         <AccordionTrigger>Backend Technologies</AccordionTrigger>
-        <AccordionContent>Node.js, Express, and GraphQL for server-side logic.</AccordionContent>
+        <AccordionContent>
+          Node.js, Express, and GraphQL for server-side logic.
+        </AccordionContent>
       </AccordionItem>
     </Accordion>
   ),

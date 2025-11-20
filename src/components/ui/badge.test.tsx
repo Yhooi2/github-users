@@ -1,169 +1,181 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Badge } from './badge';
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { Badge } from "./badge";
 
-describe('Badge', () => {
-  describe('rendering', () => {
-    it('should render badge with text', () => {
+describe("Badge", () => {
+  describe("rendering", () => {
+    it("should render badge with text", () => {
       render(<Badge>Test Badge</Badge>);
-      expect(screen.getByText('Test Badge')).toBeInTheDocument();
+      expect(screen.getByText("Test Badge")).toBeInTheDocument();
     });
 
-    it('should have data-slot attribute', () => {
+    it("should have data-slot attribute", () => {
       const { container } = render(<Badge>Badge</Badge>);
-      expect(container.querySelector('[data-slot="badge"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="badge"]'),
+      ).toBeInTheDocument();
     });
 
-    it('should render as span by default', () => {
+    it("should render as span by default", () => {
       const { container } = render(<Badge>Badge</Badge>);
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge?.tagName.toLowerCase()).toBe('span');
+      expect(badge?.tagName.toLowerCase()).toBe("span");
     });
   });
 
-  describe('variants', () => {
-    it('should render default variant', () => {
+  describe("variants", () => {
+    it("should render default variant", () => {
       const { container } = render(<Badge>Default</Badge>);
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveClass('bg-primary');
+      expect(badge).toHaveClass("bg-primary");
     });
 
-    it('should render secondary variant', () => {
-      const { container } = render(<Badge variant="secondary">Secondary</Badge>);
+    it("should render secondary variant", () => {
+      const { container } = render(
+        <Badge variant="secondary">Secondary</Badge>,
+      );
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveClass('bg-secondary');
+      expect(badge).toHaveClass("bg-secondary");
     });
 
-    it('should render destructive variant', () => {
-      const { container } = render(<Badge variant="destructive">Destructive</Badge>);
+    it("should render destructive variant", () => {
+      const { container } = render(
+        <Badge variant="destructive">Destructive</Badge>,
+      );
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveClass('bg-destructive');
+      expect(badge).toHaveClass("bg-destructive");
     });
 
-    it('should render outline variant', () => {
+    it("should render outline variant", () => {
       const { container } = render(<Badge variant="outline">Outline</Badge>);
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveClass('text-foreground');
+      expect(badge).toHaveClass("text-foreground");
     });
   });
 
-  describe('asChild prop', () => {
-    it('should render as child component when asChild is true', () => {
+  describe("asChild prop", () => {
+    it("should render as child component when asChild is true", () => {
       render(
         <Badge asChild>
           <a href="#">Link Badge</a>
-        </Badge>
+        </Badge>,
       );
 
-      const link = screen.getByRole('link', { name: 'Link Badge' });
+      const link = screen.getByRole("link", { name: "Link Badge" });
       expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute('href', '#');
+      expect(link).toHaveAttribute("href", "#");
     });
 
-    it('should apply badge classes to child component', () => {
+    it("should apply badge classes to child component", () => {
       const { container } = render(
         <Badge asChild>
           <a href="#">Link</a>
-        </Badge>
+        </Badge>,
       );
 
-      const link = container.querySelector('a');
-      expect(link).toHaveClass('inline-flex');
-      expect(link).toHaveClass('rounded-full');
+      const link = container.querySelector("a");
+      expect(link).toHaveClass("inline-flex");
+      expect(link).toHaveClass("rounded-full");
     });
   });
 
-  describe('styling', () => {
-    it('should apply custom className', () => {
-      const { container } = render(<Badge className="custom-class">Badge</Badge>);
+  describe("styling", () => {
+    it("should apply custom className", () => {
+      const { container } = render(
+        <Badge className="custom-class">Badge</Badge>,
+      );
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveClass('custom-class');
+      expect(badge).toHaveClass("custom-class");
     });
 
-    it('should merge custom className with variant classes', () => {
+    it("should merge custom className with variant classes", () => {
       const { container } = render(
         <Badge variant="secondary" className="custom-class">
           Badge
-        </Badge>
+        </Badge>,
       );
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveClass('custom-class');
-      expect(badge).toHaveClass('bg-secondary');
+      expect(badge).toHaveClass("custom-class");
+      expect(badge).toHaveClass("bg-secondary");
     });
 
-    it('should have default base classes', () => {
+    it("should have default base classes", () => {
       const { container } = render(<Badge>Badge</Badge>);
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveClass('inline-flex');
-      expect(badge).toHaveClass('rounded-full');
-      expect(badge).toHaveClass('text-xs');
+      expect(badge).toHaveClass("inline-flex");
+      expect(badge).toHaveClass("rounded-full");
+      expect(badge).toHaveClass("text-xs");
     });
   });
 
-  describe('content', () => {
-    it('should render with icon', () => {
+  describe("content", () => {
+    it("should render with icon", () => {
       render(
         <Badge>
           <svg data-testid="icon" />
           Text
-        </Badge>
+        </Badge>,
       );
 
-      expect(screen.getByTestId('icon')).toBeInTheDocument();
-      expect(screen.getByText('Text')).toBeInTheDocument();
+      expect(screen.getByTestId("icon")).toBeInTheDocument();
+      expect(screen.getByText("Text")).toBeInTheDocument();
     });
 
-    it('should render with number', () => {
+    it("should render with number", () => {
       render(<Badge>42</Badge>);
-      expect(screen.getByText('42')).toBeInTheDocument();
+      expect(screen.getByText("42")).toBeInTheDocument();
     });
 
-    it('should render with nested elements', () => {
+    it("should render with nested elements", () => {
       render(
         <Badge>
           <span data-testid="nested">Nested</span>
-        </Badge>
+        </Badge>,
       );
-      expect(screen.getByTestId('nested')).toBeInTheDocument();
+      expect(screen.getByTestId("nested")).toBeInTheDocument();
     });
   });
 
-  describe('accessibility', () => {
-    it('should support aria attributes via props spread', () => {
+  describe("accessibility", () => {
+    it("should support aria attributes via props spread", () => {
       render(<Badge aria-label="Status badge">Active</Badge>);
-      expect(screen.getByLabelText('Status badge')).toBeInTheDocument();
+      expect(screen.getByLabelText("Status badge")).toBeInTheDocument();
     });
 
-    it('should support data attributes', () => {
-      const { container } = render(<Badge data-testid="custom-badge">Badge</Badge>);
-      expect(container.querySelector('[data-testid="custom-badge"]')).toBeInTheDocument();
+    it("should support data attributes", () => {
+      const { container } = render(
+        <Badge data-testid="custom-badge">Badge</Badge>,
+      );
+      expect(
+        container.querySelector('[data-testid="custom-badge"]'),
+      ).toBeInTheDocument();
     });
 
-    it('should support role attribute', () => {
+    it("should support role attribute", () => {
       const { container } = render(<Badge role="status">Badge</Badge>);
       const badge = container.querySelector('[data-slot="badge"]');
-      expect(badge).toHaveAttribute('role', 'status');
+      expect(badge).toHaveAttribute("role", "status");
     });
   });
 
-  describe('edge cases', () => {
-    it('should render empty badge', () => {
+  describe("edge cases", () => {
+    it("should render empty badge", () => {
       const { container } = render(<Badge />);
       const badge = container.querySelector('[data-slot="badge"]');
       expect(badge).toBeInTheDocument();
-      expect(badge?.textContent).toBe('');
+      expect(badge?.textContent).toBe("");
     });
 
-    it('should handle long text', () => {
-      const longText = 'This is a very long badge text that might wrap';
+    it("should handle long text", () => {
+      const longText = "This is a very long badge text that might wrap";
       render(<Badge>{longText}</Badge>);
       expect(screen.getByText(longText)).toBeInTheDocument();
     });
 
-    it('should support click events', () => {
+    it("should support click events", () => {
       const handleClick = vi.fn();
       render(<Badge onClick={handleClick}>Clickable</Badge>);
-      const badge = screen.getByText('Clickable');
+      const badge = screen.getByText("Clickable");
       badge.click();
       expect(handleClick).toHaveBeenCalled();
     });

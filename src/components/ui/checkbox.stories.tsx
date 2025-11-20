@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Checkbox } from './checkbox';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Checkbox } from "./checkbox";
 
 const meta: Meta<typeof Checkbox> = {
-  title: 'UI/Checkbox',
+  title: "UI/Checkbox",
   component: Checkbox,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A checkbox component for boolean input. Built on Radix UI with checked, unchecked, and indeterminate states.',
+          "A checkbox component for boolean input. Built on Radix UI with checked, unchecked, and indeterminate states.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -57,7 +57,7 @@ export const WithLabel: Story = {
 // Story 6: GitHub repository settings use case
 export const RepositorySettings: Story = {
   render: () => (
-    <div className="space-y-4 rounded-lg border p-4" style={{ width: '400px' }}>
+    <div className="space-y-4 rounded-lg border p-4" style={{ width: "400px" }}>
       <div className="text-sm font-semibold">Repository Settings</div>
       <div className="space-y-3">
         <div className="flex items-start space-x-3">
@@ -69,7 +69,7 @@ export const RepositorySettings: Story = {
             >
               Issues
             </label>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Track and manage project issues and bugs
             </p>
           </div>
@@ -83,7 +83,9 @@ export const RepositorySettings: Story = {
             >
               Wiki
             </label>
-            <p className="text-muted-foreground text-xs">Document your project with wiki pages</p>
+            <p className="text-xs text-muted-foreground">
+              Document your project with wiki pages
+            </p>
           </div>
         </div>
         <div className="flex items-start space-x-3">
@@ -95,7 +97,7 @@ export const RepositorySettings: Story = {
             >
               Projects
             </label>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Organize and prioritize your work with project boards
             </p>
           </div>
@@ -109,7 +111,9 @@ export const RepositorySettings: Story = {
             >
               Discussions
             </label>
-            <p className="text-muted-foreground text-xs">Enable community discussions</p>
+            <p className="text-xs text-muted-foreground">
+              Enable community discussions
+            </p>
           </div>
         </div>
       </div>
@@ -120,7 +124,7 @@ export const RepositorySettings: Story = {
 // Story 7: Notification preferences
 export const NotificationPreferences: Story = {
   render: () => (
-    <div className="space-y-4 rounded-lg border p-4" style={{ width: '400px' }}>
+    <div className="space-y-4 rounded-lg border p-4" style={{ width: "400px" }}>
       <div className="text-sm font-semibold">Notification Preferences</div>
       <div className="space-y-3">
         <div className="flex items-center space-x-2">
@@ -179,7 +183,10 @@ export const MultipleCheckboxes: Story = {
 // Story 9: With description
 export const WithDescription: Story = {
   render: () => (
-    <div className="flex items-start space-x-3 rounded-lg border p-4" style={{ width: '400px' }}>
+    <div
+      className="flex items-start space-x-3 rounded-lg border p-4"
+      style={{ width: "400px" }}
+    >
       <Checkbox id="privacy" />
       <div className="grid gap-1.5">
         <label
@@ -188,9 +195,9 @@ export const WithDescription: Story = {
         >
           Make repository private
         </label>
-        <p className="text-muted-foreground text-xs">
-          Only you and collaborators you explicitly grant access to will be able to see this
-          repository. You can change this setting later.
+        <p className="text-xs text-muted-foreground">
+          Only you and collaborators you explicitly grant access to will be able
+          to see this repository. You can change this setting later.
         </p>
       </div>
     </div>
@@ -205,7 +212,11 @@ export const Controlled: Story = {
     return (
       <div className="space-y-3">
         <div className="flex items-center space-x-2">
-          <Checkbox id="controlled" checked={checked} onCheckedChange={setChecked} />
+          <Checkbox
+            id="controlled"
+            checked={checked}
+            onCheckedChange={setChecked}
+          />
           <label
             htmlFor="controlled"
             className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -213,7 +224,9 @@ export const Controlled: Story = {
             Controlled checkbox
           </label>
         </div>
-        <div className="text-muted-foreground text-xs">Status: {checked ? 'Checked' : 'Unchecked'}</div>
+        <div className="text-xs text-muted-foreground">
+          Status: {checked ? "Checked" : "Unchecked"}
+        </div>
       </div>
     );
   },
@@ -227,7 +240,7 @@ export const Indeterminate: Story = {
 // Story 12: GitHub PR checklist
 export const PullRequestChecklist: Story = {
   render: () => (
-    <div className="space-y-3 rounded-lg border p-4" style={{ width: '450px' }}>
+    <div className="space-y-3 rounded-lg border p-4" style={{ width: "450px" }}>
       <div className="text-sm font-semibold">Pull Request Checklist</div>
       <div className="space-y-2">
         <div className="flex items-center space-x-2">

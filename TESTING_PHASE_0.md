@@ -71,6 +71,7 @@ vercel --prod
 ## 🎯 After Testing
 
 Once validation passes:
+
 1. Mark checkboxes above as complete
 2. Proceed to **Phase 1:** Year-by-year GraphQL queries
 3. See: [docs/phases/phase-1-graphql-multi-query.md](docs/phases/phase-1-graphql-multi-query.md)

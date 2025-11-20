@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client'
-import type { Repository } from '@/apollo/github-api.types'
+import type { Repository } from "@/apollo/github-api.types";
+import { gql } from "@apollo/client";
 
 /**
  * GraphQL query to fetch user contributions for a specific year
@@ -109,28 +109,28 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
       }
     }
   }
-`
+`;
 
 /**
  * Repository with contribution count
  */
 export interface RepositoryContribution {
   contributions: {
-    totalCount: number
-  }
-  repository: Repository
+    totalCount: number;
+  };
+  repository: Repository;
 }
 
 /**
  * Contributions collection for a specific time period
  */
 export interface ContributionsCollection {
-  totalCommitContributions: number
-  totalIssueContributions: number
-  totalPullRequestContributions: number
-  totalPullRequestReviewContributions: number
-  restrictedContributionsCount: number
-  commitContributionsByRepository: RepositoryContribution[]
+  totalCommitContributions: number;
+  totalIssueContributions: number;
+  totalPullRequestContributions: number;
+  totalPullRequestReviewContributions: number;
+  restrictedContributionsCount: number;
+  commitContributionsByRepository: RepositoryContribution[];
 }
 
 /**
@@ -138,15 +138,15 @@ export interface ContributionsCollection {
  */
 export interface GetYearContributionsResponse {
   user: {
-    contributionsCollection: ContributionsCollection
-  }
+    contributionsCollection: ContributionsCollection;
+  };
 }
 
 /**
  * GraphQL variables for GetYearContributions query
  */
 export interface GetYearContributionsVariables {
-  login: string
-  from: string
-  to: string
+  login: string;
+  from: string;
+  to: string;
 }

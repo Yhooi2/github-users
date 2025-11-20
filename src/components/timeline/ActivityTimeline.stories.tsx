@@ -1,33 +1,33 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ActivityTimeline } from './ActivityTimeline'
-import { createMockRepository } from '@/test/mocks/github-data'
-import type { YearData } from '@/hooks/useUserAnalytics'
+import type { YearData } from "@/hooks/useUserAnalytics";
+import { createMockRepository } from "@/test/mocks/github-data";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ActivityTimeline } from "./ActivityTimeline";
 
 const meta: Meta<typeof ActivityTimeline> = {
-  title: 'Timeline/ActivityTimeline',
+  title: "Timeline/ActivityTimeline",
   component: ActivityTimeline,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof ActivityTimeline>
+export default meta;
+type Story = StoryObj<typeof ActivityTimeline>;
 
 // Use centralized mock factory (Week 4 P3: Mock data consolidation)
 const mockRepository = createMockRepository({
-  name: 'github-users',
-  url: 'https://github.com/user/github-users',
-  description: 'GitHub user analytics dashboard built with React and Apollo',
+  name: "github-users",
+  url: "https://github.com/user/github-users",
+  description: "GitHub user analytics dashboard built with React and Apollo",
   stargazerCount: 145,
   forkCount: 23,
   watchers: { totalCount: 12 },
-  primaryLanguage: { name: 'TypeScript', color: '#3178c6' },
+  primaryLanguage: { name: "TypeScript", color: "#3178c6" },
   repositoryTopics: { nodes: [] },
-  updatedAt: '2025-01-15T10:30:00Z',
+  updatedAt: "2025-01-15T10:30:00Z",
   defaultBranchRef: null,
-})
+});
 
 // Mock year data
 const mockTimeline: YearData[] = [
@@ -39,11 +39,11 @@ const mockTimeline: YearData[] = [
     totalReviews: 15,
     ownedRepos: [
       {
-        repository: { ...mockRepository, name: 'awesome-project' },
+        repository: { ...mockRepository, name: "awesome-project" },
         contributions: { totalCount: 200 },
       },
       {
-        repository: { ...mockRepository, name: 'cool-app', stargazerCount: 89 },
+        repository: { ...mockRepository, name: "cool-app", stargazerCount: 89 },
         contributions: { totalCount: 150 },
       },
     ],
@@ -51,8 +51,9 @@ const mockTimeline: YearData[] = [
       {
         repository: {
           ...mockRepository,
-          name: 'react',
-          description: 'A declarative, efficient, and flexible JavaScript library',
+          name: "react",
+          description:
+            "A declarative, efficient, and flexible JavaScript library",
           stargazerCount: 230000,
         },
         contributions: { totalCount: 50 },
@@ -67,7 +68,7 @@ const mockTimeline: YearData[] = [
     totalReviews: 10,
     ownedRepos: [
       {
-        repository: { ...mockRepository, name: 'old-project' },
+        repository: { ...mockRepository, name: "old-project" },
         contributions: { totalCount: 180 },
       },
     ],
@@ -84,39 +85,39 @@ const mockTimeline: YearData[] = [
       {
         repository: {
           ...mockRepository,
-          name: 'open-source-lib',
+          name: "open-source-lib",
           stargazerCount: 5600,
         },
         contributions: { totalCount: 120 },
       },
     ],
   },
-]
+];
 
 export const Default: Story = {
   args: {
     timeline: mockTimeline,
   },
-}
+};
 
 export const Loading: Story = {
   args: {
     timeline: [],
     loading: true,
   },
-}
+};
 
 export const Empty: Story = {
   args: {
     timeline: [],
   },
-}
+};
 
 export const SingleYear: Story = {
   args: {
     timeline: [mockTimeline[0]],
   },
-}
+};
 
 export const ManyYears: Story = {
   args: {
@@ -142,7 +143,7 @@ export const ManyYears: Story = {
       },
     ],
   },
-}
+};
 
 export const NoActivity: Story = {
   args: {
@@ -158,4 +159,4 @@ export const NoActivity: Story = {
       },
     ],
   },
-}
+};

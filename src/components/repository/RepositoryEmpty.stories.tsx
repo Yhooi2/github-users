@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { RepositoryEmpty } from './RepositoryEmpty';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { RepositoryEmpty } from "./RepositoryEmpty";
 
 const meta = {
-  title: 'Components/Repository/RepositoryEmpty',
+  title: "Components/Repository/RepositoryEmpty",
   component: RepositoryEmpty,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof RepositoryEmpty>;
 
 export default meta;
@@ -26,8 +26,8 @@ export const Default: Story = {
 export const NoRepositories: Story = {
   args: {
     hasFilters: false,
-    title: 'No Repositories Yet',
-    description: 'This user hasn\'t created any public repositories.',
+    title: "No Repositories Yet",
+    description: "This user hasn't created any public repositories.",
   },
 };
 
@@ -36,8 +36,9 @@ export const NoRepositories: Story = {
  */
 export const CustomMessage: Story = {
   args: {
-    title: 'No Starred Repositories',
-    description: 'You can add repositories by searching and clicking the filter button.',
+    title: "No Starred Repositories",
+    description:
+      "You can add repositories by searching and clicking the filter button.",
     hasFilters: true,
   },
 };
@@ -47,8 +48,9 @@ export const CustomMessage: Story = {
  */
 export const LongDescription: Story = {
   args: {
-    title: 'Advanced Filters Applied',
-    description: 'No repositories match your current advanced filter criteria. This could mean the combination of language, star count, fork count, and activity filters is too restrictive. Try removing some filters or broadening your search parameters.',
+    title: "Advanced Filters Applied",
+    description:
+      "No repositories match your current advanced filter criteria. This could mean the combination of language, star count, fork count, and activity filters is too restrictive. Try removing some filters or broadening your search parameters.",
     hasFilters: true,
   },
 };
@@ -58,8 +60,8 @@ export const LongDescription: Story = {
  */
 export const ArchivedRepositories: Story = {
   args: {
-    title: 'No Archived Repositories',
-    description: 'This user has no archived repositories.',
+    title: "No Archived Repositories",
+    description: "This user has no archived repositories.",
     hasFilters: false,
   },
 };

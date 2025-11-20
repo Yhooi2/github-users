@@ -1,25 +1,32 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./accordion";
 
-describe('Accordion', () => {
-  describe('rendering', () => {
-    it('should render accordion with items', () => {
+describe("Accordion", () => {
+  describe("rendering", () => {
+    it("should render accordion with items", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(container.querySelector('[data-slot="accordion"]')).toBeInTheDocument();
-      expect(screen.getByText('Question 1')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="accordion"]'),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Question 1")).toBeInTheDocument();
     });
 
-    it('should render multiple accordion items', () => {
+    it("should render multiple accordion items", () => {
       render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
@@ -34,30 +41,30 @@ describe('Accordion', () => {
             <AccordionTrigger>Question 3</AccordionTrigger>
             <AccordionContent>Answer 3</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(screen.getByText('Question 1')).toBeInTheDocument();
-      expect(screen.getByText('Question 2')).toBeInTheDocument();
-      expect(screen.getByText('Question 3')).toBeInTheDocument();
+      expect(screen.getByText("Question 1")).toBeInTheDocument();
+      expect(screen.getByText("Question 2")).toBeInTheDocument();
+      expect(screen.getByText("Question 3")).toBeInTheDocument();
     });
 
-    it('should not show content initially when closed', () => {
+    it("should not show content initially when closed", () => {
       render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Hidden Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
       // Content exists in DOM but is hidden via CSS/animations
-      expect(screen.getByText('Question')).toBeInTheDocument();
+      expect(screen.getByText("Question")).toBeInTheDocument();
     });
   });
 
-  describe('data attributes', () => {
+  describe("data attributes", () => {
     it('should have data-slot="accordion" on root', () => {
       const { container } = render(
         <Accordion type="single" collapsible>
@@ -65,10 +72,12 @@ describe('Accordion', () => {
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(container.querySelector('[data-slot="accordion"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="accordion"]'),
+      ).toBeInTheDocument();
     });
 
     it('should have data-slot="accordion-item" on items', () => {
@@ -78,10 +87,12 @@ describe('Accordion', () => {
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(container.querySelector('[data-slot="accordion-item"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="accordion-item"]'),
+      ).toBeInTheDocument();
     });
 
     it('should have data-slot="accordion-trigger" on triggers', () => {
@@ -91,10 +102,12 @@ describe('Accordion', () => {
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(container.querySelector('[data-slot="accordion-trigger"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="accordion-trigger"]'),
+      ).toBeInTheDocument();
     });
 
     it('should have data-slot="accordion-content" on content', () => {
@@ -104,15 +117,17 @@ describe('Accordion', () => {
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(container.querySelector('[data-slot="accordion-content"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="accordion-content"]'),
+      ).toBeInTheDocument();
     });
   });
 
-  describe('interactions', () => {
-    it('should expand item when clicked', async () => {
+  describe("interactions", () => {
+    it("should expand item when clicked", async () => {
       const user = userEvent.setup();
 
       render(
@@ -121,16 +136,16 @@ describe('Accordion', () => {
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const trigger = screen.getByText('Question');
+      const trigger = screen.getByText("Question");
       await user.click(trigger);
 
-      expect(screen.getByText('Answer')).toBeVisible();
+      expect(screen.getByText("Answer")).toBeVisible();
     });
 
-    it('should collapse item when clicked again', async () => {
+    it("should collapse item when clicked again", async () => {
       const user = userEvent.setup();
 
       const { container } = render(
@@ -139,22 +154,24 @@ describe('Accordion', () => {
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const trigger = screen.getByText('Question');
+      const trigger = screen.getByText("Question");
 
       // Open
       await user.click(trigger);
-      expect(screen.getByText('Answer')).toBeVisible();
+      expect(screen.getByText("Answer")).toBeVisible();
 
       // Close - check data-state attribute
       await user.click(trigger);
-      const triggerElement = container.querySelector('[data-slot="accordion-trigger"]');
-      expect(triggerElement).toHaveAttribute('data-state', 'closed');
+      const triggerElement = container.querySelector(
+        '[data-slot="accordion-trigger"]',
+      );
+      expect(triggerElement).toHaveAttribute("data-state", "closed");
     });
 
-    it('should close previous item in single mode', async () => {
+    it("should close previous item in single mode", async () => {
       const user = userEvent.setup();
 
       const { container } = render(
@@ -167,23 +184,25 @@ describe('Accordion', () => {
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
       // Open first item
-      await user.click(screen.getByText('Question 1'));
-      expect(screen.getByText('Answer 1')).toBeVisible();
+      await user.click(screen.getByText("Question 1"));
+      expect(screen.getByText("Answer 1")).toBeVisible();
 
       // Open second item (should close first) - check via aria-expanded
-      await user.click(screen.getByText('Question 2'));
-      expect(screen.getByText('Answer 2')).toBeVisible();
+      await user.click(screen.getByText("Question 2"));
+      expect(screen.getByText("Answer 2")).toBeVisible();
 
-      const triggers = container.querySelectorAll('[data-slot="accordion-trigger"]');
-      expect(triggers[0]).toHaveAttribute('data-state', 'closed');
-      expect(triggers[1]).toHaveAttribute('data-state', 'open');
+      const triggers = container.querySelectorAll(
+        '[data-slot="accordion-trigger"]',
+      );
+      expect(triggers[0]).toHaveAttribute("data-state", "closed");
+      expect(triggers[1]).toHaveAttribute("data-state", "open");
     });
 
-    it('should allow multiple items open in multiple mode', async () => {
+    it("should allow multiple items open in multiple mode", async () => {
       const user = userEvent.setup();
 
       render(
@@ -196,121 +215,131 @@ describe('Accordion', () => {
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      await user.click(screen.getByText('Question 1'));
-      await user.click(screen.getByText('Question 2'));
+      await user.click(screen.getByText("Question 1"));
+      await user.click(screen.getByText("Question 2"));
 
-      expect(screen.getByText('Answer 1')).toBeVisible();
-      expect(screen.getByText('Answer 2')).toBeVisible();
+      expect(screen.getByText("Answer 1")).toBeVisible();
+      expect(screen.getByText("Answer 2")).toBeVisible();
     });
   });
 
-  describe('styling', () => {
-    it('should have default border classes on items', () => {
+  describe("styling", () => {
+    it("should have default border classes on items", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
       const item = container.querySelector('[data-slot="accordion-item"]');
-      expect(item).toHaveClass('border-b');
-      expect(item).toHaveClass('last:border-b-0');
+      expect(item).toHaveClass("border-b");
+      expect(item).toHaveClass("last:border-b-0");
     });
 
-    it('should apply custom className to accordion', () => {
+    it("should apply custom className to accordion", () => {
       const { container } = render(
         <Accordion type="single" collapsible className="custom-accordion">
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
       const accordion = container.querySelector('[data-slot="accordion"]');
-      expect(accordion).toHaveClass('custom-accordion');
+      expect(accordion).toHaveClass("custom-accordion");
     });
 
-    it('should apply custom className to items', () => {
+    it("should apply custom className to items", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1" className="custom-item">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
       const item = container.querySelector('[data-slot="accordion-item"]');
-      expect(item).toHaveClass('custom-item');
+      expect(item).toHaveClass("custom-item");
     });
 
-    it('should apply custom className to trigger', () => {
+    it("should apply custom className to trigger", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
-            <AccordionTrigger className="custom-trigger">Question</AccordionTrigger>
+            <AccordionTrigger className="custom-trigger">
+              Question
+            </AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const trigger = container.querySelector('[data-slot="accordion-trigger"]');
-      expect(trigger).toHaveClass('custom-trigger');
+      const trigger = container.querySelector(
+        '[data-slot="accordion-trigger"]',
+      );
+      expect(trigger).toHaveClass("custom-trigger");
     });
 
-    it('should accept custom className on content', () => {
+    it("should accept custom className on content", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
-            <AccordionContent className="custom-content">Answer</AccordionContent>
+            <AccordionContent className="custom-content">
+              Answer
+            </AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
       // Content exists in DOM
-      expect(container.querySelector('[data-slot="accordion-content"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="accordion-content"]'),
+      ).toBeInTheDocument();
     });
 
-    it('should have chevron icon in trigger', () => {
+    it("should have chevron icon in trigger", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const svg = container.querySelector('[data-slot="accordion-trigger"] svg');
+      const svg = container.querySelector(
+        '[data-slot="accordion-trigger"] svg',
+      );
       expect(svg).toBeInTheDocument();
     });
   });
 
-  describe('default value', () => {
-    it('should open item with defaultValue in single mode', () => {
+  describe("default value", () => {
+    it("should open item with defaultValue in single mode", () => {
       render(
         <Accordion type="single" collapsible defaultValue="item-1">
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Default Open</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(screen.getByText('Default Open')).toBeVisible();
+      expect(screen.getByText("Default Open")).toBeVisible();
     });
 
-    it('should open multiple items with defaultValue in multiple mode', () => {
+    it("should open multiple items with defaultValue in multiple mode", () => {
       render(
-        <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+        <Accordion type="multiple" defaultValue={["item-1", "item-2"]}>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
@@ -319,29 +348,31 @@ describe('Accordion', () => {
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(screen.getByText('Answer 1')).toBeVisible();
-      expect(screen.getByText('Answer 2')).toBeVisible();
+      expect(screen.getByText("Answer 1")).toBeVisible();
+      expect(screen.getByText("Answer 2")).toBeVisible();
     });
   });
 
-  describe('accessibility', () => {
-    it('should have button role on trigger', () => {
+  describe("accessibility", () => {
+    it("should have button role on trigger", () => {
       render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(screen.getByRole('button', { name: 'Question' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Question" }),
+      ).toBeInTheDocument();
     });
 
-    it('should support keyboard navigation', async () => {
+    it("should support keyboard navigation", async () => {
       const user = userEvent.setup();
 
       render(
@@ -350,35 +381,37 @@ describe('Accordion', () => {
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const trigger = screen.getByRole('button', { name: 'Question' });
+      const trigger = screen.getByRole("button", { name: "Question" });
 
       // Focus and activate with Enter
       trigger.focus();
-      await user.keyboard('{Enter}');
+      await user.keyboard("{Enter}");
 
-      expect(screen.getByText('Answer')).toBeVisible();
+      expect(screen.getByText("Answer")).toBeVisible();
     });
 
-    it('should support aria attributes', () => {
+    it("should support aria attributes", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const trigger = container.querySelector('[data-slot="accordion-trigger"]');
-      expect(trigger).toHaveAttribute('aria-expanded');
+      const trigger = container.querySelector(
+        '[data-slot="accordion-trigger"]',
+      );
+      expect(trigger).toHaveAttribute("aria-expanded");
     });
   });
 
-  describe('disabled state', () => {
-    it('should not expand disabled item', async () => {
+  describe("disabled state", () => {
+    it("should not expand disabled item", async () => {
       const user = userEvent.setup();
 
       const { container } = render(
@@ -387,34 +420,38 @@ describe('Accordion', () => {
             <AccordionTrigger>Disabled Question</AccordionTrigger>
             <AccordionContent>Hidden Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const trigger = screen.getByText('Disabled Question');
+      const trigger = screen.getByText("Disabled Question");
       await user.click(trigger);
 
       // Check that trigger remains closed via data-state
-      const triggerElement = container.querySelector('[data-slot="accordion-trigger"]');
-      expect(triggerElement).toHaveAttribute('data-state', 'closed');
+      const triggerElement = container.querySelector(
+        '[data-slot="accordion-trigger"]',
+      );
+      expect(triggerElement).toHaveAttribute("data-state", "closed");
     });
 
-    it('should have disabled attribute on disabled trigger', () => {
+    it("should have disabled attribute on disabled trigger", () => {
       const { container } = render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1" disabled>
             <AccordionTrigger>Disabled</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      const trigger = container.querySelector('[data-slot="accordion-trigger"]');
+      const trigger = container.querySelector(
+        '[data-slot="accordion-trigger"]',
+      );
       expect(trigger).toBeDisabled();
     });
   });
 
-  describe('edge cases', () => {
-    it('should render with complex content', () => {
+  describe("edge cases", () => {
+    it("should render with complex content", () => {
       render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
@@ -429,36 +466,36 @@ describe('Accordion', () => {
               </div>
             </AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(screen.getByText('Complex')).toBeInTheDocument();
+      expect(screen.getByText("Complex")).toBeInTheDocument();
     });
 
-    it('should handle empty content', () => {
+    it("should handle empty content", () => {
       render(
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Empty</AccordionTrigger>
             <AccordionContent></AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(screen.getByText('Empty')).toBeInTheDocument();
+      expect(screen.getByText("Empty")).toBeInTheDocument();
     });
 
-    it('should render single item accordion', () => {
+    it("should render single item accordion", () => {
       render(
         <Accordion type="single" collapsible>
           <AccordionItem value="only">
             <AccordionTrigger>Only Item</AccordionTrigger>
             <AccordionContent>Only Content</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Accordion>,
       );
 
-      expect(screen.getByText('Only Item')).toBeInTheDocument();
+      expect(screen.getByText("Only Item")).toBeInTheDocument();
     });
   });
 });

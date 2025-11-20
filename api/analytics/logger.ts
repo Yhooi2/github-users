@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv'
+import { kv } from "@vercel/kv";
 
 /**
  * OAuth Analytics Logger
@@ -7,26 +7,26 @@ import { kv } from '@vercel/kv'
  */
 
 export interface OAuthLoginEvent {
-  timestamp: number
-  userId: number
-  login: string
-  sessionId: string
+  timestamp: number;
+  userId: number;
+  login: string;
+  sessionId: string;
 }
 
 export interface OAuthLogoutEvent {
-  timestamp: number
-  userId: number
-  login: string
-  sessionId: string
+  timestamp: number;
+  userId: number;
+  login: string;
+  sessionId: string;
 }
 
 export interface RateLimitSnapshot {
-  timestamp: number
-  remaining: number
-  limit: number
-  used: number
-  isDemo: boolean
-  userLogin?: string
+  timestamp: number;
+  remaining: number;
+  limit: number;
+  used: number;
+  isDemo: boolean;
+  userLogin?: string;
 }
 
 /**
@@ -34,8 +34,8 @@ export interface RateLimitSnapshot {
  */
 export async function logOAuthLogin(event: OAuthLoginEvent): Promise<void> {
   if (!kv) {
-    console.warn('KV not available, skipping OAuth login logging')
-    return
+    console.warn("KV not available, skipping OAuth login logging");
+    return;
   }
 
   try {
@@ -44,20 +44,20 @@ export async function logOAuthLogin(event: OAuthLoginEvent): Promise<void> {
       userId: event.userId,
       login: event.login,
       sessionId: event.sessionId,
-    })
+    });
 
     // Store in sorted set by timestamp
-    await kv.zadd('analytics:oauth:logins', {
+    await kv.zadd("analytics:oauth:logins", {
       score: event.timestamp,
       member: eventData,
-    })
+    });
 
     // Set expiry to 30 days
-    await kv.expire('analytics:oauth:logins', 2592000)
+    await kv.expire("analytics:oauth:logins", 2592000);
 
-    console.log(`OAuth login logged: ${event.login} (${event.userId})`)
+    console.log(`OAuth login logged: ${event.login} (${event.userId})`);
   } catch (error) {
-    console.error('Failed to log OAuth login:', error)
+    console.error("Failed to log OAuth login:", error);
   }
 }
 
@@ -66,8 +66,8 @@ export async function logOAuthLogin(event: OAuthLoginEvent): Promise<void> {
  */
 export async function logOAuthLogout(event: OAuthLogoutEvent): Promise<void> {
   if (!kv) {
-    console.warn('KV not available, skipping OAuth logout logging')
-    return
+    console.warn("KV not available, skipping OAuth logout logging");
+    return;
   }
 
   try {
@@ -76,29 +76,31 @@ export async function logOAuthLogout(event: OAuthLogoutEvent): Promise<void> {
       userId: event.userId,
       login: event.login,
       sessionId: event.sessionId,
-    })
+    });
 
     // Store in sorted set by timestamp
-    await kv.zadd('analytics:oauth:logouts', {
+    await kv.zadd("analytics:oauth:logouts", {
       score: event.timestamp,
       member: eventData,
-    })
+    });
 
     // Set expiry to 30 days
-    await kv.expire('analytics:oauth:logouts', 2592000)
+    await kv.expire("analytics:oauth:logouts", 2592000);
 
-    console.log(`OAuth logout logged: ${event.login} (${event.userId})`)
+    console.log(`OAuth logout logged: ${event.login} (${event.userId})`);
   } catch (error) {
-    console.error('Failed to log OAuth logout:', error)
+    console.error("Failed to log OAuth logout:", error);
   }
 }
 
 /**
  * Log rate limit snapshot
  */
-export async function logRateLimitSnapshot(snapshot: RateLimitSnapshot): Promise<void> {
+export async function logRateLimitSnapshot(
+  snapshot: RateLimitSnapshot,
+): Promise<void> {
   if (!kv) {
-    return
+    return;
   }
 
   try {
@@ -109,18 +111,18 @@ export async function logRateLimitSnapshot(snapshot: RateLimitSnapshot): Promise
       used: snapshot.used,
       isDemo: snapshot.isDemo,
       userLogin: snapshot.userLogin,
-    })
+    });
 
     // Store in sorted set by timestamp
-    await kv.zadd('analytics:ratelimit', {
+    await kv.zadd("analytics:ratelimit", {
       score: snapshot.timestamp,
       member: snapshotData,
-    })
+    });
 
     // Set expiry to 7 days (rate limit snapshots are more frequent)
-    await kv.expire('analytics:ratelimit', 604800)
+    await kv.expire("analytics:ratelimit", 604800);
   } catch (error) {
-    console.error('Failed to log rate limit snapshot:', error)
+    console.error("Failed to log rate limit snapshot:", error);
   }
 }
 
@@ -129,19 +131,19 @@ export async function logRateLimitSnapshot(snapshot: RateLimitSnapshot): Promise
  */
 export async function updateSessionActivity(sessionId: string): Promise<void> {
   if (!kv) {
-    return
+    return;
   }
 
   try {
-    const key = `session:${sessionId}`
+    const key = `session:${sessionId}`;
     const session = await kv.get<{
-      userId: number
-      login: string
-      accessToken: string
-      avatarUrl: string
-      createdAt: number
-      lastActivity?: number
-    }>(key)
+      userId: number;
+      login: string;
+      accessToken: string;
+      avatarUrl: string;
+      createdAt: number;
+      lastActivity?: number;
+    }>(key);
 
     if (session) {
       await kv.set(
@@ -150,11 +152,11 @@ export async function updateSessionActivity(sessionId: string): Promise<void> {
           ...session,
           lastActivity: Date.now(),
         },
-        { ex: 2592000 } // 30 days TTL
-      )
+        { ex: 2592000 }, // 30 days TTL
+      );
     }
   } catch (error) {
-    console.error('Failed to update session activity:', error)
+    console.error("Failed to update session activity:", error);
   }
 }
 
@@ -164,25 +166,25 @@ export async function updateSessionActivity(sessionId: string): Promise<void> {
  */
 export async function cleanupOldAnalytics(): Promise<void> {
   if (!kv) {
-    return
+    return;
   }
 
   try {
-    const now = Date.now()
-    const thirtyDaysAgo = now - 2592000000 // 30 days in ms
+    const now = Date.now();
+    const thirtyDaysAgo = now - 2592000000; // 30 days in ms
 
     // Remove old login events
-    await kv.zremrangebyscore('analytics:oauth:logins', 0, thirtyDaysAgo)
+    await kv.zremrangebyscore("analytics:oauth:logins", 0, thirtyDaysAgo);
 
     // Remove old logout events
-    await kv.zremrangebyscore('analytics:oauth:logouts', 0, thirtyDaysAgo)
+    await kv.zremrangebyscore("analytics:oauth:logouts", 0, thirtyDaysAgo);
 
     // Remove old rate limit snapshots (keep only 7 days)
-    const sevenDaysAgo = now - 604800000
-    await kv.zremrangebyscore('analytics:ratelimit', 0, sevenDaysAgo)
+    const sevenDaysAgo = now - 604800000;
+    await kv.zremrangebyscore("analytics:ratelimit", 0, sevenDaysAgo);
 
-    console.log('Analytics cleanup completed')
+    console.log("Analytics cleanup completed");
   } catch (error) {
-    console.error('Failed to cleanup old analytics:', error)
+    console.error("Failed to cleanup old analytics:", error);
   }
 }

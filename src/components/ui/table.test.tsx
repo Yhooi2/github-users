@@ -1,19 +1,19 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import {
   Table,
-  TableHeader,
   TableBody,
+  TableCaption,
+  TableCell,
   TableFooter,
   TableHead,
+  TableHeader,
   TableRow,
-  TableCell,
-  TableCaption,
-} from './table';
+} from "./table";
 
-describe('Table', () => {
-  describe('rendering', () => {
-    it('should render complete table with all sections', () => {
+describe("Table", () => {
+  describe("rendering", () => {
+    it("should render complete table with all sections", () => {
       render(
         <Table>
           <TableCaption>Test Caption</TableCaption>
@@ -32,16 +32,16 @@ describe('Table', () => {
               <TableCell>Footer 1</TableCell>
             </TableRow>
           </TableFooter>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByText('Test Caption')).toBeInTheDocument();
-      expect(screen.getByText('Header 1')).toBeInTheDocument();
-      expect(screen.getByText('Cell 1')).toBeInTheDocument();
-      expect(screen.getByText('Footer 1')).toBeInTheDocument();
+      expect(screen.getByText("Test Caption")).toBeInTheDocument();
+      expect(screen.getByText("Header 1")).toBeInTheDocument();
+      expect(screen.getByText("Cell 1")).toBeInTheDocument();
+      expect(screen.getByText("Footer 1")).toBeInTheDocument();
     });
 
-    it('should render table without optional sections', () => {
+    it("should render table without optional sections", () => {
       render(
         <Table>
           <TableBody>
@@ -49,13 +49,13 @@ describe('Table', () => {
               <TableCell>Only Body</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByText('Only Body')).toBeInTheDocument();
+      expect(screen.getByText("Only Body")).toBeInTheDocument();
     });
 
-    it('should render multiple rows', () => {
+    it("should render multiple rows", () => {
       render(
         <Table>
           <TableBody>
@@ -69,15 +69,15 @@ describe('Table', () => {
               <TableCell>Row 3</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByText('Row 1')).toBeInTheDocument();
-      expect(screen.getByText('Row 2')).toBeInTheDocument();
-      expect(screen.getByText('Row 3')).toBeInTheDocument();
+      expect(screen.getByText("Row 1")).toBeInTheDocument();
+      expect(screen.getByText("Row 2")).toBeInTheDocument();
+      expect(screen.getByText("Row 3")).toBeInTheDocument();
     });
 
-    it('should render multiple columns', () => {
+    it("should render multiple columns", () => {
       render(
         <Table>
           <TableBody>
@@ -87,17 +87,17 @@ describe('Table', () => {
               <TableCell>Col 3</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByText('Col 1')).toBeInTheDocument();
-      expect(screen.getByText('Col 2')).toBeInTheDocument();
-      expect(screen.getByText('Col 3')).toBeInTheDocument();
+      expect(screen.getByText("Col 1")).toBeInTheDocument();
+      expect(screen.getByText("Col 2")).toBeInTheDocument();
+      expect(screen.getByText("Col 3")).toBeInTheDocument();
     });
   });
 
-  describe('data attributes', () => {
-    it('should have correct data-slot attributes', () => {
+  describe("data attributes", () => {
+    it("should have correct data-slot attributes", () => {
       const { container } = render(
         <Table>
           <TableCaption>Caption</TableCaption>
@@ -116,21 +116,39 @@ describe('Table', () => {
               <TableCell>Footer</TableCell>
             </TableRow>
           </TableFooter>
-        </Table>
+        </Table>,
       );
 
-      expect(container.querySelector('[data-slot="table-container"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table-caption"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table-header"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table-body"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table-footer"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table-row"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table-head"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="table-cell"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-container"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-caption"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-header"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-body"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-footer"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-row"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-head"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="table-cell"]'),
+      ).toBeInTheDocument();
     });
 
-    it('should support data-state attribute on TableRow', () => {
+    it("should support data-state attribute on TableRow", () => {
       const { container } = render(
         <Table>
           <TableBody>
@@ -138,7 +156,7 @@ describe('Table', () => {
               <TableCell>Selected</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
       const row = container.querySelector('[data-state="selected"]');
@@ -146,8 +164,8 @@ describe('Table', () => {
     });
   });
 
-  describe('styling', () => {
-    it('should apply custom className to Table', () => {
+  describe("styling", () => {
+    it("should apply custom className to Table", () => {
       const { container } = render(
         <Table className="custom-table">
           <TableBody>
@@ -155,14 +173,14 @@ describe('Table', () => {
               <TableCell>Content</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
       const table = container.querySelector('[data-slot="table"]');
-      expect(table).toHaveClass('custom-table');
+      expect(table).toHaveClass("custom-table");
     });
 
-    it('should apply custom className to TableHeader', () => {
+    it("should apply custom className to TableHeader", () => {
       const { container } = render(
         <Table>
           <TableHeader className="custom-header">
@@ -170,14 +188,14 @@ describe('Table', () => {
               <TableHead>Head</TableHead>
             </TableRow>
           </TableHeader>
-        </Table>
+        </Table>,
       );
 
       const header = container.querySelector('[data-slot="table-header"]');
-      expect(header).toHaveClass('custom-header');
+      expect(header).toHaveClass("custom-header");
     });
 
-    it('should apply custom className to TableBody', () => {
+    it("should apply custom className to TableBody", () => {
       const { container } = render(
         <Table>
           <TableBody className="custom-body">
@@ -185,14 +203,14 @@ describe('Table', () => {
               <TableCell>Cell</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
       const body = container.querySelector('[data-slot="table-body"]');
-      expect(body).toHaveClass('custom-body');
+      expect(body).toHaveClass("custom-body");
     });
 
-    it('should apply custom className to TableFooter', () => {
+    it("should apply custom className to TableFooter", () => {
       const { container } = render(
         <Table>
           <TableFooter className="custom-footer">
@@ -200,14 +218,14 @@ describe('Table', () => {
               <TableCell>Footer</TableCell>
             </TableRow>
           </TableFooter>
-        </Table>
+        </Table>,
       );
 
       const footer = container.querySelector('[data-slot="table-footer"]');
-      expect(footer).toHaveClass('custom-footer');
+      expect(footer).toHaveClass("custom-footer");
     });
 
-    it('should apply custom className to TableRow', () => {
+    it("should apply custom className to TableRow", () => {
       const { container } = render(
         <Table>
           <TableBody>
@@ -215,14 +233,14 @@ describe('Table', () => {
               <TableCell>Cell</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
       const row = container.querySelector('[data-slot="table-row"]');
-      expect(row).toHaveClass('custom-row');
+      expect(row).toHaveClass("custom-row");
     });
 
-    it('should apply custom className to TableHead', () => {
+    it("should apply custom className to TableHead", () => {
       const { container } = render(
         <Table>
           <TableHeader>
@@ -230,14 +248,14 @@ describe('Table', () => {
               <TableHead className="custom-head">Head</TableHead>
             </TableRow>
           </TableHeader>
-        </Table>
+        </Table>,
       );
 
       const head = container.querySelector('[data-slot="table-head"]');
-      expect(head).toHaveClass('custom-head');
+      expect(head).toHaveClass("custom-head");
     });
 
-    it('should apply custom className to TableCell', () => {
+    it("should apply custom className to TableCell", () => {
       const { container } = render(
         <Table>
           <TableBody>
@@ -245,27 +263,27 @@ describe('Table', () => {
               <TableCell className="custom-cell">Cell</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
       const cell = container.querySelector('[data-slot="table-cell"]');
-      expect(cell).toHaveClass('custom-cell');
+      expect(cell).toHaveClass("custom-cell");
     });
 
-    it('should apply custom className to TableCaption', () => {
+    it("should apply custom className to TableCaption", () => {
       const { container } = render(
         <Table>
           <TableCaption className="custom-caption">Caption</TableCaption>
-        </Table>
+        </Table>,
       );
 
       const caption = container.querySelector('[data-slot="table-caption"]');
-      expect(caption).toHaveClass('custom-caption');
+      expect(caption).toHaveClass("custom-caption");
     });
   });
 
-  describe('semantic HTML', () => {
-    it('should use semantic table elements', () => {
+  describe("semantic HTML", () => {
+    it("should use semantic table elements", () => {
       const { container } = render(
         <Table>
           <TableHeader>
@@ -283,31 +301,31 @@ describe('Table', () => {
               <TableCell>Footer</TableCell>
             </TableRow>
           </TableFooter>
-        </Table>
+        </Table>,
       );
 
-      expect(container.querySelector('table')).toBeInTheDocument();
-      expect(container.querySelector('thead')).toBeInTheDocument();
-      expect(container.querySelector('tbody')).toBeInTheDocument();
-      expect(container.querySelector('tfoot')).toBeInTheDocument();
-      expect(container.querySelector('tr')).toBeInTheDocument();
-      expect(container.querySelector('th')).toBeInTheDocument();
-      expect(container.querySelector('td')).toBeInTheDocument();
+      expect(container.querySelector("table")).toBeInTheDocument();
+      expect(container.querySelector("thead")).toBeInTheDocument();
+      expect(container.querySelector("tbody")).toBeInTheDocument();
+      expect(container.querySelector("tfoot")).toBeInTheDocument();
+      expect(container.querySelector("tr")).toBeInTheDocument();
+      expect(container.querySelector("th")).toBeInTheDocument();
+      expect(container.querySelector("td")).toBeInTheDocument();
     });
 
-    it('should use caption element', () => {
+    it("should use caption element", () => {
       const { container } = render(
         <Table>
           <TableCaption>Test Caption</TableCaption>
-        </Table>
+        </Table>,
       );
 
-      expect(container.querySelector('caption')).toBeInTheDocument();
+      expect(container.querySelector("caption")).toBeInTheDocument();
     });
   });
 
-  describe('colSpan support', () => {
-    it('should support colSpan on TableCell', () => {
+  describe("colSpan support", () => {
+    it("should support colSpan on TableCell", () => {
       render(
         <Table>
           <TableBody>
@@ -315,14 +333,14 @@ describe('Table', () => {
               <TableCell colSpan={3}>Spanning 3 columns</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
-      const cell = screen.getByText('Spanning 3 columns');
-      expect(cell).toHaveAttribute('colSpan', '3');
+      const cell = screen.getByText("Spanning 3 columns");
+      expect(cell).toHaveAttribute("colSpan", "3");
     });
 
-    it('should support colSpan in footer', () => {
+    it("should support colSpan in footer", () => {
       render(
         <Table>
           <TableFooter>
@@ -331,16 +349,16 @@ describe('Table', () => {
               <TableCell>$100</TableCell>
             </TableRow>
           </TableFooter>
-        </Table>
+        </Table>,
       );
 
-      const totalCell = screen.getByText('Total');
-      expect(totalCell).toHaveAttribute('colSpan', '2');
+      const totalCell = screen.getByText("Total");
+      expect(totalCell).toHaveAttribute("colSpan", "2");
     });
   });
 
-  describe('accessibility', () => {
-    it('should support aria attributes via props spread', () => {
+  describe("accessibility", () => {
+    it("should support aria attributes via props spread", () => {
       render(
         <Table aria-label="User data table">
           <TableBody>
@@ -348,38 +366,42 @@ describe('Table', () => {
               <TableCell>Data</TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByLabelText('User data table')).toBeInTheDocument();
+      expect(screen.getByLabelText("User data table")).toBeInTheDocument();
     });
 
-    it('should support role attribute on checkboxes', () => {
+    it("should support role attribute on checkboxes", () => {
       render(
         <Table>
           <TableBody>
             <TableRow>
               <TableCell>
-                <input type="checkbox" role="checkbox" aria-label="Select row" />
+                <input
+                  type="checkbox"
+                  role="checkbox"
+                  aria-label="Select row"
+                />
               </TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByRole('checkbox')).toBeInTheDocument();
+      expect(screen.getByRole("checkbox")).toBeInTheDocument();
     });
   });
 
-  describe('edge cases', () => {
-    it('should render empty table', () => {
+  describe("edge cases", () => {
+    it("should render empty table", () => {
       const { container } = render(<Table />);
 
       const table = container.querySelector('[data-slot="table"]');
       expect(table).toBeInTheDocument();
     });
 
-    it('should render table with only header', () => {
+    it("should render table with only header", () => {
       render(
         <Table>
           <TableHeader>
@@ -387,13 +409,13 @@ describe('Table', () => {
               <TableHead>Only Header</TableHead>
             </TableRow>
           </TableHeader>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByText('Only Header')).toBeInTheDocument();
+      expect(screen.getByText("Only Header")).toBeInTheDocument();
     });
 
-    it('should render table with nested elements in cells', () => {
+    it("should render table with nested elements in cells", () => {
       render(
         <Table>
           <TableBody>
@@ -406,12 +428,12 @@ describe('Table', () => {
               </TableCell>
             </TableRow>
           </TableBody>
-        </Table>
+        </Table>,
       );
 
-      expect(screen.getByTestId('nested')).toBeInTheDocument();
-      expect(screen.getByText('Nested')).toBeInTheDocument();
-      expect(screen.getByRole('button')).toBeInTheDocument();
+      expect(screen.getByTestId("nested")).toBeInTheDocument();
+      expect(screen.getByText("Nested")).toBeInTheDocument();
+      expect(screen.getByRole("button")).toBeInTheDocument();
     });
   });
 });

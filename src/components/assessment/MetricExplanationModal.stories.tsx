@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { MetricExplanationModal } from './MetricExplanationModal';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { MetricExplanationModal } from "./MetricExplanationModal";
 
 const meta: Meta<typeof MetricExplanationModal> = {
-  title: 'Assessment/MetricExplanationModal',
+  title: "Assessment/MetricExplanationModal",
   component: MetricExplanationModal,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
 };
 
@@ -16,8 +16,8 @@ type Story = StoryObj<typeof MetricExplanationModal>;
 export const ActivityMetric: Story = {
   args: {
     isOpen: true,
-    onClose: () => console.log('Close modal'),
-    metric: 'activity',
+    onClose: () => console.log("Close modal"),
+    metric: "activity",
     score: 85,
     breakdown: {
       recentCommits: 40,
@@ -30,8 +30,8 @@ export const ActivityMetric: Story = {
 export const ImpactMetric: Story = {
   args: {
     isOpen: true,
-    onClose: () => console.log('Close modal'),
-    metric: 'impact',
+    onClose: () => console.log("Close modal"),
+    metric: "impact",
     score: 72,
     breakdown: {
       stars: 30,
@@ -46,8 +46,8 @@ export const ImpactMetric: Story = {
 export const QualityMetric: Story = {
   args: {
     isOpen: true,
-    onClose: () => console.log('Close modal'),
-    metric: 'quality',
+    onClose: () => console.log("Close modal"),
+    metric: "quality",
     score: 90,
     breakdown: {
       originality: 30,
@@ -62,8 +62,8 @@ export const QualityMetric: Story = {
 export const GrowthMetric: Story = {
   args: {
     isOpen: true,
-    onClose: () => console.log('Close modal'),
-    metric: 'growth',
+    onClose: () => console.log("Close modal"),
+    metric: "growth",
     score: 45,
     breakdown: {
       commitGrowth: 20,
@@ -76,8 +76,8 @@ export const GrowthMetric: Story = {
 export const Closed: Story = {
   args: {
     isOpen: false,
-    onClose: () => console.log('Close modal'),
-    metric: 'activity',
+    onClose: () => console.log("Close modal"),
+    metric: "activity",
     score: 85,
     breakdown: {
       recentCommits: 40,
@@ -90,8 +90,8 @@ export const Closed: Story = {
 export const LowScore: Story = {
   args: {
     isOpen: true,
-    onClose: () => console.log('Close modal'),
-    metric: 'activity',
+    onClose: () => console.log("Close modal"),
+    metric: "activity",
     score: 25,
     breakdown: {
       recentCommits: 10,
@@ -104,8 +104,8 @@ export const LowScore: Story = {
 export const PerfectScore: Story = {
   args: {
     isOpen: true,
-    onClose: () => console.log('Close modal'),
-    metric: 'impact',
+    onClose: () => console.log("Close modal"),
+    metric: "impact",
     score: 100,
     breakdown: {
       stars: 35,

@@ -7,8 +7,8 @@
  * Week 2 P1: Quality improvements for test suite
  */
 
-import { screen, within } from '@testing-library/react'
-import { expect } from 'vitest'
+import { screen, within } from "@testing-library/react";
+import { expect } from "vitest";
 
 /**
  * Asserts that a metric value is displayed with correct formatting and accessibility
@@ -30,38 +30,41 @@ import { expect } from 'vitest'
 export function expectMetricValue(
   value: number,
   options: {
-    format?: 'percentage' | 'number' | 'ratio'
-    ariaLabel?: string
-    container?: HTMLElement
-  } = {}
+    format?: "percentage" | "number" | "ratio";
+    ariaLabel?: string;
+    container?: HTMLElement;
+  } = {},
 ) {
-  const { format = 'number', ariaLabel, container } = options
-  const scope = container ? within(container) : screen
+  const { format = "number", ariaLabel, container } = options;
+  const scope = container ? within(container) : screen;
 
-  let formattedValue: string
+  let formattedValue: string;
   switch (format) {
-    case 'percentage':
-      formattedValue = `${value}%`
-      break
-    case 'number':
-      formattedValue = value.toString()
-      break
-    case 'ratio':
-      formattedValue = value.toString()
-      break
+    case "percentage":
+      formattedValue = `${value}%`;
+      break;
+    case "number":
+      formattedValue = value.toString();
+      break;
+    case "ratio":
+      formattedValue = value.toString();
+      break;
     default:
-      formattedValue = value.toString()
+      formattedValue = value.toString();
   }
 
-  const element = scope.getByText(formattedValue)
-  expect(element, `Expected to find metric value "${formattedValue}"`).toBeInTheDocument()
+  const element = scope.getByText(formattedValue);
+  expect(
+    element,
+    `Expected to find metric value "${formattedValue}"`,
+  ).toBeInTheDocument();
 
   if (ariaLabel) {
-    const labeledElement = scope.getByLabelText(ariaLabel)
+    const labeledElement = scope.getByLabelText(ariaLabel);
     expect(
       labeledElement,
-      `Expected element with aria-label="${ariaLabel}" to contain "${formattedValue}"`
-    ).toBeInTheDocument()
+      `Expected element with aria-label="${ariaLabel}" to contain "${formattedValue}"`,
+    ).toBeInTheDocument();
   }
 }
 
@@ -81,31 +84,31 @@ export function expectBreakdownMetric(
   label: string,
   value: number,
   max: number,
-  container?: HTMLElement
+  container?: HTMLElement,
 ) {
-  const scope = container ? within(container) : screen
-  const formattedValue = `${value}/${max}`
+  const scope = container ? within(container) : screen;
+  const formattedValue = `${value}/${max}`;
 
   expect(
     scope.getByText(label),
-    `Expected to find breakdown label "${label}"`
-  ).toBeInTheDocument()
+    `Expected to find breakdown label "${label}"`,
+  ).toBeInTheDocument();
 
   expect(
     scope.getByText(formattedValue),
-    `Expected to find breakdown value "${formattedValue}"`
-  ).toBeInTheDocument()
+    `Expected to find breakdown value "${formattedValue}"`,
+  ).toBeInTheDocument();
 }
 
 /**
  * Schema for component structure validation
  */
 export interface StructureSchema {
-  selector: string
-  required?: boolean
-  attributes?: Record<string, string | RegExp>
-  children?: StructureSchema[]
-  count?: number
+  selector: string;
+  required?: boolean;
+  attributes?: Record<string, string | RegExp>;
+  children?: StructureSchema[];
+  count?: number;
 }
 
 /**
@@ -129,47 +132,52 @@ export interface StructureSchema {
  *   }
  * ])
  */
-export function expectStructure(container: HTMLElement, schema: StructureSchema[]) {
-  schema.forEach(({ selector, required = true, attributes, children, count }) => {
-    const elements = container.querySelectorAll(selector)
+export function expectStructure(
+  container: HTMLElement,
+  schema: StructureSchema[],
+) {
+  schema.forEach(
+    ({ selector, required = true, attributes, children, count }) => {
+      const elements = container.querySelectorAll(selector);
 
-    if (required) {
-      expect(
-        elements.length,
-        `Required element "${selector}" not found in container`
-      ).toBeGreaterThan(0)
-    }
+      if (required) {
+        expect(
+          elements.length,
+          `Required element "${selector}" not found in container`,
+        ).toBeGreaterThan(0);
+      }
 
-    if (count !== undefined) {
-      expect(
-        elements.length,
-        `Expected ${count} element(s) matching "${selector}", found ${elements.length}`
-      ).toBe(count)
-    }
+      if (count !== undefined) {
+        expect(
+          elements.length,
+          `Expected ${count} element(s) matching "${selector}", found ${elements.length}`,
+        ).toBe(count);
+      }
 
-    if (attributes && elements.length > 0) {
-      const element = elements[0]
-      Object.entries(attributes).forEach(([attr, expectedValue]) => {
-        const actualValue = element.getAttribute(attr)
+      if (attributes && elements.length > 0) {
+        const element = elements[0];
+        Object.entries(attributes).forEach(([attr, expectedValue]) => {
+          const actualValue = element.getAttribute(attr);
 
-        if (expectedValue instanceof RegExp) {
-          expect(
-            actualValue,
-            `Expected attribute "${attr}" to match pattern ${expectedValue}`
-          ).toMatch(expectedValue)
-        } else {
-          expect(
-            actualValue,
-            `Expected attribute "${attr}" to equal "${expectedValue}"`
-          ).toBe(expectedValue)
-        }
-      })
-    }
+          if (expectedValue instanceof RegExp) {
+            expect(
+              actualValue,
+              `Expected attribute "${attr}" to match pattern ${expectedValue}`,
+            ).toMatch(expectedValue);
+          } else {
+            expect(
+              actualValue,
+              `Expected attribute "${attr}" to equal "${expectedValue}"`,
+            ).toBe(expectedValue);
+          }
+        });
+      }
 
-    if (children && elements.length > 0) {
-      expectStructure(elements[0] as HTMLElement, children)
-    }
-  })
+      if (children && elements.length > 0) {
+        expectStructure(elements[0] as HTMLElement, children);
+      }
+    },
+  );
 }
 
 /**
@@ -187,24 +195,24 @@ export function expectStructure(container: HTMLElement, schema: StructureSchema[
  */
 export function expectARIA(
   element: HTMLElement,
-  expectedAttributes: Record<string, string | boolean | null>
+  expectedAttributes: Record<string, string | boolean | null>,
 ) {
   Object.entries(expectedAttributes).forEach(([attr, expectedValue]) => {
     if (expectedValue === null) {
       expect(
         element.hasAttribute(attr),
-        `Expected element to NOT have attribute "${attr}"`
-      ).toBe(false)
+        `Expected element to NOT have attribute "${attr}"`,
+      ).toBe(false);
     } else {
-      const actualValue = element.getAttribute(attr)
-      const stringValue = String(expectedValue)
+      const actualValue = element.getAttribute(attr);
+      const stringValue = String(expectedValue);
 
       expect(
         actualValue,
-        `Expected "${attr}" to be "${stringValue}", but got "${actualValue}"`
-      ).toBe(stringValue)
+        `Expected "${attr}" to be "${stringValue}", but got "${actualValue}"`,
+      ).toBe(stringValue);
     }
-  })
+  });
 }
 
 /**
@@ -217,19 +225,22 @@ export function expectARIA(
  * expectLoadingState(container, true)
  * // Checks for: .animate-pulse class, skeleton loaders
  */
-export function expectLoadingState(container: HTMLElement, expectedLoading: boolean) {
-  const pulseElements = container.querySelectorAll('.animate-pulse')
+export function expectLoadingState(
+  container: HTMLElement,
+  expectedLoading: boolean,
+) {
+  const pulseElements = container.querySelectorAll(".animate-pulse");
 
   if (expectedLoading) {
     expect(
       pulseElements.length,
-      'Expected to find loading skeleton with .animate-pulse class'
-    ).toBeGreaterThan(0)
+      "Expected to find loading skeleton with .animate-pulse class",
+    ).toBeGreaterThan(0);
   } else {
     expect(
       pulseElements.length,
-      'Expected NOT to find loading skeleton with .animate-pulse class'
-    ).toBe(0)
+      "Expected NOT to find loading skeleton with .animate-pulse class",
+    ).toBe(0);
   }
 }
 
@@ -243,13 +254,18 @@ export function expectLoadingState(container: HTMLElement, expectedLoading: bool
  * expectProgressBar(container, 75)
  * // Checks for: element with style="width: 75%"
  */
-export function expectProgressBar(container: HTMLElement, expectedPercentage: number) {
-  const progressBar = container.querySelector(`[style*="width: ${expectedPercentage}%"]`)
+export function expectProgressBar(
+  container: HTMLElement,
+  expectedPercentage: number,
+) {
+  const progressBar = container.querySelector(
+    `[style*="width: ${expectedPercentage}%"]`,
+  );
 
   expect(
     progressBar,
-    `Expected to find progress bar with width: ${expectedPercentage}%`
-  ).toBeInTheDocument()
+    `Expected to find progress bar with width: ${expectedPercentage}%`,
+  ).toBeInTheDocument();
 }
 
 /**
@@ -270,21 +286,21 @@ export function expectProgressBar(container: HTMLElement, expectedPercentage: nu
 export function expectClasses(
   element: HTMLElement,
   expectedClasses: string[],
-  unexpectedClasses: string[] = []
+  unexpectedClasses: string[] = [],
 ) {
   expectedClasses.forEach((className) => {
     expect(
       element,
-      `Expected element to have class "${className}"`
-    ).toHaveClass(className)
-  })
+      `Expected element to have class "${className}"`,
+    ).toHaveClass(className);
+  });
 
   unexpectedClasses.forEach((className) => {
     expect(
       element,
-      `Expected element NOT to have class "${className}"`
-    ).not.toHaveClass(className)
-  })
+      `Expected element NOT to have class "${className}"`,
+    ).not.toHaveClass(className);
+  });
 }
 
 /**
@@ -305,24 +321,24 @@ export function expectClasses(
 export function expectOrder(
   container: HTMLElement,
   selector: string,
-  expectedOrder: string[]
+  expectedOrder: string[],
 ) {
-  const elements = Array.from(container.querySelectorAll(selector))
+  const elements = Array.from(container.querySelectorAll(selector));
 
   expect(
     elements.length,
-    `Expected ${expectedOrder.length} elements matching "${selector}", found ${elements.length}`
-  ).toBe(expectedOrder.length)
+    `Expected ${expectedOrder.length} elements matching "${selector}", found ${elements.length}`,
+  ).toBe(expectedOrder.length);
 
   elements.forEach((element, index) => {
-    const actualText = element.textContent?.trim() || ''
-    const expectedText = expectedOrder[index]
+    const actualText = element.textContent?.trim() || "";
+    const expectedText = expectedOrder[index];
 
     expect(
       actualText,
-      `Element at index ${index} should contain "${expectedText}"`
-    ).toContain(expectedText)
-  })
+      `Element at index ${index} should contain "${expectedText}"`,
+    ).toContain(expectedText);
+  });
 }
 
 /**
@@ -340,18 +356,18 @@ export function expectOrder(
  * // Checks for: at least 1 SVG element
  */
 export function expectIcons(container: HTMLElement, expectedCount?: number) {
-  const icons = container.querySelectorAll('svg')
+  const icons = container.querySelectorAll("svg");
 
   if (expectedCount !== undefined) {
     expect(
       icons.length,
-      `Expected exactly ${expectedCount} icons (SVG elements), found ${icons.length}`
-    ).toBe(expectedCount)
+      `Expected exactly ${expectedCount} icons (SVG elements), found ${icons.length}`,
+    ).toBe(expectedCount);
   } else {
     expect(
       icons.length,
-      'Expected at least one icon (SVG element)'
-    ).toBeGreaterThan(0)
+      "Expected at least one icon (SVG element)",
+    ).toBeGreaterThan(0);
   }
 }
 
@@ -368,8 +384,11 @@ export function expectIcons(container: HTMLElement, expectedCount?: number) {
  *   'md:grid-cols-4'
  * ])
  */
-export function expectGridLayout(element: HTMLElement, expectedClasses: string[]) {
-  expectClasses(element, expectedClasses)
+export function expectGridLayout(
+  element: HTMLElement,
+  expectedClasses: string[],
+) {
+  expectClasses(element, expectedClasses);
 }
 
 /**
@@ -385,26 +404,28 @@ export function expectGridLayout(element: HTMLElement, expectedClasses: string[]
 export function expectErrorState(
   container: HTMLElement,
   expectedError: boolean,
-  errorMessage?: string
+  errorMessage?: string,
 ) {
   if (expectedError) {
     // Check for common error indicators
-    const errorElements = container.querySelectorAll('[role="alert"], .error, .text-destructive')
+    const errorElements = container.querySelectorAll(
+      '[role="alert"], .error, .text-destructive',
+    );
 
     expect(
       errorElements.length,
-      'Expected to find error state indicators'
-    ).toBeGreaterThan(0)
+      "Expected to find error state indicators",
+    ).toBeGreaterThan(0);
 
     if (errorMessage) {
-      expect(screen.getByText(errorMessage)).toBeInTheDocument()
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
     }
   } else {
-    const errorElements = container.querySelectorAll('[role="alert"]')
+    const errorElements = container.querySelectorAll('[role="alert"]');
     expect(
       errorElements.length,
-      'Expected NOT to find error state indicators'
-    ).toBe(0)
+      "Expected NOT to find error state indicators",
+    ).toBe(0);
   }
 }
 
@@ -421,24 +442,26 @@ export function expectErrorState(
 export function expectEmptyState(
   container: HTMLElement,
   expectedEmpty: boolean,
-  emptyMessage?: string
+  emptyMessage?: string,
 ) {
   if (expectedEmpty) {
-    const emptyElements = container.querySelectorAll('[data-empty="true"], .empty-state')
+    const emptyElements = container.querySelectorAll(
+      '[data-empty="true"], .empty-state',
+    );
 
     expect(
       emptyElements.length,
-      'Expected to find empty state indicators'
-    ).toBeGreaterThan(0)
+      "Expected to find empty state indicators",
+    ).toBeGreaterThan(0);
 
     if (emptyMessage) {
-      expect(screen.getByText(emptyMessage)).toBeInTheDocument()
+      expect(screen.getByText(emptyMessage)).toBeInTheDocument();
     }
   } else {
-    const emptyElements = container.querySelectorAll('[data-empty="true"]')
+    const emptyElements = container.querySelectorAll('[data-empty="true"]');
     expect(
       emptyElements.length,
-      'Expected NOT to find empty state indicators'
-    ).toBe(0)
+      "Expected NOT to find empty state indicators",
+    ).toBe(0);
   }
 }

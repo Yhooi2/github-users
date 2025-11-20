@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ProjectSection } from './ProjectSection';
-import type { Repository } from '@/apollo/github-api.types';
+import type { Repository } from "@/apollo/github-api.types";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ProjectSection } from "./ProjectSection";
 
 // Mock repository data
 const createMockRepository = (
   id: string,
   name: string,
   description: string,
-  stars: number
+  stars: number,
 ): Repository => ({
   id,
   name,
@@ -18,51 +18,68 @@ const createMockRepository = (
   isFork: false,
   isTemplate: false,
   parent: null,
-  createdAt: '2023-01-15T10:30:00Z',
-  updatedAt: '2024-11-05T14:22:00Z',
-  pushedAt: '2024-11-05T14:22:00Z',
+  createdAt: "2023-01-15T10:30:00Z",
+  updatedAt: "2024-11-05T14:22:00Z",
+  pushedAt: "2024-11-05T14:22:00Z",
   diskUsage: 5000,
   isArchived: false,
   homepageUrl: null,
   owner: {
-    login: 'user',
-    avatarUrl: 'https://avatars.githubusercontent.com/u/123456',
+    login: "user",
+    avatarUrl: "https://avatars.githubusercontent.com/u/123456",
   },
   watchers: { totalCount: Math.floor(stars / 20) },
   issues: { totalCount: 12 },
   repositoryTopics: {
-    nodes: [
-      { topic: { name: 'react' } },
-      { topic: { name: 'typescript' } },
-    ],
+    nodes: [{ topic: { name: "react" } }, { topic: { name: "typescript" } }],
   },
-  licenseInfo: { name: 'MIT License' },
+  licenseInfo: { name: "MIT License" },
   defaultBranchRef: {
     target: {
       history: { totalCount: 150 },
     },
   },
-  primaryLanguage: { name: 'TypeScript' },
+  primaryLanguage: { name: "TypeScript" },
   languages: {
     totalSize: 5000,
     edges: [
-      { size: 4000, node: { name: 'TypeScript' } },
-      { size: 1000, node: { name: 'CSS' } },
+      { size: 4000, node: { name: "TypeScript" } },
+      { size: 1000, node: { name: "CSS" } },
     ],
   },
 });
 
 const ownedProjects: Repository[] = [
-  createMockRepository('1', 'my-awesome-app', 'A comprehensive React application', 1234),
-  createMockRepository('2', 'cli-tool', 'A powerful command line utility', 567),
-  createMockRepository('3', 'website', 'Personal portfolio website', 89),
-  createMockRepository('4', 'api-server', 'RESTful API server with Node.js', 234),
+  createMockRepository(
+    "1",
+    "my-awesome-app",
+    "A comprehensive React application",
+    1234,
+  ),
+  createMockRepository("2", "cli-tool", "A powerful command line utility", 567),
+  createMockRepository("3", "website", "Personal portfolio website", 89),
+  createMockRepository(
+    "4",
+    "api-server",
+    "RESTful API server with Node.js",
+    234,
+  ),
 ];
 
 const contributionProjects: Repository[] = [
-  createMockRepository('5', 'react', 'A JavaScript library for building user interfaces', 234567),
-  createMockRepository('6', 'typescript', 'TypeScript language compiler', 123456),
-  createMockRepository('7', 'vite', 'Next generation frontend tooling', 78901),
+  createMockRepository(
+    "5",
+    "react",
+    "A JavaScript library for building user interfaces",
+    234567,
+  ),
+  createMockRepository(
+    "6",
+    "typescript",
+    "TypeScript language compiler",
+    123456,
+  ),
+  createMockRepository("7", "vite", "Next generation frontend tooling", 78901),
 ];
 
 /**
@@ -73,22 +90,22 @@ const contributionProjects: Repository[] = [
  * Part of Phase 5: Layout Refactoring for single-page progressive disclosure.
  */
 const meta = {
-  title: 'Projects/ProjectSection',
+  title: "Projects/ProjectSection",
   component: ProjectSection,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     docs: {
       description: {
         component:
-          'Displays user projects separated into owned repositories and open source contributions. Uses responsive grid layout.',
+          "Displays user projects separated into owned repositories and open source contributions. Uses responsive grid layout.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     loading: {
-      control: 'boolean',
-      description: 'Loading state for the section',
+      control: "boolean",
+      description: "Loading state for the section",
     },
   },
 } satisfies Meta<typeof ProjectSection>;
@@ -123,7 +140,8 @@ export const OnlyOwnedProjects: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'User has created repositories but has not contributed to other projects.',
+        story:
+          "User has created repositories but has not contributed to other projects.",
       },
     },
   },
@@ -143,7 +161,8 @@ export const OnlyContributions: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'User has contributed to open source but does not have their own repositories.',
+        story:
+          "User has contributed to open source but does not have their own repositories.",
       },
     },
   },
@@ -163,7 +182,7 @@ export const Empty: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'No repositories found for this user.',
+        story: "No repositories found for this user.",
       },
     },
   },
@@ -183,7 +202,7 @@ export const Loading: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Shows loading skeleton while fetching repository data.',
+        story: "Shows loading skeleton while fetching repository data.",
       },
     },
   },
@@ -203,7 +222,7 @@ export const SingleOwnedProject: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'User with only one owned repository.',
+        story: "User with only one owned repository.",
       },
     },
   },
@@ -215,7 +234,10 @@ export const SingleOwnedProject: Story = {
 export const ManyProjects: Story = {
   args: {
     projects: {
-      owned: [...ownedProjects, ...ownedProjects.map((p, i) => ({ ...p, id: `owned-${i}` }))],
+      owned: [
+        ...ownedProjects,
+        ...ownedProjects.map((p, i) => ({ ...p, id: `owned-${i}` })),
+      ],
       contributions: [
         ...contributionProjects,
         ...contributionProjects.map((p, i) => ({ ...p, id: `contrib-${i}` })),
@@ -226,7 +248,8 @@ export const ManyProjects: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'User with many repositories - tests grid layout with multiple rows.',
+        story:
+          "User with many repositories - tests grid layout with multiple rows.",
       },
     },
   },
@@ -245,11 +268,11 @@ export const Mobile: Story = {
   },
   parameters: {
     viewport: {
-      defaultViewport: 'mobile1',
+      defaultViewport: "mobile1",
     },
     docs: {
       description: {
-        story: 'ProjectSection on mobile devices (single column layout).',
+        story: "ProjectSection on mobile devices (single column layout).",
       },
     },
   },
@@ -268,11 +291,11 @@ export const Tablet: Story = {
   },
   parameters: {
     viewport: {
-      defaultViewport: 'tablet',
+      defaultViewport: "tablet",
     },
     docs: {
       description: {
-        story: 'ProjectSection on tablet devices (2 column grid).',
+        story: "ProjectSection on tablet devices (2 column grid).",
       },
     },
   },

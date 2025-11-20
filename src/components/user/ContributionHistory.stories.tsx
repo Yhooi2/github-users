@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ContributionHistory } from './ContributionHistory';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ContributionHistory } from "./ContributionHistory";
 
 const meta: Meta<typeof ContributionHistory> = {
-  title: 'User/ContributionHistory',
+  title: "User/ContributionHistory",
   component: ContributionHistory,
-  parameters: { layout: 'padded' },
-  tags: ['autodocs'],
+  parameters: { layout: "padded" },
+  tags: ["autodocs"],
 };
 
 export default meta;

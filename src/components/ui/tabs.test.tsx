@@ -1,11 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
 
-describe('Tabs', () => {
-  describe('rendering', () => {
-    it('should render tabs with triggers and content', () => {
+describe("Tabs", () => {
+  describe("rendering", () => {
+    it("should render tabs with triggers and content", () => {
       render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -14,15 +14,15 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      expect(screen.getByText('Tab 1')).toBeInTheDocument();
-      expect(screen.getByText('Tab 2')).toBeInTheDocument();
-      expect(screen.getByText('Content 1')).toBeVisible();
+      expect(screen.getByText("Tab 1")).toBeInTheDocument();
+      expect(screen.getByText("Tab 2")).toBeInTheDocument();
+      expect(screen.getByText("Content 1")).toBeVisible();
     });
 
-    it('should show default tab content', () => {
+    it("should show default tab content", () => {
       render(
         <Tabs defaultValue="tab2">
           <TabsList>
@@ -31,13 +31,13 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      expect(screen.getByText('Content 2')).toBeVisible();
+      expect(screen.getByText("Content 2")).toBeVisible();
     });
 
-    it('should render multiple tabs', () => {
+    it("should render multiple tabs", () => {
       render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -48,17 +48,17 @@ describe('Tabs', () => {
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
           <TabsContent value="tab3">Content 3</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      expect(screen.getByText('Tab 1')).toBeInTheDocument();
-      expect(screen.getByText('Tab 2')).toBeInTheDocument();
-      expect(screen.getByText('Tab 3')).toBeInTheDocument();
+      expect(screen.getByText("Tab 1")).toBeInTheDocument();
+      expect(screen.getByText("Tab 2")).toBeInTheDocument();
+      expect(screen.getByText("Tab 3")).toBeInTheDocument();
     });
   });
 
-  describe('user interactions', () => {
-    it('should switch tabs on click', async () => {
+  describe("user interactions", () => {
+    it("should switch tabs on click", async () => {
       const user = userEvent.setup();
 
       render(
@@ -69,19 +69,19 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      expect(screen.getByText('Content 1')).toBeVisible();
+      expect(screen.getByText("Content 1")).toBeVisible();
 
-      await user.click(screen.getByText('Tab 2'));
+      await user.click(screen.getByText("Tab 2"));
 
       await waitFor(() => {
-        expect(screen.getByText('Content 2')).toBeVisible();
+        expect(screen.getByText("Content 2")).toBeVisible();
       });
     });
 
-    it('should support keyboard navigation', async () => {
+    it("should support keyboard navigation", async () => {
       const user = userEvent.setup();
 
       render(
@@ -94,23 +94,23 @@ describe('Tabs', () => {
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
           <TabsContent value="tab3">Content 3</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      const tab1 = screen.getByText('Tab 1');
+      const tab1 = screen.getByText("Tab 1");
       tab1.focus();
 
-      await user.keyboard('{ArrowRight}');
-      expect(screen.getByText('Tab 2')).toHaveFocus();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByText("Tab 2")).toHaveFocus();
 
-      await user.keyboard('{ArrowRight}');
-      expect(screen.getByText('Tab 3')).toHaveFocus();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByText("Tab 3")).toHaveFocus();
 
-      await user.keyboard('{ArrowLeft}');
-      expect(screen.getByText('Tab 2')).toHaveFocus();
+      await user.keyboard("{ArrowLeft}");
+      expect(screen.getByText("Tab 2")).toHaveFocus();
     });
 
-    it('should activate tab on Enter key', async () => {
+    it("should activate tab on Enter key", async () => {
       const user = userEvent.setup();
 
       render(
@@ -121,22 +121,22 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      const tab2 = screen.getByText('Tab 2');
+      const tab2 = screen.getByText("Tab 2");
       tab2.focus();
 
-      await user.keyboard('{Enter}');
+      await user.keyboard("{Enter}");
 
       await waitFor(() => {
-        expect(screen.getByText('Content 2')).toBeVisible();
+        expect(screen.getByText("Content 2")).toBeVisible();
       });
     });
   });
 
-  describe('disabled state', () => {
-    it('should render disabled tab', () => {
+  describe("disabled state", () => {
+    it("should render disabled tab", () => {
       render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -147,14 +147,14 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      const tab2 = screen.getByText('Tab 2');
+      const tab2 = screen.getByText("Tab 2");
       expect(tab2).toBeDisabled();
     });
 
-    it('should not switch to disabled tab on click', async () => {
+    it("should not switch to disabled tab on click", async () => {
       const user = userEvent.setup();
 
       render(
@@ -167,34 +167,40 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      await user.click(screen.getByText('Tab 2'));
+      await user.click(screen.getByText("Tab 2"));
 
       // Should still show Content 1
-      expect(screen.getByText('Content 1')).toBeVisible();
+      expect(screen.getByText("Content 1")).toBeVisible();
     });
   });
 
-  describe('data attributes', () => {
-    it('should have correct data-slot attributes', () => {
+  describe("data attributes", () => {
+    it("should have correct data-slot attributes", () => {
       const { container } = render(
         <Tabs defaultValue="tab1">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
       expect(container.querySelector('[data-slot="tabs"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="tabs-list"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="tabs-trigger"]')).toBeInTheDocument();
-      expect(container.querySelector('[data-slot="tabs-content"]')).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="tabs-list"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="tabs-trigger"]'),
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="tabs-content"]'),
+      ).toBeInTheDocument();
     });
 
-    it('should have data-state attribute on active trigger', () => {
+    it("should have data-state attribute on active trigger", () => {
       render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -203,47 +209,47 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      const activeTrigger = screen.getByText('Tab 1');
-      expect(activeTrigger).toHaveAttribute('data-state', 'active');
+      const activeTrigger = screen.getByText("Tab 1");
+      expect(activeTrigger).toHaveAttribute("data-state", "active");
 
-      const inactiveTrigger = screen.getByText('Tab 2');
-      expect(inactiveTrigger).toHaveAttribute('data-state', 'inactive');
+      const inactiveTrigger = screen.getByText("Tab 2");
+      expect(inactiveTrigger).toHaveAttribute("data-state", "inactive");
     });
   });
 
-  describe('styling', () => {
-    it('should apply custom className to Tabs', () => {
+  describe("styling", () => {
+    it("should apply custom className to Tabs", () => {
       const { container } = render(
         <Tabs defaultValue="tab1" className="custom-tabs">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
       const tabs = container.querySelector('[data-slot="tabs"]');
-      expect(tabs).toHaveClass('custom-tabs');
+      expect(tabs).toHaveClass("custom-tabs");
     });
 
-    it('should apply custom className to TabsList', () => {
+    it("should apply custom className to TabsList", () => {
       const { container } = render(
         <Tabs defaultValue="tab1">
           <TabsList className="custom-list">
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
       const list = container.querySelector('[data-slot="tabs-list"]');
-      expect(list).toHaveClass('custom-list');
+      expect(list).toHaveClass("custom-list");
     });
 
-    it('should apply custom className to TabsTrigger', () => {
+    it("should apply custom className to TabsTrigger", () => {
       const { container } = render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -252,14 +258,14 @@ describe('Tabs', () => {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
       const trigger = container.querySelector('[data-slot="tabs-trigger"]');
-      expect(trigger).toHaveClass('custom-trigger');
+      expect(trigger).toHaveClass("custom-trigger");
     });
 
-    it('should apply custom className to TabsContent', () => {
+    it("should apply custom className to TabsContent", () => {
       const { container } = render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -268,16 +274,16 @@ describe('Tabs', () => {
           <TabsContent value="tab1" className="custom-content">
             Content 1
           </TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
       const content = container.querySelector('[data-slot="tabs-content"]');
-      expect(content).toHaveClass('custom-content');
+      expect(content).toHaveClass("custom-content");
     });
   });
 
-  describe('controlled mode', () => {
-    it('should work in controlled mode', async () => {
+  describe("controlled mode", () => {
+    it("should work in controlled mode", async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
 
@@ -289,17 +295,17 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      await user.click(screen.getByText('Tab 2'));
+      await user.click(screen.getByText("Tab 2"));
 
-      expect(onValueChange).toHaveBeenCalledWith('tab2');
+      expect(onValueChange).toHaveBeenCalledWith("tab2");
     });
   });
 
-  describe('accessibility', () => {
-    it('should have correct ARIA roles', () => {
+  describe("accessibility", () => {
+    it("should have correct ARIA roles", () => {
       const { container } = render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -308,7 +314,7 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
       const tablist = container.querySelector('[role="tablist"]');
@@ -321,7 +327,7 @@ describe('Tabs', () => {
       expect(tabpanels.length).toBeGreaterThan(0);
     });
 
-    it('should have aria-selected on active tab', () => {
+    it("should have aria-selected on active tab", () => {
       render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -330,46 +336,46 @@ describe('Tabs', () => {
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
           <TabsContent value="tab2">Content 2</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      const activeTab = screen.getByText('Tab 1');
-      expect(activeTab).toHaveAttribute('aria-selected', 'true');
+      const activeTab = screen.getByText("Tab 1");
+      expect(activeTab).toHaveAttribute("aria-selected", "true");
 
-      const inactiveTab = screen.getByText('Tab 2');
-      expect(inactiveTab).toHaveAttribute('aria-selected', 'false');
+      const inactiveTab = screen.getByText("Tab 2");
+      expect(inactiveTab).toHaveAttribute("aria-selected", "false");
     });
 
-    it('should support aria-label', () => {
+    it("should support aria-label", () => {
       render(
         <Tabs defaultValue="tab1" aria-label="Navigation tabs">
           <TabsList>
             <TabsTrigger value="tab1">Tab 1</TabsTrigger>
           </TabsList>
           <TabsContent value="tab1">Content 1</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      expect(screen.getByLabelText('Navigation tabs')).toBeInTheDocument();
+      expect(screen.getByLabelText("Navigation tabs")).toBeInTheDocument();
     });
   });
 
-  describe('edge cases', () => {
-    it('should render with single tab', () => {
+  describe("edge cases", () => {
+    it("should render with single tab", () => {
       render(
         <Tabs defaultValue="tab1">
           <TabsList>
             <TabsTrigger value="tab1">Only Tab</TabsTrigger>
           </TabsList>
           <TabsContent value="tab1">Only Content</TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      expect(screen.getByText('Only Tab')).toBeInTheDocument();
-      expect(screen.getByText('Only Content')).toBeVisible();
+      expect(screen.getByText("Only Tab")).toBeInTheDocument();
+      expect(screen.getByText("Only Content")).toBeVisible();
     });
 
-    it('should handle tabs with complex content', () => {
+    it("should handle tabs with complex content", () => {
       render(
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -382,12 +388,14 @@ describe('Tabs', () => {
               <button>Button</button>
             </div>
           </TabsContent>
-        </Tabs>
+        </Tabs>,
       );
 
-      expect(screen.getByTestId('complex-content')).toBeInTheDocument();
-      expect(screen.getByText('Heading')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Button' })).toBeInTheDocument();
+      expect(screen.getByTestId("complex-content")).toBeInTheDocument();
+      expect(screen.getByText("Heading")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Button" }),
+      ).toBeInTheDocument();
     });
   });
 });

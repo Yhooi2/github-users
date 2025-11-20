@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import type { ReactNode, ComponentType, SVGProps } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import type { ComponentType, ReactNode, SVGProps } from "react";
 
 type StatsCardProps = {
   /**
@@ -25,7 +25,7 @@ type StatsCardProps = {
    * - 'down': Trending down (red)
    * - 'neutral': No change (gray)
    */
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   /**
    * Trend value (e.g., "+12%", "-5%", "0%")
    */
@@ -67,11 +67,11 @@ export function StatsCard({
 }: StatsCardProps) {
   const getTrendIcon = () => {
     switch (trend) {
-      case 'up':
+      case "up":
         return TrendingUp;
-      case 'down':
+      case "down":
         return TrendingDown;
-      case 'neutral':
+      case "neutral":
         return Minus;
       default:
         return null;
@@ -80,14 +80,14 @@ export function StatsCard({
 
   const getTrendColor = () => {
     switch (trend) {
-      case 'up':
-        return 'text-green-600 dark:text-green-400';
-      case 'down':
-        return 'text-red-600 dark:text-red-400';
-      case 'neutral':
-        return 'text-muted-foreground';
+      case "up":
+        return "text-green-600 dark:text-green-400";
+      case "down":
+        return "text-red-600 dark:text-red-400";
+      case "neutral":
+        return "text-muted-foreground";
       default:
-        return '';
+        return "";
     }
   };
 
@@ -97,26 +97,30 @@ export function StatsCard({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {Icon && <Icon className="text-muted-foreground h-4 w-4" aria-hidden="true" />}
+        {Icon && (
+          <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+        )}
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline gap-2">
-          <div className="text-2xl font-bold">{value}</div>
+          <div className="text-2xl font-bold">
+            {typeof value === "number" ? value.toLocaleString() : value}
+          </div>
           {badge && <div>{badge}</div>}
         </div>
 
         {(description || trend) && (
           <div className="mt-1 flex items-center gap-2">
             {trend && TrendIcon && (
-              <div className={`flex items-center gap-1 text-xs ${getTrendColor()}`}>
+              <div
+                className={`flex items-center gap-1 text-xs ${getTrendColor()}`}
+              >
                 <TrendIcon className="h-3 w-3" aria-hidden="true" />
                 {trendValue && <span>{trendValue}</span>}
               </div>
             )}
             {description && (
-              <p className="text-muted-foreground text-xs">
-                {description}
-              </p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             )}
           </div>
         )}

@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,8 +7,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { User, LogOut } from 'lucide-react'
+} from "@/components/ui/dropdown-menu";
+import { LogOut, User } from "lucide-react";
 
 /**
  * Props for UserMenu component
@@ -17,27 +17,27 @@ export interface UserMenuProps {
   /**
    * Whether the user is authenticated
    */
-  isAuthenticated: boolean
+  isAuthenticated: boolean;
 
   /**
    * User information (only when authenticated)
    */
   user?: {
     /** GitHub username */
-    login: string
+    login: string;
     /** Avatar URL */
-    avatarUrl: string
-  }
+    avatarUrl: string;
+  };
 
   /**
    * Callback when sign in button is clicked
    */
-  onSignIn: () => void
+  onSignIn: () => void;
 
   /**
    * Callback when sign out is clicked
    */
-  onSignOut: () => void
+  onSignOut: () => void;
 }
 
 /**
@@ -69,7 +69,7 @@ export function UserMenu({
         <User className="mr-2 h-4 w-4" />
         Sign in with GitHub
       </Button>
-    )
+    );
   }
 
   // Authenticated state: Show avatar with dropdown
@@ -91,7 +91,7 @@ export function UserMenu({
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">@{user?.login}</p>
+            <p className="text-sm leading-none font-medium">@{user?.login}</p>
             <p className="text-xs leading-none text-muted-foreground">
               Authenticated
             </p>
@@ -106,5 +106,5 @@ export function UserMenu({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

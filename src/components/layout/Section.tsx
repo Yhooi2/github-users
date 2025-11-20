@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
+import { type ReactNode } from "react";
 
 type SectionProps = {
   /**
@@ -39,7 +39,7 @@ export function Section({
   description,
   children,
   showSeparator = true,
-  className = '',
+  className = "",
 }: SectionProps) {
   const hasHeader = title || description;
 
@@ -47,8 +47,12 @@ export function Section({
     <section className={`space-y-4 ${className}`.trim()}>
       {hasHeader && (
         <div className="space-y-1">
-          {title && <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>}
-          {description && <p className="text-muted-foreground text-sm">{description}</p>}
+          {title && (
+            <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+          )}
+          {description && (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          )}
           {showSeparator && <Separator className="mt-2" />}
         </div>
       )}

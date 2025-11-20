@@ -1,9 +1,9 @@
-import type { YearData } from '@/hooks/useUserAnalytics'
-import { RepositoryCard } from '@/components/repository/RepositoryCard'
-import { Badge } from '@/components/ui/badge'
+import { RepositoryCard } from "@/components/repository/RepositoryCard";
+import { Badge } from "@/components/ui/badge";
+import type { YearData } from "@/hooks/useUserAnalytics";
 
 export interface YearExpandedViewProps {
-  year: YearData
+  year: YearData;
 }
 
 /**
@@ -22,11 +22,11 @@ export interface YearExpandedViewProps {
 export function YearExpandedView({ year }: YearExpandedViewProps) {
   const topOwnedRepos = year.ownedRepos
     .sort((a, b) => b.repository.stargazerCount - a.repository.stargazerCount)
-    .slice(0, 5)
+    .slice(0, 5);
 
   const topContributions = year.contributions
     .sort((a, b) => b.contributions.totalCount - a.contributions.totalCount)
-    .slice(0, 5)
+    .slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -81,12 +81,12 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
 
       {/* No activity fallback */}
       {topOwnedRepos.length === 0 && topContributions.length === 0 && (
-        <div className="text-muted-foreground rounded-lg border p-8 text-center">
+        <div className="rounded-lg border p-8 text-center text-muted-foreground">
           No repositories found for this year
         </div>
       )}
     </div>
-  )
+  );
 }
 
 /**
@@ -95,8 +95,8 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg border p-3">
-      <div className="text-muted-foreground text-sm">{label}</div>
+      <div className="text-sm text-muted-foreground">{label}</div>
       <div className="text-2xl font-bold">{value}</div>
     </div>
-  )
+  );
 }

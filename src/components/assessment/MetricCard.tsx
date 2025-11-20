@@ -1,11 +1,26 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Info } from "lucide-react";
 
 export interface MetricCardProps {
   title: string;
   score: number;
-  level: 'Low' | 'Moderate' | 'High' | 'Strong' | 'Excellent' | 'Exceptional' | 'Minimal' | 'Good' | 'Fair' | 'Weak' | 'Rapid Growth' | 'Growing' | 'Stable' | 'Declining' | 'Rapid Decline';
+  level:
+    | "Low"
+    | "Moderate"
+    | "High"
+    | "Strong"
+    | "Excellent"
+    | "Exceptional"
+    | "Minimal"
+    | "Good"
+    | "Fair"
+    | "Weak"
+    | "Rapid Growth"
+    | "Growing"
+    | "Stable"
+    | "Declining"
+    | "Rapid Decline";
   breakdown?: Array<{
     label: string;
     value: number;
@@ -27,10 +42,10 @@ export function MetricCard({
     return (
       <Card className="animate-pulse">
         <CardHeader>
-          <div className="bg-muted h-6 w-1/2 rounded" />
+          <div className="h-6 w-1/2 rounded bg-muted" />
         </CardHeader>
         <CardContent>
-          <div className="bg-muted h-12 rounded" />
+          <div className="h-12 rounded bg-muted" />
         </CardContent>
       </Card>
     );
@@ -55,13 +70,13 @@ export function MetricCard({
         {/* Score display */}
         <div className="text-center">
           <div className="text-4xl font-bold">{score}%</div>
-          <div className="text-muted-foreground text-sm">{level}</div>
+          <div className="text-sm text-muted-foreground">{level}</div>
         </div>
 
         {/* Progress bar */}
-        <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
+            className="h-2 rounded-full bg-primary transition-all duration-500 ease-out"
             style={{ width: `${score}%` }}
           />
         </div>

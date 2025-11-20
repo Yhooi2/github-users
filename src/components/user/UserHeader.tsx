@@ -1,5 +1,5 @@
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { MapPin, Calendar, ExternalLink } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Calendar, ExternalLink, MapPin } from "lucide-react";
 
 type UserHeaderProps = {
   user: {
@@ -16,22 +16,22 @@ type UserHeaderProps = {
 export function UserHeader({ user }: UserHeaderProps) {
   const displayName = user.name || user.login;
   const initials = displayName
-    .split(' ')
+    .split(" ")
     .map((n) => n[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 
-  const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return (
     <div className="flex flex-col items-start gap-6 md:flex-row">
       {/* Avatar */}
-      <Avatar className="border-border h-32 w-32 border-4">
+      <Avatar className="h-32 w-32 border-4 border-border">
         <AvatarImage src={user.avatarUrl} alt={`${displayName}'s avatar`} />
         <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
       </Avatar>
@@ -39,11 +39,11 @@ export function UserHeader({ user }: UserHeaderProps) {
       {/* User Info */}
       <div className="flex-1 space-y-2">
         <h1 className="text-3xl font-bold">{displayName}</h1>
-        <p className="text-muted-foreground text-xl">@{user.login}</p>
+        <p className="text-xl text-muted-foreground">@{user.login}</p>
 
         {user.bio && <p className="text-base">{user.bio}</p>}
 
-        <div className="text-muted-foreground flex flex-col gap-2 text-sm">
+        <div className="flex flex-col gap-2 text-sm text-muted-foreground">
           {user.location && (
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4" aria-hidden="true" />
@@ -61,7 +61,7 @@ export function UserHeader({ user }: UserHeaderProps) {
           href={user.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary inline-flex items-center gap-2 text-sm hover:underline"
+          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
         >
           View on GitHub
           <ExternalLink className="h-4 w-4" aria-hidden="true" />

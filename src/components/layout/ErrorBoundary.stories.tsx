@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { ErrorBoundary } from './ErrorBoundary'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 /**
  * Error Boundary component to catch and handle errors in child components.
@@ -10,35 +10,39 @@ import { Button } from '@/components/ui/button'
  * when errors occur, preventing the entire app from crashing.
  */
 const meta = {
-  title: 'Layout/ErrorBoundary',
+  title: "Layout/ErrorBoundary",
   component: ErrorBoundary,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
-} satisfies Meta<typeof ErrorBoundary>
+  tags: ["autodocs"],
+} satisfies Meta<typeof ErrorBoundary>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 /**
  * Component that throws an error when button is clicked
  */
-function ThrowErrorButton({ message = 'Test error thrown!' }: { message?: string }) {
-  const [shouldThrow, setShouldThrow] = useState(false)
+function ThrowErrorButton({
+  message = "Test error thrown!",
+}: {
+  message?: string;
+}) {
+  const [shouldThrow, setShouldThrow] = useState(false);
 
   if (shouldThrow) {
-    throw new Error(message)
+    throw new Error(message);
   }
 
   return (
-    <div className="flex flex-col gap-4 items-center">
+    <div className="flex flex-col items-center gap-4">
       <p className="text-muted-foreground">Click button to trigger an error</p>
       <Button onClick={() => setShouldThrow(true)} variant="destructive">
         Throw Error
       </Button>
     </div>
-  )
+  );
 }
 
 /**
@@ -47,15 +51,15 @@ function ThrowErrorButton({ message = 'Test error thrown!' }: { message?: string
 export const Default: Story = {
   args: {
     children: (
-      <div className="p-8 border rounded-lg">
-        <h2 className="text-xl font-semibold mb-2">Working Component</h2>
+      <div className="rounded-lg border p-8">
+        <h2 className="mb-2 text-xl font-semibold">Working Component</h2>
         <p className="text-muted-foreground">
           This component renders normally without any errors.
         </p>
       </div>
     ),
   },
-}
+};
 
 /**
  * Error caught - default ErrorState fallback displayed
@@ -68,27 +72,30 @@ export const WithError: Story = {
     docs: {
       description: {
         story:
-          'When a child component throws an error, ErrorBoundary catches it and displays the default ErrorState fallback.',
+          "When a child component throws an error, ErrorBoundary catches it and displays the default ErrorState fallback.",
       },
     },
   },
-}
+};
 
 /**
  * Error with custom message
  */
 export const WithCustomErrorMessage: Story = {
   args: {
-    children: <ThrowErrorButton message="Failed to load user data from GitHub API" />,
+    children: (
+      <ThrowErrorButton message="Failed to load user data from GitHub API" />
+    ),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Error messages are passed through and displayed in the ErrorState component.',
+        story:
+          "Error messages are passed through and displayed in the ErrorState component.",
       },
     },
   },
-}
+};
 
 /**
  * Error with custom fallback UI
@@ -96,8 +103,10 @@ export const WithCustomErrorMessage: Story = {
 export const WithCustomFallback: Story = {
   args: {
     fallback: (
-      <div className="p-8 border border-destructive rounded-lg bg-destructive/10">
-        <h2 className="text-lg font-semibold text-destructive mb-2">Custom Error UI</h2>
+      <div className="rounded-lg border border-destructive bg-destructive/10 p-8">
+        <h2 className="mb-2 text-lg font-semibold text-destructive">
+          Custom Error UI
+        </h2>
         <p className="text-sm text-muted-foreground">
           This is a custom fallback component instead of the default ErrorState.
         </p>
@@ -109,11 +118,11 @@ export const WithCustomFallback: Story = {
     docs: {
       description: {
         story:
-          'You can provide a custom fallback component to render when an error occurs.',
+          "You can provide a custom fallback component to render when an error occurs.",
       },
     },
   },
-}
+};
 
 /**
  * Error with callback handler
@@ -121,8 +130,8 @@ export const WithCustomFallback: Story = {
 export const WithErrorCallback: Story = {
   args: {
     onError: (error, errorInfo) => {
-      console.log('Error caught by ErrorBoundary:', error.message)
-      console.log('Component stack:', errorInfo.componentStack)
+      console.log("Error caught by ErrorBoundary:", error.message);
+      console.log("Component stack:", errorInfo.componentStack);
       // In real app: send to error tracking service (Sentry, etc.)
     },
     children: <ThrowErrorButton message="Error logged to console" />,
@@ -131,43 +140,48 @@ export const WithErrorCallback: Story = {
     docs: {
       description: {
         story:
-          'The onError callback is triggered when an error is caught, useful for logging to error tracking services.',
+          "The onError callback is triggered when an error is caught, useful for logging to error tracking services.",
       },
     },
   },
-}
+};
 
 /**
  * Network error simulation
  */
 export const NetworkError: Story = {
   args: {
-    children: <ThrowErrorButton message="Failed to fetch: Network request failed" />,
+    children: (
+      <ThrowErrorButton message="Failed to fetch: Network request failed" />
+    ),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Simulates a network error that might occur during API calls.',
+        story: "Simulates a network error that might occur during API calls.",
       },
     },
   },
-}
+};
 
 /**
  * Rendering error simulation
  */
 export const RenderError: Story = {
   args: {
-    children: <ThrowErrorButton message="Cannot read property 'map' of undefined" />,
+    children: (
+      <ThrowErrorButton message="Cannot read property 'map' of undefined" />
+    ),
   },
   parameters: {
     docs: {
       description: {
-        story: 'Simulates a rendering error that might occur with malformed data.',
+        story:
+          "Simulates a rendering error that might occur with malformed data.",
       },
     },
   },
-}
+};
 
 /**
  * Multiple children - one throws error
@@ -176,7 +190,7 @@ export const PartialError: Story = {
   args: {
     children: (
       <div className="flex flex-col gap-4">
-        <div className="p-4 border rounded">
+        <div className="rounded border p-4">
           <p>This component renders fine</p>
         </div>
         <ThrowErrorButton message="Only this component failed" />
@@ -187,8 +201,8 @@ export const PartialError: Story = {
     docs: {
       description: {
         story:
-          'When one child throws an error, the entire ErrorBoundary tree shows the fallback. Consider using separate ErrorBoundaries for independent sections.',
+          "When one child throws an error, the entire ErrorBoundary tree shows the fallback. Consider using separate ErrorBoundaries for independent sections.",
       },
     },
   },
-}
+};

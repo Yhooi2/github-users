@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { OAuthMetricsDashboard } from './OAuthMetricsDashboard'
-import { http, HttpResponse } from 'msw'
+import type { Meta, StoryObj } from "@storybook/react";
+import { http, HttpResponse } from "msw";
+import { OAuthMetricsDashboard } from "./OAuthMetricsDashboard";
 
 /**
  * OAuth Metrics Dashboard Stories
@@ -25,20 +25,20 @@ import { http, HttpResponse } from 'msw'
  */
 
 const meta = {
-  title: 'Components/Analytics/OAuthMetricsDashboard',
+  title: "Components/Analytics/OAuthMetricsDashboard",
   component: OAuthMetricsDashboard,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
-} satisfies Meta<typeof OAuthMetricsDashboard>
+  tags: ["autodocs"],
+} satisfies Meta<typeof OAuthMetricsDashboard>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Mock data: Default day metrics
 const mockDayMetrics = {
-  period: 'day',
+  period: "day",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 42,
@@ -52,11 +52,11 @@ const mockDayMetrics = {
       avgRemaining: 3755,
     },
   },
-}
+};
 
 // Mock data: Hour metrics
 const mockHourMetrics = {
-  period: 'hour',
+  period: "hour",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 15,
@@ -70,11 +70,11 @@ const mockHourMetrics = {
       avgRemaining: 4755,
     },
   },
-}
+};
 
 // Mock data: Week metrics
 const mockWeekMetrics = {
-  period: 'week',
+  period: "week",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 128,
@@ -88,11 +88,11 @@ const mockWeekMetrics = {
       avgRemaining: 2900,
     },
   },
-}
+};
 
 // Mock data: Month metrics
 const mockMonthMetrics = {
-  period: 'month',
+  period: "month",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 342,
@@ -106,11 +106,11 @@ const mockMonthMetrics = {
       avgRemaining: 2500,
     },
   },
-}
+};
 
 // Mock data: High usage
 const mockHighUsage = {
-  period: 'day',
+  period: "day",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 523,
@@ -124,11 +124,11 @@ const mockHighUsage = {
       avgRemaining: 800,
     },
   },
-}
+};
 
 // Mock data: Low activity
 const mockLowActivity = {
-  period: 'day',
+  period: "day",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 3,
@@ -142,11 +142,11 @@ const mockLowActivity = {
       avgRemaining: 4955,
     },
   },
-}
+};
 
 // Mock data: Admin mode with detailed data
 const mockAdminMetrics = {
-  period: 'day',
+  period: "day",
   timestamp: Date.now(),
   metrics: {
     activeSessions: 42,
@@ -163,16 +163,16 @@ const mockAdminMetrics = {
   detailed: {
     sessions: [
       {
-        sessionId: 'abc123...',
+        sessionId: "abc123...",
         userId: 12345,
-        login: 'testuser1',
+        login: "testuser1",
         createdAt: Date.now() - 3600000,
         lastActivity: Date.now() - 600000,
       },
       {
-        sessionId: 'def456...',
+        sessionId: "def456...",
         userId: 67890,
-        login: 'testuser2',
+        login: "testuser2",
         createdAt: Date.now() - 7200000,
         lastActivity: Date.now() - 300000,
       },
@@ -180,224 +180,224 @@ const mockAdminMetrics = {
     timeline: [
       {
         timestamp: Date.now() - 3600000,
-        event: 'login' as const,
+        event: "login" as const,
         userId: 12345,
-        login: 'testuser1',
+        login: "testuser1",
       },
       {
         timestamp: Date.now() - 3000000,
-        event: 'login' as const,
+        event: "login" as const,
         userId: 67890,
-        login: 'testuser2',
+        login: "testuser2",
       },
       {
         timestamp: Date.now() - 1800000,
-        event: 'logout' as const,
+        event: "logout" as const,
         userId: 98765,
-        login: 'testuser3',
+        login: "testuser3",
       },
     ],
   },
-}
+};
 
 /**
  * Default: Day period with standard metrics
  */
 export const Default: Story = {
   args: {
-    initialPeriod: 'day',
+    initialPeriod: "day",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
-          return HttpResponse.json(mockDayMetrics)
+        http.get("/api/analytics/oauth-usage", () => {
+          return HttpResponse.json(mockDayMetrics);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Hour Period: Recent metrics from last hour
  */
 export const HourPeriod: Story = {
   args: {
-    initialPeriod: 'hour',
+    initialPeriod: "hour",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
-          return HttpResponse.json(mockHourMetrics)
+        http.get("/api/analytics/oauth-usage", () => {
+          return HttpResponse.json(mockHourMetrics);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Week Period: Weekly statistics overview
  */
 export const WeekPeriod: Story = {
   args: {
-    initialPeriod: 'week',
+    initialPeriod: "week",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
-          return HttpResponse.json(mockWeekMetrics)
+        http.get("/api/analytics/oauth-usage", () => {
+          return HttpResponse.json(mockWeekMetrics);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Month Period: Monthly overview
  */
 export const MonthPeriod: Story = {
   args: {
-    initialPeriod: 'month',
+    initialPeriod: "month",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
-          return HttpResponse.json(mockMonthMetrics)
+        http.get("/api/analytics/oauth-usage", () => {
+          return HttpResponse.json(mockMonthMetrics);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * High Usage: Peak activity with high rate limit usage
  */
 export const HighUsage: Story = {
   args: {
-    initialPeriod: 'day',
+    initialPeriod: "day",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
-          return HttpResponse.json(mockHighUsage)
+        http.get("/api/analytics/oauth-usage", () => {
+          return HttpResponse.json(mockHighUsage);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Low Activity: Minimal usage with few sessions
  */
 export const LowActivity: Story = {
   args: {
-    initialPeriod: 'day',
+    initialPeriod: "day",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
-          return HttpResponse.json(mockLowActivity)
+        http.get("/api/analytics/oauth-usage", () => {
+          return HttpResponse.json(mockLowActivity);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Loading State: Fetching data from API
  */
 export const Loading: Story = {
   args: {
-    initialPeriod: 'day',
+    initialPeriod: "day",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', async () => {
+        http.get("/api/analytics/oauth-usage", async () => {
           // Simulate slow response
-          await new Promise((resolve) => setTimeout(resolve, 10000))
-          return HttpResponse.json(mockDayMetrics)
+          await new Promise((resolve) => setTimeout(resolve, 10000));
+          return HttpResponse.json(mockDayMetrics);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Error State: Failed to fetch metrics
  */
 export const Error: Story = {
   args: {
-    initialPeriod: 'day',
+    initialPeriod: "day",
     refreshInterval: 0,
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
+        http.get("/api/analytics/oauth-usage", () => {
           return HttpResponse.json(
-            { error: 'Analytics service unavailable' },
-            { status: 503 }
-          )
+            { error: "Analytics service unavailable" },
+            { status: 503 },
+          );
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Admin Mode: Shows detailed session and timeline data
  */
 export const AdminMode: Story = {
   args: {
-    initialPeriod: 'day',
+    initialPeriod: "day",
     refreshInterval: 0,
     adminMode: true,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
-          return HttpResponse.json(mockAdminMetrics)
+        http.get("/api/analytics/oauth-usage", () => {
+          return HttpResponse.json(mockAdminMetrics);
         }),
       ],
     },
   },
-}
+};
 
 /**
  * Auto-refresh: Updates every 30 seconds
  */
 export const AutoRefresh: Story = {
   args: {
-    initialPeriod: 'day',
+    initialPeriod: "day",
     refreshInterval: 30000, // 30 seconds
     adminMode: false,
   },
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/analytics/oauth-usage', () => {
+        http.get("/api/analytics/oauth-usage", () => {
           // Simulate changing metrics
           const randomMetrics = {
             ...mockDayMetrics,
@@ -407,10 +407,10 @@ export const AutoRefresh: Story = {
               activeSessions: Math.floor(Math.random() * 100) + 20,
               totalLogins: Math.floor(Math.random() * 200) + 100,
             },
-          }
-          return HttpResponse.json(randomMetrics)
+          };
+          return HttpResponse.json(randomMetrics);
         }),
       ],
     },
   },
-}
+};

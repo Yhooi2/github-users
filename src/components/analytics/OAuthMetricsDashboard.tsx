@@ -1,43 +1,56 @@
-import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Users, LogIn, LogOut, Activity, TrendingUp, Clock } from 'lucide-react'
+} from "@/components/ui/select";
+import {
+  Activity,
+  Clock,
+  LogIn,
+  LogOut,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * OAuth Metrics from API
  */
 interface OAuthMetrics {
-  period: string
-  timestamp: number
+  period: string;
+  timestamp: number;
   metrics: {
-    activeSessions: number
-    totalLogins: number
-    totalLogouts: number
-    uniqueUsers: number
-    avgSessionDuration: number
+    activeSessions: number;
+    totalLogins: number;
+    totalLogouts: number;
+    uniqueUsers: number;
+    avgSessionDuration: number;
     rateLimit: {
-      avgUsage: number
-      peakUsage: number
-      avgRemaining: number
-    }
-  }
+      avgUsage: number;
+      peakUsage: number;
+      avgRemaining: number;
+    };
+  };
 }
 
 export interface OAuthMetricsDashboardProps {
   /** Initial period to display */
-  initialPeriod?: 'hour' | 'day' | 'week' | 'month'
+  initialPeriod?: "hour" | "day" | "week" | "month";
   /** Auto-refresh interval in milliseconds (0 to disable) */
-  refreshInterval?: number
+  refreshInterval?: number;
   /** Admin mode - show detailed data */
-  adminMode?: boolean
+  adminMode?: boolean;
 }
 
 /**
@@ -45,22 +58,22 @@ export interface OAuthMetricsDashboardProps {
  */
 function formatDuration(ms: number): string {
   if (ms < 60000) {
-    return `${Math.round(ms / 1000)}s`
+    return `${Math.round(ms / 1000)}s`;
   }
   if (ms < 3600000) {
-    return `${Math.round(ms / 60000)}m`
+    return `${Math.round(ms / 60000)}m`;
   }
   if (ms < 86400000) {
-    return `${Math.round(ms / 3600000)}h`
+    return `${Math.round(ms / 3600000)}h`;
   }
-  return `${Math.round(ms / 86400000)}d`
+  return `${Math.round(ms / 86400000)}d`;
 }
 
 /**
  * Format timestamp to readable date
  */
 function formatTimestamp(timestamp: number): string {
-  return new Date(timestamp).toLocaleString()
+  return new Date(timestamp).toLocaleString();
 }
 
 /**
@@ -83,49 +96,53 @@ function formatTimestamp(timestamp: number): string {
  * ```
  */
 export function OAuthMetricsDashboard({
-  initialPeriod = 'day',
+  initialPeriod = "day",
   refreshInterval = 0,
   adminMode = false,
 }: OAuthMetricsDashboardProps) {
-  const [period, setPeriod] = useState<'hour' | 'day' | 'week' | 'month'>(initialPeriod)
-  const [metrics, setMetrics] = useState<OAuthMetrics | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [lastUpdated, setLastUpdated] = useState<number>(0)
+  const [period, setPeriod] = useState<"hour" | "day" | "week" | "month">(
+    initialPeriod,
+  );
+  const [metrics, setMetrics] = useState<OAuthMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<number>(0);
 
   // Fetch metrics from API
-  const fetchMetrics = async () => {
+  const fetchMetrics = useCallback(async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const detailed = adminMode ? 'true' : 'false'
-      const response = await fetch(`/api/analytics/oauth-usage?period=${period}&detailed=${detailed}`)
+      const detailed = adminMode ? "true" : "false";
+      const response = await fetch(
+        `/api/analytics/oauth-usage?period=${period}&detailed=${detailed}`,
+      );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch metrics: ${response.statusText}`)
+        throw new Error(`Failed to fetch metrics: ${response.statusText}`);
       }
 
-      const data: OAuthMetrics = await response.json()
-      setMetrics(data)
-      setLastUpdated(Date.now())
+      const data: OAuthMetrics = await response.json();
+      setMetrics(data);
+      setLastUpdated(Date.now());
     } catch (err) {
-      console.error('Failed to fetch OAuth metrics:', err)
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      console.error("Failed to fetch OAuth metrics:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  }, [period, adminMode]);
 
   // Initial fetch + auto-refresh
   useEffect(() => {
-    fetchMetrics()
+    fetchMetrics();
 
     if (refreshInterval > 0) {
-      const interval = setInterval(fetchMetrics, refreshInterval)
-      return () => clearInterval(interval)
+      const interval = setInterval(fetchMetrics, refreshInterval);
+      return () => clearInterval(interval);
     }
-  }, [period, refreshInterval, adminMode])
+  }, [fetchMetrics, refreshInterval]);
 
   // Loading state
   if (loading && !metrics) {
@@ -133,7 +150,9 @@ export function OAuthMetricsDashboard({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">OAuth Analytics</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              OAuth Analytics
+            </h2>
             <p className="text-muted-foreground">Loading metrics...</p>
           </div>
         </div>
@@ -141,17 +160,17 @@ export function OAuthMetricsDashboard({
           {[...Array(4)].map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div className="h-4 w-20 bg-muted rounded" />
-                <div className="h-4 w-4 bg-muted rounded-full" />
+                <div className="h-4 w-20 rounded bg-muted" />
+                <div className="h-4 w-4 rounded-full bg-muted" />
               </CardHeader>
               <CardContent>
-                <div className="h-8 w-16 bg-muted rounded" />
+                <div className="h-8 w-16 rounded bg-muted" />
               </CardContent>
             </Card>
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   // Error state
@@ -160,7 +179,9 @@ export function OAuthMetricsDashboard({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">OAuth Analytics</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              OAuth Analytics
+            </h2>
             <p className="text-muted-foreground">Failed to load metrics</p>
           </div>
         </div>
@@ -176,14 +197,14 @@ export function OAuthMetricsDashboard({
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!metrics) {
-    return null
+    return null;
   }
 
-  const { metrics: data } = metrics
+  const { metrics: data } = metrics;
 
   return (
     <div className="space-y-4">
@@ -202,7 +223,10 @@ export function OAuthMetricsDashboard({
               Auto-refresh: {formatDuration(refreshInterval)}
             </Badge>
           )}
-          <Select value={period} onValueChange={(value) => setPeriod(value as typeof period)}>
+          <Select
+            value={period}
+            onValueChange={(value) => setPeriod(value as typeof period)}
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
@@ -224,12 +248,14 @@ export function OAuthMetricsDashboard({
         {/* Active Sessions */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Sessions
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.activeSessions}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="mt-1 text-xs text-muted-foreground">
               {data.uniqueUsers} unique users
             </p>
           </CardContent>
@@ -243,8 +269,8 @@ export function OAuthMetricsDashboard({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalLogins}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              In {period === 'hour' ? 'last hour' : `last ${period}`}
+            <p className="mt-1 text-xs text-muted-foreground">
+              In {period === "hour" ? "last hour" : `last ${period}`}
             </p>
           </CardContent>
         </Card>
@@ -257,8 +283,8 @@ export function OAuthMetricsDashboard({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalLogouts}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              In {period === 'hour' ? 'last hour' : `last ${period}`}
+            <p className="mt-1 text-xs text-muted-foreground">
+              In {period === "hour" ? "last hour" : `last ${period}`}
             </p>
           </CardContent>
         </Card>
@@ -270,8 +296,12 @@ export function OAuthMetricsDashboard({
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatDuration(data.avgSessionDuration)}</div>
-            <p className="text-xs text-muted-foreground mt-1">Average duration</p>
+            <div className="text-2xl font-bold">
+              {formatDuration(data.avgSessionDuration)}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Average duration
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -283,24 +313,40 @@ export function OAuthMetricsDashboard({
             <TrendingUp className="h-5 w-5" />
             Rate Limit Statistics
           </CardTitle>
-          <CardDescription>API usage metrics for authenticated users</CardDescription>
+          <CardDescription>
+            API usage metrics for authenticated users
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Average Usage</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Average Usage
+              </p>
               <p className="text-2xl font-bold">{data.rateLimit.avgUsage}</p>
-              <p className="text-xs text-muted-foreground mt-1">requests used</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                requests used
+              </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Peak Usage</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Peak Usage
+              </p>
               <p className="text-2xl font-bold">{data.rateLimit.peakUsage}</p>
-              <p className="text-xs text-muted-foreground mt-1">maximum reached</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                maximum reached
+              </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Average Remaining</p>
-              <p className="text-2xl font-bold">{data.rateLimit.avgRemaining}</p>
-              <p className="text-xs text-muted-foreground mt-1">of 5000 limit</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Average Remaining
+              </p>
+              <p className="text-2xl font-bold">
+                {data.rateLimit.avgRemaining}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                of 5000 limit
+              </p>
             </div>
           </div>
         </CardContent>
@@ -311,18 +357,20 @@ export function OAuthMetricsDashboard({
         <Card>
           <CardHeader>
             <CardTitle>Detailed Data (Admin Only)</CardTitle>
-            <CardDescription>Additional information about sessions and timeline</CardDescription>
+            <CardDescription>
+              Additional information about sessions and timeline
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="text-sm font-semibold mb-2">Active Sessions</h4>
+                <h4 className="mb-2 text-sm font-semibold">Active Sessions</h4>
                 <div className="text-xs text-muted-foreground">
                   {metrics.detailed.sessions.length} active sessions found
                 </div>
               </div>
               <div>
-                <h4 className="text-sm font-semibold mb-2">Recent Events</h4>
+                <h4 className="mb-2 text-sm font-semibold">Recent Events</h4>
                 <div className="text-xs text-muted-foreground">
                   {metrics.detailed.timeline.length} events in timeline
                 </div>
@@ -332,5 +380,5 @@ export function OAuthMetricsDashboard({
         </Card>
       )}
     </div>
-  )
+  );
 }

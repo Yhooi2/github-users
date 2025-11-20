@@ -1,32 +1,32 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { LoadingState } from './LoadingState';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { LoadingState } from "./LoadingState";
 
 const meta: Meta<typeof LoadingState> = {
-  title: 'Layout/LoadingState',
+  title: "Layout/LoadingState",
   component: LoadingState,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     docs: {
       description: {
         component:
-          'LoadingState displays skeleton loaders for different content types while data is being fetched.',
+          "LoadingState displays skeleton loaders for different content types while data is being fetched.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['default', 'card', 'profile', 'list'],
-      description: 'The visual style of the loading state',
+      control: "select",
+      options: ["default", "card", "profile", "list"],
+      description: "The visual style of the loading state",
     },
     count: {
-      control: 'number',
-      description: 'Number of items to show (only for list variant)',
+      control: "number",
+      description: "Number of items to show (only for list variant)",
     },
     message: {
-      control: 'text',
-      description: 'Optional message to display below skeleton',
+      control: "text",
+      description: "Optional message to display below skeleton",
     },
   },
 };
@@ -46,7 +46,7 @@ export const Default: Story = {
  */
 export const WithMessage: Story = {
   args: {
-    message: 'Loading user data...',
+    message: "Loading user data...",
   },
 };
 
@@ -55,7 +55,7 @@ export const WithMessage: Story = {
  */
 export const Card: Story = {
   args: {
-    variant: 'card',
+    variant: "card",
   },
 };
 
@@ -64,8 +64,8 @@ export const Card: Story = {
  */
 export const CardWithMessage: Story = {
   args: {
-    variant: 'card',
-    message: 'Fetching repository information...',
+    variant: "card",
+    message: "Fetching repository information...",
   },
 };
 
@@ -74,7 +74,7 @@ export const CardWithMessage: Story = {
  */
 export const Profile: Story = {
   args: {
-    variant: 'profile',
+    variant: "profile",
   },
 };
 
@@ -83,8 +83,8 @@ export const Profile: Story = {
  */
 export const ProfileWithMessage: Story = {
   args: {
-    variant: 'profile',
-    message: 'Loading GitHub profile...',
+    variant: "profile",
+    message: "Loading GitHub profile...",
   },
 };
 
@@ -93,7 +93,7 @@ export const ProfileWithMessage: Story = {
  */
 export const List: Story = {
   args: {
-    variant: 'list',
+    variant: "list",
   },
 };
 
@@ -102,7 +102,7 @@ export const List: Story = {
  */
 export const ListWithFiveItems: Story = {
   args: {
-    variant: 'list',
+    variant: "list",
     count: 5,
   },
 };
@@ -112,7 +112,7 @@ export const ListWithFiveItems: Story = {
  */
 export const ListWithOneItem: Story = {
   args: {
-    variant: 'list',
+    variant: "list",
     count: 1,
   },
 };
@@ -122,8 +122,8 @@ export const ListWithOneItem: Story = {
  */
 export const ListWithManyItems: Story = {
   args: {
-    variant: 'list',
+    variant: "list",
     count: 10,
-    message: 'Loading repositories...',
+    message: "Loading repositories...",
   },
 };

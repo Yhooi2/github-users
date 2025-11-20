@@ -1,18 +1,18 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ScrollArea } from './scroll-area';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ScrollArea } from "./scroll-area";
 
 const meta: Meta<typeof ScrollArea> = {
-  title: 'UI/ScrollArea',
+  title: "UI/ScrollArea",
   component: ScrollArea,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
-        component: 'A scroll area component with custom scrollbars.',
+        component: "A scroll area component with custom scrollbars.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -37,23 +37,26 @@ export const RepositoryList: Story = {
     <ScrollArea className="h-[300px] w-[400px] rounded-md border">
       <div className="space-y-3 p-4">
         {[
-          'facebook/react',
-          'vercel/next.js',
-          'microsoft/vscode',
-          'nodejs/node',
-          'angular/angular',
-          'vuejs/vue',
-          'sveltejs/svelte',
-          'laravel/laravel',
-          'django/django',
-          'rails/rails',
-          'expressjs/express',
-          'nestjs/nest',
-          'spring-projects/spring-boot',
+          "facebook/react",
+          "vercel/next.js",
+          "microsoft/vscode",
+          "nodejs/node",
+          "angular/angular",
+          "vuejs/vue",
+          "sveltejs/svelte",
+          "laravel/laravel",
+          "django/django",
+          "rails/rails",
+          "expressjs/express",
+          "nestjs/nest",
+          "spring-projects/spring-boot",
         ].map((repo) => (
-          <div key={repo} className="flex items-center justify-between border-b py-2 last:border-b-0">
+          <div
+            key={repo}
+            className="flex items-center justify-between border-b py-2 last:border-b-0"
+          >
             <span className="text-sm font-medium">{repo}</span>
-            <span className="text-muted-foreground text-xs">★ 234k</span>
+            <span className="text-xs text-muted-foreground">★ 234k</span>
           </div>
         ))}
       </div>
@@ -66,19 +69,22 @@ export const LongText: Story = {
     <ScrollArea className="h-[250px] w-[450px] rounded-md border p-4">
       <div className="space-y-4 text-sm">
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat.
         </p>
         <p>
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-          nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-          deserunt mollit anim id est laborum.
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+          dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+          proident, sunt in culpa qui officia deserunt mollit anim id est
+          laborum.
         </p>
         <p>
-          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-          laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-          architecto beatae vitae dicta sunt explicabo.
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
+          ab illo inventore veritatis et quasi architecto beatae vitae dicta
+          sunt explicabo.
         </p>
       </div>
     </ScrollArea>

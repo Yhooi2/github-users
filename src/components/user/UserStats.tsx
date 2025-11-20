@@ -1,5 +1,5 @@
-import { StatsCard } from '@/components/layout/StatsCard';
-import { GitFork, Users, FileText, Star } from 'lucide-react';
+import { StatsCard } from "@/components/layout/StatsCard";
+import { FileText, GitFork, Star, Users } from "lucide-react";
 
 type UserStatsProps = {
   stats: {
@@ -13,22 +13,22 @@ type UserStatsProps = {
 export function UserStats({ stats }: UserStatsProps) {
   const statsConfig = [
     {
-      title: 'Repositories',
+      title: "Repositories",
       value: stats.repositories,
       icon: GitFork,
     },
     {
-      title: 'Followers',
+      title: "Followers",
       value: stats.followers,
       icon: Users,
     },
     {
-      title: 'Following',
+      title: "Following",
       value: stats.following,
       icon: Star,
     },
     {
-      title: 'Gists',
+      title: "Gists",
       value: stats.gists,
       icon: FileText,
     },
@@ -37,7 +37,12 @@ export function UserStats({ stats }: UserStatsProps) {
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
       {statsConfig.map((stat) => (
-        <StatsCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} />
+        <StatsCard
+          key={stat.title}
+          title={stat.title}
+          value={stat.value}
+          icon={stat.icon}
+        />
       ))}
     </div>
   );

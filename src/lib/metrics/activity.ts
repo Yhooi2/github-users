@@ -1,4 +1,4 @@
-import type { YearData } from '@/hooks/useUserAnalytics';
+import type { YearData } from "@/hooks/useUserAnalytics";
 
 /**
  * Activity metric result with detailed breakdown
@@ -17,7 +17,7 @@ export interface ActivityMetric {
   /** Overall score from 0-100 */
   score: number;
   /** Activity level based on score */
-  level: 'High' | 'Moderate' | 'Low';
+  level: "High" | "Moderate" | "Low";
   /** Detailed breakdown by component */
   breakdown: {
     recentCommits: number;
@@ -50,7 +50,7 @@ export function calculateActivityScore(timeline: YearData[]): ActivityMetric {
   if (!timeline.length) {
     return {
       score: 0,
-      level: 'Low',
+      level: "Low",
       breakdown: { recentCommits: 0, consistency: 0, diversity: 0 },
       details: { last3MonthsCommits: 0, activeMonths: 0, uniqueRepos: 0 },
     };
@@ -108,7 +108,8 @@ function getLastNMonths(timeline: YearData[], months: number): YearData[] {
 
   // For 3 months: include current year only
   // For 12 months: include current year + potentially last year
-  const yearsToInclude = months <= 3 ? 1 : months <= 12 ? 2 : Math.ceil(months / 12);
+  const yearsToInclude =
+    months <= 3 ? 1 : months <= 12 ? 2 : Math.ceil(months / 12);
 
   return timeline
     .sort((a, b) => b.year - a.year) // newest first
@@ -145,8 +146,8 @@ function countUniqueRepos(data: YearData[]): number {
  * @param score - Activity score (0-100)
  * @returns Activity level label
  */
-export function getActivityLabel(score: number): ActivityMetric['level'] {
-  if (score >= 71) return 'High';
-  if (score >= 41) return 'Moderate';
-  return 'Low';
+export function getActivityLabel(score: number): ActivityMetric["level"] {
+  if (score >= 71) return "High";
+  if (score >= 41) return "Moderate";
+  return "Low";
 }

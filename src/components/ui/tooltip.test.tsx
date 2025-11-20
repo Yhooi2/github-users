@@ -1,11 +1,16 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip';
-import { Button } from './button';
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { Button } from "./button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./tooltip";
 
-describe('Tooltip', () => {
-  describe('rendering', () => {
-    it('should render tooltip trigger', () => {
+describe("Tooltip", () => {
+  describe("rendering", () => {
+    it("should render tooltip trigger", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -14,13 +19,15 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>Tooltip text</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
 
-    it('should not show content initially', () => {
+    it("should not show content initially", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -29,13 +36,13 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>Tooltip text</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.queryByText('Tooltip text')).not.toBeInTheDocument();
+      expect(screen.queryByText("Tooltip text")).not.toBeInTheDocument();
     });
 
-    it('should render with custom trigger element', () => {
+    it("should render with custom trigger element", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -44,14 +51,14 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>Tooltip text</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByText('Custom trigger')).toBeInTheDocument();
+      expect(screen.getByText("Custom trigger")).toBeInTheDocument();
     });
   });
 
-  describe('data attributes', () => {
+  describe("data attributes", () => {
     it('should have data-slot="tooltip-trigger" on trigger', () => {
       const { container } = render(
         <Tooltip>
@@ -61,7 +68,7 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>Tooltip text</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
       const trigger = container.querySelector('[data-slot="tooltip-trigger"]');
@@ -69,7 +76,7 @@ describe('Tooltip', () => {
     });
   });
 
-  describe('content placement', () => {
+  describe("content placement", () => {
     it('should accept side="top" prop', () => {
       render(
         <Tooltip>
@@ -79,10 +86,12 @@ describe('Tooltip', () => {
           <TooltipContent side="top">
             <p>Top tooltip</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
 
     it('should accept side="bottom" prop', () => {
@@ -94,10 +103,12 @@ describe('Tooltip', () => {
           <TooltipContent side="bottom">
             <p>Bottom tooltip</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
 
     it('should accept side="left" prop', () => {
@@ -109,10 +120,12 @@ describe('Tooltip', () => {
           <TooltipContent side="left">
             <p>Left tooltip</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
 
     it('should accept side="right" prop', () => {
@@ -124,15 +137,17 @@ describe('Tooltip', () => {
           <TooltipContent side="right">
             <p>Right tooltip</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
   });
 
-  describe('styling', () => {
-    it('should accept custom className on content', () => {
+  describe("styling", () => {
+    it("should accept custom className on content", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -141,47 +156,49 @@ describe('Tooltip', () => {
           <TooltipContent className="bg-blue-500">
             <p>Styled tooltip</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
   });
 
-  describe('TooltipProvider', () => {
-    it('should render TooltipProvider with children', () => {
+  describe("TooltipProvider", () => {
+    it("should render TooltipProvider with children", () => {
       render(
         <TooltipProvider>
           <div data-testid="provider-child">Content</div>
-        </TooltipProvider>
+        </TooltipProvider>,
       );
 
-      expect(screen.getByTestId('provider-child')).toBeInTheDocument();
+      expect(screen.getByTestId("provider-child")).toBeInTheDocument();
     });
 
-    it('should accept delayDuration prop', () => {
+    it("should accept delayDuration prop", () => {
       render(
         <TooltipProvider delayDuration={500}>
           <div data-testid="provider-content">Content</div>
-        </TooltipProvider>
+        </TooltipProvider>,
       );
 
-      expect(screen.getByTestId('provider-content')).toBeInTheDocument();
+      expect(screen.getByTestId("provider-content")).toBeInTheDocument();
     });
 
-    it('should default to 0 delay duration when not specified', () => {
+    it("should default to 0 delay duration when not specified", () => {
       render(
         <TooltipProvider>
           <div data-testid="provider-content">Content</div>
-        </TooltipProvider>
+        </TooltipProvider>,
       );
 
-      expect(screen.getByTestId('provider-content')).toBeInTheDocument();
+      expect(screen.getByTestId("provider-content")).toBeInTheDocument();
     });
   });
 
-  describe('accessibility', () => {
-    it('should support focusable trigger', () => {
+  describe("accessibility", () => {
+    it("should support focusable trigger", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -190,16 +207,16 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>Tooltip text</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      const trigger = screen.getByRole('button', { name: 'Focus me' });
+      const trigger = screen.getByRole("button", { name: "Focus me" });
       expect(trigger).toBeInTheDocument();
       trigger.focus();
       expect(trigger).toHaveFocus();
     });
 
-    it('should render tooltip structure with aria support', () => {
+    it("should render tooltip structure with aria support", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -208,31 +225,33 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>Tooltip text</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      const trigger = screen.getByRole('button', { name: 'Hover me' });
+      const trigger = screen.getByRole("button", { name: "Hover me" });
       expect(trigger).toBeInTheDocument();
     });
   });
 
-  describe('edge cases', () => {
-    it('should render tooltip with empty content', () => {
+  describe("edge cases", () => {
+    it("should render tooltip with empty content", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
             <Button>Hover me</Button>
           </TooltipTrigger>
           <TooltipContent></TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
 
-    it('should handle long content text', () => {
+    it("should handle long content text", () => {
       const longText =
-        'This is a very long tooltip content that should wrap properly when displayed';
+        "This is a very long tooltip content that should wrap properly when displayed";
 
       render(
         <Tooltip>
@@ -242,13 +261,15 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>{longText}</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
 
-    it('should work with disabled button wrapper', () => {
+    it("should work with disabled button wrapper", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -259,13 +280,13 @@ describe('Tooltip', () => {
           <TooltipContent>
             <p>Tooltip for disabled button</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Disabled' })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Disabled" })).toBeDisabled();
     });
 
-    it('should render multiple tooltips independently', () => {
+    it("should render multiple tooltips independently", () => {
       render(
         <>
           <Tooltip>
@@ -285,14 +306,16 @@ describe('Tooltip', () => {
               <p>Second tooltip</p>
             </TooltipContent>
           </Tooltip>
-        </>
+        </>,
       );
 
-      expect(screen.getByRole('button', { name: 'First' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Second' })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "First" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Second" }),
+      ).toBeInTheDocument();
     });
 
-    it('should support complex content with nested elements', () => {
+    it("should support complex content with nested elements", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -304,13 +327,15 @@ describe('Tooltip', () => {
               <span data-testid="nested">Nested</span>
             </div>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
 
-    it('should accept sideOffset prop', () => {
+    it("should accept sideOffset prop", () => {
       render(
         <Tooltip>
           <TooltipTrigger asChild>
@@ -319,10 +344,12 @@ describe('Tooltip', () => {
           <TooltipContent sideOffset={10}>
             <p>Offset tooltip</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>,
       );
 
-      expect(screen.getByRole('button', { name: 'Hover me' })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Hover me" }),
+      ).toBeInTheDocument();
     });
   });
 });

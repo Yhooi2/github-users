@@ -1,6 +1,6 @@
-import { RepositoryCard } from '@/components/repository/RepositoryCard';
-import { Badge } from '@/components/ui/badge';
-import type { Repository } from '@/apollo/github-api.types';
+import type { Repository } from "@/apollo/github-api.types";
+import { RepositoryCard } from "@/components/repository/RepositoryCard";
+import { Badge } from "@/components/ui/badge";
 
 export interface ProjectSectionProps {
   /**
@@ -40,7 +40,10 @@ export interface ProjectSectionProps {
  * <ProjectSection projects={{ owned: [], contributions: [] }} loading />
  * ```
  */
-export function ProjectSection({ projects, loading = false }: ProjectSectionProps) {
+export function ProjectSection({
+  projects,
+  loading = false,
+}: ProjectSectionProps) {
   if (loading) {
     return <ProjectSectionSkeleton />;
   }
@@ -85,7 +88,7 @@ export function ProjectSection({ projects, loading = false }: ProjectSectionProp
 
       {/* Empty State */}
       {hasNoProjects && (
-        <div className="text-muted-foreground rounded-lg border p-8 text-center">
+        <div className="rounded-lg border p-8 text-center text-muted-foreground">
           No repositories found
         </div>
       )}
@@ -99,10 +102,10 @@ export function ProjectSection({ projects, loading = false }: ProjectSectionProp
 function ProjectSectionSkeleton() {
   return (
     <section className="space-y-6" aria-label="Loading projects">
-      <div className="bg-muted h-8 w-64 animate-pulse rounded" />
+      <div className="h-8 w-64 animate-pulse rounded bg-muted" />
       <div className="grid gap-4 md:grid-cols-2">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-muted h-32 animate-pulse rounded-lg" />
+          <div key={i} className="h-32 animate-pulse rounded-lg bg-muted" />
         ))}
       </div>
     </section>

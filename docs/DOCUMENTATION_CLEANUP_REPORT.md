@@ -13,6 +13,7 @@
 **Общий объем:** 21,536 строк
 **Проблемные файлы:** 15 требуют внимания
 **Категории проблем:**
+
 - 🔴 **Критичные дубликаты:** 6 файлов
 - 🟡 **Устаревший контент:** 9 файлов
 - 🟢 **Противоречия статуса:** 9 файлов
@@ -24,14 +25,17 @@
 ### 1. CLAUDE.md файлы (ДУБЛИКАТ)
 
 **Файлы:**
+
 - `/CLAUDE.md` (6 строк) - только про Graphiti memory
 - `/.claude/CLAUDE.md` (первые 50 строк из полной версии)
 
 **Проблема:**
+
 - Корневой `/CLAUDE.md` содержит только повторяющийся текст про Graphiti memory (4 раза одно и то же!)
 - Реальная документация в `/.claude/CLAUDE.md` (полная версия проекта)
 
 **Дублирование:**
+
 ```
 - При поиске информации о проекте для ее получения используй мсп графити мемори...
 - Всегда сначала проверяй память перед ответом на вопросы о проекте.
@@ -47,10 +51,12 @@
 ### 2. Implementation Plans (ИЗБЫТОЧНОСТЬ)
 
 **Файлы:**
+
 - `IMPLEMENTATION_PLAN.md` (v5.0) - 2,388 строк
 - `IMPLEMENTATION_PLAN_HYBRID.md` (v4.0) - 2,050 строк
 
 **Дублирование (>60% контента):**
+
 - ✅ Phases 0-6 описаны в ОБОИХ планах с похожей структурой
 - ✅ Technology Stack (React 19, Vite 7, Apollo Client) - дублируется
 - ✅ MCP-Driven Development Process - дублируется
@@ -60,6 +66,7 @@
 - ✅ What NOT to Change - дублируется
 
 **Уникальный контент в IMPLEMENTATION_PLAN.md (v5.0):**
+
 - Project Status (Phase 10 Completed)
 - Security Status (CRITICAL)
 - Phase 1.5: Fraud Detection (800+ строк)
@@ -68,13 +75,16 @@
 - Performance Targets (230+ строк)
 
 **Уникальный контент в IMPLEMENTATION_PLAN_HYBRID.md (v4.0):**
+
 - Reusability Analysis (70% готово) ← ВАЖНО!
 - Realistic Timeline с учетом reuse (14 дней) ← ВАЖНО!
 
 **Вывод из PLAN_COMPARISON.md:**
+
 > **Hybrid Approach рекомендован:** Используйте базис из плана пользователя (Phases 0-6, Reusability) + добавить Security, Rollback, Performance из моего плана
 
 **Рекомендация:** 🟡 **ОБЪЕДИНИТЬ в один HYBRID план**
+
 1. Базис: IMPLEMENTATION_PLAN_HYBRID.md (Phases 0-6, Reusability)
 2. Добавить: Security Status, Rollback Plan, Performance Targets из IMPLEMENTATION_PLAN.md
 3. Удалить: Phase 1.5 Fraud Detection (содержит ошибки API), Phase 5.5 OAuth (отложить)
@@ -84,10 +94,12 @@
 ### 3. Metrics Documentation (ДУБЛИКАТ)
 
 **Файлы:**
+
 - `metrics-explanation.md` (924 строки) - краткая версия
 - `METRICS_V2_DETAILED.md` (1,806 строк) - детальная версия
 
 **Дублирование:**
+
 - Fraud Detection System (идентичные формулы)
 - Activity Score (идентичные компоненты)
 - Impact Score (идентичные benchmark ranges)
@@ -95,6 +107,7 @@
 - Growth Score (идентичные metrics)
 
 **Разница:**
+
 - `METRICS_V2_DETAILED.md` содержит полный TypeScript код (implementation examples)
 - `metrics-explanation.md` содержит только формулы (high-level)
 
@@ -106,16 +119,19 @@
 ### 4. Component Documentation (ЧАСТИЧНОЕ ДУБЛИРОВАНИЕ)
 
 **Файлы:**
+
 - `components-guide.md` (1,160 строк) - user guide для всех компонентов
 - `component-development.md` (1,060 строк) - development guide для создания новых
 
 **Дублирование (~30%):**
+
 - shadcn/ui patterns
 - TypeScript conventions
 - Testing patterns
 - Storybook setup
 
 **Уникальный контент:**
+
 - `components-guide.md`: список ВСЕХ компонентов (46 components)
 - `component-development.md`: step-by-step создание НОВОГО компонента
 
@@ -127,18 +143,21 @@
 ### 5. API Documentation (ЧАСТИЧНОЕ ДУБЛИРОВАНИЕ)
 
 **Файлы:**
+
 - `api-reference.md` (966 строк) - GitHub GraphQL API reference
 - `api-strategy.md` (846 строк) - querying strategy
 - `apollo-client-guide.md` (1,189 строк) - Apollo Client setup
 - `api-reference.md` (504 строки) - GraphQL basics
 
 **Дублирование (~40%):**
+
 - GraphQL query examples
 - Apollo Client setup
 - Error handling patterns
 - Rate limiting info
 
 **Рекомендация:** 🟡 **ОБЪЕДИНИТЬ в 2 файла:**
+
 1. `api-guide.md` (reference + strategy) ← объединить api-reference.md + api-strategy.md
 2. Оставить `apollo-client-guide.md` (детальный setup)
 3. **УДАЛИТЬ** `api-reference.md` (базовая инфо, дублируется в apollo-client-guide.md)
@@ -152,27 +171,33 @@
 **Проблема:** 7 упоминаний `commit.additions` и `commit.deletions` в документации
 
 **Файлы с ошибками:**
+
 1. `IMPLEMENTATION_PLAN.md` - Phase 2: Metrics v2.0
 2. `METRICS_V2_DETAILED.md` - Activity Score: Code Throughput
 3. `metrics-explanation.md` - Activity Score formula
 
 **Доказательство из VERIFICATION_REPORT.md:**
+
 ```markdown
 ❌ ОШИБКА #1: commit.additions/deletions НЕ СУЩЕСТВУЮТ в GitHub GraphQL API!
 
 # В schema НЕТ commit.additions/deletions!
+
 commit {
-  id
-  message
-  committedDate
-  # ❌ additions - НЕ СУЩЕСТВУЕТ
-  # ❌ deletions - НЕ СУЩЕСТВУЕТ
+id
+message
+committedDate
+
+# ❌ additions - НЕ СУЩЕСТВУЕТ
+
+# ❌ deletions - НЕ СУЩЕСТВУЕТ
+
 }
 
 Что РЕАЛЬНО доступно:
 pullRequest {
-  additions   # ✅ ЕСТЬ (только для PR)
-  deletions   # ✅ ЕСТЬ (только для PR)
+additions # ✅ ЕСТЬ (только для PR)
+deletions # ✅ ЕСТЬ (только для PR)
 }
 ```
 
@@ -186,6 +211,7 @@ pullRequest {
 **Проблема:** 9 файлов упоминают "Phase 10 Completed" или "Production Ready"
 
 **Файлы:**
+
 1. `PLAN_COMPARISON.md` - "Status: Phase 10 Completed (Production Ready)"
 2. `IMPLEMENTATION_PLAN.md` - "🎉 Project Status: Phase 10 Completed: 2025-11-16"
 3. `IMPLEMENTATION_PLAN_HYBRID.md` - "Status: ✅ Phase 10 COMPLETED"
@@ -194,6 +220,7 @@ pullRequest {
 6. и т.д.
 
 **НО:**
+
 - `IMPLEMENTATION_PLAN.md` предлагает: "Begin Phase 0: Backend Security Layer"
 - `IMPLEMENTATION_PLAN_HYBRID.md` предлагает: "Start with Phase 0"
 
@@ -204,10 +231,12 @@ pullRequest {
 Планы написаны для РЕФАКТОРИНГА (не для разработки с нуля), но это не очевидно из названия.
 
 **Рекомендация:** ✅ **ПЕРЕИМЕНОВАТЬ планы:**
+
 - `IMPLEMENTATION_PLAN.md` → `REFACTORING_PLAN_V2.md` (ясно, что это v2.0)
 - `IMPLEMENTATION_PLAN_HYBRID.md` → `REFACTORING_PLAN_HYBRID.md`
 
 **Добавить в начало:**
+
 ```markdown
 **⚠️ IMPORTANT:** This is a REFACTORING plan for existing production app (Phase 10 completed).
 NOT a greenfield implementation! Existing features must remain working.
@@ -220,17 +249,19 @@ NOT a greenfield implementation! Existing features must remain working.
 **Проблема:** VERIFICATION_REPORT.md доказывает, что timeline недооценен
 
 **Из VERIFICATION_REPORT.md:**
+
 ```markdown
 Phase 1.5 Fraud Detection:
-  План говорит: 2 дня
-  REALISTIC: 4-5 дней ❌ (Недооценка на 150%)
+План говорит: 2 дня
+REALISTIC: 4-5 дней ❌ (Недооценка на 150%)
 
 Phase 2 Metrics v2.0:
-  План говорит: 5 дней
-  REALISTIC: 8-9 дней ❌ (Недооценка на 80%)
+План говорит: 5 дней
+REALISTIC: 8-9 дней ❌ (Недооценка на 80%)
 ```
 
 **Рекомендация:** ✅ **ОБНОВИТЬ timeline во всех планах:**
+
 - Phase 1.5: 2 → 4-5 дней (или удалить, т.к. API limitations)
 - Phase 2: 5 → 8-9 дней (или использовать Metrics v1.0, которые реализуемы)
 
@@ -241,15 +272,18 @@ Phase 2 Metrics v2.0:
 ### 9. Слишком детальные TypeScript примеры
 
 **Проблема:**
+
 - `IMPLEMENTATION_PLAN.md` содержит 800+ строк TypeScript кода для Fraud Detection
 - `METRICS_V2_DETAILED.md` содержит 1,806 строк с полным TypeScript кодом
 
 **Рекомендация:** 🟡 **ПЕРЕМЕСТИТЬ код в отдельные файлы:**
+
 - Создать `docs/examples/fraud-detection-example.ts`
 - Создать `docs/examples/metrics-v2-example.ts`
 - В планах оставить только ссылки: `See examples/fraud-detection-example.ts`
 
 **Преимущества:**
+
 - Планы короче и читабельнее
 - Код можно запустить и протестировать отдельно
 - Проще поддерживать (не нужно править в markdown)
@@ -261,6 +295,7 @@ Phase 2 Metrics v2.0:
 ### Этап 1: Удаление критичных дубликатов (15 минут)
 
 **Действия:**
+
 ```bash
 # 1. Удалить корневой CLAUDE.md (дубликат)
 git rm /CLAUDE.md
@@ -281,37 +316,46 @@ git rm docs/api-reference.md
 **Действие:** Создать `docs/REFACTORING_PLAN.md` (единый план)
 
 **Структура:**
+
 ```markdown
 # GitHub User Analytics — Refactoring Plan
 
 **⚠️ IMPORTANT:** Refactoring existing production app (Phase 10 completed).
 
 ## 🎉 Current Status
+
 - 46 components, 1302 tests, 90.04% coverage
 - Production ready!
 
 ## ⚠️ Security Status (CRITICAL!)
+
 - Token security audit required
-- grep "ghp_" dist/assets/*.js
+- grep "ghp\_" dist/assets/\*.js
 
 ## 📦 Reusability Analysis (70% готово)
+
 ← из IMPLEMENTATION_PLAN_HYBRID.md
 
 ## Phases 0-6 (14 дней)
+
 ← базис из IMPLEMENTATION_PLAN_HYBRID.md
 
 ## 🔄 Rollback Plan
+
 ← из IMPLEMENTATION_PLAN.md
 
 ## ⚡ Performance Targets
+
 ← из IMPLEMENTATION_PLAN.md
 
 ## Future Enhancements (Optional)
+
 - Phase 11: Fraud Detection v1.0 (simplified, 4-5 дней)
 - Phase 12: OAuth Migration (5-7 дней)
 ```
 
 **После:**
+
 ```bash
 # Удалить старые планы
 git rm docs/IMPLEMENTATION_PLAN.md
@@ -339,10 +383,12 @@ grep -rn "commit\.additions\|commit\.deletions" docs/
 ```
 
 **Файлы для правки:**
+
 - `metrics-explanation.md`
 - Новый `REFACTORING_PLAN.md`
 
 **Добавить warning:**
+
 ```markdown
 **⚠️ API Limitation:** GitHub GraphQL does NOT provide commit.additions/deletions.
 Only pullRequest.additions/deletions available. Requires fetching all PRs (slow + rate limit).
@@ -356,13 +402,16 @@ Alternative: Use commit count as proxy (less accurate but fast).
 **Действие:** Создать `docs/github-api-guide.md`
 
 **Объединить:**
+
 - `api-reference.md` (GitHub API endpoints)
 - `api-strategy.md` (querying strategy)
 
 **Оставить отдельно:**
+
 - `apollo-client-guide.md` (Apollo-specific setup)
 
 **После:**
+
 ```bash
 git rm docs/api-reference.md
 git rm docs/api-strategy.md
@@ -377,20 +426,23 @@ git rm docs/api-strategy.md
 **Действие:** Удалить дублирование про Graphiti memory
 
 **Текущая версия (дублируется 2 раза!):**
+
 ```markdown
 - При поиске информации о проекте для ее получения используй мсп графити мемори...
 - Всегда сначала проверяй память перед ответом на вопросы о проекте.
 - У меня подключен Graphiti memory MCP...
-- У меня подключен Graphiti memory MCP...  ← ДУБЛИКАТ!
+- У меня подключен Graphiti memory MCP... ← ДУБЛИКАТ!
 ```
 
 **Новая версия (упомянуть 1 раз в конце):**
+
 ```markdown
 [... вся документация проекта ...]
 
 ## Graphiti Memory Integration
 
 При работе с проектом используй MCP Graphiti Memory:
+
 - Всегда проверяй существующую память перед ответом
 - Сохраняй важную информацию о проекте
 - При выявлении несоответствия обновляй память
@@ -410,17 +462,20 @@ git rm docs/api-strategy.md
 **⚠️ OUTDATED:** These documents are preserved for historical reference only.
 
 ## Implementation Plans (Superseded by REFACTORING_PLAN.md)
+
 - [IMPLEMENTATION_PLAN.md v5.0](./legacy/IMPLEMENTATION_PLAN_v5.md)
 - [IMPLEMENTATION_PLAN_HYBRID.md v4.0](./legacy/IMPLEMENTATION_PLAN_HYBRID_v4.md)
 - [PLAN_COMPARISON.md](./legacy/PLAN_COMPARISON.md)
 
 ## Metrics v2.0 (Superseded by metrics-explanation.md v1.0)
+
 - [METRICS_V2_DETAILED.md](./legacy/METRICS_V2_DETAILED.md)
   - **Reason:** API limitations (commit.additions/deletions not available)
   - **Status:** Not implementable as written
 ```
 
 **Переместить старые файлы:**
+
 ```bash
 mkdir -p docs/archive/legacy
 git mv docs/IMPLEMENTATION_PLAN.md docs/archive/legacy/IMPLEMENTATION_PLAN_v5.md
@@ -433,18 +488,21 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 ## 📊 ИТОГОВАЯ СТАТИСТИКА
 
 ### До очистки:
+
 - Файлов: 25
 - Строк: 21,536
 - Дубликаты: ~8,000 строк (~37%)
 - Устаревший контент: 9 файлов
 
 ### После очистки:
+
 - Файлов: 18 (-28%)
 - Строк: ~12,500 (-42%)
 - Дубликаты: 0 строк (✅ устранены)
 - Устаревший контент: 0 файлов (✅ исправлены)
 
 ### Удаленные файлы (7):
+
 1. `/CLAUDE.md` ← дубликат
 2. `METRICS_V2_DETAILED.md` ← нереализуемый + дубликат
 3. `IMPLEMENTATION_PLAN.md` ← объединен в REFACTORING_PLAN.md
@@ -455,6 +513,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 8. `api-reference.md` ← дублирует apollo-client-guide.md
 
 ### Новые файлы (2):
+
 1. `REFACTORING_PLAN.md` ← единый гибридный план
 2. `github-api-guide.md` ← объединенная API документация
 
@@ -463,6 +522,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 ## ✅ КРИТЕРИИ УСПЕХА
 
 **Очистка считается успешной, если:**
+
 - ✅ Нет дублирования контента между файлами
 - ✅ Все API limitations задокументированы
 - ✅ Статус проекта (Phase 10 completed) ясен во всех планах
@@ -476,6 +536,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 ## 🚀 NEXT STEPS
 
 **После очистки:**
+
 1. ✅ Создать PR с очисткой документации
 2. ✅ Review изменений с командой
 3. ✅ Merge в alt-main
@@ -501,6 +562,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 **Commit:** 67a6e8c
 
 **Выполнено:**
+
 1. ✅ Удален `/CLAUDE.md` (дубликат)
 2. ✅ Исправлен `.claude/CLAUDE.md` (убрано 4x дублирование Graphiti)
 3. ✅ Добавлено предупреждение об API limitations в `metrics-explanation.md`
@@ -541,6 +603,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
    - Ссылки на предыдущую/следующую фазу
 
 **Преимущества новой структуры:**
+
 - ✅ Модульность: можно работать с каждой фазой отдельно
 - ✅ Оптимизация для Claude Code subagents (изолированный контекст)
 - ✅ Легко обновлять отдельные фазы
@@ -548,6 +611,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 - ✅ Соответствует 2025 best practices (100-200 строк на главный файл)
 
 **Следующие шаги:**
+
 - Коммит всех изменений
 - Push в ветку `claude/review-refactoring-plan-01Y7LHv2r4zPkwni3KfzjkvY`
 - (Опционально) Удалить устаревшие `IMPLEMENTATION_PLAN.md` и `IMPLEMENTATION_PLAN_HYBRID.md` после проверки
@@ -611,11 +675,13 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 ## 📊 Final Statistics
 
 **Before Cleanup:**
+
 - Total docs: 25 files
 - Total lines: 21,536
 - Problematic files: 15
 
 **After Cleanup:**
+
 - Total docs: 22 files (21 active + 1 cleanup report)
 - Removed: 4 legacy files (~5,700 lines)
 - Added: 8 new files (REFACTORING_MASTER_PLAN + 7 phases)
@@ -626,6 +692,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 ---
 
 **Next Steps:**
+
 1. Consider migrating baggs.md issues to GitHub Issues
 2. Begin Phase 0 (Backend Security) using modular plan
 3. Follow Component → Storybook → Test workflow for all new components
@@ -659,12 +726,14 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 ### Final Statistics (After Stage 3)
 
 **Documentation Structure:**
+
 - Total docs: 22 files (active + cleanup report)
 - Removed duplication: ~570 lines from REFACTORING_MASTER_PLAN.md
 - Added: Cross-references in 4 key files
 - Status: ✅ **Clean, well-organized, no significant duplication**
 
 **Remaining Files:**
+
 - ✅ REFACTORING_MASTER_PLAN.md (optimized, ~570 lines)
 - ✅ testing-guide.md (complete reference)
 - ✅ component-development.md (workflow guide with references)
@@ -674,6 +743,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 - ✅ All phase files (modular, focused)
 
 **Quality Metrics:**
+
 - ✅ No critical duplication (eliminated ~8000 lines in Stages 1-3)
 - ✅ Clear cross-references between related docs
 - ✅ Modular structure (phases separated)
@@ -688,6 +758,7 @@ git mv docs/IMPLEMENTATION_PLAN_HYBRID.md docs/archive/legacy/IMPLEMENTATION_PLA
 **Stage 3 (Nov 17):** Optimized testing docs, added cross-references
 
 **Total Impact:**
+
 - Before cleanup: 21,536 lines across 25 files
 - After cleanup: ~12,000 lines across 22 files
 - Reduction: ~44% reduction in total documentation size

@@ -1,3 +1,7 @@
+import type { Repository } from "@/apollo/github-api.types";
+import { ErrorState } from "@/components/layout/ErrorState";
+import { LoadingState } from "@/components/layout/LoadingState";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -5,15 +9,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import type { Repository } from '@/apollo/github-api.types';
-import { Star, GitFork, Eye, AlertCircle, ExternalLink } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { formatNumber } from '@/lib/statistics';
-import { LoadingState } from '@/components/layout/LoadingState';
-import { ErrorState } from '@/components/layout/ErrorState';
-import { RepositoryEmpty } from './RepositoryEmpty';
+} from "@/components/ui/table";
+import { formatNumber } from "@/lib/statistics";
+import { formatDistanceToNow } from "date-fns";
+import { AlertCircle, ExternalLink, Eye, GitFork, Star } from "lucide-react";
+import { RepositoryEmpty } from "./RepositoryEmpty";
 
 type Props = {
   /**
@@ -90,7 +90,7 @@ export function RepositoryTable({
   hasActiveFilters = false,
   onRepositoryClick,
   compact = false,
-  loadingMessage = 'Loading repositories...',
+  loadingMessage = "Loading repositories...",
   errorTitle,
   errorDescription,
   emptyTitle,
@@ -105,7 +105,7 @@ export function RepositoryTable({
   if (error) {
     return (
       <ErrorState
-        title={errorTitle || 'Failed to load repositories'}
+        title={errorTitle || "Failed to load repositories"}
         message={errorDescription || error.message}
       />
     );
@@ -156,8 +156,10 @@ export function RepositoryTable({
         <TableBody>
           {repositories.map((repository) => {
             const updatedAt = repository.updatedAt
-              ? formatDistanceToNow(new Date(repository.updatedAt), { addSuffix: true })
-              : 'Never';
+              ? formatDistanceToNow(new Date(repository.updatedAt), {
+                  addSuffix: true,
+                })
+              : "Never";
 
             const handleClick = () => {
               if (onRepositoryClick) {
@@ -166,7 +168,7 @@ export function RepositoryTable({
             };
 
             const handleKeyDown = (e: React.KeyboardEvent) => {
-              if (onRepositoryClick && (e.key === 'Enter' || e.key === ' ')) {
+              if (onRepositoryClick && (e.key === "Enter" || e.key === " ")) {
                 e.preventDefault();
                 onRepositoryClick(repository);
               }
@@ -175,12 +177,16 @@ export function RepositoryTable({
             return (
               <TableRow
                 key={repository.id}
-                className={onRepositoryClick ? 'cursor-pointer' : undefined}
+                className={onRepositoryClick ? "cursor-pointer" : undefined}
                 onClick={handleClick}
                 onKeyDown={handleKeyDown}
                 tabIndex={onRepositoryClick ? 0 : undefined}
-                role={onRepositoryClick ? 'button' : undefined}
-                aria-label={onRepositoryClick ? `Open ${repository.name} repository` : undefined}
+                role={onRepositoryClick ? "button" : undefined}
+                aria-label={
+                  onRepositoryClick
+                    ? `Open ${repository.name} repository`
+                    : undefined
+                }
               >
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
@@ -209,16 +215,22 @@ export function RepositoryTable({
                 </TableCell>
 
                 {!compact && (
-                  <TableCell className="text-muted-foreground max-w-md truncate text-sm">
-                    {repository.description || 'No description'}
+                  <TableCell className="max-w-md truncate text-sm text-muted-foreground">
+                    {repository.description || "No description"}
                   </TableCell>
                 )}
 
-                <TableCell className="text-center" title={`${repository.stargazerCount} stars`}>
+                <TableCell
+                  className="text-center"
+                  title={`${repository.stargazerCount} stars`}
+                >
                   {formatNumber(repository.stargazerCount)}
                 </TableCell>
 
-                <TableCell className="text-center" title={`${repository.forkCount} forks`}>
+                <TableCell
+                  className="text-center"
+                  title={`${repository.forkCount} forks`}
+                >
                   {formatNumber(repository.forkCount)}
                 </TableCell>
 
@@ -234,14 +246,16 @@ export function RepositoryTable({
                 {!compact && (
                   <TableCell>
                     {repository.primaryLanguage ? (
-                      <Badge variant="outline">{repository.primaryLanguage.name}</Badge>
+                      <Badge variant="outline">
+                        {repository.primaryLanguage.name}
+                      </Badge>
                     ) : (
-                      <span className="text-muted-foreground text-xs">-</span>
+                      <span className="text-xs text-muted-foreground">-</span>
                     )}
                   </TableCell>
                 )}
 
-                <TableCell className="text-muted-foreground text-right text-sm">
+                <TableCell className="text-right text-sm text-muted-foreground">
                   {updatedAt}
                 </TableCell>
               </TableRow>

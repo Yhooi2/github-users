@@ -1,6 +1,6 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, RefreshCw, XCircle, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, AlertTriangle, RefreshCw, XCircle } from "lucide-react";
 
 type ErrorStateProps = {
   /**
@@ -17,7 +17,7 @@ type ErrorStateProps = {
    * - 'warning': Warning message (yellow)
    * - 'info': Informational (blue)
    */
-  variant?: 'error' | 'warning' | 'info';
+  variant?: "error" | "warning" | "info";
   /**
    * Optional retry callback
    */
@@ -54,31 +54,31 @@ type ErrorStateProps = {
  * ```
  */
 export function ErrorState({
-  title = 'Error',
+  title = "Error",
   message,
-  variant = 'error',
+  variant = "error",
   onRetry,
   onDismiss,
-  retryText = 'Try Again',
-  dismissText = 'Dismiss',
+  retryText = "Try Again",
+  dismissText = "Dismiss",
   showIcon = true,
 }: ErrorStateProps) {
   const getIcon = () => {
     if (!showIcon) return null;
 
     switch (variant) {
-      case 'error':
+      case "error":
         return <XCircle className="h-5 w-5" />;
-      case 'warning':
+      case "warning":
         return <AlertTriangle className="h-5 w-5" />;
-      case 'info':
+      case "info":
         return <AlertCircle className="h-5 w-5" />;
     }
   };
 
   const getAlertVariant = () => {
-    if (variant === 'error') return 'destructive';
-    return 'default';
+    if (variant === "error") return "destructive";
+    return "default";
   };
 
   return (

@@ -1,55 +1,60 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { MainTabs, TabItem } from './MainTabs';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { MainTabs, TabItem } from "./MainTabs";
 
-describe('MainTabs', () => {
+describe("MainTabs", () => {
   const mockTabs: TabItem[] = [
-    { value: 'tab1', label: 'Tab 1', content: <div>Content 1</div> },
-    { value: 'tab2', label: 'Tab 2', content: <div>Content 2</div> },
+    { value: "tab1", label: "Tab 1", content: <div>Content 1</div> },
+    { value: "tab2", label: "Tab 2", content: <div>Content 2</div> },
   ];
 
-  it('should render tabs', () => {
+  it("should render tabs", () => {
     render(<MainTabs tabs={mockTabs} />);
-    expect(screen.getByText('Tab 1')).toBeInTheDocument();
-    expect(screen.getByText('Tab 2')).toBeInTheDocument();
+    expect(screen.getByText("Tab 1")).toBeInTheDocument();
+    expect(screen.getByText("Tab 2")).toBeInTheDocument();
   });
 
-  it('should show first tab content by default', () => {
+  it("should show first tab content by default", () => {
     render(<MainTabs tabs={mockTabs} />);
-    expect(screen.getByText('Content 1')).toBeInTheDocument();
+    expect(screen.getByText("Content 1")).toBeInTheDocument();
   });
 
-  it('should switch tabs on click', async () => {
+  it("should switch tabs on click", async () => {
     const user = userEvent.setup();
     render(<MainTabs tabs={mockTabs} />);
 
-    await user.click(screen.getByText('Tab 2'));
-    expect(screen.getByText('Content 2')).toBeVisible();
+    await user.click(screen.getByText("Tab 2"));
+    expect(screen.getByText("Content 2")).toBeVisible();
   });
 
-  it('should call onValueChange', async () => {
+  it("should call onValueChange", async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<MainTabs tabs={mockTabs} onValueChange={handleChange} />);
 
-    await user.click(screen.getByText('Tab 2'));
-    expect(handleChange).toHaveBeenCalledWith('tab2');
+    await user.click(screen.getByText("Tab 2"));
+    expect(handleChange).toHaveBeenCalledWith("tab2");
   });
 
-  it('should respect defaultValue', () => {
+  it("should respect defaultValue", () => {
     render(<MainTabs tabs={mockTabs} defaultValue="tab2" />);
-    expect(screen.getByText('Content 2')).toBeInTheDocument();
+    expect(screen.getByText("Content 2")).toBeInTheDocument();
   });
 
-  it('should disable tabs', () => {
+  it("should disable tabs", () => {
     const tabsWithDisabled: TabItem[] = [
       ...mockTabs,
-      { value: 'tab3', label: 'Disabled', content: <div>Content 3</div>, disabled: true },
+      {
+        value: "tab3",
+        label: "Disabled",
+        content: <div>Content 3</div>,
+        disabled: true,
+      },
     ];
     render(<MainTabs tabs={tabsWithDisabled} />);
 
-    const disabledTab = screen.getByText('Disabled');
-    expect(disabledTab).toHaveAttribute('disabled');
+    const disabledTab = screen.getByText("Disabled");
+    expect(disabledTab).toHaveAttribute("disabled");
   });
 });

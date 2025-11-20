@@ -1,4 +1,4 @@
-import type { YearData } from '@/hooks/useUserAnalytics';
+import type { YearData } from "@/hooks/useUserAnalytics";
 
 /**
  * Quality metric result with detailed breakdown
@@ -21,7 +21,7 @@ export interface QualityMetric {
   /** Overall score from 0-100 */
   score: number;
   /** Quality level based on score */
-  level: 'Excellent' | 'Strong' | 'Good' | 'Fair' | 'Weak';
+  level: "Excellent" | "Strong" | "Good" | "Fair" | "Weak";
   /** Detailed breakdown by component */
   breakdown: {
     originality: number;
@@ -60,8 +60,14 @@ export function calculateQualityScore(timeline: YearData[]): QualityMetric {
   if (!timeline.length) {
     return {
       score: 0,
-      level: 'Weak',
-      breakdown: { originality: 0, documentation: 0, ownership: 0, maturity: 0, stack: 0 },
+      level: "Weak",
+      breakdown: {
+        originality: 0,
+        documentation: 0,
+        ownership: 0,
+        maturity: 0,
+        stack: 0,
+      },
       details: {
         nonForkRepos: 0,
         totalOwnedRepos: 0,
@@ -76,21 +82,26 @@ export function calculateQualityScore(timeline: YearData[]): QualityMetric {
 
   // Aggregate all unique repositories
   const allOwnedRepos = getUniqueRepos(timeline.flatMap((y) => y.ownedRepos));
-  const allContributedRepos = getUniqueRepos(timeline.flatMap((y) => y.contributions));
+  const allContributedRepos = getUniqueRepos(
+    timeline.flatMap((y) => y.contributions),
+  );
 
   // A. Originality (0-30 points)
   // Non-fork ratio: owned repos that aren't forks / total owned repos
   const nonForkRepos = allOwnedRepos.filter((r) => !r.repository.isFork).length;
   const totalOwnedRepos = allOwnedRepos.length;
-  const originalityRatio = totalOwnedRepos > 0 ? nonForkRepos / totalOwnedRepos : 0;
+  const originalityRatio =
+    totalOwnedRepos > 0 ? nonForkRepos / totalOwnedRepos : 0;
   const originalityPoints = originalityRatio * 30;
 
   // B. Documentation (0-25 points)
   // Check if repos have descriptions (proxy for documentation)
   const documentedRepos = allOwnedRepos.filter(
-    (r) => r.repository.description && r.repository.description.trim().length > 0
+    (r) =>
+      r.repository.description && r.repository.description.trim().length > 0,
   ).length;
-  const documentationRatio = totalOwnedRepos > 0 ? documentedRepos / totalOwnedRepos : 0;
+  const documentationRatio =
+    totalOwnedRepos > 0 ? documentedRepos / totalOwnedRepos : 0;
   const documentationPoints = documentationRatio * 25;
 
   // C. Ownership (0-20 points)
@@ -110,7 +121,11 @@ export function calculateQualityScore(timeline: YearData[]): QualityMetric {
   const stackPoints = calculateStackPoints(uniqueLanguages);
 
   const score = Math.round(
-    originalityPoints + documentationPoints + ownershipPoints + maturityPoints + stackPoints
+    originalityPoints +
+      documentationPoints +
+      ownershipPoints +
+      maturityPoints +
+      stackPoints,
   );
 
   return {
@@ -139,7 +154,9 @@ export function calculateQualityScore(timeline: YearData[]): QualityMetric {
  * Get unique repositories by URL to avoid duplicates across years
  * @internal
  */
-function getUniqueRepos<T extends { repository: { url: string } }>(repos: T[]): T[] {
+function getUniqueRepos<T extends { repository: { url: string } }>(
+  repos: T[],
+): T[] {
   const seen = new Set<string>();
   const unique: T[] = [];
 
@@ -158,14 +175,15 @@ function getUniqueRepos<T extends { repository: { url: string } }>(repos: T[]): 
  * @internal
  */
 function calculateAverageRepoAge(
-  repos: Array<{ repository: { createdAt: string } }>
+  repos: Array<{ repository: { createdAt: string } }>,
 ): number {
   if (repos.length === 0) return 0;
 
   const now = new Date();
   const totalAge = repos.reduce((sum, r) => {
     const created = new Date(r.repository.createdAt);
-    const ageYears = (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24 * 365);
+    const ageYears =
+      (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24 * 365);
     return sum + ageYears;
   }, 0);
 
@@ -195,7 +213,7 @@ function calculateMaturityPoints(avgAge: number): number {
  * @internal
  */
 function countUniqueLanguages(
-  repos: Array<{ repository: { primaryLanguage: { name: string } | null } }>
+  repos: Array<{ repository: { primaryLanguage: { name: string } | null } }>,
 ): number {
   const languages = new Set<string>();
 
@@ -232,10 +250,10 @@ function calculateStackPoints(languageCount: number): number {
  * @param score - Quality score (0-100)
  * @returns Quality level label
  */
-export function getQualityLabel(score: number): QualityMetric['level'] {
-  if (score >= 81) return 'Excellent';
-  if (score >= 61) return 'Strong';
-  if (score >= 41) return 'Good';
-  if (score >= 21) return 'Fair';
-  return 'Weak';
+export function getQualityLabel(score: number): QualityMetric["level"] {
+  if (score >= 81) return "Excellent";
+  if (score >= 61) return "Strong";
+  if (score >= 41) return "Good";
+  if (score >= 21) return "Fair";
+  return "Weak";
 }

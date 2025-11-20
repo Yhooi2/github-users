@@ -1,48 +1,47 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ErrorState } from './ErrorState';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ErrorState } from "./ErrorState";
 
 const meta: Meta<typeof ErrorState> = {
-  title: 'Layout/ErrorState',
+  title: "Layout/ErrorState",
   component: ErrorState,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
     docs: {
       description: {
         component:
-          'ErrorState displays error messages with different severity levels and optional retry/dismiss actions.',
+          "ErrorState displays error messages with different severity levels and optional retry/dismiss actions.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     title: {
-      control: 'text',
-      description: 'Error title/heading',
+      control: "text",
+      description: "Error title/heading",
     },
     message: {
-      control: 'text',
-      description: 'Error message/description',
+      control: "text",
+      description: "Error message/description",
     },
     variant: {
-      control: 'select',
-      options: ['error', 'warning', 'info'],
-      description: 'Visual severity of the error',
+      control: "select",
+      options: ["error", "warning", "info"],
+      description: "Visual severity of the error",
     },
     showIcon: {
-      control: 'boolean',
-      description: 'Show icon based on variant',
+      control: "boolean",
+      description: "Show icon based on variant",
     },
     retryText: {
-      control: 'text',
-      description: 'Custom retry button text',
+      control: "text",
+      description: "Custom retry button text",
     },
     dismissText: {
-      control: 'text',
-      description: 'Custom dismiss button text',
+      control: "text",
+      description: "Custom dismiss button text",
     },
   },
-  args: {
-  },
+  args: {},
 };
 
 export default meta;
@@ -53,9 +52,10 @@ type Story = StoryObj<typeof ErrorState>;
  */
 export const Error: Story = {
   args: {
-    title: 'Error Loading Data',
-    message: 'Unable to fetch user information from GitHub API. Please try again.',
-    variant: 'error',
+    title: "Error Loading Data",
+    message:
+      "Unable to fetch user information from GitHub API. Please try again.",
+    variant: "error",
   },
 };
 
@@ -64,9 +64,10 @@ export const Error: Story = {
  */
 export const Warning: Story = {
   args: {
-    title: 'Limited Data',
-    message: 'Some repository information could not be loaded. The displayed data may be incomplete.',
-    variant: 'warning',
+    title: "Limited Data",
+    message:
+      "Some repository information could not be loaded. The displayed data may be incomplete.",
+    variant: "warning",
   },
 };
 
@@ -75,9 +76,10 @@ export const Warning: Story = {
  */
 export const Info: Story = {
   args: {
-    title: 'Rate Limit Approaching',
-    message: 'You are approaching the GitHub API rate limit. Consider authenticating for higher limits.',
-    variant: 'info',
+    title: "Rate Limit Approaching",
+    message:
+      "You are approaching the GitHub API rate limit. Consider authenticating for higher limits.",
+    variant: "info",
   },
 };
 
@@ -86,9 +88,10 @@ export const Info: Story = {
  */
 export const WithRetry: Story = {
   args: {
-    title: 'Connection Failed',
-    message: 'Unable to connect to the server. Please check your internet connection.',
-    variant: 'error',
+    title: "Connection Failed",
+    message:
+      "Unable to connect to the server. Please check your internet connection.",
+    variant: "error",
   },
 };
 
@@ -97,9 +100,9 @@ export const WithRetry: Story = {
  */
 export const WithDismiss: Story = {
   args: {
-    title: 'Partial Failure',
-    message: 'Some data failed to load but you can continue.',
-    variant: 'warning',
+    title: "Partial Failure",
+    message: "Some data failed to load but you can continue.",
+    variant: "warning",
   },
 };
 
@@ -108,9 +111,10 @@ export const WithDismiss: Story = {
  */
 export const WithBothActions: Story = {
   args: {
-    title: 'Network Error',
-    message: 'Failed to load repository data. You can retry or dismiss this message.',
-    variant: 'error',
+    title: "Network Error",
+    message:
+      "Failed to load repository data. You can retry or dismiss this message.",
+    variant: "error",
   },
 };
 
@@ -119,9 +123,9 @@ export const WithBothActions: Story = {
  */
 export const WithoutIcon: Story = {
   args: {
-    title: 'Simple Error',
-    message: 'An error occurred without an icon.',
-    variant: 'error',
+    title: "Simple Error",
+    message: "An error occurred without an icon.",
+    variant: "error",
     showIcon: false,
   },
 };
@@ -131,11 +135,11 @@ export const WithoutIcon: Story = {
  */
 export const CustomButtonText: Story = {
   args: {
-    title: 'Authentication Required',
-    message: 'You need to provide a GitHub token to access this data.',
-    variant: 'warning',
-    retryText: 'Add Token',
-    dismissText: 'Skip',
+    title: "Authentication Required",
+    message: "You need to provide a GitHub token to access this data.",
+    variant: "warning",
+    retryText: "Add Token",
+    dismissText: "Skip",
   },
 };
 
@@ -144,10 +148,11 @@ export const CustomButtonText: Story = {
  */
 export const NetworkError: Story = {
   args: {
-    title: 'Network Error',
-    message: 'Cannot reach GitHub servers. Please check your internet connection and try again.',
-    variant: 'error',
-    retryText: 'Retry Connection',
+    title: "Network Error",
+    message:
+      "Cannot reach GitHub servers. Please check your internet connection and try again.",
+    variant: "error",
+    retryText: "Retry Connection",
   },
 };
 
@@ -156,10 +161,10 @@ export const NetworkError: Story = {
  */
 export const NotFound: Story = {
   args: {
-    title: 'User Not Found',
-    message: 'The requested GitHub user does not exist or has been deleted.',
-    variant: 'error',
-    dismissText: 'Go Back',
+    title: "User Not Found",
+    message: "The requested GitHub user does not exist or has been deleted.",
+    variant: "error",
+    dismissText: "Go Back",
   },
 };
 
@@ -168,10 +173,11 @@ export const NotFound: Story = {
  */
 export const RateLimitExceeded: Story = {
   args: {
-    title: 'Rate Limit Exceeded',
-    message: 'You have exceeded the GitHub API rate limit. Please wait or authenticate for higher limits.',
-    variant: 'warning',
-    retryText: 'Authenticate',
+    title: "Rate Limit Exceeded",
+    message:
+      "You have exceeded the GitHub API rate limit. Please wait or authenticate for higher limits.",
+    variant: "warning",
+    retryText: "Authenticate",
   },
 };
 
@@ -180,9 +186,9 @@ export const RateLimitExceeded: Story = {
  */
 export const LongMessage: Story = {
   args: {
-    title: 'GraphQL Error',
+    title: "GraphQL Error",
     message:
-      'An error occurred while executing the GraphQL query. This could be due to invalid query syntax, missing required fields, or server-side issues. Please review your query and try again. If the problem persists, contact support.',
-    variant: 'error',
+      "An error occurred while executing the GraphQL query. This could be due to invalid query syntax, missing required fields, or server-side issues. Please review your query and try again. If the problem persists, contact support.",
+    variant: "error",
   },
 };

@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { RepositorySorting } from './RepositorySorting';
-import type { SortBy, SortDirection } from '@/types/filters';
-import { useState } from 'react';
+import type { SortBy, SortDirection } from "@/types/filters";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+import { RepositorySorting } from "./RepositorySorting";
 
 // Wrapper component to manage sorting state
 function RepositorySortingWrapper(props: {
@@ -9,13 +9,13 @@ function RepositorySortingWrapper(props: {
   initialSortDirection?: SortDirection;
   compact?: boolean;
 }) {
-  const [sortBy, setSortBy] = useState<SortBy>(props.initialSortBy || 'stars');
+  const [sortBy, setSortBy] = useState<SortBy>(props.initialSortBy || "stars");
   const [sortDirection, setSortDirection] = useState<SortDirection>(
-    props.initialSortDirection || 'desc'
+    props.initialSortDirection || "desc",
   );
 
   const handleToggleDirection = () => {
-    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
   return (
@@ -31,15 +31,15 @@ function RepositorySortingWrapper(props: {
 }
 
 const meta = {
-  title: 'Components/Repository/RepositorySorting',
+  title: "Components/Repository/RepositorySorting",
   component: RepositorySortingWrapper,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div style={{ width: '100%', minWidth: '400px', padding: '20px' }}>
+      <div style={{ width: "100%", minWidth: "400px", padding: "20px" }}>
         <Story />
       </div>
     ),
@@ -61,8 +61,8 @@ export const Default: Story = {
  */
 export const StarsAscending: Story = {
   args: {
-    initialSortBy: 'stars',
-    initialSortDirection: 'asc',
+    initialSortBy: "stars",
+    initialSortDirection: "asc",
   },
 };
 
@@ -71,8 +71,8 @@ export const StarsAscending: Story = {
  */
 export const SortByForks: Story = {
   args: {
-    initialSortBy: 'forks',
-    initialSortDirection: 'desc',
+    initialSortBy: "forks",
+    initialSortDirection: "desc",
   },
 };
 
@@ -81,8 +81,8 @@ export const SortByForks: Story = {
  */
 export const SortByWatchers: Story = {
   args: {
-    initialSortBy: 'watchers',
-    initialSortDirection: 'desc',
+    initialSortBy: "watchers",
+    initialSortDirection: "desc",
   },
 };
 
@@ -91,8 +91,8 @@ export const SortByWatchers: Story = {
  */
 export const SortByCommits: Story = {
   args: {
-    initialSortBy: 'commits',
-    initialSortDirection: 'desc',
+    initialSortBy: "commits",
+    initialSortDirection: "desc",
   },
 };
 
@@ -101,8 +101,8 @@ export const SortByCommits: Story = {
  */
 export const SortBySize: Story = {
   args: {
-    initialSortBy: 'size',
-    initialSortDirection: 'desc',
+    initialSortBy: "size",
+    initialSortDirection: "desc",
   },
 };
 
@@ -111,8 +111,8 @@ export const SortBySize: Story = {
  */
 export const SortByUpdated: Story = {
   args: {
-    initialSortBy: 'updated',
-    initialSortDirection: 'desc',
+    initialSortBy: "updated",
+    initialSortDirection: "desc",
   },
 };
 
@@ -121,8 +121,8 @@ export const SortByUpdated: Story = {
  */
 export const SortByCreated: Story = {
   args: {
-    initialSortBy: 'created',
-    initialSortDirection: 'asc',
+    initialSortBy: "created",
+    initialSortDirection: "asc",
   },
 };
 
@@ -131,8 +131,8 @@ export const SortByCreated: Story = {
  */
 export const SortByName: Story = {
   args: {
-    initialSortBy: 'name',
-    initialSortDirection: 'asc',
+    initialSortBy: "name",
+    initialSortDirection: "asc",
   },
 };
 
@@ -141,8 +141,8 @@ export const SortByName: Story = {
  */
 export const CompactMode: Story = {
   args: {
-    initialSortBy: 'stars',
-    initialSortDirection: 'desc',
+    initialSortBy: "stars",
+    initialSortDirection: "desc",
     compact: true,
   },
 };
@@ -152,8 +152,8 @@ export const CompactMode: Story = {
  */
 export const CompactAscending: Story = {
   args: {
-    initialSortBy: 'forks',
-    initialSortDirection: 'asc',
+    initialSortBy: "forks",
+    initialSortDirection: "asc",
     compact: true,
   },
 };

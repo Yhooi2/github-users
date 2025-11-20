@@ -5,4 +5,4 @@
  * Week 2 P1: Quality improvements for test suite
  */
 
-export * from './assertions'
+export * from "./assertions";

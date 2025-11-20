@@ -20,7 +20,7 @@ import {
   expectGridLayout,
   expectErrorState,
   expectEmptyState,
-} from '@/test/helpers'
+} from "@/test/helpers";
 ```
 
 ## Custom Assertions
@@ -34,13 +34,13 @@ Validates that a metric value is displayed with correct formatting and accessibi
 ```typescript
 // Example: Percentage metric with ARIA label
 expectMetricValue(85, {
-  format: 'percentage',
-  ariaLabel: 'Activity score',
+  format: "percentage",
+  ariaLabel: "Activity score",
   container,
-})
+});
 
 // Example: Simple number validation
-expectMetricValue(1234, { format: 'number' })
+expectMetricValue(1234, { format: "number" });
 
 // Before (verbose):
 // expect(screen.getByText('85%')).toBeInTheDocument()
@@ -48,6 +48,7 @@ expectMetricValue(1234, { format: 'number' })
 ```
 
 **Parameters:**
+
 - `value: number` - Expected numeric value
 - `options.format?: 'percentage' | 'number' | 'ratio'` - Value format (default: 'number')
 - `options.ariaLabel?: string` - Expected ARIA label for accessibility
@@ -63,8 +64,8 @@ Validates breakdown metrics displayed in "value/max" format.
 
 ```typescript
 // Example: Validate breakdown with label and value/max
-expectBreakdownMetric('Recent commits', 40, 40, container)
-expectBreakdownMetric('Consistency', 30, 30, container)
+expectBreakdownMetric("Recent commits", 40, 40, container);
+expectBreakdownMetric("Consistency", 30, 30, container);
 
 // Before (verbose):
 // expect(screen.getByText('Recent commits')).toBeInTheDocument()
@@ -74,6 +75,7 @@ expectBreakdownMetric('Consistency', 30, 30, container)
 ```
 
 **Parameters:**
+
 - `label: string` - Metric label (e.g., "Recent commits")
 - `value: number` - Current value
 - `max: number` - Maximum value
@@ -93,15 +95,15 @@ expectStructure(container, [
   { selector: '[role="tablist"]', required: true },
   { selector: '[role="tab"]', count: 4 },
   {
-    selector: '.metric-card',
+    selector: ".metric-card",
     required: true,
-    attributes: { 'data-slot': 'card' },
+    attributes: { "data-slot": "card" },
     children: [
-      { selector: '.metric-value', required: true },
-      { selector: '.metric-label', required: true },
+      { selector: ".metric-value", required: true },
+      { selector: ".metric-label", required: true },
     ],
   },
-])
+]);
 
 // Before (verbose):
 // const tablist = container.querySelector('[role="tablist"]')
@@ -115,13 +117,14 @@ expectStructure(container, [
 ```
 
 **Schema Interface:**
+
 ```typescript
 interface StructureSchema {
-  selector: string           // CSS selector
-  required?: boolean         // Element must exist (default: true)
-  attributes?: Record<string, string | RegExp>  // Expected attributes
-  children?: StructureSchema[]  // Nested elements
-  count?: number             // Expected count
+  selector: string; // CSS selector
+  required?: boolean; // Element must exist (default: true)
+  attributes?: Record<string, string | RegExp>; // Expected attributes
+  children?: StructureSchema[]; // Nested elements
+  count?: number; // Expected count
 }
 ```
 
@@ -136,15 +139,15 @@ Validates ARIA attributes for accessibility compliance.
 ```typescript
 // Example: Validate button ARIA attributes
 expectARIA(button, {
-  role: 'button',
-  'aria-label': 'Explain Activity score',
-  'aria-expanded': 'false',
-})
+  role: "button",
+  "aria-label": "Explain Activity score",
+  "aria-expanded": "false",
+});
 
 // Example: Validate attribute does NOT exist
 expectARIA(element, {
-  'aria-hidden': null,  // ← null means attribute should NOT exist
-})
+  "aria-hidden": null, // ← null means attribute should NOT exist
+});
 
 // Before (verbose):
 // expect(button.getAttribute('role')).toBe('button')
@@ -154,6 +157,7 @@ expectARIA(element, {
 ```
 
 **Parameters:**
+
 - `element: HTMLElement` - Element to check
 - `expectedAttributes: Record<string, string | boolean | null>` - Expected ARIA attributes
 
@@ -167,10 +171,10 @@ Validates loading state indicators (skeletons, spinners, pulse animations).
 
 ```typescript
 // Example: Check for loading state
-expectLoadingState(container, true)
+expectLoadingState(container, true);
 
 // Example: Check for NOT loading
-expectLoadingState(container, false)
+expectLoadingState(container, false);
 
 // Before (verbose):
 // const pulseElements = container.querySelectorAll('.animate-pulse')
@@ -182,6 +186,7 @@ expectLoadingState(container, false)
 ```
 
 **Parameters:**
+
 - `container: HTMLElement` - Container to check
 - `expectedLoading: boolean` - Whether loading state should be visible
 
@@ -195,7 +200,7 @@ Validates progress bar width percentage.
 
 ```typescript
 // Example: Validate 75% progress bar
-expectProgressBar(container, 75)
+expectProgressBar(container, 75);
 
 // Before (verbose):
 // const progressBar = container.querySelector('[style*="width: 75%"]')
@@ -203,6 +208,7 @@ expectProgressBar(container, 75)
 ```
 
 **Parameters:**
+
 - `container: HTMLElement` - Container to search in
 - `expectedPercentage: number` - Expected width percentage (0-100)
 
@@ -216,14 +222,14 @@ Validates CSS classes presence and absence.
 
 ```typescript
 // Example: Validate hover effect classes
-expectClasses(card, ['hover:shadow-lg', 'hover:-translate-y-0.5'])
+expectClasses(card, ["hover:shadow-lg", "hover:-translate-y-0.5"]);
 
 // Example: Validate expected vs unexpected classes
 expectClasses(
   button,
-  ['bg-primary'],           // Should have
-  ['bg-destructive']        // Should NOT have
-)
+  ["bg-primary"], // Should have
+  ["bg-destructive"], // Should NOT have
+);
 
 // Before (verbose):
 // expect(card).toHaveClass('hover:shadow-lg')
@@ -233,6 +239,7 @@ expectClasses(
 ```
 
 **Parameters:**
+
 - `element: HTMLElement` - Element to check
 - `expectedClasses: string[]` - Classes that should be present
 - `unexpectedClasses?: string[]` - Classes that should NOT be present
@@ -248,11 +255,11 @@ Validates that elements are rendered in expected order.
 ```typescript
 // Example: Validate stats card order
 expectOrder(container, '[data-slot="card-title"]', [
-  'Repositories',
-  'Followers',
-  'Following',
-  'Gists',
-])
+  "Repositories",
+  "Followers",
+  "Following",
+  "Gists",
+]);
 
 // Before (verbose):
 // const titles = container.querySelectorAll('[data-slot="card-title"]')
@@ -264,6 +271,7 @@ expectOrder(container, '[data-slot="card-title"]', [
 ```
 
 **Parameters:**
+
 - `container: HTMLElement` - Container element
 - `selector: string` - CSS selector for elements
 - `expectedOrder: string[]` - Expected text content in order
@@ -278,10 +286,10 @@ Validates SVG icon presence.
 
 ```typescript
 // Example: Check for at least 1 icon
-expectIcons(container)
+expectIcons(container);
 
 // Example: Check for exact count
-expectIcons(container, 4)
+expectIcons(container, 4);
 
 // Before (verbose):
 // const icons = container.querySelectorAll('svg')
@@ -291,6 +299,7 @@ expectIcons(container, 4)
 ```
 
 **Parameters:**
+
 - `container: HTMLElement` - Container to search in
 - `expectedCount?: number` - Expected number of icons (optional)
 
@@ -304,7 +313,7 @@ Validates responsive grid layout classes.
 
 ```typescript
 // Example: Validate responsive grid
-expectGridLayout(grid, ['grid', 'grid-cols-2', 'md:grid-cols-4'])
+expectGridLayout(grid, ["grid", "grid-cols-2", "md:grid-cols-4"]);
 
 // Before (verbose):
 // expect(grid).toHaveClass('grid')
@@ -313,6 +322,7 @@ expectGridLayout(grid, ['grid', 'grid-cols-2', 'md:grid-cols-4'])
 ```
 
 **Parameters:**
+
 - `element: HTMLElement` - Grid element
 - `expectedClasses: string[]` - Expected grid classes
 
@@ -326,10 +336,10 @@ Validates error state display.
 
 ```typescript
 // Example: Check for error state with message
-expectErrorState(container, true, 'Failed to load data')
+expectErrorState(container, true, "Failed to load data");
 
 // Example: Check for NO error state
-expectErrorState(container, false)
+expectErrorState(container, false);
 
 // Before (verbose):
 // const errorElements = container.querySelectorAll('[role="alert"]')
@@ -342,6 +352,7 @@ expectErrorState(container, false)
 ```
 
 **Parameters:**
+
 - `container: HTMLElement` - Container to check
 - `expectedError: boolean` - Whether error state should be visible
 - `errorMessage?: string` - Optional expected error message
@@ -356,10 +367,10 @@ Validates empty state display.
 
 ```typescript
 // Example: Check for empty state with message
-expectEmptyState(container, true, 'No repositories found')
+expectEmptyState(container, true, "No repositories found");
 
 // Example: Check for NO empty state
-expectEmptyState(container, false)
+expectEmptyState(container, false);
 
 // Before (verbose):
 // const emptyElements = container.querySelectorAll('[data-empty="true"]')
@@ -372,6 +383,7 @@ expectEmptyState(container, false)
 ```
 
 **Parameters:**
+
 - `container: HTMLElement` - Container to check
 - `expectedEmpty: boolean` - Whether empty state should be visible
 - `emptyMessage?: string` - Optional expected empty message
@@ -381,19 +393,21 @@ expectEmptyState(container, false)
 ## Benefits
 
 ### ✅ **Improved Readability**
+
 ```typescript
 // Before: 5 lines, unclear intent
-expect(screen.getByText('Recent commits')).toBeInTheDocument()
-expect(screen.getByText('40/40')).toBeInTheDocument()
-expect(screen.getByText('Consistency')).toBeInTheDocument()
-expect(screen.getByText('30/30')).toBeInTheDocument()
+expect(screen.getByText("Recent commits")).toBeInTheDocument();
+expect(screen.getByText("40/40")).toBeInTheDocument();
+expect(screen.getByText("Consistency")).toBeInTheDocument();
+expect(screen.getByText("30/30")).toBeInTheDocument();
 
 // After: 2 lines, semantic intent
-expectBreakdownMetric('Recent commits', 40, 40)
-expectBreakdownMetric('Consistency', 30, 30)
+expectBreakdownMetric("Recent commits", 40, 40);
+expectBreakdownMetric("Consistency", 30, 30);
 ```
 
 ### ✅ **Better Error Messages**
+
 ```typescript
 // Custom helpers provide descriptive error messages:
 // ❌ "Expected to find breakdown label 'Recent commits'"
@@ -402,11 +416,13 @@ expectBreakdownMetric('Consistency', 30, 30)
 ```
 
 ### ✅ **Reduced Code Duplication**
+
 - Reusable patterns across test files
 - Consistent validation logic
 - Easier maintenance
 
 ### ✅ **Type Safety**
+
 - Full TypeScript support
 - IntelliSense autocomplete
 - Compile-time validation
@@ -416,6 +432,7 @@ expectBreakdownMetric('Consistency', 30, 30)
 ## Migration Guide
 
 ### Before (Manual Assertions)
+
 ```typescript
 it('should display metric breakdown', () => {
   const { container } = render(<MetricCard score={85} />)
@@ -434,6 +451,7 @@ it('should display metric breakdown', () => {
 ```
 
 ### After (Custom Helpers)
+
 ```typescript
 it('should display metric breakdown', () => {
   const { container } = render(<MetricCard score={85} />)
@@ -482,12 +500,14 @@ When adding new helpers:
 **Status:** ✅ 12/12 tests passing (Week 2 P1 complete)
 
 **Files:**
+
 - `assertions.ts` - Custom assertion helpers (~450 lines)
 - `assertions.example.test.tsx` - Usage examples and tests (12 tests)
 - `index.ts` - Exports for easy imports
 - `README.md` - Documentation (this file)
 
 **Benefits Achieved:**
+
 - 57% reduction in test code
 - Improved test readability
 - Better error messages

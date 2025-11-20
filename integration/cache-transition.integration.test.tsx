@@ -1,9 +1,15 @@
-import { describe, it, expect } from 'vitest'
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import App from '../src/App'
-import { renderWithMockedProvider, waitForApollo } from '../src/test/utils/renderWithMockedProvider'
-import { createUserInfoMock, createUserProfileMock } from '../src/test/mocks/apollo-mocks'
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
+import App from "../src/App";
+import {
+  createUserInfoMock,
+  createUserProfileMock,
+} from "../src/test/mocks/apollo-mocks";
+import {
+  renderWithMockedProvider,
+  waitForApollo,
+} from "../src/test/utils/renderWithMockedProvider";
 
 /**
  * Integration Test: Apollo MockedProvider Demo & Auth Modes
@@ -42,7 +48,7 @@ import { createUserInfoMock, createUserProfileMock } from '../src/test/mocks/apo
  * - https://www.apollographql.com/docs/react/development-testing/testing/
  */
 
-describe.skip('Integration Test: Apollo MockedProvider (Demo & Auth Modes)', () => {
+describe("Integration Test: Apollo MockedProvider (Demo & Auth Modes)", () => {
   /**
    * STATUS: TEMPORARILY SKIPPED (2025-11-20)
    *
@@ -69,179 +75,179 @@ describe.skip('Integration Test: Apollo MockedProvider (Demo & Auth Modes)', () 
    * - createUserProfileMock() - for GET_USER_PROFILE mocking
    * - waitForApollo() - async helper for query resolution
    */
-  it('should display demo mode rate limit when searching for user', async () => {
-    const user = userEvent.setup()
+  it("should display demo mode rate limit when searching for user", async () => {
+    const user = userEvent.setup();
 
     // Create mocks for both queries used by App
     // 1. GET_USER_PROFILE - used by useUserAnalytics to fetch initial profile
     const profileMock = createUserProfileMock({
-      login: 'torvalds',
-      name: 'Linus Torvalds',
-      bio: 'Creator of Linux',
-      createdAt: '2011-09-03T15:26:22Z',
-    })
+      login: "torvalds",
+      name: "Linus Torvalds",
+      bio: "Creator of Linux",
+      createdAt: "2011-09-03T15:26:22Z",
+    });
 
     // 2. GET_USER_INFO - used by useQueryUser for detailed analytics
     const userInfoMock = createUserInfoMock(
       {
-        login: 'torvalds',
-        name: 'Linus Torvalds',
-        bio: 'Creator of Linux',
+        login: "torvalds",
+        name: "Linus Torvalds",
+        bio: "Creator of Linux",
       },
       {
         remaining: 5000,
         limit: 5000,
         used: 0,
         isDemo: true,
-      }
-    )
+      },
+    );
 
     // Render app with both mocks
-    renderWithMockedProvider(<App />, [profileMock, userInfoMock])
+    renderWithMockedProvider(<App />, [profileMock, userInfoMock]);
 
     // Search for user
-    const searchInput = screen.getByPlaceholderText(/search github user/i)
-    const searchButton = screen.getByRole('button', { name: /search/i })
+    const searchInput = screen.getByPlaceholderText(/search github user/i);
+    const searchButton = screen.getByRole("button", { name: /search/i });
 
-    await user.type(searchInput, 'torvalds')
-    await user.click(searchButton)
+    await user.type(searchInput, "torvalds");
+    await user.click(searchButton);
 
     // Wait for Apollo MockedProvider to resolve query
-    await waitForApollo()
+    await waitForApollo();
 
     // Verify demo mode rate limit displayed (5000/5000)
     await waitFor(
       () => {
-        const rateLimitText = screen.queryByText(/5000.*5000/i)
+        const rateLimitText = screen.queryByText(/5000.*5000/i);
         expect(
           rateLimitText,
-          'Demo mode rate limit (5000/5000) should be displayed in UI'
-        ).toBeInTheDocument()
+          "Demo mode rate limit (5000/5000) should be displayed in UI",
+        ).toBeInTheDocument();
       },
-      { timeout: 3000 }
-    )
+      { timeout: 3000 },
+    );
 
     // Verify user data displayed
     await waitFor(() => {
-      expect(screen.getByText(/Linus Torvalds/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/Linus Torvalds/i)).toBeInTheDocument();
+    });
+  });
 
-  it('should display auth mode rate limit when searching for user', async () => {
-    const user = userEvent.setup()
+  it("should display auth mode rate limit when searching for user", async () => {
+    const user = userEvent.setup();
 
     // Create mocks for both queries
     const profileMock = createUserProfileMock({
-      login: 'torvalds',
-      name: 'Linus Torvalds',
-      bio: 'Creator of Linux',
-      createdAt: '2011-09-03T15:26:22Z',
-    })
+      login: "torvalds",
+      name: "Linus Torvalds",
+      bio: "Creator of Linux",
+      createdAt: "2011-09-03T15:26:22Z",
+    });
 
     const userInfoMock = createUserInfoMock(
       {
-        login: 'torvalds',
-        name: 'Linus Torvalds',
-        bio: 'Creator of Linux',
+        login: "torvalds",
+        name: "Linus Torvalds",
+        bio: "Creator of Linux",
       },
       {
         remaining: 4999,
         limit: 5000,
         used: 1,
         isDemo: false,
-        userLogin: 'authenticateduser',
-      }
-    )
+        userLogin: "authenticateduser",
+      },
+    );
 
     // Render app with both mocks
-    renderWithMockedProvider(<App />, [profileMock, userInfoMock])
+    renderWithMockedProvider(<App />, [profileMock, userInfoMock]);
 
     // Search for user
-    const searchInput = screen.getByPlaceholderText(/search github user/i)
-    const searchButton = screen.getByRole('button', { name: /search/i })
+    const searchInput = screen.getByPlaceholderText(/search github user/i);
+    const searchButton = screen.getByRole("button", { name: /search/i });
 
-    await user.type(searchInput, 'torvalds')
-    await user.click(searchButton)
+    await user.type(searchInput, "torvalds");
+    await user.click(searchButton);
 
     // Wait for Apollo MockedProvider to resolve query
-    await waitForApollo()
+    await waitForApollo();
 
     // Verify auth mode rate limit displayed (4999/5000 used: 1)
     await waitFor(
       () => {
-        const rateLimitText = screen.queryByText(/4999.*5000/i)
+        const rateLimitText = screen.queryByText(/4999.*5000/i);
         expect(
           rateLimitText,
-          'Auth mode rate limit (4999/5000) should be displayed in UI'
-        ).toBeInTheDocument()
+          "Auth mode rate limit (4999/5000) should be displayed in UI",
+        ).toBeInTheDocument();
       },
-      { timeout: 3000 }
-    )
+      { timeout: 3000 },
+    );
 
     // Verify user data displayed
     await waitFor(() => {
-      expect(screen.getByText(/Linus Torvalds/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/Linus Torvalds/i)).toBeInTheDocument();
+    });
+  });
 
-  it('should handle multiple searches with isolated cache', async () => {
-    const user = userEvent.setup()
+  it("should handle multiple searches with isolated cache", async () => {
+    const user = userEvent.setup();
 
     // Create mocks for both queries
     const profileMock = createUserProfileMock({
-      login: 'torvalds',
-      name: 'Linus Torvalds',
-      bio: 'Creator of Linux',
-      createdAt: '2011-09-03T15:26:22Z',
-    })
+      login: "torvalds",
+      name: "Linus Torvalds",
+      bio: "Creator of Linux",
+      createdAt: "2011-09-03T15:26:22Z",
+    });
 
     const userInfoMock = createUserInfoMock(
       {
-        login: 'torvalds',
-        name: 'Linus Torvalds',
-        bio: 'Creator of Linux',
+        login: "torvalds",
+        name: "Linus Torvalds",
+        bio: "Creator of Linux",
       },
       {
         remaining: 5000,
         limit: 5000,
         used: 0,
         isDemo: true,
-      }
-    )
+      },
+    );
 
     // Render app with both mocks
-    renderWithMockedProvider(<App />, [profileMock, userInfoMock])
+    renderWithMockedProvider(<App />, [profileMock, userInfoMock]);
 
     // First search
-    const searchInput = screen.getByPlaceholderText(/search github user/i)
-    const searchButton = screen.getByRole('button', { name: /search/i })
+    const searchInput = screen.getByPlaceholderText(/search github user/i);
+    const searchButton = screen.getByRole("button", { name: /search/i });
 
-    await user.type(searchInput, 'torvalds')
-    await user.click(searchButton)
+    await user.type(searchInput, "torvalds");
+    await user.click(searchButton);
 
     // Wait for first query to resolve
-    await waitForApollo()
+    await waitForApollo();
 
     // Verify first search results
     await waitFor(
       () => {
-        expect(screen.getByText(/Linus Torvalds/i)).toBeInTheDocument()
+        expect(screen.getByText(/Linus Torvalds/i)).toBeInTheDocument();
       },
-      { timeout: 3000 }
-    )
+      { timeout: 3000 },
+    );
 
     // Verify demo mode rate limit
     await waitFor(() => {
-      const rateLimitText = screen.queryByText(/5000.*5000/i)
+      const rateLimitText = screen.queryByText(/5000.*5000/i);
       expect(
         rateLimitText,
-        'Demo mode rate limit should be consistent across searches'
-      ).toBeInTheDocument()
-    })
+        "Demo mode rate limit should be consistent across searches",
+      ).toBeInTheDocument();
+    });
 
     // Note: MockedProvider provides isolated cache per test
     // Each test gets fresh Apollo Client instance
     // This prevents cache pollution between demo and auth modes
     // Real app handles mode transitions via ApolloAppProvider
-  })
-})
+  });
+});

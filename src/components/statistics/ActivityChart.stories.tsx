@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ActivityChart } from './ActivityChart';
-import type { CommitActivity } from '@/lib/statistics';
+import type { CommitActivity } from "@/lib/statistics";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ActivityChart } from "./ActivityChart";
 
 // Mock data generators
 const typicalActivity: CommitActivity = {
@@ -53,12 +53,12 @@ const consistentActivity: CommitActivity = {
 };
 
 const meta = {
-  title: 'Components/Statistics/ActivityChart',
+  title: "Components/Statistics/ActivityChart",
   component: ActivityChart,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof ActivityChart>;
 
 export default meta;
@@ -154,7 +154,7 @@ export const LoadingWithMessage: Story = {
   args: {
     data: null,
     loading: true,
-    loadingMessage: 'Analyzing commit patterns...',
+    loadingMessage: "Analyzing commit patterns...",
   },
 };
 
@@ -164,7 +164,7 @@ export const LoadingWithMessage: Story = {
 export const Error: Story = {
   args: {
     data: null,
-    error: new Error('Failed to calculate activity'),
+    error: new Error("Failed to calculate activity"),
   },
 };
 
@@ -174,9 +174,9 @@ export const Error: Story = {
 export const CustomError: Story = {
   args: {
     data: null,
-    error: new Error('Insufficient data'),
-    errorTitle: 'Calculation Error',
-    errorDescription: 'Not enough data to calculate activity statistics.',
+    error: new Error("Insufficient data"),
+    errorTitle: "Calculation Error",
+    errorDescription: "Not enough data to calculate activity statistics.",
   },
 };
 
@@ -195,8 +195,8 @@ export const Empty: Story = {
 export const CustomEmpty: Story = {
   args: {
     data: null,
-    emptyTitle: 'No Commits Yet',
-    emptyDescription: 'Start contributing to see your activity statistics.',
+    emptyTitle: "No Commits Yet",
+    emptyDescription: "Start contributing to see your activity statistics.",
   },
 };
 
@@ -260,7 +260,7 @@ export const AllStates: Story = {
       </div>
       <div>
         <h3 className="mb-4 text-lg font-semibold">Error State</h3>
-        <ActivityChart data={null} error={new Error('Test error')} />
+        <ActivityChart data={null} error={new Error("Test error")} />
       </div>
       <div>
         <h3 className="mb-4 text-lg font-semibold">Empty State</h3>

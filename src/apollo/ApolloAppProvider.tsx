@@ -41,7 +41,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 const httpLink = createHttpLink({
   uri: "/api/github-proxy", // Proxy to GitHub API (token secured on server)
   includeExtensions: true, // ← CRITICAL: Include extensions in request body
-  credentials: 'include', // ← Include cookies for OAuth session
+  credentials: "include", // ← Include cookies for OAuth session
   fetch: (uri, options) => {
     // Extract cacheKey from extensions and add to body
     const body = JSON.parse((options?.body as string) || "{}");
@@ -57,7 +57,7 @@ const httpLink = createHttpLink({
 
     return fetch(uri, {
       ...options,
-      credentials: 'include', // Ensure cookies are sent with every request
+      credentials: "include", // Ensure cookies are sent with every request
       body: JSON.stringify(newBody),
     });
   },
@@ -100,7 +100,8 @@ const link = ApolloLink.from([cacheKeyLink, errorLink, httpLink]);
 const client = new ApolloClient({
   link,
   cache: new InMemoryCache(),
-  connectToDevTools: true, // Enable Apollo Client DevTools in development
+  // Use the new `devtools.enabled` configuration (replaces connectToDevTools)
+  devtools: { enabled: process.env.NODE_ENV !== "production" },
 });
 
 /**
@@ -133,6 +134,27 @@ const client = new ApolloClient({
  * ```
  */
 export function ApolloAppProvider({ children }: { children: React.ReactNode }) {
+  // Load Apollo Client dev/error messages only in development on the client
+  React.useEffect(() => {
+    if (
+      process.env.NODE_ENV !== "production" &&
+      typeof window !== "undefined"
+    ) {
+      import("@apollo/client/dev")
+        .then((mod) => {
+          try {
+            mod.loadDevMessages?.();
+            mod.loadErrorMessages?.();
+          } catch {
+            // ignore if dev messages cannot be loaded
+            // they are optional developer ergonomics only
+          }
+        })
+        .catch(() => {
+          // ignore dynamic import failures
+        });
+    }
+  }, []);
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }
 

@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
-import type { Repository } from '@/apollo/github-api.types';
-import type { SortBy, SortDirection, RepositorySorting } from '@/types/filters';
-import { sortRepositories } from '@/lib/repository-filters';
+import type { Repository } from "@/apollo/github-api.types";
+import { sortRepositories } from "@/lib/repository-filters";
+import type { RepositorySorting, SortBy, SortDirection } from "@/types/filters";
+import { useCallback, useMemo, useState } from "react";
 
 /**
  * React hook for managing repository sorting state and applying sort
@@ -46,7 +46,7 @@ import { sortRepositories } from '@/lib/repository-filters';
  */
 export function useRepositorySorting(
   repositories: Repository[],
-  initialSort: RepositorySorting = { field: 'stars', direction: 'desc' }
+  initialSort: RepositorySorting = { field: "stars", direction: "desc" },
 ) {
   const [sorting, setSorting] = useState<RepositorySorting>(initialSort);
 
@@ -72,7 +72,7 @@ export function useRepositorySorting(
   const toggleDirection = useCallback(() => {
     setSorting((prev) => ({
       ...prev,
-      direction: prev.direction === 'asc' ? 'desc' : 'asc',
+      direction: prev.direction === "asc" ? "desc" : "asc",
     }));
   }, []);
 
@@ -100,7 +100,8 @@ export function useRepositorySorting(
    */
   const isDefaultSort = useMemo(() => {
     return (
-      sorting.field === initialSort.field && sorting.direction === initialSort.direction
+      sorting.field === initialSort.field &&
+      sorting.direction === initialSort.direction
     );
   }, [sorting, initialSort]);
 

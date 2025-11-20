@@ -21,17 +21,21 @@ Phase 0 implementation revealed **critical gaps** in both **plan specification**
 ### 1. **Missing Apollo Client Technical Details**
 
 **What was specified:**
+
 ```typescript
 // Step 0.3: Update Apollo Client
 const httpLink = new HttpLink({
-  uri: '/api/github-proxy'
-})
+  uri: "/api/github-proxy",
+});
 
 // Add cacheKey to context
-context: { cacheKey: 'user:octocat:profile' }
+context: {
+  cacheKey: "user:octocat:profile";
+}
 ```
 
 **What was MISSING:**
+
 - ❌ How `context` is passed to HTTP layer
 - ❌ Need for `includeExtensions: true` option
 - ❌ Custom Apollo Link chain requirement
@@ -44,6 +48,7 @@ context: { cacheKey: 'user:octocat:profile' }
 ### 2. **Insufficient Testing Requirements**
 
 **What was specified:**
+
 ```bash
 # Test:
 npm run dev
@@ -52,6 +57,7 @@ npm run dev
 ```
 
 **What was MISSING:**
+
 - ❌ Integration tests with real HTTP layer
 - ❌ Request body structure validation
 - ❌ Circular structure error prevention
@@ -68,24 +74,27 @@ npm run dev
 ```typescript
 // ❌ WRONG: extensions NOT included in body by default
 const httpLink = createHttpLink({
-  uri: '/api/github-proxy',
+  uri: "/api/github-proxy",
   // Missing: includeExtensions: true
-})
+});
 
 // ❌ WRONG: context doesn't automatically go to HTTP
-context: { cacheKey: '...' } // Lost in Apollo Client internals
+context: {
+  cacheKey: "...";
+} // Lost in Apollo Client internals
 
 // ✅ CORRECT: Need custom link to extract from context
 const cacheKeyLink = new ApolloLink((operation, forward) => {
-  const { cacheKey } = operation.getContext()
+  const { cacheKey } = operation.getContext();
   if (cacheKey) {
-    operation.extensions = { ...operation.extensions, cacheKey }
+    operation.extensions = { ...operation.extensions, cacheKey };
   }
-  return forward(operation)
-})
+  return forward(operation);
+});
 ```
 
 **Why not caught earlier:**
+
 - Apollo Client documentation doesn't emphasize `includeExtensions`
 - `context` API seems straightforward but doesn't work as expected
 - Unit tests with `MockedProvider` don't reveal HTTP layer issues
@@ -97,6 +106,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 ### 1. **Enhanced Phase 0 Documentation**
 
 **Added sections:**
+
 - Step 0.3.1: Create cacheKey extraction link
 - Step 0.3.2: Create HTTP link with includeExtensions
 - Step 0.3.3: Combine links in correct order
@@ -104,6 +114,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 - Step 0.3.5: Add integration tests (CRITICAL)
 
 **Why better:**
+
 - ✅ Step-by-step with code examples
 - ✅ Explains WHY each step is needed
 - ✅ Documents Apollo Client gotchas
@@ -116,6 +127,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 **File:** `src/apollo/cacheKey.integration.test.tsx`
 
 **Tests (3/3 passing):**
+
 ```typescript
 ✓ should pass cacheKey from context to request body
 ✓ should NOT include cacheKey if not provided in context
@@ -123,12 +135,14 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 ```
 
 **Key techniques:**
+
 - Mock `global.fetch` to intercept HTTP
 - Parse request body to verify structure
 - Test with/without cacheKey
 - Verify no JSON serialization errors
 
 **Why critical:**
+
 - ✅ Catches `includeExtensions: true` missing
 - ✅ Validates request body structure
 - ✅ Tests real Apollo Client behavior
@@ -139,6 +153,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 ### 3. **Updated Deliverables Checklist**
 
 **Before:**
+
 ```
 - [ ] Apollo Client HttpLink URI updated to /api/github-proxy
 - [ ] Token NOT visible in DevTools
@@ -146,6 +161,7 @@ const cacheKeyLink = new ApolloLink((operation, forward) => {
 ```
 
 **After:**
+
 ```
 Apollo Client:
 - [x] Custom cacheKeyLink for context extraction
@@ -160,6 +176,7 @@ Testing:
 ```
 
 **Why better:**
+
 - ✅ Specific technical requirements
 - ✅ Verifiable with tests
 - ✅ Catches missing implementation details
@@ -171,16 +188,19 @@ Testing:
 ### Why were these gaps present?
 
 **1. Apollo Client complexity underestimated:**
+
 - Assumed `context` would "just work"
 - Didn't research how Apollo Link chain handles context
 - Documentation incomplete about `includeExtensions`
 
 **2. Over-reliance on unit tests:**
+
 - MockedProvider doesn't test HTTP layer
 - Unit tests gave false confidence
 - Integration tests were seen as "optional"
 
 **3. Specification too high-level:**
+
 - Focused on "what" not "how"
 - Skipped implementation gotchas
 - Assumed developer would figure out details
@@ -192,12 +212,14 @@ Testing:
 ### For Future Phases:
 
 **1. Integration tests are NOT optional:**
+
 ```
 ❌ Unit tests alone = False confidence
 ✅ Unit tests + Integration tests = Real confidence
 ```
 
 **2. Apollo Client needs special attention:**
+
 ```
 Always specify:
 - Link chain setup
@@ -207,6 +229,7 @@ Always specify:
 ```
 
 **3. Testing strategy in plan:**
+
 ```
 Don't just say "add tests"
 Specify:
@@ -216,6 +239,7 @@ Specify:
 ```
 
 **4. Document gotchas proactively:**
+
 ```
 Research libraries BEFORE writing plan:
 - Apollo Client context API
@@ -230,6 +254,7 @@ Research libraries BEFORE writing plan:
 When planning Phase 2, 3, etc., include:
 
 ### Technical Implementation Details
+
 ```markdown
 ### Step X.Y: [Feature Name]
 
@@ -240,28 +265,34 @@ When planning Phase 2, 3, etc., include:
 [Explain the rationale]
 
 **Gotchas:**
+
 - ⚠️ [Common mistake 1]
 - ⚠️ [Common mistake 2]
 
 **Testing:**
+
 - [ ] Unit test: [specific case]
 - [ ] Integration test: [specific case]
 - [ ] Verification: [how to confirm it works]
 ```
 
 ### Testing Requirements
+
 ```markdown
 ### Required Tests
 
 **Unit tests:**
+
 - Test case 1: [what it verifies]
 - Test case 2: [what it verifies]
 
 **Integration tests:**
+
 - Test case 1: [what it verifies]
 - Test case 2: [what it verifies]
 
 **Why integration tests:**
+
 - Catches [specific bug type]
 - Validates [specific behavior]
 ```
@@ -271,16 +302,19 @@ When planning Phase 2, 3, etc., include:
 ## 📈 Metrics
 
 **Before improvements:**
+
 - Unit tests: 13/13 passing ✅
 - Integration tests: 0 ❌
 - Production bugs: 2 (circular structure, cacheKey not sent)
 
 **After improvements:**
+
 - Unit tests: 13/13 passing ✅
 - Integration tests: 3/3 passing ✅
 - Production bugs: 0 ✅
 
 **Time impact:**
+
 - Initial implementation: ~2 hours
 - Debugging production issues: ~1 hour
 - Writing integration tests: ~30 minutes
@@ -300,17 +334,20 @@ When planning Phase 2, 3, etc., include:
 ### Integration Testing Requirements
 
 **CRITICAL for Apollo Client:**
+
 - ✅ Mock `global.fetch` to test HTTP layer
 - ✅ Verify request body structure
 - ✅ Test with real Apollo Link chain
 - ✅ Validate context extraction
 
 **Unit tests alone are NOT enough:**
+
 - MockedProvider doesn't test HTTP
 - Context behavior differs in production
 - Link chain order matters
 
 **When to write integration tests:**
+
 - Custom Apollo Links
 - Custom fetch functions
 - Backend proxy communication
@@ -323,11 +360,13 @@ When planning Phase 2, 3, etc., include:
 ### Apollo Client Best Practices
 
 **Always specify:**
+
 - `includeExtensions: true` when using operation.extensions
 - Complete link chain setup
 - Context extraction patterns
 
 **Document gotchas:**
+
 - Context doesn't auto-pass to HTTP
 - Extensions need explicit inclusion
 - Link order matters

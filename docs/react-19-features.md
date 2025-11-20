@@ -22,14 +22,14 @@
 
 ### Основные нововведения
 
-| Фича | Описание | Статус |
-|------|----------|--------|
-| **useOptimistic** | Оптимистичные обновления UI | ✅ Stable |
-| **use hook** | Чтение промисов и контекста | ✅ Stable |
-| **Form Actions** | Декларативная работа с формами | ✅ Stable |
-| **React Compiler** | Автоматическая оптимизация | 🚧 Experimental |
-| **ref as prop** | Ref как обычный prop | ✅ Stable |
-| **Async components** | Server Components | 🚧 Experimental |
+| Фича                 | Описание                       | Статус          |
+| -------------------- | ------------------------------ | --------------- |
+| **useOptimistic**    | Оптимистичные обновления UI    | ✅ Stable       |
+| **use hook**         | Чтение промисов и контекста    | ✅ Stable       |
+| **Form Actions**     | Декларативная работа с формами | ✅ Stable       |
+| **React Compiler**   | Автоматическая оптимизация     | 🚧 Experimental |
+| **ref as prop**      | Ref как обычный prop           | ✅ Stable       |
+| **Async components** | Server Components              | 🚧 Experimental |
 
 ### Что изменилось с React 18
 
@@ -62,10 +62,7 @@ React 19 (2024)
 #### Синтаксис
 
 ```typescript
-const [optimisticState, addOptimistic] = useOptimistic(
-  state,
-  updateFn
-)
+const [optimisticState, addOptimistic] = useOptimistic(state, updateFn);
 ```
 
 #### Пример: Optimistic Form Submit
@@ -170,12 +167,14 @@ function LikeButton({ postId, initialLikes }: Props) {
 #### Когда использовать useOptimistic
 
 **✅ Хорошо для:**
+
 - Отправка форм (комментарии, сообщения)
 - Лайки, реакции
 - Добавление/удаление items
 - Toggle состояния (favorite, bookmark)
 
 **❌ Не подходит для:**
+
 - Критичные операции (платежи)
 - Операции без возможности отката
 - Сложные multi-step операции
@@ -243,13 +242,13 @@ function Button({ primary }: { primary?: boolean }) {
 // ❌ useContext нельзя вызвать условно
 function Component({ useTheme }: Props) {
   // ERROR: Conditional hook call
-  const theme = useTheme ? useContext(ThemeContext) : null
+  const theme = useTheme ? useContext(ThemeContext) : null;
 }
 
 // ✅ use() можно вызвать условно
 function Component({ useTheme }: Props) {
   // OK: Conditional use() call
-  const theme = useTheme ? use(ThemeContext) : null
+  const theme = useTheme ? use(ThemeContext) : null;
 }
 ```
 
@@ -485,11 +484,14 @@ npm install -D babel-plugin-react-compiler
 // babel.config.js
 module.exports = {
   plugins: [
-    ['babel-plugin-react-compiler', {
-      // Options
-    }]
-  ]
-}
+    [
+      "babel-plugin-react-compiler",
+      {
+        // Options
+      },
+    ],
+  ],
+};
 ```
 
 **⚠️ Внимание:** Compiler еще experimental, не используйте в production без тестирования.
@@ -537,13 +539,13 @@ function Input({ value, ref }: Props & { ref?: Ref<HTMLInputElement> }) {
 // ❌ React 19: ERROR - conditional hook
 function Component({ shouldLoad }) {
   if (shouldLoad) {
-    const data = useData() // ERROR!
+    const data = useData(); // ERROR!
   }
 }
 
 // ✅ React 19: use() можно вызывать условно
 function Component({ shouldLoad }) {
-  const data = shouldLoad ? use(dataPromise) : null // OK
+  const data = shouldLoad ? use(dataPromise) : null; // OK
 }
 ```
 
@@ -576,25 +578,25 @@ const ThemeContext = createContext('light')
 ```typescript
 // ✅ React 19: Все обновления батчатся автоматически
 function handleClick() {
-  setCount(c => c + 1)
-  setFlag(f => !f)
-  setData(newData)
+  setCount((c) => c + 1);
+  setFlag((f) => !f);
+  setData(newData);
   // Все три обновления = 1 re-render
 }
 
 // ✅ Работает даже в промисах
-fetch('/api/data').then(data => {
-  setData(data)      // Батчится
-  setLoading(false)  // Батчится
+fetch("/api/data").then((data) => {
+  setData(data); // Батчится
+  setLoading(false); // Батчится
   // 1 re-render
-})
+});
 
 // ✅ Работает в setTimeout
 setTimeout(() => {
-  setCount(1)   // Батчится
-  setName('x')  // Батчится
+  setCount(1); // Батчится
+  setName("x"); // Батчится
   // 1 re-render
-}, 1000)
+}, 1000);
 ```
 
 ### 2. useTransition improvements
@@ -723,10 +725,10 @@ grep -r "defaultProps" src/
 
 ```typescript
 // ❌ Заменить это
-Component.defaultProps = { name: 'Guest' }
+Component.defaultProps = { name: "Guest" };
 
 // ✅ На это
-function Component({ name = 'Guest' }: Props) {}
+function Component({ name = "Guest" }: Props) {}
 ```
 
 #### 3. Обновить forwardRef (опционально)
@@ -886,14 +888,14 @@ function DataTable() {
 ```typescript
 // ❌ Плохо: Optimistic для критичных операций
 async function makePayment(amount: number) {
-  addOptimisticPayment(amount) // НЕ ДЕЛАЙТЕ ТАК
-  await processPayment(amount)
+  addOptimisticPayment(amount); // НЕ ДЕЛАЙТЕ ТАК
+  await processPayment(amount);
 }
 
 // ✅ Хорошо: Для некритичных операций
 async function toggleFavorite() {
-  addOptimisticFavorite() // OK для favorites
-  await saveFavorite()
+  addOptimisticFavorite(); // OK для favorites
+  await saveFavorite();
 }
 ```
 
@@ -906,6 +908,7 @@ async function toggleFavorite() {
 **Версия:** React 19.2.0 ✅
 
 **Что используется:**
+
 - ✅ React 19 установлен
 - ✅ TypeScript конфигурация совместима
 - ✅ Vite поддерживает React 19

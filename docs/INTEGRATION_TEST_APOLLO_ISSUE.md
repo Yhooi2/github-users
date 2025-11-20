@@ -25,6 +25,7 @@ Apollo Client's `InMemoryCache` normalizes GraphQL data across **ALL queries in 
 **Project has 2+ queries for User type:**
 
 1. **`GET_USER_INFO`** (`src/apollo/queriers.ts`):
+
    ```graphql
    user(login: $login) {
      id, login, name, avatarUrl, bio, url, location
@@ -44,6 +45,7 @@ Apollo Client's `InMemoryCache` normalizes GraphQL data across **ALL queries in 
    ```
 
 **What Happens:**
+
 - Integration test calls `GET_USER_INFO` with mock User data
 - Apollo Client sees `User` type and checks InMemoryCache
 - Cache knows that `User` type can have fields: `email`, `company`, `websiteUrl`, `twitterUsername` (from other queries in the app)
@@ -83,6 +85,7 @@ render(
 ```
 
 **Problems:**
+
 1. Real `ApolloAppProvider` creates real `InMemoryCache`
 2. Cache knows about **ALL queries in the project**
 3. Cache tries to normalize across queries
@@ -222,16 +225,19 @@ describe('Cache Transition Integration Test', () => {
 ## 📊 Impact Assessment
 
 ### Tests Affected
+
 - ❌ `cache-transition.integration.test.tsx` - 3 tests skipped
 - ✅ All other tests (1817+) passing
 
 ### Functionality Impact
+
 - ✅ **NONE** - Application works correctly in production
 - ✅ E2E tests pass (14 scenarios with Playwright)
 - ✅ Unit tests pass (1600+ tests)
 - ⚠️ Only integration tests with Apollo mocking affected
 
 ### User Impact
+
 - ✅ **ZERO** - This is purely a test infrastructure issue
 
 ---
@@ -268,15 +274,15 @@ export function renderWithMockedProvider(
 Create `src/test/mocks/apollo-mocks.ts`:
 
 ```typescript
-import { GET_USER_INFO } from '@/apollo/queriers';
-import { createMockUser } from './github-data';
+import { GET_USER_INFO } from "@/apollo/queriers";
+import { createMockUser } from "./github-data";
 
 export function createUserInfoMock(overrides = {}) {
   return {
     request: {
       query: GET_USER_INFO,
       variables: {
-        login: 'torvalds',
+        login: "torvalds",
         // ... all required variables
       },
     },

@@ -53,6 +53,7 @@ Choose your path:
 ## 🎯 Your Next Action
 
 **Right now:**
+
 1. Go to: https://github.com/settings/tokens/new
 2. Create token with `read:user` and `user:email` scopes
 3. Copy the token

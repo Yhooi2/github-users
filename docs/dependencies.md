@@ -17,16 +17,19 @@
 ### Frontend Framework
 
 #### React 19.2.0
+
 **Назначение:** Основной UI фреймворк
 **Документация:** https://react.dev/
 
 **Используемые фичи:**
+
 - Functional Components с хуками
 - `useState` для локального состояния
 - `useMemo` для мемоизации вычислений
 - Concurrent Features (автоматически)
 
 **Ключевые изменения в v19:**
+
 - ✅ Новые хуки: `useOptimistic`, `use`
 - ✅ Form Actions для упрощенной работы с формами
 - ✅ Улучшенная обработка ошибок
@@ -42,16 +45,19 @@ React 19 — это последняя стабильная версия с ул
 ### Build Tools & TypeScript
 
 #### Vite 7.1.2
+
 **Назначение:** Сборщик и dev-сервер
 **Документация:** https://vite.dev/
 
 **Используемые фичи:**
+
 - Быстрый HMR (Hot Module Replacement)
 - Плагины (React, Tailwind, MCP)
 - TypeScript поддержка из коробки
 - Оптимизация продакшн-билда
 
 **Ключевые изменения в v7:**
+
 - ✅ Улучшенный plugin API
 - ✅ Поддержка environment-specific конфигов
 - ✅ Встроенная поддержка MCP через плагины
@@ -60,16 +66,19 @@ React 19 — это последняя стабильная версия с ул
 **Конфигурация:** `vite.config.ts`
 
 #### TypeScript 5.8.3
+
 **Назначение:** Статическая типизация
 **Документация:** https://www.typescriptlang.org/
 
 **Используемые фичи:**
+
 - Strict mode (полная проверка типов)
 - Path aliases (`@/*` → `./src/*`)
 - JSX/TSX поддержка
 - Inference для типов
 
 **Ключевые изменения в v5.8:**
+
 - ✅ Улучшенная производительность
 - ✅ Лучший type inference
 - ✅ Более понятные сообщения об ошибках
@@ -81,16 +90,19 @@ React 19 — это последняя стабильная версия с ул
 ### Styling & UI
 
 #### Tailwind CSS 4.1.12
+
 **Назначение:** Utility-first CSS фреймворк
 **Документация:** https://tailwindcss.com/
 
 **Используемые фичи:**
+
 - Utility classes для быстрой стилизации
 - Responsive design (breakpoints)
 - Dark mode support через `next-themes`
 - Custom theming
 
 **⚠️ CRITICAL - Tailwind v4 Breaking Changes:**
+
 - CSS-first конфигурация (больше нет `tailwind.config.js`)
 - Новый синтаксис `@theme` для кастомизации
 - Переименованы утилиты: `sm`→`xs` для shadows/radius/blur
@@ -100,18 +112,22 @@ React 19 — это последняя стабильная версия с ул
 **См. также:** [docs/tailwind-v4-migration.md](./tailwind-v4-migration.md)
 
 **Плагины:**
+
 - `@tailwindcss/vite@4.1.12` - Vite интеграция
 - `@tailwindcss/postcss@4.1.12` - PostCSS интеграция
 
 #### shadcn/ui (Radix UI Primitives)
+
 **Назначение:** Доступные UI компоненты
 **Документация:** https://ui.shadcn.com/
 
 **Установленные компоненты:**
+
 - `@radix-ui/react-label@2.1.7` - Доступные лейблы
 - `@radix-ui/react-slot@2.1.7` - Композиция компонентов
 
 **Утилиты:**
+
 - `class-variance-authority@0.7.1` - Управление вариантами классов
 - `clsx@2.1.1` - Условные классы
 - `tailwind-merge@3.3.1` - Merge конфликтующих Tailwind классов
@@ -126,27 +142,32 @@ React 19 — это последняя стабильная версия с ул
 ### Data Management
 
 #### @apollo/client 3.14.0
+
 **Назначение:** GraphQL клиент с кэшированием
 **Документация:** https://www.apollographql.com/docs/react/
 
 **Используемые фичи:**
+
 - `useQuery` для получения данных
 - `InMemoryCache` для автоматического кэширования
 - Link chain: `errorLink` → `authLink` → `httpLink`
 - Error handling с toast уведомлениями
 
 **Ключевые изменения в v3.14:**
+
 - ✅ Новые классы ошибок: `CombinedGraphQLErrors`, `ServerError`
 - ✅ Статические `.is()` методы для проверки типов ошибок
 - ✅ Улучшенная TypeScript поддержка
 - ⚠️ **Deprecated:** `addTypename` опция в `MockedProvider` и `InMemoryCache`
 
 **Наша реализация:**
+
 - Custom hook: `useQueryUser`
 - Error link с автоматической очисткой токена
 - Auth link с Bearer token из env/localStorage
 
 #### GraphQL 16.11.0
+
 **Назначение:** GraphQL core library
 **Документация:** https://graphql.org/
 
@@ -157,20 +178,24 @@ React 19 — это последняя стабильная версия с ул
 ### Utilities
 
 #### date-fns 4.1.0
+
 **Назначение:** Работа с датами
 **Документация:** https://date-fns.org/
 
 **Используемые функции:**
+
 - Date форматирование
 - Date арифметика (для диапазонов)
 
 **Примечание:** В проекте также используются нативные JavaScript Date API.
 
 #### sonner 2.0.7
+
 **Назначение:** Toast уведомления
 **Документация:** https://sonner.emilkowal.ski/
 
 **Используется для:**
+
 - Уведомления об ошибках валидации
 - GraphQL/Network ошибки из Apollo
 - User feedback
@@ -182,15 +207,18 @@ React 19 — это последняя стабильная версия с ул
 ### Testing Framework
 
 #### Vitest 4.0.6
+
 **Назначение:** Тестовый фреймворк (Vite-native)
 **Документация:** https://vitest.dev/
 
 **Установленные пакеты:**
+
 - `vitest@4.0.6` - Основной пакет
 - `@vitest/ui@4.0.6` - UI для интерактивного запуска тестов
 - `@vitest/coverage-v8@4.0.6` - Coverage reporter (V8)
 
 **Ключевые фичи v4:**
+
 - ✅ Vite-native (использует ту же конфигурацию)
 - ✅ Jest-compatible API
 - ✅ Fast HMR для тестов
@@ -200,14 +228,17 @@ React 19 — это последняя стабильная версия с ул
 **Текущее покрытие:** 62/62 тестов проходят
 
 #### Testing Library
+
 **Назначение:** Утилиты для тестирования React компонентов
 
 **Установленные пакеты:**
+
 - `@testing-library/react@16.3.0` - React тестинг утилиты
 - `@testing-library/jest-dom@6.9.1` - Custom matchers для DOM
 - `@testing-library/user-event@14.6.1` - Симуляция пользовательских событий
 
 **DOM Environments:**
+
 - `happy-dom@20.0.10` - Легковесная DOM имплементация
 - `jsdom@27.1.0` - Полная DOM имплементация
 
@@ -216,10 +247,12 @@ React 19 — это последняя стабильная версия с ул
 ### E2E Testing
 
 #### Playwright 1.56.1
+
 **Назначение:** End-to-end тестирование
 **Документация:** https://playwright.dev/
 
 **Ключевые фичи:**
+
 - ✅ Cross-browser (Chromium, Firefox, WebKit)
 - ✅ Auto-wait механизмы
 - ✅ Network interception
@@ -227,6 +260,7 @@ React 19 — это последняя стабильная версия с ул
 - ✅ Codegen для генерации тестов
 
 **Установленные пакеты:**
+
 - `@playwright/test@1.56.1` - Test runner
 - `@playwright/experimental-ct-react@1.56.1` - Component testing
 
@@ -237,10 +271,12 @@ React 19 — это последняя стабильная версия с ул
 ### Component Development
 
 #### Storybook 10.0.3
+
 **Назначение:** Интерактивная разработка компонентов
 **Документация:** https://storybook.js.org/
 
 **Установленные пакеты:**
+
 - `storybook@10.0.3` - Core
 - `@storybook/react@10.0.3` - React поддержка
 - `@storybook/react-vite@10.0.3` - Vite builder
@@ -249,6 +285,7 @@ React 19 — это последняя стабильная версия с ул
 - `storybook-mcp@0.4.0` - MCP интеграция
 
 **Ключевые фичи v10:**
+
 - ✅ Vite builder по умолчанию
 - ✅ Improved performance
 - ✅ Component Story Format (CSF) 3
@@ -261,10 +298,12 @@ React 19 — это последняя стабильная версия с ул
 ### Code Quality
 
 #### ESLint 9.33.0
+
 **Назначение:** Линтер для JavaScript/TypeScript
 **Документация:** https://eslint.org/
 
 **Установленные плагины:**
+
 - `@eslint/js@9.33.0` - Рекомендуемые правила
 - `eslint-plugin-react-hooks@5.3.0` - React Hooks правила
 - `eslint-plugin-react-refresh@0.5.1` - React Refresh валидация
@@ -274,10 +313,12 @@ React 19 — это последняя стабильная версия с ул
 **Конфигурация:** `eslint.config.js` (Flat Config)
 
 #### Prettier 3.6.2
+
 **Назначение:** Code formatter
 **Документация:** https://prettier.io/
 
 **Установленные плагины:**
+
 - `eslint-config-prettier@10.0.3` - Интеграция с ESLint
 - `eslint-plugin-prettier@5.3.1` - Prettier как ESLint правило
 
@@ -303,16 +344,20 @@ React 19 — это последняя стабильная версия с ул
 ### React 19 - Новые возможности
 
 1. **useOptimistic Hook**
+
    ```typescript
-   const [optimisticState, addOptimistic] = useOptimistic(state, updateFn)
+   const [optimisticState, addOptimistic] = useOptimistic(state, updateFn);
    ```
+
    Для оптимистичных UI обновлений (пока не используется в проекте)
 
 2. **use Hook**
+
    ```typescript
-   const value = use(promise)
-   const value = use(context)
+   const value = use(promise);
+   const value = use(context);
    ```
+
    Универсальный хук для промисов и контекста
 
 3. **Form Actions**
@@ -325,6 +370,7 @@ React 19 — это последняя стабильная версия с ул
 ### Tailwind CSS v4 - Критические изменения
 
 **CSS-First конфигурация:**
+
 ```css
 @import "tailwindcss";
 
@@ -334,11 +380,13 @@ React 19 — это последняя стабильная версия с ул
 ```
 
 **Переименования:**
+
 - `shadow-sm` → `shadow-xs`
 - `rounded-sm` → `rounded-xs`
 - `blur-sm` → `blur-xs`
 
 **Изменения по умолчанию:**
+
 - Border color: `currentColor` (было `#e5e7eb`)
 - Ring width: `1px` (было `3px`)
 
@@ -349,8 +397,9 @@ React 19 — это последняя стабильная версия с ул
 ### Apollo Client 3.14 - Новая обработка ошибок
 
 **Новые классы ошибок:**
+
 ```typescript
-import { ApolloError } from '@apollo/client'
+import { ApolloError } from "@apollo/client";
 
 // Новые static методы
 if (ApolloError.is(error)) {
@@ -359,6 +408,7 @@ if (ApolloError.is(error)) {
 ```
 
 **Типы ошибок:**
+
 - `CombinedGraphQLErrors` - GraphQL ошибки с partial data
 - `ServerError` - HTTP ошибки от сервера
 - `ServerParseError` - Ошибки парсинга ответа
@@ -371,21 +421,23 @@ if (ApolloError.is(error)) {
 ### Vitest 4 - Улучшения производительности
 
 **Новые фичи:**
+
 - ✅ Faster test execution
 - ✅ Enhanced browser mode
 - ✅ Better UI mode
 - ✅ V8 coverage by default (был Istanbul)
 
 **Конфигурация:**
+
 ```typescript
 // vite.config.ts
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-  }
-})
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+  },
+});
 ```
 
 **См. также:** [docs/testing-guide.md](./testing-guide.md)
@@ -397,21 +449,25 @@ export default defineConfig({
 ### От предыдущих версий
 
 #### React 18 → 19
+
 - ❌ Удален `defaultProps` для функциональных компонентов
 - ⚠️ Изменено поведение `useEffect` cleanup
 - ⚠️ Строже правила хуков (нельзя вызывать в условиях)
 
 #### Tailwind CSS 3 → 4
+
 - ❌ Убран `tailwind.config.js` (CSS-first)
 - ❌ Container больше не имеет `center`/`padding` опций
 - ⚠️ Изменены дефолтные значения (border, ring)
 - ⚠️ Переименованы многие утилиты
 
 #### Vite 6 → 7
+
 - ✅ В основном обратно совместимые изменения
 - ⚠️ Новый plugin API (старый deprecated)
 
 #### Apollo Client 3.11 → 3.14
+
 - ⚠️ `addTypename` deprecated в `MockedProvider`
 - ✅ Новые методы `.is()` для проверки ошибок
 
@@ -422,15 +478,19 @@ export default defineConfig({
 ### Стратегия обновления зависимостей
 
 1. **Минорные обновления (безопасно)**
+
    ```bash
    npm update
    ```
+
    Обновляет патч и минорные версии в пределах semver
 
 2. **Мажорные обновления (осторожно)**
+
    ```bash
    npm outdated  # Проверить устаревшие пакеты
    ```
+
    Требуют проверки breaking changes и тестирования
 
 3. **Порядок обновления:**
@@ -451,6 +511,7 @@ export default defineConfig({
 ### Известные совместимости
 
 **Работает отлично:**
+
 - ✅ React 19 + Vite 7
 - ✅ TypeScript 5.8 + Vite 7
 - ✅ Tailwind v4 + Vite plugin
@@ -458,6 +519,7 @@ export default defineConfig({
 - ✅ Vitest 4 + Vite 7
 
 **Требует внимания:**
+
 - ⚠️ Tailwind v4 - проверить все utility классы
 - ⚠️ Apollo Client - убрать `addTypename` из MockedProvider
 

@@ -1,23 +1,24 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Badge } from './badge';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Badge } from "./badge";
 
 const meta: Meta<typeof Badge> = {
-  title: 'UI/Badge',
+  title: "UI/Badge",
   component: Badge,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
-        component: 'A badge component for displaying status, labels, or counts.',
+        component:
+          "A badge component for displaying status, labels, or counts.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['default', 'secondary', 'destructive', 'outline'],
-      description: 'The visual style variant of the badge',
+      control: "select",
+      options: ["default", "secondary", "destructive", "outline"],
+      description: "The visual style variant of the badge",
     },
   },
 };
@@ -28,31 +29,31 @@ type Story = StoryObj<typeof Badge>;
 // Story 1: Default badge
 export const Default: Story = {
   args: {
-    children: 'Badge',
+    children: "Badge",
   },
 };
 
 // Story 2: Secondary variant
 export const Secondary: Story = {
   args: {
-    children: 'Secondary',
-    variant: 'secondary',
+    children: "Secondary",
+    variant: "secondary",
   },
 };
 
 // Story 3: Destructive variant
 export const Destructive: Story = {
   args: {
-    children: 'Destructive',
-    variant: 'destructive',
+    children: "Destructive",
+    variant: "destructive",
   },
 };
 
 // Story 4: Outline variant
 export const Outline: Story = {
   args: {
-    children: 'Outline',
-    variant: 'outline',
+    children: "Outline",
+    variant: "outline",
   },
 };
 
@@ -73,7 +74,12 @@ export const WithIcons: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
       <Badge>
-        <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg
+          className="size-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -84,7 +90,12 @@ export const WithIcons: Story = {
         Completed
       </Badge>
       <Badge variant="secondary">
-        <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg
+          className="size-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -95,7 +106,12 @@ export const WithIcons: Story = {
         In Progress
       </Badge>
       <Badge variant="destructive">
-        <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg
+          className="size-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

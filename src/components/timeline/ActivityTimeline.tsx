@@ -1,9 +1,9 @@
-import type { YearData } from '@/hooks/useUserAnalytics'
-import { TimelineYear } from './TimelineYear'
+import type { YearData } from "@/hooks/useUserAnalytics";
+import { TimelineYear } from "./TimelineYear";
 
 export interface ActivityTimelineProps {
-  timeline: YearData[]
-  loading?: boolean
+  timeline: YearData[];
+  loading?: boolean;
 }
 
 /**
@@ -20,23 +20,26 @@ export interface ActivityTimelineProps {
  * <ActivityTimeline timeline={[]} loading />
  * ```
  */
-export function ActivityTimeline({ timeline, loading = false }: ActivityTimelineProps) {
+export function ActivityTimeline({
+  timeline,
+  loading = false,
+}: ActivityTimelineProps) {
   if (loading) {
-    return <TimelineSkeleton />
+    return <TimelineSkeleton />;
   }
 
   if (!timeline.length) {
     return (
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">📊 Activity Timeline</h2>
-        <div className="text-muted-foreground rounded-lg border p-8 text-center">
+        <div className="rounded-lg border p-8 text-center text-muted-foreground">
           No activity data available
         </div>
       </section>
-    )
+    );
   }
 
-  const maxCommits = Math.max(...timeline.map((y) => y.totalCommits))
+  const maxCommits = Math.max(...timeline.map((y) => y.totalCommits));
 
   return (
     <section className="space-y-4" aria-label="Activity Timeline">
@@ -48,7 +51,7 @@ export function ActivityTimeline({ timeline, loading = false }: ActivityTimeline
         ))}
       </div>
     </section>
-  )
+  );
 }
 
 /**
@@ -57,12 +60,12 @@ export function ActivityTimeline({ timeline, loading = false }: ActivityTimeline
 function TimelineSkeleton() {
   return (
     <section className="space-y-4" aria-label="Loading activity timeline">
-      <div className="bg-muted h-8 w-64 animate-pulse rounded" />
+      <div className="h-8 w-64 animate-pulse rounded bg-muted" />
       <div className="space-y-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="bg-muted h-16 animate-pulse rounded-lg" />
+          <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
         ))}
       </div>
     </section>
-  )
+  );
 }

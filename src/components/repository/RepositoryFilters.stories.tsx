@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { RepositoryFilters } from './RepositoryFilters';
-import type { RepositoryFilter } from '@/types/filters';
-import { useState } from 'react';
+import type { RepositoryFilter } from "@/types/filters";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+import { RepositoryFilters } from "./RepositoryFilters";
 
 // Wrapper component to manage filter state
 function RepositoryFiltersWrapper(props: {
@@ -9,11 +9,13 @@ function RepositoryFiltersWrapper(props: {
   availableLanguages?: string[];
   compact?: boolean;
 }) {
-  const [filters, setFilters] = useState<RepositoryFilter>(props.initialFilters || {});
+  const [filters, setFilters] = useState<RepositoryFilter>(
+    props.initialFilters || {},
+  );
 
   const handleFilterChange = <K extends keyof RepositoryFilter>(
     key: K,
-    value: RepositoryFilter[K]
+    value: RepositoryFilter[K],
   ) => {
     setFilters((prev) => {
       if (value === undefined) {
@@ -46,15 +48,15 @@ function RepositoryFiltersWrapper(props: {
 }
 
 const meta = {
-  title: 'Components/Repository/RepositoryFilters',
+  title: "Components/Repository/RepositoryFilters",
   component: RepositoryFiltersWrapper,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div style={{ width: '400px', maxWidth: '100%' }}>
+      <div style={{ width: "400px", maxWidth: "100%" }}>
         <Story />
       </div>
     ),
@@ -69,7 +71,14 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   args: {
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python', 'Go', 'Rust', 'Java'],
+    availableLanguages: [
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "Go",
+      "Rust",
+      "Java",
+    ],
   },
 };
 
@@ -79,12 +88,19 @@ export const Default: Story = {
 export const WithActiveFilters: Story = {
   args: {
     initialFilters: {
-      searchQuery: 'react',
-      language: 'TypeScript',
+      searchQuery: "react",
+      language: "TypeScript",
       minStars: 100,
       originalOnly: true,
     },
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python', 'Go', 'Rust', 'Java'],
+    availableLanguages: [
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "Go",
+      "Rust",
+      "Java",
+    ],
   },
 };
 
@@ -99,7 +115,7 @@ export const AllBooleansActive: Story = {
       hasTopics: true,
       hasLicense: true,
     },
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python'],
+    availableLanguages: ["TypeScript", "JavaScript", "Python"],
   },
 };
 
@@ -111,7 +127,7 @@ export const ForksOnly: Story = {
     initialFilters: {
       forksOnly: true,
     },
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python'],
+    availableLanguages: ["TypeScript", "JavaScript", "Python"],
   },
 };
 
@@ -130,22 +146,22 @@ export const NoLanguageOptions: Story = {
 export const ManyLanguages: Story = {
   args: {
     availableLanguages: [
-      'TypeScript',
-      'JavaScript',
-      'Python',
-      'Go',
-      'Rust',
-      'Java',
-      'C++',
-      'C#',
-      'Ruby',
-      'PHP',
-      'Swift',
-      'Kotlin',
-      'Dart',
-      'Shell',
-      'HTML',
-      'CSS',
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "Go",
+      "Rust",
+      "Java",
+      "C++",
+      "C#",
+      "Ruby",
+      "PHP",
+      "Swift",
+      "Kotlin",
+      "Dart",
+      "Shell",
+      "HTML",
+      "CSS",
     ],
   },
 };
@@ -156,10 +172,10 @@ export const ManyLanguages: Story = {
 export const CompactMode: Story = {
   args: {
     initialFilters: {
-      searchQuery: 'test',
+      searchQuery: "test",
       minStars: 50,
     },
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python'],
+    availableLanguages: ["TypeScript", "JavaScript", "Python"],
     compact: true,
   },
 };
@@ -170,15 +186,15 @@ export const CompactMode: Story = {
 export const MaximumFilters: Story = {
   args: {
     initialFilters: {
-      searchQuery: 'awesome-project',
-      language: 'TypeScript',
+      searchQuery: "awesome-project",
+      language: "TypeScript",
       minStars: 1000,
       originalOnly: true,
       hideArchived: true,
       hasTopics: true,
       hasLicense: true,
     },
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python', 'Go', 'Rust'],
+    availableLanguages: ["TypeScript", "JavaScript", "Python", "Go", "Rust"],
   },
 };
 
@@ -188,9 +204,9 @@ export const MaximumFilters: Story = {
 export const SearchOnly: Story = {
   args: {
     initialFilters: {
-      searchQuery: 'user-repository',
+      searchQuery: "user-repository",
     },
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python'],
+    availableLanguages: ["TypeScript", "JavaScript", "Python"],
   },
 };
 
@@ -202,6 +218,6 @@ export const MinimumStarsFilter: Story = {
     initialFilters: {
       minStars: 500,
     },
-    availableLanguages: ['TypeScript', 'JavaScript', 'Python'],
+    availableLanguages: ["TypeScript", "JavaScript", "Python"],
   },
 };

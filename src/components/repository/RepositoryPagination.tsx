@@ -1,12 +1,17 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+} from "@/components/ui/select";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 type Props = {
   /**
@@ -129,15 +134,15 @@ export function RepositoryPagination({
 
   return (
     <div
-      className={`flex items-center justify-between ${compact ? 'gap-2' : 'gap-4'} flex-wrap`}
+      className={`flex items-center justify-between ${compact ? "gap-2" : "gap-4"} flex-wrap`}
       role="navigation"
       aria-label="Pagination"
     >
       {/* Items info */}
       {!compact && (
-        <div className="text-muted-foreground text-sm">
-          Showing <span className="font-medium">{startItem}</span> to{' '}
-          <span className="font-medium">{endItem}</span> of{' '}
+        <div className="text-sm text-muted-foreground">
+          Showing <span className="font-medium">{startItem}</span> to{" "}
+          <span className="font-medium">{endItem}</span> of{" "}
           <span className="font-medium">{totalItems}</span> repositories
         </div>
       )}
@@ -146,7 +151,7 @@ export function RepositoryPagination({
       <div className="flex items-center gap-1">
         <Button
           variant="outline"
-          size={compact ? 'sm' : 'default'}
+          size={compact ? "sm" : "default"}
           onClick={handleFirstPage}
           disabled={isFirstPage || disabled}
           aria-label="Go to first page"
@@ -158,7 +163,7 @@ export function RepositoryPagination({
 
         <Button
           variant="outline"
-          size={compact ? 'sm' : 'default'}
+          size={compact ? "sm" : "default"}
           onClick={handlePreviousPage}
           disabled={isFirstPage || disabled}
           aria-label="Go to previous page"
@@ -169,7 +174,7 @@ export function RepositoryPagination({
         </Button>
 
         <div
-          className={`flex items-center ${compact ? 'px-2' : 'px-4'} text-sm font-medium`}
+          className={`flex items-center ${compact ? "px-2" : "px-4"} text-sm font-medium`}
           aria-current="page"
         >
           Page {currentPage} of {totalPages || 1}
@@ -177,7 +182,7 @@ export function RepositoryPagination({
 
         <Button
           variant="outline"
-          size={compact ? 'sm' : 'default'}
+          size={compact ? "sm" : "default"}
           onClick={handleNextPage}
           disabled={isLastPage || disabled}
           aria-label="Go to next page"
@@ -189,7 +194,7 @@ export function RepositoryPagination({
 
         <Button
           variant="outline"
-          size={compact ? 'sm' : 'default'}
+          size={compact ? "sm" : "default"}
           onClick={handleLastPage}
           disabled={isLastPage || disabled}
           aria-label="Go to last page"
@@ -203,13 +208,16 @@ export function RepositoryPagination({
       {/* Page size selector */}
       {onPageSizeChange && (
         <div className="flex items-center gap-2">
-          <span className="text-muted-foreground text-sm">Items per page:</span>
+          <span className="text-sm text-muted-foreground">Items per page:</span>
           <Select
             value={pageSize.toString()}
             onValueChange={handlePageSizeChange}
             disabled={disabled}
           >
-            <SelectTrigger size={compact ? 'sm' : 'default'} className="w-[80px]">
+            <SelectTrigger
+              size={compact ? "sm" : "default"}
+              className="w-[80px]"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

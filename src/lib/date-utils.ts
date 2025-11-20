@@ -4,10 +4,10 @@
  */
 
 export interface YearRange {
-  year: number
-  from: string
-  to: string
-  label: string
+  year: number;
+  from: string;
+  to: string;
+  label: string;
 }
 
 /**
@@ -26,35 +26,36 @@ export interface YearRange {
  * // ]
  */
 export function generateYearRanges(createdAt: string): YearRange[] {
-  const created = new Date(createdAt)
+  const created = new Date(createdAt);
 
   // Validate date
   if (isNaN(created.getTime())) {
-    return []
+    return [];
   }
 
-  const now = new Date()
+  const now = new Date();
 
-  const startYear = created.getUTCFullYear()
-  const currentYear = now.getUTCFullYear()
+  const startYear = created.getUTCFullYear();
+  const currentYear = now.getUTCFullYear();
 
-  const ranges: YearRange[] = []
+  const ranges: YearRange[] = [];
 
   for (let year = startYear; year <= currentYear; year++) {
-    const from = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0)) // January 1st UTC
-    const to = year === currentYear
-      ? now // Current date for current year
-      : new Date(Date.UTC(year, 11, 31, 23, 59, 59, 0)) // December 31st UTC for past years
+    const from = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0)); // January 1st UTC
+    const to =
+      year === currentYear
+        ? now // Current date for current year
+        : new Date(Date.UTC(year, 11, 31, 23, 59, 59, 0)); // December 31st UTC for past years
 
     ranges.push({
       year,
       from: from.toISOString(),
       to: to.toISOString(),
       label: year.toString(),
-    })
+    });
   }
 
-  return ranges
+  return ranges;
 }
 
 /**
@@ -68,11 +69,11 @@ export function generateYearRanges(createdAt: string): YearRange[] {
  * formatDate(new Date()) // "Nov 17, 2025"
  */
 export function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 /**
@@ -85,7 +86,7 @@ export function formatDate(date: string | Date): string {
  * getYear('2023-01-15T12:00:00Z') // 2023
  */
 export function getYear(date: string): number {
-  return new Date(date).getUTCFullYear()
+  return new Date(date).getUTCFullYear();
 }
 
 /**
@@ -99,8 +100,8 @@ export function getYear(date: string): number {
  * isCurrentYear('2024-01-15T12:00:00Z') // false
  */
 export function isCurrentYear(date: string | Date): boolean {
-  const dateObj = typeof date === 'string' ? new Date(date) : date
-  const year = dateObj.getUTCFullYear()
-  const currentYear = new Date().getUTCFullYear()
-  return year === currentYear
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const year = dateObj.getUTCFullYear();
+  const currentYear = new Date().getUTCFullYear();
+  return year === currentYear;
 }

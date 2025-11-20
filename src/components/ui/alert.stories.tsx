@@ -1,20 +1,26 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Alert, AlertTitle, AlertDescription } from './alert';
-import { AlertCircle, CheckCircle2, Info, XCircle, Terminal } from 'lucide-react';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Info,
+  Terminal,
+  XCircle,
+} from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "./alert";
 
 const meta: Meta<typeof Alert> = {
-  title: 'UI/Alert',
+  title: "UI/Alert",
   component: Alert,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'An alert component for displaying important messages. Supports default and destructive variants with optional icons and titles.',
+          "An alert component for displaying important messages. Supports default and destructive variants with optional icons and titles.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -53,7 +59,8 @@ export const SuccessMessage: Story = {
       <CheckCircle2 />
       <AlertTitle>Repository forked successfully</AlertTitle>
       <AlertDescription>
-        You can now make changes to your fork and submit a pull request to the original repository.
+        You can now make changes to your fork and submit a pull request to the
+        original repository.
       </AlertDescription>
     </Alert>
   ),
@@ -66,7 +73,8 @@ export const ErrorMessage: Story = {
       <AlertCircle />
       <AlertTitle>Failed to create pull request</AlertTitle>
       <AlertDescription>
-        The base branch does not exist or you do not have permission to create a pull request.
+        The base branch does not exist or you do not have permission to create a
+        pull request.
       </AlertDescription>
     </Alert>
   ),
@@ -78,7 +86,8 @@ export const WithoutIcon: Story = {
     <Alert className="w-[500px]">
       <AlertTitle>Update available</AlertTitle>
       <AlertDescription>
-        A new version of the application is available. Please refresh the page to update.
+        A new version of the application is available. Please refresh the page
+        to update.
       </AlertDescription>
     </Alert>
   ),
@@ -100,7 +109,9 @@ export const WithoutTitle: Story = {
 export const DescriptionOnly: Story = {
   render: () => (
     <Alert className="w-[500px]">
-      <AlertDescription>Simple alert message without icon or title.</AlertDescription>
+      <AlertDescription>
+        Simple alert message without icon or title.
+      </AlertDescription>
     </Alert>
   ),
 };
@@ -112,9 +123,9 @@ export const RateLimitWarning: Story = {
       <AlertCircle />
       <AlertTitle>API Rate Limit Exceeded</AlertTitle>
       <AlertDescription>
-        You have exceeded the GitHub API rate limit. Please wait until{' '}
-        <strong>3:42 PM</strong> or authenticate to increase your rate limit to 5,000
-        requests per hour.
+        You have exceeded the GitHub API rate limit. Please wait until{" "}
+        <strong>3:42 PM</strong> or authenticate to increase your rate limit to
+        5,000 requests per hour.
       </AlertDescription>
     </Alert>
   ),
@@ -132,7 +143,9 @@ export const MultipleAlerts: Story = {
       <Alert>
         <CheckCircle2 />
         <AlertTitle>Workflow completed</AlertTitle>
-        <AlertDescription>CI/CD pipeline finished successfully in 2m 34s.</AlertDescription>
+        <AlertDescription>
+          CI/CD pipeline finished successfully in 2m 34s.
+        </AlertDescription>
       </Alert>
       <Alert variant="destructive">
         <AlertCircle />
@@ -152,11 +165,12 @@ export const LongContent: Story = {
       <Terminal />
       <AlertTitle>Deployment Configuration</AlertTitle>
       <AlertDescription>
-        Your deployment configuration has been updated. The following environment variables have
-        been modified: DATABASE_URL, API_KEY, SESSION_SECRET. These changes will take effect on
-        the next deployment. Make sure to update your local .env file accordingly to match the
-        production environment. If you experience any issues, please contact the development team
-        or check the deployment logs for more information.
+        Your deployment configuration has been updated. The following
+        environment variables have been modified: DATABASE_URL, API_KEY,
+        SESSION_SECRET. These changes will take effect on the next deployment.
+        Make sure to update your local .env file accordingly to match the
+        production environment. If you experience any issues, please contact the
+        development team or check the deployment logs for more information.
       </AlertDescription>
     </Alert>
   ),
@@ -169,8 +183,9 @@ export const AuthenticationWarning: Story = {
       <AlertCircle />
       <AlertTitle>Authentication Required</AlertTitle>
       <AlertDescription>
-        You need to provide a GitHub Personal Access Token to use this application. Please add
-        your token to the .env.local file or enter it in the settings.
+        You need to provide a GitHub Personal Access Token to use this
+        application. Please add your token to the .env.local file or enter it in
+        the settings.
       </AlertDescription>
     </Alert>
   ),

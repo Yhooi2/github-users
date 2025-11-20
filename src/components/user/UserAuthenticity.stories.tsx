@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { UserAuthenticity } from './UserAuthenticity';
-import type { Repository } from '@/apollo/github-api.types';
+import type { Repository } from "@/apollo/github-api.types";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { UserAuthenticity } from "./UserAuthenticity";
 
 const meta: Meta<typeof UserAuthenticity> = {
-  title: 'User/UserAuthenticity',
+  title: "User/UserAuthenticity",
   component: UserAuthenticity,
-  parameters: { layout: 'padded' },
-  tags: ['autodocs'],
+  parameters: { layout: "padded" },
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -15,31 +15,31 @@ type Story = StoryObj<typeof UserAuthenticity>;
 // Mock repositories for high score
 const highScoreRepos: Repository[] = [
   {
-    id: '1',
-    name: 'main-project',
-    description: 'Main project',
+    id: "1",
+    name: "main-project",
+    description: "Main project",
     isFork: false,
     isArchived: false,
     isTemplate: false,
     stargazerCount: 150,
     forkCount: 30,
-    primaryLanguage: { name: 'TypeScript', color: '#3178c6' },
-    languages: { edges: [{ node: { name: 'TypeScript', color: '#3178c6' } }] },
+    primaryLanguage: { name: "TypeScript", color: "#3178c6" },
+    languages: { edges: [{ node: { name: "TypeScript", color: "#3178c6" } }] },
     repositoryTopics: { nodes: [] },
     updatedAt: new Date().toISOString(),
     createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    id: '2',
-    name: 'popular-lib',
-    description: 'Popular library',
+    id: "2",
+    name: "popular-lib",
+    description: "Popular library",
     isFork: false,
     isArchived: false,
     isTemplate: false,
     stargazerCount: 500,
     forkCount: 100,
-    primaryLanguage: { name: 'JavaScript', color: '#f1e05a' },
-    languages: { edges: [{ node: { name: 'JavaScript', color: '#f1e05a' } }] },
+    primaryLanguage: { name: "JavaScript", color: "#f1e05a" },
+    languages: { edges: [{ node: { name: "JavaScript", color: "#f1e05a" } }] },
     repositoryTopics: { nodes: [] },
     updatedAt: new Date().toISOString(),
     createdAt: new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
@@ -50,16 +50,16 @@ const highScoreRepos: Repository[] = [
 const mediumScoreRepos: Repository[] = [
   ...highScoreRepos.slice(0, 1),
   {
-    id: '3',
-    name: 'forked-repo',
-    description: 'Forked repository',
+    id: "3",
+    name: "forked-repo",
+    description: "Forked repository",
     isFork: true,
     isArchived: false,
     isTemplate: false,
     stargazerCount: 10,
     forkCount: 2,
-    primaryLanguage: { name: 'Python', color: '#3572A5' },
-    languages: { edges: [{ node: { name: 'Python', color: '#3572A5' } }] },
+    primaryLanguage: { name: "Python", color: "#3572A5" },
+    languages: { edges: [{ node: { name: "Python", color: "#3572A5" } }] },
     repositoryTopics: { nodes: [] },
     updatedAt: new Date().toISOString(),
     createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
@@ -69,16 +69,16 @@ const mediumScoreRepos: Repository[] = [
 // Mock repositories for low score
 const lowScoreRepos: Repository[] = [
   {
-    id: '4',
-    name: 'old-archived',
-    description: 'Archived project',
+    id: "4",
+    name: "old-archived",
+    description: "Archived project",
     isFork: false,
     isArchived: true,
     isTemplate: false,
     stargazerCount: 2,
     forkCount: 0,
-    primaryLanguage: { name: 'JavaScript', color: '#f1e05a' },
-    languages: { edges: [{ node: { name: 'JavaScript', color: '#f1e05a' } }] },
+    primaryLanguage: { name: "JavaScript", color: "#f1e05a" },
+    languages: { edges: [{ node: { name: "JavaScript", color: "#f1e05a" } }] },
     repositoryTopics: { nodes: [] },
     updatedAt: new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date(Date.now() - 1095 * 24 * 60 * 60 * 1000).toISOString(),
@@ -114,9 +114,9 @@ export const ManyForkedRepos: Story = {
     repositories: [
       ...mediumScoreRepos,
       {
-        id: '5',
-        name: 'fork-1',
-        description: 'Forked repo 1',
+        id: "5",
+        name: "fork-1",
+        description: "Forked repo 1",
         isFork: true,
         isArchived: false,
         isTemplate: false,
@@ -126,12 +126,14 @@ export const ManyForkedRepos: Story = {
         languages: { edges: [] },
         repositoryTopics: { nodes: [] },
         updatedAt: new Date().toISOString(),
-        createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date(
+          Date.now() - 90 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
       },
       {
-        id: '6',
-        name: 'fork-2',
-        description: 'Forked repo 2',
+        id: "6",
+        name: "fork-2",
+        description: "Forked repo 2",
         isFork: true,
         isArchived: false,
         isTemplate: false,
@@ -141,7 +143,9 @@ export const ManyForkedRepos: Story = {
         languages: { edges: [] },
         repositoryTopics: { nodes: [] },
         updatedAt: new Date().toISOString(),
-        createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date(
+          Date.now() - 60 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
       },
     ] as Repository[],
   },

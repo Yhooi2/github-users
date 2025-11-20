@@ -1,10 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import type { Repository } from '@/apollo/github-api.types';
-import { Star, GitFork, Eye, AlertCircle, GitCommit } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { formatNumber } from '@/lib/statistics';
-import { getLanguageColor } from '@/lib/constants';
+import type { Repository } from "@/apollo/github-api.types";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getLanguageColor } from "@/lib/constants";
+import { formatNumber } from "@/lib/statistics";
+import { formatDistanceToNow } from "date-fns";
+import { AlertCircle, Eye, GitCommit, GitFork, Star } from "lucide-react";
 
 type Props = {
   /**
@@ -46,7 +52,11 @@ type Props = {
  * />
  * ```
  */
-export function RepositoryCard({ repository, compact = false, onClick }: Props) {
+export function RepositoryCard({
+  repository,
+  compact = false,
+  onClick,
+}: Props) {
   const handleClick = () => {
     if (onClick) {
       onClick(repository);
@@ -54,7 +64,7 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+    if (onClick && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       onClick(repository);
     }
@@ -62,15 +72,17 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
 
   const updatedAt = repository.updatedAt
     ? formatDistanceToNow(new Date(repository.updatedAt), { addSuffix: true })
-    : 'Never';
+    : "Never";
 
   return (
     <Card
-      className={onClick ? 'cursor-pointer transition-shadow hover:shadow-md' : undefined}
+      className={
+        onClick ? "cursor-pointer transition-shadow hover:shadow-md" : undefined
+      }
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       tabIndex={onClick ? 0 : undefined}
-      role={onClick ? 'button' : undefined}
+      role={onClick ? "button" : undefined}
       aria-label={onClick ? `Open ${repository.name} repository` : undefined}
     >
       <CardHeader>
@@ -100,7 +112,10 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
             </Badge>
           )}
           {repository.isArchived && (
-            <Badge variant="destructive" aria-label="This repository is archived">
+            <Badge
+              variant="destructive"
+              aria-label="This repository is archived"
+            >
               <AlertCircle className="h-3 w-3" />
               Archived
             </Badge>
@@ -109,49 +124,71 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
       </CardHeader>
 
       <CardContent>
-        <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           {repository.primaryLanguage && (
             <div className="flex items-center gap-1">
               <span
                 className="h-3 w-3 rounded-full"
-                style={{ backgroundColor: getLanguageColor(repository.primaryLanguage.name) }}
+                style={{
+                  backgroundColor: getLanguageColor(
+                    repository.primaryLanguage.name,
+                  ),
+                }}
                 aria-hidden="true"
               />
               <span>{repository.primaryLanguage.name}</span>
             </div>
           )}
 
-          <div className="flex items-center gap-1" title={`${repository.stargazerCount} stars`}>
+          <div
+            className="flex items-center gap-1"
+            title={`${repository.stargazerCount} stars`}
+          >
             <Star className="h-4 w-4" aria-hidden="true" />
             <span>{formatNumber(repository.stargazerCount)}</span>
           </div>
 
-          <div className="flex items-center gap-1" title={`${repository.forkCount} forks`}>
+          <div
+            className="flex items-center gap-1"
+            title={`${repository.forkCount} forks`}
+          >
             <GitFork className="h-4 w-4" aria-hidden="true" />
             <span>{formatNumber(repository.forkCount)}</span>
           </div>
 
           {!compact && (
-            <div className="flex items-center gap-1" title={`${repository.watchers.totalCount} watchers`}>
+            <div
+              className="flex items-center gap-1"
+              title={`${repository.watchers.totalCount} watchers`}
+            >
               <Eye className="h-4 w-4" aria-hidden="true" />
               <span>{formatNumber(repository.watchers.totalCount)}</span>
             </div>
           )}
 
           {!compact && repository.defaultBranchRef?.target?.history && (
-            <div className="flex items-center gap-1" title={`${repository.defaultBranchRef.target.history.totalCount} commits`}>
+            <div
+              className="flex items-center gap-1"
+              title={`${repository.defaultBranchRef.target.history.totalCount} commits`}
+            >
               <GitCommit className="h-4 w-4" aria-hidden="true" />
-              <span>{formatNumber(repository.defaultBranchRef.target.history.totalCount)}</span>
+              <span>
+                {formatNumber(
+                  repository.defaultBranchRef.target.history.totalCount,
+                )}
+              </span>
             </div>
           )}
 
-          <div className="ml-auto text-xs">
-            Updated {updatedAt}
-          </div>
+          <div className="ml-auto text-xs">Updated {updatedAt}</div>
         </div>
 
         {!compact && repository.repositoryTopics.nodes.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2" role="list" aria-label="Repository topics">
+          <div
+            className="mt-4 flex flex-wrap gap-2"
+            role="list"
+            aria-label="Repository topics"
+          >
             {repository.repositoryTopics.nodes.slice(0, 5).map((topic) => (
               <Badge key={topic.topic.name} variant="secondary" role="listitem">
                 {topic.topic.name}
@@ -168,4 +205,3 @@ export function RepositoryCard({ repository, compact = false, onClick }: Props) 
     </Card>
   );
 }
-

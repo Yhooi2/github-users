@@ -1,5 +1,5 @@
-import type { Repository } from '@/apollo/github-api.types';
-import type { AuthenticityScore } from '@/types/metrics';
+import type { Repository } from "@/apollo/github-api.types";
+import type { AuthenticityScore } from "@/types/metrics";
 
 /**
  * Calculates authenticity score for a GitHub user based on their repositories
@@ -27,18 +27,20 @@ import type { AuthenticityScore } from '@/types/metrics';
  * }
  * ```
  */
-export function calculateAuthenticityScore(repositories: Repository[]): AuthenticityScore {
+export function calculateAuthenticityScore(
+  repositories: Repository[],
+): AuthenticityScore {
   if (repositories.length === 0) {
     return {
       score: 0,
-      category: 'Suspicious',
+      category: "Suspicious",
       breakdown: {
         originalityScore: 0,
         activityScore: 0,
         engagementScore: 0,
         codeOwnershipScore: 0,
       },
-      flags: ['No repositories found'],
+      flags: ["No repositories found"],
       metadata: {
         totalRepos: 0,
         originalRepos: 0,
@@ -54,7 +56,9 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
 
   // Calculate metadata
   const totalRepos = repositories.length;
-  const originalRepos = repositories.filter((r) => !r.isFork && !r.isTemplate).length;
+  const originalRepos = repositories.filter(
+    (r) => !r.isFork && !r.isTemplate,
+  ).length;
   const forkedRepos = repositories.filter((r) => r.isFork).length;
   const archivedRepos = repositories.filter((r) => r.isArchived).length;
   const templateRepos = repositories.filter((r) => r.isTemplate).length;
@@ -65,10 +69,10 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
   const originalityScore = originalRatio * 25;
 
   if (originalRatio <= 0.35) {
-    flags.push('Less than 30% original repositories');
+    flags.push("Less than 30% original repositories");
   }
   if (forkedRepos > originalRepos * 2) {
-    flags.push('Significantly more forks than original repos');
+    flags.push("Significantly more forks than original repos");
   }
 
   // 2. ACTIVITY SCORE (25 points)
@@ -84,14 +88,17 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
 
     // Check recent activity (last 90 days)
     if (repo.pushedAt) {
-      const daysSinceLastPush = (now.getTime() - new Date(repo.pushedAt).getTime()) / (1000 * 60 * 60 * 24);
+      const daysSinceLastPush =
+        (now.getTime() - new Date(repo.pushedAt).getTime()) /
+        (1000 * 60 * 60 * 24);
       if (daysSinceLastPush <= 90) {
         recentlyActiverepos++;
       }
     }
   });
 
-  const recentActivityRatio = totalRepos > 0 ? recentlyActiverepos / totalRepos : 0;
+  const recentActivityRatio =
+    totalRepos > 0 ? recentlyActiverepos / totalRepos : 0;
   const avgCommitsPerRepo = totalRepos > 0 ? totalCommits / totalRepos : 0;
 
   // Activity score: 12.5 pts for recent activity + 12.5 pts for commit volume
@@ -99,10 +106,10 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
   activityScore += Math.min((avgCommitsPerRepo / 50) * 12.5, 12.5); // Cap at 12.5
 
   if (recentActivityRatio < 0.2) {
-    flags.push('Less than 20% repos active in last 90 days');
+    flags.push("Less than 20% repos active in last 90 days");
   }
   if (avgCommitsPerRepo < 5) {
-    flags.push('Low average commits per repository');
+    flags.push("Low average commits per repository");
   }
 
   // 3. ENGAGEMENT SCORE (25 points)
@@ -126,7 +133,7 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
   const engagementScore = starScore + forkScore + watcherScore;
 
   if (totalStars === 0 && totalRepos > 5) {
-    flags.push('No stars across all repositories');
+    flags.push("No stars across all repositories");
   }
 
   // 4. CODE OWNERSHIP SCORE (25 points)
@@ -156,32 +163,32 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
   const codeOwnershipScore = languageDiversityScore + codeSizeScore;
 
   if (languageCount < 2) {
-    flags.push('Limited language diversity (less than 2 languages)');
+    flags.push("Limited language diversity (less than 2 languages)");
   }
 
   // CALCULATE FINAL SCORE
   const totalScore = Math.round(
-    originalityScore + activityScore + engagementScore + codeOwnershipScore
+    originalityScore + activityScore + engagementScore + codeOwnershipScore,
   );
 
   // Determine category
-  let category: AuthenticityScore['category'];
+  let category: AuthenticityScore["category"];
   if (totalScore >= 80) {
-    category = 'High';
+    category = "High";
   } else if (totalScore >= 60) {
-    category = 'Medium';
+    category = "Medium";
   } else if (totalScore >= 40) {
-    category = 'Low';
+    category = "Low";
   } else {
-    category = 'Suspicious';
+    category = "Suspicious";
   }
 
   // Additional suspicious patterns
   if (archivedRepos > totalRepos * 0.5) {
-    flags.push('More than 50% repos are archived');
+    flags.push("More than 50% repos are archived");
   }
   if (totalRepos > 20 && originalRepos === 0) {
-    flags.push('No original repositories despite having many repos');
+    flags.push("No original repositories despite having many repos");
   }
 
   return {
@@ -209,12 +216,14 @@ export function calculateAuthenticityScore(repositories: Repository[]): Authenti
  * @param category - Authenticity category
  * @returns Tailwind color class
  */
-export function getAuthenticityColor(category: AuthenticityScore['category']): string {
+export function getAuthenticityColor(
+  category: AuthenticityScore["category"],
+): string {
   const colors = {
-    High: 'text-green-600 dark:text-green-400',
-    Medium: 'text-yellow-600 dark:text-yellow-400',
-    Low: 'text-orange-600 dark:text-orange-400',
-    Suspicious: 'text-red-600 dark:text-red-400',
+    High: "text-green-600 dark:text-green-400",
+    Medium: "text-yellow-600 dark:text-yellow-400",
+    Low: "text-orange-600 dark:text-orange-400",
+    Suspicious: "text-red-600 dark:text-red-400",
   };
   return colors[category];
 }
@@ -224,12 +233,14 @@ export function getAuthenticityColor(category: AuthenticityScore['category']): s
  * @param category - Authenticity category
  * @returns User-friendly badge text
  */
-export function getAuthenticityBadgeText(category: AuthenticityScore['category']): string {
+export function getAuthenticityBadgeText(
+  category: AuthenticityScore["category"],
+): string {
   const texts = {
-    High: 'Highly Authentic',
-    Medium: 'Moderately Authentic',
-    Low: 'Limited Activity',
-    Suspicious: 'Suspicious Activity',
+    High: "Highly Authentic",
+    Medium: "Moderately Authentic",
+    Low: "Limited Activity",
+    Suspicious: "Suspicious Activity",
   };
   return texts[category];
 }

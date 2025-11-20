@@ -22,14 +22,14 @@
 
 ### 1. API Endpoints (100% покрытие обязательно)
 
-| Endpoint | Unit Tests | Integration Tests | E2E Tests | Текущий статус |
-|----------|-----------|-------------------|-----------|----------------|
-| `/api/auth/login` | ✅ 6 тестов | ✅ OAuth flow | ✅ E2E | ✅ Готово |
-| `/api/auth/callback` | ✅ 11 тестов | ✅ CSRF validation | ✅ E2E | ⚠️ Нужны edge cases |
-| `/api/auth/logout` | ✅ 7 тестов | ✅ Session cleanup | ✅ E2E | ✅ Готово |
-| `/api/github-proxy` | ✅ 15 тестов | ✅ Cache tests | ✅ E2E | ⚠️ Rate limit bug |
-| `/api/analytics/logger` | ❌ **0 тестов** | ❌ Нет | ❌ Нет | 🔴 **КРИТИЧНО** |
-| `/api/analytics/oauth-usage` | ❌ **0 тестов** | ❌ Нет | ❌ Нет | 🔴 **КРИТИЧНО** |
+| Endpoint                     | Unit Tests      | Integration Tests  | E2E Tests | Текущий статус      |
+| ---------------------------- | --------------- | ------------------ | --------- | ------------------- |
+| `/api/auth/login`            | ✅ 6 тестов     | ✅ OAuth flow      | ✅ E2E    | ✅ Готово           |
+| `/api/auth/callback`         | ✅ 11 тестов    | ✅ CSRF validation | ✅ E2E    | ⚠️ Нужны edge cases |
+| `/api/auth/logout`           | ✅ 7 тестов     | ✅ Session cleanup | ✅ E2E    | ✅ Готово           |
+| `/api/github-proxy`          | ✅ 15 тестов    | ✅ Cache tests     | ✅ E2E    | ⚠️ Rate limit bug   |
+| `/api/analytics/logger`      | ❌ **0 тестов** | ❌ Нет             | ❌ Нет    | 🔴 **КРИТИЧНО**     |
+| `/api/analytics/oauth-usage` | ❌ **0 тестов** | ❌ Нет             | ❌ Нет    | 🔴 **КРИТИЧНО**     |
 
 **Что должно быть для КАЖДОГО API endpoint:**
 
@@ -73,14 +73,14 @@ test('user can complete full workflow in browser', async ({ page }) => {
 
 ### 2. React Components (Component → Storybook → Test)
 
-| Компонент | Stories | Unit Tests | Integration Tests | Статус |
-|-----------|---------|-----------|-------------------|---------|
-| `UserProfile` | ✅ 8 stories | ✅ 12 тестов | ⚠️ Rate limit flow | ⚠️ Нужен integration |
-| `SearchForm` | ✅ 6 stories | ✅ 10 тестов | ✅ Form submission | ✅ Готово |
-| `RateLimitBanner` | ✅ 8 stories | ✅ 22 тестов | ⚠️ Update flow | ⚠️ Нужен integration |
-| `UserMenu` | ✅ 6 stories | ✅ 10 тестов | ✅ OAuth flow | ✅ Готово |
-| `ErrorBoundary` | ❌ **0 stories** | ❌ **0 тестов** | ❌ Нет | 🔴 **КРИТИЧНО** |
-| `OAuthMetricsDashboard` | ✅ 6 stories | ✅ 18 тестов | ⚠️ KV fetch | ⚠️ Нужен integration |
+| Компонент               | Stories          | Unit Tests      | Integration Tests  | Статус               |
+| ----------------------- | ---------------- | --------------- | ------------------ | -------------------- |
+| `UserProfile`           | ✅ 8 stories     | ✅ 12 тестов    | ⚠️ Rate limit flow | ⚠️ Нужен integration |
+| `SearchForm`            | ✅ 6 stories     | ✅ 10 тестов    | ✅ Form submission | ✅ Готово            |
+| `RateLimitBanner`       | ✅ 8 stories     | ✅ 22 тестов    | ⚠️ Update flow     | ⚠️ Нужен integration |
+| `UserMenu`              | ✅ 6 stories     | ✅ 10 тестов    | ✅ OAuth flow      | ✅ Готово            |
+| `ErrorBoundary`         | ❌ **0 stories** | ❌ **0 тестов** | ❌ Нет             | 🔴 **КРИТИЧНО**      |
+| `OAuthMetricsDashboard` | ✅ 6 stories     | ✅ 18 тестов    | ⚠️ KV fetch        | ⚠️ Нужен integration |
 
 **Что должно быть для КАЖДОГО компонента:**
 
@@ -125,13 +125,13 @@ test('component integrates with data flow', async () => {
 
 ### 3. Custom Hooks (100% покрытие обязательно)
 
-| Hook | Unit Tests | Integration Tests | Статус |
-|------|-----------|-------------------|---------|
-| `useQueryUser` | ✅ 8 тестов | ✅ Apollo integration | ⚠️ Rate limit callback |
-| `useAuthenticityScore` | ✅ 12 тестов | ✅ Calculation flow | ✅ Готово |
-| `useRepositoryFilters` | ✅ 15 тестов | ✅ Filter logic | ✅ Готово |
-| `useRepositorySorting` | ✅ 10 тестов | ✅ Sort logic | ✅ Готово |
-| `useUserAnalytics` | ❌ **0 тестов** | ❌ Нет | 🔴 **КРИТИЧНО** |
+| Hook                   | Unit Tests      | Integration Tests     | Статус                 |
+| ---------------------- | --------------- | --------------------- | ---------------------- |
+| `useQueryUser`         | ✅ 8 тестов     | ✅ Apollo integration | ⚠️ Rate limit callback |
+| `useAuthenticityScore` | ✅ 12 тестов    | ✅ Calculation flow   | ✅ Готово              |
+| `useRepositoryFilters` | ✅ 15 тестов    | ✅ Filter logic       | ✅ Готово              |
+| `useRepositorySorting` | ✅ 10 тестов    | ✅ Sort logic         | ✅ Готово              |
+| `useUserAnalytics`     | ❌ **0 тестов** | ❌ Нет                | 🔴 **КРИТИЧНО**        |
 
 **Что должно быть для КАЖДОГО хука:**
 
@@ -161,13 +161,13 @@ describe('useHook', () => {
 
 ### 4. Utility Functions (100% покрытие + edge cases)
 
-| Utility | Unit Tests | Edge Cases | Статус |
-|---------|-----------|-----------|---------|
-| `statistics.ts` | ✅ 20 тестов | ✅ Все | ✅ Готово |
-| `authenticity.ts` | ✅ 18 тестов | ✅ Все | ✅ Готово |
-| `repository-filters.ts` | ✅ 15 тестов | ✅ Все | ✅ Готово |
-| `date-helpers.ts` | ✅ 10 тестов | ✅ Все | ✅ Готово |
-| `user-timeline.ts` | ✅ 12 тестов | ✅ Все | ✅ Готово |
+| Utility                 | Unit Tests   | Edge Cases | Статус    |
+| ----------------------- | ------------ | ---------- | --------- |
+| `statistics.ts`         | ✅ 20 тестов | ✅ Все     | ✅ Готово |
+| `authenticity.ts`       | ✅ 18 тестов | ✅ Все     | ✅ Готово |
+| `repository-filters.ts` | ✅ 15 тестов | ✅ Все     | ✅ Готово |
+| `date-helpers.ts`       | ✅ 10 тестов | ✅ Все     | ✅ Готово |
+| `user-timeline.ts`      | ✅ 12 тестов | ✅ Все     | ✅ Готово |
 
 **Что должно быть для КАЖДОЙ utility функции:**
 
@@ -198,37 +198,34 @@ describe('utilityFunction', () => {
 
 ### 5. Integration Tests (критические пути)
 
-| Путь | Тест существует | Покрытие | Статус |
-|------|----------------|----------|---------|
-| Search User → View Profile | ✅ E2E | 90% | ⚠️ Rate limit bug |
-| OAuth Login → Use Token | ✅ E2E | 70% | ⚠️ Edge cases |
-| View Analytics Dashboard | ✅ E2E (mock) | 40% | 🔴 Нет real KV |
-| Filter/Sort Repos | ✅ E2E | 95% | ✅ Готово |
-| Cache: Demo → Auth Transition | ❌ Нет | 0% | 🔴 **КРИТИЧНО** |
-| Session Expiration Mid-Use | ❌ Нет | 0% | 🔴 **КРИТИЧНО** |
-| Rate Limit: API → UI Flow | ❌ Нет | 0% | 🔴 **КРИТИЧНО** |
+| Путь                          | Тест существует | Покрытие | Статус            |
+| ----------------------------- | --------------- | -------- | ----------------- |
+| Search User → View Profile    | ✅ E2E          | 90%      | ⚠️ Rate limit bug |
+| OAuth Login → Use Token       | ✅ E2E          | 70%      | ⚠️ Edge cases     |
+| View Analytics Dashboard      | ✅ E2E (mock)   | 40%      | 🔴 Нет real KV    |
+| Filter/Sort Repos             | ✅ E2E          | 95%      | ✅ Готово         |
+| Cache: Demo → Auth Transition | ❌ Нет          | 0%       | 🔴 **КРИТИЧНО**   |
+| Session Expiration Mid-Use    | ❌ Нет          | 0%       | 🔴 **КРИТИЧНО**   |
+| Rate Limit: API → UI Flow     | ❌ Нет          | 0%       | 🔴 **КРИТИЧНО**   |
 
 **Что должно быть для КАЖДОГО критического пути:**
 
 ```typescript
 // integration/[critical-path].integration.test.tsx
-test('full user journey end-to-end', async () => {
+test("full user journey end-to-end", async () => {
   // 1. Setup: Real database, real cache, real session
-
   // 2. Execute: Full user flow
   //    - User action 1
   //    - System response 1
   //    - User action 2
   //    - System response 2
-
   // 3. Verify: All intermediate states
   //    - Database updated correctly
   //    - Cache populated correctly
   //    - UI reflects correct state
   //    - Analytics logged correctly
-
   // 4. Cleanup: Restore initial state
-})
+});
 ```
 
 ---
@@ -246,14 +243,14 @@ test('full user journey end-to-end', async () => {
 
 ### Покрытие по категориям
 
-| Категория | Файлов с тестами | Покрытие кода | Оценка |
-|-----------|------------------|---------------|---------|
-| API Endpoints | 4/6 | 67% | ⚠️ Analytics без тестов |
-| Components | 73/75 | 95% | ✅ Отлично |
-| Hooks | 4/5 | 80% | ⚠️ useUserAnalytics без тестов |
-| Utilities | 8/8 | 100% | ✅ Идеально |
-| Types | 2/2 | 100% | ✅ Идеально |
-| Integration | 8 критических путей | 60% | ⚠️ Пробелы |
+| Категория     | Файлов с тестами    | Покрытие кода | Оценка                         |
+| ------------- | ------------------- | ------------- | ------------------------------ |
+| API Endpoints | 4/6                 | 67%           | ⚠️ Analytics без тестов        |
+| Components    | 73/75               | 95%           | ✅ Отлично                     |
+| Hooks         | 4/5                 | 80%           | ⚠️ useUserAnalytics без тестов |
+| Utilities     | 8/8                 | 100%          | ✅ Идеально                    |
+| Types         | 2/2                 | 100%          | ✅ Идеально                    |
+| Integration   | 8 критических путей | 60%           | ⚠️ Пробелы                     |
 
 ### Проблемы
 
@@ -273,35 +270,41 @@ test('full user journey end-to-end', async () => {
 **Почему:** Отсутствует параметр `onRateLimitUpdate` при вызове хука
 
 **Симптом:**
+
 - Пользователь видит дефолтный "5000/5000" rate limit
 - Реальный rate limit приходит с GitHub API, но НИКОГДА не обновляется в UI
 - Баннер rate limit показывает неверные данные
 
 **Код (ТЕКУЩИЙ — сломан):**
+
 ```typescript
 // src/components/UserProfile.tsx:41
-const { data, loading, error, refetch } = useQueryUser(userName)
+const { data, loading, error, refetch } = useQueryUser(userName);
 //                                                     ↑ НЕТ CALLBACK!
 ```
 
 **Код (ПРАВИЛЬНЫЙ):**
+
 ```typescript
 const { data, loading, error, refetch } = useQueryUser(userName, 365, {
   onRateLimitUpdate: (rateLimit) => {
     // Передать в App.tsx для обновления banner
-    props.onRateLimitUpdate?.(rateLimit)
-  }
-})
+    props.onRateLimitUpdate?.(rateLimit);
+  },
+});
 ```
 
 **Что НЕ ЛОВЯТ тесты:**
+
 - Нет интеграционного теста, проверяющего поток: `GitHub API → github-proxy → Apollo → UserProfile → App.tsx → RateLimitBanner`
 - E2E тесты не проверяют что rate limit в баннере соответствует реальному значению
 
 **Как исправить:**
+
 1. Добавить prop `onRateLimitUpdate` в `UserProfile`
 2. Передать callback из `App.tsx`
 3. Создать интеграционный тест:
+
 ```typescript
 // src/apollo/rate-limit-flow.integration.test.tsx
 test('rate limit flows from API to UI banner', async () => {
@@ -327,34 +330,43 @@ test('rate limit flows from API to UI banner', async () => {
 ### 2. ❌ КРИТИЧЕСКИЙ ПРОБЕЛ: Analytics Endpoints БЕЗ тестов
 
 **Где:**
+
 - `api/analytics/logger.ts` (200+ lines) — 0% coverage
 - `api/analytics/oauth-usage.ts` (375+ lines) — 0% coverage
 
 **Что сломано:** Если KV storage падает, ошибки МОЛЧА проглатываются
 
 **Код:**
+
 ```typescript
 // api/analytics/logger.ts:58
 try {
-  await kv.zadd(`analytics:oauth:logins`, { score: timestamp, member: JSON.stringify(event) })
+  await kv.zadd(`analytics:oauth:logins`, {
+    score: timestamp,
+    member: JSON.stringify(event),
+  });
 } catch (error) {
-  console.error('Failed to log OAuth login:', error)
+  console.error("Failed to log OAuth login:", error);
   // ↑ Ошибка ТОЛЬКО логируется, никому не сообщается!
 }
 ```
 
 **Что происходит:**
+
 - Функция всегда возвращает успех (`Promise<void>`)
 - Если KV недоступен — вся аналитика теряется БЕЗВОЗВРАТНО
 - Monitoring не знает о проблеме
 
 **Что НЕ ЛОВЯТ тесты:**
+
 - Нет тестов для API endpoint `/api/analytics/oauth-usage`
 - Нет тестов для logging functions
 - E2E тесты только моки responses, не проверяют реальное сохранение
 
 **Как исправить:**
+
 1. Создать `api/analytics/logger.test.ts`:
+
 ```typescript
 test('should retry KV operations on failure', async () => {
   vi.mocked(kv.zadd)
@@ -377,6 +389,7 @@ test('should emit metric on KV failure', async () => {
 ```
 
 2. Создать `api/analytics/oauth-usage.integration.test.ts`:
+
 ```typescript
 test('should aggregate metrics from KV', async () => {
   // Seed KV with test data
@@ -397,77 +410,91 @@ test('should aggregate metrics from KV', async () => {
 **Проблемы:**
 
 #### 3.1. CSRF State Expiration
+
 **Где:** `api/auth/login.ts` — state cookie с TTL 10 минут
 **Что не протестировано:**
+
 - Пользователь начал OAuth flow → ушёл на кофе 15 минут → вернулся
 - Cookie истёк, но GitHub callback всё равно приходит
 - Что происходит? Тесты не проверяют!
 
 **Тест:**
+
 ```typescript
-test('should reject expired CSRF state', async () => {
+test("should reject expired CSRF state", async () => {
   // Start OAuth flow
-  await handler(loginReq, loginRes)
-  const stateCookie = extractStateCookie(loginRes)
+  await handler(loginReq, loginRes);
+  const stateCookie = extractStateCookie(loginRes);
 
   // Simulate 11 minutes passing
-  vi.advanceTimersByTime(11 * 60 * 1000)
+  vi.advanceTimersByTime(11 * 60 * 1000);
 
   // Callback arrives with expired state
-  await callbackHandler({ query: { code: 'abc', state: stateCookie } }, callbackRes)
+  await callbackHandler(
+    { query: { code: "abc", state: stateCookie } },
+    callbackRes,
+  );
 
   // Should redirect with error
-  expect(callbackRes.redirect).toHaveBeenCalledWith('/?error=csrf_failed')
-})
+  expect(callbackRes.redirect).toHaveBeenCalledWith("/?error=csrf_failed");
+});
 ```
 
 #### 3.2. Session Expiration Во Время Использования
+
 **Где:** `api/github-proxy.ts:109`
 **Что не протестировано:**
+
 - Пользователь авторизован → делает запросы → session истекает (30 дней) МИД-REQUEST
 - Proxy молча переключается на demo mode
 - Пользователь НЕ ВИДИТ что вышел из аккаунта
 
 **E2E тест:**
+
 ```typescript
-test('should notify user when session expires mid-use', async () => {
+test("should notify user when session expires mid-use", async () => {
   // Authenticate
-  await signIn()
+  await signIn();
 
   // Make successful request
-  await searchUser('torvalds')
-  expect(screen.getByText('Authenticated')).toBeInTheDocument()
+  await searchUser("torvalds");
+  expect(screen.getByText("Authenticated")).toBeInTheDocument();
 
   // Delete session from KV (simulate expiration)
-  await kv.del('session:abc123')
+  await kv.del("session:abc123");
 
   // Make another request
-  await searchUser('linus')
+  await searchUser("linus");
 
   // Should see warning
-  expect(screen.getByText('Session expired. Please sign in again.')).toBeInTheDocument()
-  expect(screen.getByText('Demo mode active')).toBeInTheDocument()
-})
+  expect(
+    screen.getByText("Session expired. Please sign in again."),
+  ).toBeInTheDocument();
+  expect(screen.getByText("Demo mode active")).toBeInTheDocument();
+});
 ```
 
 #### 3.3. State Reuse Attack
+
 **Что не протестировано:**
+
 - Атакер перехватывает state parameter → пытается использовать повторно
 - CSRF protection должен блокировать
 
 **Тест:**
+
 ```typescript
-test('should reject reused OAuth state', async () => {
-  const state = 'captured_state_123'
+test("should reject reused OAuth state", async () => {
+  const state = "captured_state_123";
 
   // First use succeeds
-  await callbackHandler({ query: { code: 'abc', state } }, res1)
-  expect(res1.redirect).toHaveBeenCalledWith('/?auth=success')
+  await callbackHandler({ query: { code: "abc", state } }, res1);
+  expect(res1.redirect).toHaveBeenCalledWith("/?auth=success");
 
   // Second use with same state should fail
-  await callbackHandler({ query: { code: 'def', state } }, res2)
-  expect(res2.redirect).toHaveBeenCalledWith('/?error=csrf_failed')
-})
+  await callbackHandler({ query: { code: "def", state } }, res2);
+  expect(res2.redirect).toHaveBeenCalledWith("/?error=csrf_failed");
+});
 ```
 
 ---
@@ -475,46 +502,55 @@ test('should reject reused OAuth state', async () => {
 ## 📊 СТАТИСТИКА ТЕСТОВ
 
 ### Покрытие
-| Категория | Кол-во тестов | Покрытие | Оценка |
-|-----------|---------------|----------|---------|
-| **Unit Tests** | 75 файлов | 90%+ | ✅ Отлично |
-| **Integration Tests** | 8 файлов | 40% | ⚠️ Пробелы |
-| **E2E Tests** | 7 файлов, ~60 сценариев | 70% | ⚠️ Gaps в критических путях |
-| **API Endpoints** | 4/7 с тестами | 57% | ❌ Analytics БЕЗ тестов |
+
+| Категория             | Кол-во тестов           | Покрытие | Оценка                      |
+| --------------------- | ----------------------- | -------- | --------------------------- |
+| **Unit Tests**        | 75 файлов               | 90%+     | ✅ Отлично                  |
+| **Integration Tests** | 8 файлов                | 40%      | ⚠️ Пробелы                  |
+| **E2E Tests**         | 7 файлов, ~60 сценариев | 70%      | ⚠️ Gaps в критических путях |
+| **API Endpoints**     | 4/7 с тестами           | 57%      | ❌ Analytics БЕЗ тестов     |
 
 ### Проблемы
 
 **1. Высокое покрытие МАСКИРУЕТ пробелы:**
+
 - 99.85% тестов проходят (1302/1304)
 - НО: unit тесты часто моки всё
 - Критические integration flows НЕ протестированы end-to-end
 
 **2. Тесты не проверяют ГДЕ и ПОЧЕМУ:**
+
 ```typescript
 // ПЛОХО (текущий код)
-expect(screen.getByText('42')).toBeInTheDocument()
+expect(screen.getByText("42")).toBeInTheDocument();
 // ↑ "42" найдено ГДЕ-ТО на странице, но где именно? В правильном ли месте?
 
 // ХОРОШО (детальная проверка)
-const activeSessionsCard = screen.getByRole('region', { name: 'Active Sessions' })
-expect(within(activeSessionsCard).getByText('42')).toBeInTheDocument()
-expect(within(activeSessionsCard).getByText('unique users')).toBeInTheDocument()
+const activeSessionsCard = screen.getByRole("region", {
+  name: "Active Sessions",
+});
+expect(within(activeSessionsCard).getByText("42")).toBeInTheDocument();
+expect(
+  within(activeSessionsCard).getByText("unique users"),
+).toBeInTheDocument();
 // ↑ Проверяем что "42" именно в карточке Active Sessions, а не где-то ещё
 ```
 
 **3. Нет кастомных assertion messages:**
+
 ```typescript
 // ПЛОХО
-expect(result.score).toBeGreaterThanOrEqual(0)
+expect(result.score).toBeGreaterThanOrEqual(0);
 // ↑ Падает с generic ошибкой: "Expected 0, received -5"
 
 // ХОРОШО
-expect(result.score).toBeGreaterThanOrEqual(0,
+expect(result.score).toBeGreaterThanOrEqual(
+  0,
   `Authenticity score должен быть >=0, получен ${result.score}. ` +
-  `Репозитории: ${result.metadata.totalRepos}, ` +
-  `Оригинальные: ${result.metadata.originalRepos}, ` +
-  `Flags: ${result.flags.join(', ')}`
-)
+    `Репозитории: ${result.metadata.totalRepos}, ` +
+    `Оригинальные: ${result.metadata.originalRepos}, ` +
+    `Flags: ${result.flags.join(", ")}`,
+);
 // ↑ Падает с детальной диагностикой: сразу видно ЧТО сломалось и ПОЧЕМУ
 ```
 
@@ -523,25 +559,31 @@ expect(result.score).toBeGreaterThanOrEqual(0,
 ## 🎯 КРИТИЧЕСКИЕ ПУТИ (ЧТО СЛОМАЕТСЯ БОЛЬНЕЕ ВСЕГО)
 
 ### PATH 1: Поиск пользователя → Просмотр профиля
+
 **Покрытие:** ✅ E2E + Unit
 **Пробел:** ❌ Rate limit extraction (см. bug #1)
 
 ### PATH 2: OAuth Login → Использование Personal Token
+
 **Покрытие:** ✅ E2E (happy path), ⚠️ Unit (все endpoints)
 **Пробелы:**
+
 - ❌ CSRF state expiration
 - ❌ Session expiration mid-use
 - ❌ State reuse attack
 - ❌ Concurrent logins
 
 ### PATH 3: Просмотр Analytics Dashboard
+
 **Покрытие:** ✅ E2E (mock), ❌ NO Integration
 **Пробелы:**
+
 - ❌ API endpoint без тестов
 - ❌ KV failures не тестируются
 - ❌ Large dataset (1000+ sessions) не тестируется
 
 ### PATH 4: Фильтрация/Сортировка Репозиториев
+
 **Покрытие:** ✅ E2E + Unit
 **Пробелы:** Минимальные
 
@@ -552,13 +594,16 @@ expect(result.score).toBeGreaterThanOrEqual(0,
 ### Этап 1: КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ (Эта неделя)
 
 #### 1.1. Исправить Rate Limit Bug
+
 **Время:** 2-3 часа
 **Файлы:**
+
 - `src/components/UserProfile.tsx` — добавить prop `onRateLimitUpdate`
 - `src/App.tsx` — передать callback в UserProfile
 - `src/apollo/rate-limit-flow.integration.test.tsx` — новый тест
 
 **Тест проверяет:**
+
 ```typescript
 ✓ Rate limit приходит с GitHub API
 ✓ Proxy извлекает из headers
@@ -569,12 +614,15 @@ expect(result.score).toBeGreaterThanOrEqual(0,
 ```
 
 #### 1.2. Добавить Analytics Tests
+
 **Время:** 4-6 часов
 **Файлы:**
+
 - `api/analytics/logger.test.ts` — unit tests для всех logging functions
 - `api/analytics/oauth-usage.integration.test.ts` — API endpoint tests
 
 **Тесты проверяют:**
+
 ```typescript
 ✓ Успешное логирование событий
 ✓ KV failure handling (retry logic)
@@ -585,12 +633,15 @@ expect(result.score).toBeGreaterThanOrEqual(0,
 ```
 
 #### 1.3. OAuth Security Tests
+
 **Время:** 3-4 часа
 **Файлы:**
+
 - `api/auth/callback.test.ts` — добавить edge cases
 - `e2e/oauth-security.spec.ts` — новый файл
 
 **Тесты проверяют:**
+
 ```typescript
 ✓ CSRF state expiration (11+ minutes)
 ✓ State reuse attack
@@ -606,66 +657,76 @@ expect(result.score).toBeGreaterThanOrEqual(0,
 ### Этап 2: УЛУЧШЕНИЕ КАЧЕСТВА ДИАГНОСТИКИ (Следующая неделя)
 
 #### 2.1. Добавить Custom Assertion Messages
+
 **Время:** 4-6 часов
 **Файлы:** Обновить все критические тесты
 
 **Принцип:**
+
 ```typescript
 // ДО
-expect(result.score).toBe(75)
+expect(result.score).toBe(75);
 
 // ПОСЛЕ
-expect(result.score).toBe(75,
+expect(result.score).toBe(
+  75,
   `Expected authenticity score 75, got ${result.score}.\n` +
-  `Breakdown: originality=${result.breakdown.originalityScore}, ` +
-  `activity=${result.breakdown.activityScore}, ` +
-  `quality=${result.breakdown.qualityScore}, ` +
-  `consistency=${result.breakdown.consistencyScore}.\n` +
-  `Flags: ${result.flags.join(', ')}`
-)
+    `Breakdown: originality=${result.breakdown.originalityScore}, ` +
+    `activity=${result.breakdown.activityScore}, ` +
+    `quality=${result.breakdown.qualityScore}, ` +
+    `consistency=${result.breakdown.consistencyScore}.\n` +
+    `Flags: ${result.flags.join(", ")}`,
+);
 ```
 
 **Когда тест падает, сразу видно:**
+
 - ЧТО ожидалось
 - ЧТО получено
 - КАКИЕ промежуточные значения
 - КАКИЕ flags установлены
 
 #### 2.2. Добавить Structural Assertions
+
 **Время:** 3-4 часа
 
 **Принцип:**
+
 ```typescript
 // ДО (находит "42" где угодно)
-expect(screen.getByText('42')).toBeInTheDocument()
+expect(screen.getByText("42")).toBeInTheDocument();
 
 // ПОСЛЕ (проверяет конкретную структуру)
-const dashboard = screen.getByRole('region', { name: 'OAuth Analytics' })
-const sessionsCard = within(dashboard).getByRole('article', { name: 'Active Sessions' })
-expect(within(sessionsCard).getByText('42')).toBeInTheDocument()
-expect(within(sessionsCard).getByText('unique users')).toBeInTheDocument()
+const dashboard = screen.getByRole("region", { name: "OAuth Analytics" });
+const sessionsCard = within(dashboard).getByRole("article", {
+  name: "Active Sessions",
+});
+expect(within(sessionsCard).getByText("42")).toBeInTheDocument();
+expect(within(sessionsCard).getByText("unique users")).toBeInTheDocument();
 ```
 
 #### 2.3. Consolidate Mock Data
+
 **Время:** 2-3 hours
 **Файлы:** Обновить 18 файлов с дублированием repository mocks
 
 **Принцип:**
+
 ```typescript
 // ДО (каждый тест создаёт свой mock)
 const mockRepository = {
-  id: '1',
-  name: 'test-repo',
+  id: "1",
+  name: "test-repo",
   // ... 40 строк boilerplate
-}
+};
 
 // ПОСЛЕ (используем централизованную factory)
-import { createMockRepository } from '@/test/mocks/github-data'
+import { createMockRepository } from "@/test/mocks/github-data";
 
 const mockRepository = createMockRepository({
-  id: '1',
-  name: 'test-repo'
-})
+  id: "1",
+  name: "test-repo",
+});
 ```
 
 **Экономия:** ~500 строк кода
@@ -677,6 +738,7 @@ const mockRepository = createMockRepository({
 ### Этап 3: INTEGRATION TESTS (2-3 недели)
 
 #### 3.1. Critical Integration Flows
+
 **Время:** 8-12 hours
 
 **Новые тесты:**
@@ -684,30 +746,32 @@ const mockRepository = createMockRepository({
 1. **Rate Limit Flow** (уже описан в Этапе 1)
 
 2. **Cache Transition Test:**
+
 ```typescript
-test('should not use demo cache after OAuth login', async () => {
+test("should not use demo cache after OAuth login", async () => {
   // 1. Search in demo mode
-  await searchUser('torvalds')
-  const demoCacheKey = await kv.keys('demo:user:torvalds:*')
-  expect(demoCacheKey).toHaveLength(1)
+  await searchUser("torvalds");
+  const demoCacheKey = await kv.keys("demo:user:torvalds:*");
+  expect(demoCacheKey).toHaveLength(1);
 
   // 2. Log in with OAuth
-  await signIn()
+  await signIn();
 
   // 3. Search same user
-  await searchUser('torvalds')
+  await searchUser("torvalds");
 
   // 4. Should use DIFFERENT cache key
-  const userCacheKey = await kv.keys('user:session123:user:torvalds:*')
-  expect(userCacheKey).toHaveLength(1)
+  const userCacheKey = await kv.keys("user:session123:user:torvalds:*");
+  expect(userCacheKey).toHaveLength(1);
 
   // 5. Demo cache should NOT be used
-  const fetchCalls = mockFetch.mock.calls
-  expect(fetchCalls.some(call => call[0].includes('torvalds'))).toBe(true)
-})
+  const fetchCalls = mockFetch.mock.calls;
+  expect(fetchCalls.some((call) => call[0].includes("torvalds"))).toBe(true);
+});
 ```
 
 3. **Parallel Query Failure Test:**
+
 ```typescript
 test('should show partial timeline when some years fail', async () => {
   // Mock: 2020-2023 succeed, 2024 fails
@@ -736,6 +800,7 @@ test('should show partial timeline when some years fail', async () => {
 ```
 
 #### 3.2. Error Boundary Tests
+
 **Время:** 2-3 часа
 **Файл:** `src/components/layout/ErrorBoundary.test.tsx` (КРИТИЧЕСКИЙ ПРОБЕЛ!)
 
@@ -791,17 +856,18 @@ test('should reset error boundary', async () => {
 
 #### 1. Покрытие тестами
 
-| Метрика | Текущее | Цель | Дедлайн |
-|---------|---------|------|---------|
-| **API Endpoints** | 67% | **100%** | Неделя 1 |
-| **Components** | 95% | **100%** | Неделя 2 |
-| **Hooks** | 80% | **100%** | Неделя 1 |
-| **Integration Tests** | 60% | **90%+** | Неделя 3 |
-| **E2E Coverage** | 70% | **85%+** | Неделя 4 |
+| Метрика               | Текущее | Цель     | Дедлайн  |
+| --------------------- | ------- | -------- | -------- |
+| **API Endpoints**     | 67%     | **100%** | Неделя 1 |
+| **Components**        | 95%     | **100%** | Неделя 2 |
+| **Hooks**             | 80%     | **100%** | Неделя 1 |
+| **Integration Tests** | 60%     | **90%+** | Неделя 3 |
+| **E2E Coverage**      | 70%     | **85%+** | Неделя 4 |
 
 #### 2. Качество диагностики
 
 **Текущее:**
+
 ```bash
 ❌ FAIL src/hooks/useAuthenticityScore.test.ts
   Expected: 75
@@ -809,6 +875,7 @@ test('should reset error boundary', async () => {
 ```
 
 **Цель:**
+
 ```bash
 ❌ FAIL src/hooks/useAuthenticityScore.test.ts
   Expected authenticity score 75, got 68.
@@ -823,19 +890,20 @@ test('should reset error boundary', async () => {
 ```
 
 **Метрики:**
+
 - ✅ **100%** критических assertions имеют custom messages
 - ✅ **100%** падений тестов показывают файл + функцию + причину
 - ✅ **0** случаев "нужен debugger чтобы понять что сломалось"
 
 #### 3. Критические пути
 
-| Путь | Статус | Дедлайн |
-|------|--------|---------|
-| Rate Limit: API → UI | ❌ Нет теста | День 1 |
-| Cache Transition: Demo → Auth | ❌ Нет теста | День 2 |
-| Session Expiration Mid-Use | ❌ Нет теста | День 3 |
-| Analytics: Logger KV Failures | ❌ Нет теста | День 4 |
-| OAuth CSRF Edge Cases | ⚠️ Частичный | День 5 |
+| Путь                          | Статус       | Дедлайн |
+| ----------------------------- | ------------ | ------- |
+| Rate Limit: API → UI          | ❌ Нет теста | День 1  |
+| Cache Transition: Demo → Auth | ❌ Нет теста | День 2  |
+| Session Expiration Mid-Use    | ❌ Нет теста | День 3  |
+| Analytics: Logger KV Failures | ❌ Нет теста | День 4  |
+| OAuth CSRF Edge Cases         | ⚠️ Частичный | День 5  |
 
 **Цель:** ✅ **Все** критические пути имеют integration + E2E тесты
 
@@ -845,6 +913,7 @@ test('should reset error boundary', async () => {
 **Цель:** 0 bugs проходят мимо тестов после рефакторинга
 
 **Как измерить:**
+
 - При каждом найденном production bug → создать тест, который его ловит
 - Если тест существовал → улучшить его (добавить assertions)
 - Tracking: `docs/bugs-caught-by-tests.md`
@@ -853,14 +922,15 @@ test('should reset error boundary', async () => {
 
 **Метрики:**
 
-| Метрика | Текущее | Цель |
-|---------|---------|------|
-| Время на debugging теста | ~30 мин | <5 мин |
-| "Почему тест упал?" понятно сразу | 40% | 95% |
-| Тесты находят проблему ДО code review | 60% | 90% |
-| False positives (тест падает, код OK) | 5% | <1% |
+| Метрика                               | Текущее | Цель   |
+| ------------------------------------- | ------- | ------ |
+| Время на debugging теста              | ~30 мин | <5 мин |
+| "Почему тест упал?" понятно сразу     | 40%     | 95%    |
+| Тесты находят проблему ДО code review | 60%     | 90%    |
+| False positives (тест падает, код OK) | 5%      | <1%    |
 
 **Как измерить:**
+
 - Survey команды каждую неделю
 - Track время на debugging в git commits
 - Count: сколько раз reviewer нашёл баг, который тесты не поймали
@@ -878,16 +948,17 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Исправить код** (1-2 часа)
+
    ```typescript
    // src/components/UserProfile.tsx
    interface UserProfileProps {
-     userName: string
-     onRateLimitUpdate?: (rateLimit: RateLimit) => void  // ← ADD
+     userName: string;
+     onRateLimitUpdate?: (rateLimit: RateLimit) => void; // ← ADD
    }
 
    const { data, loading, error, refetch } = useQueryUser(userName, 365, {
-     onRateLimitUpdate: props.onRateLimitUpdate  // ← ADD
-   })
+     onRateLimitUpdate: props.onRateLimitUpdate, // ← ADD
+   });
    ```
 
    ```typescript
@@ -899,6 +970,7 @@ test('should reset error boundary', async () => {
    ```
 
 2. **Создать integration тест** (1-2 часа)
+
    ```typescript
    // src/apollo/rate-limit-flow.integration.test.tsx
    test('rate limit flows from GitHub API to UI banner', async () => {
@@ -918,6 +990,7 @@ test('should reset error boundary', async () => {
 3. **Commit & Push** (15 мин)
 
 **Критерий успеха:**
+
 - ✅ Rate limit в баннере обновляется при каждом запросе
 - ✅ Integration тест проверяет полный flow
 - ✅ Все существующие тесты проходят
@@ -931,6 +1004,7 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Unit tests для logger** (2-3 часа)
+
    ```typescript
    // api/analytics/logger.test.ts
    describe('logOAuthLogin', () => {
@@ -944,6 +1018,7 @@ test('should reset error boundary', async () => {
    ```
 
 2. **Integration tests для oauth-usage** (2-3 часа)
+
    ```typescript
    // api/analytics/oauth-usage.integration.test.ts
    describe('GET /api/analytics/oauth-usage', () => {
@@ -958,15 +1033,16 @@ test('should reset error boundary', async () => {
    ```typescript
    // api/analytics/logger.ts
    try {
-     await kv.zadd(key, value)
+     await kv.zadd(key, value);
    } catch (error) {
-     logger.error('KV write failed', { key, error, userId })
-     await sendToDeadLetterQueue({ operation: 'kv.zadd', key, value })
-     throw new KVWriteError(`Failed to write ${key}`, { cause: error })
+     logger.error("KV write failed", { key, error, userId });
+     await sendToDeadLetterQueue({ operation: "kv.zadd", key, value });
+     throw new KVWriteError(`Failed to write ${key}`, { cause: error });
    }
    ```
 
 **Критерий успеха:**
+
 - ✅ 100% покрытие `api/analytics/logger.ts`
 - ✅ 100% покрытие `api/analytics/oauth-usage.ts`
 - ✅ Все failure scenarios протестированы
@@ -980,6 +1056,7 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Unit tests для callback edge cases** (2 часа)
+
    ```typescript
    // api/auth/callback.test.ts (добавить)
    test('should reject expired CSRF state (11+ min)', async () => {...})
@@ -988,17 +1065,19 @@ test('should reset error boundary', async () => {
    ```
 
 2. **E2E test для session expiration** (2 часа)
+
    ```typescript
    // e2e/oauth-security.spec.ts (новый файл)
-   test('should notify user when session expires mid-use', async ({ page }) => {
+   test("should notify user when session expires mid-use", async ({ page }) => {
      // Login → make request → delete session → make request
      // Should see "Session expired" warning
-   })
+   });
    ```
 
 3. **Документация security checklist** (30 мин)
 
 **Критерий успеха:**
+
 - ✅ Все OAuth edge cases покрыты тестами
 - ✅ Security checklist обновлён
 - ✅ E2E тесты проходят в CI/CD
@@ -1014,27 +1093,30 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Создать helper utilities** (1 час)
+
    ```typescript
    // src/test/helpers/assertions.ts
    export function expectAuthenticityScore(
      result: AuthenticityResult,
      expected: number,
-     customMessage?: string
+     customMessage?: string,
    ) {
-     const message = customMessage || `
+     const message =
+       customMessage ||
+       `
        Expected authenticity score ${expected}, got ${result.score}.
-
+   
        Breakdown:
          - originalityScore: ${result.breakdown.originalityScore}
          - activityScore: ${result.breakdown.activityScore}
          - qualityScore: ${result.breakdown.qualityScore}
          - consistencyScore: ${result.breakdown.consistencyScore}
-
-       Flags: ${result.flags.join(', ')}
+   
+       Flags: ${result.flags.join(", ")}
        Total Repos: ${result.metadata.totalRepos}
-     `.trim()
+     `.trim();
 
-     expect(result.score, message).toBe(expected)
+     expect(result.score, message).toBe(expected);
    }
    ```
 
@@ -1044,6 +1126,7 @@ test('should reset error boundary', async () => {
    - `src/components/user/UserAuthenticity.test.tsx`
 
 **Критерий успеха:**
+
 - ✅ Все metric calculations имеют custom assertions
 - ✅ При падении теста → сразу видно причину без debugger
 
@@ -1056,15 +1139,18 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Обновить component tests** (4-5 часов)
+
    ```typescript
    // ДО
-   expect(screen.getByText('42')).toBeInTheDocument()
+   expect(screen.getByText("42")).toBeInTheDocument();
 
    // ПОСЛЕ
-   const dashboard = screen.getByRole('region', { name: 'OAuth Analytics' })
-   const sessionsCard = within(dashboard).getByRole('article', { name: 'Active Sessions' })
-   expect(within(sessionsCard).getByText('42')).toBeInTheDocument()
-   expect(within(sessionsCard).getByText('unique users')).toBeInTheDocument()
+   const dashboard = screen.getByRole("region", { name: "OAuth Analytics" });
+   const sessionsCard = within(dashboard).getByRole("article", {
+     name: "Active Sessions",
+   });
+   expect(within(sessionsCard).getByText("42")).toBeInTheDocument();
+   expect(within(sessionsCard).getByText("unique users")).toBeInTheDocument();
    ```
 
 2. **Обновить accessibility checks** (2 часа)
@@ -1072,6 +1158,7 @@ test('should reset error boundary', async () => {
    - Обновить тесты для проверки ARIA
 
 **Критерий успеха:**
+
 - ✅ Каждый component test проверяет structure
 - ✅ Accessibility violations = 0
 
@@ -1084,6 +1171,7 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Создать Storybook stories** (30 мин)
+
    ```typescript
    // src/components/layout/ErrorBoundary.stories.tsx
    export const Default: Story = {...}
@@ -1092,6 +1180,7 @@ test('should reset error boundary', async () => {
    ```
 
 2. **Создать unit tests** (2 часа)
+
    ```typescript
    // src/components/layout/ErrorBoundary.test.tsx
    test('should catch errors from children', () => {...})
@@ -1107,6 +1196,7 @@ test('should reset error boundary', async () => {
    ```
 
 **Критерий успеха:**
+
 - ✅ ErrorBoundary имеет 100% покрытие
 - ✅ Все error scenarios протестированы
 
@@ -1121,32 +1211,36 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Integration test** (3-4 часа)
+
    ```typescript
    // src/integration/cache-transition.integration.test.tsx
-   test('should not use demo cache after OAuth login', async () => {
+   test("should not use demo cache after OAuth login", async () => {
      // 1. Search in demo mode
-     await searchUser('torvalds')
-     const demoCacheKey = await kv.keys('demo:user:torvalds:*')
-     expect(demoCacheKey).toHaveLength(1)
+     await searchUser("torvalds");
+     const demoCacheKey = await kv.keys("demo:user:torvalds:*");
+     expect(demoCacheKey).toHaveLength(1);
 
      // 2. Log in
-     await signIn()
+     await signIn();
 
      // 3. Search same user
-     await searchUser('torvalds')
+     await searchUser("torvalds");
 
      // 4. Should use different cache
-     const userCacheKey = await kv.keys('user:session123:user:torvalds:*')
-     expect(userCacheKey).toHaveLength(1)
+     const userCacheKey = await kv.keys("user:session123:user:torvalds:*");
+     expect(userCacheKey).toHaveLength(1);
 
      // 5. Should NOT reuse demo cache
-     expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('torvalds'))
-   })
+     expect(mockFetch).toHaveBeenCalledWith(
+       expect.stringContaining("torvalds"),
+     );
+   });
    ```
 
 2. **E2E test** (2 часа)
 
 **Критерий успеха:**
+
 - ✅ Cache transition работает корректно
 - ✅ Integration + E2E тесты проходят
 
@@ -1159,6 +1253,7 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Integration test** (3-4 часа)
+
    ```typescript
    test('should show partial timeline when some years fail', async () => {
      // Mock: 2020-2023 succeed, 2024 fails
@@ -1182,6 +1277,7 @@ test('should reset error boundary', async () => {
    ```
 
 **Критерий успеха:**
+
 - ✅ Partial failures обрабатываются корректно
 - ✅ UI показывает warning
 - ✅ Metrics рассчитываются из доступных данных
@@ -1197,15 +1293,18 @@ test('should reset error boundary', async () => {
 **Задачи:**
 
 1. **Создать centralised factories** (3 часа)
+
    ```typescript
    // src/test/mocks/github-data.ts (обновить)
-   export function createMockRepository(overrides?: Partial<Repository>): Repository {
+   export function createMockRepository(
+     overrides?: Partial<Repository>,
+   ): Repository {
      return {
        id: faker.string.uuid(),
        name: faker.lorem.word(),
        stargazerCount: faker.number.int({ min: 0, max: 1000 }),
-       ...overrides
-     }
+       ...overrides,
+     };
    }
    ```
 
@@ -1214,6 +1313,7 @@ test('should reset error boundary', async () => {
    - Убрать дубликаты
 
 **Критерий успеха:**
+
 - ✅ Экономия ~500 строк кода
 - ✅ Все тесты проходят
 
@@ -1229,6 +1329,7 @@ test('should reset error boundary', async () => {
 4. **Финальный review** (2 часа)
 
 **Критерий успеха:**
+
 - ✅ Вся документация обновлена
 - ✅ Команда обучена новым практикам
 
@@ -1244,21 +1345,22 @@ test('should reset error boundary', async () => {
 - [ ] **Mock failures:** Тесты проверяют что происходит при failure каждого dependency
 
 **Пример:**
+
 ```typescript
 // ПЛОХО
 try {
-  await kv.set(key, value)
+  await kv.set(key, value);
 } catch (error) {
-  console.error(error)  // ← МОЛЧАЛИВАЯ ОШИБКА!
+  console.error(error); // ← МОЛЧАЛИВАЯ ОШИБКА!
 }
 
 // ХОРОШО
 try {
-  await kv.set(key, value)
+  await kv.set(key, value);
 } catch (error) {
-  logger.error('KV write failed', { key, error, userId, timestamp })
-  await sendToDeadLetterQueue({ operation: 'kv.set', key, value })
-  throw new KVWriteError(`Failed to write ${key}`, { cause: error })
+  logger.error("KV write failed", { key, error, userId, timestamp });
+  await sendToDeadLetterQueue({ operation: "kv.set", key, value });
+  throw new KVWriteError(`Failed to write ${key}`, { cause: error });
 }
 ```
 
@@ -1270,6 +1372,7 @@ try {
 - [ ] **Empty states:** Каждый list/collection имеет empty state UI
 
 **Пример теста:**
+
 ```typescript
 test('should show loading → data → error → retry flow', async () => {
   // Initial loading
@@ -1352,21 +1455,25 @@ test('should show loading → data → error → retry flow', async () => {
 ## 📈 ОЖИДАЕМЫЕ РЕЗУЛЬТАТЫ
 
 ### После Этапа 1 (Критические исправления):
+
 ✅ Production bug исправлен
 ✅ Analytics tracking надёжен
 ✅ OAuth security проверен
 ✅ При добавлении новой фичи, ломающей rate limit → **тест сразу покажет ГДЕ (интеграционный тест) и ПОЧЕМУ (детальная assertion)**
 
 ### После Этапа 2 (Качество диагностики):
+
 ✅ Каждое падение теста показывает:
-  - **ЧТО** ожидалось
-  - **ЧТО** получено
-  - **ГДЕ** в коде (файл, функция)
-  - **ПРОМЕЖУТОЧНЫЕ** значения
+
+- **ЧТО** ожидалось
+- **ЧТО** получено
+- **ГДЕ** в коде (файл, функция)
+- **ПРОМЕЖУТОЧНЫЕ** значения
 
 ✅ При рефакторинге → сломанные тесты показывают **КОНКРЕТНУЮ** проблему, не нужно debugging
 
 ### После Этапа 3 (Integration tests):
+
 ✅ Критические flows протестированы end-to-end
 ✅ При изменении API → integration тесты падают с **точным описанием** где сломался contract
 ✅ При добавлении новой фичи → **полная уверенность**, что существующие flows работают
@@ -1378,15 +1485,18 @@ test('should show loading → data → error → retry flow', async () => {
 ### Сценарий 1: Добавляем новую метрику в Authenticity Score
 
 **БЕЗ рефакторинга:**
+
 ```bash
 $ npm test
 ❌ FAIL src/hooks/useAuthenticityScore.test.ts
   Expected: 75
   Received: 68
 ```
+
 **→ НЕ ПОНЯТНО:** Где конкретно сломалось? Какая метрика?
 
 **ПОСЛЕ рефакторинга:**
+
 ```bash
 $ npm test
 ❌ FAIL src/hooks/useAuthenticityScore.test.ts
@@ -1404,6 +1514,7 @@ $ npm test
   DIAGNOSIS: activityScore calculation changed.
   Check: src/lib/metrics/activity.ts:calculateActivityScore()
 ```
+
 **→ СРАЗУ ВИДНО:** activityScore неправильный, остальное OK, где чинить
 
 ---
@@ -1411,6 +1522,7 @@ $ npm test
 ### Сценарий 2: Изменили GitHub API response format
 
 **БЕЗ рефакторинга:**
+
 ```bash
 $ npm test
 ✓ All tests passed (1302/1302)
@@ -1422,9 +1534,11 @@ $ vercel deploy
 TypeError: Cannot read property 'totalCount' of undefined
   at calculateMetrics (src/lib/statistics.ts:42)
 ```
+
 **→ ПРОБЛЕМА:** Тесты проходят (используют моки), но production падает
 
 **ПОСЛЕ рефакторинга (с runtime validation):**
+
 ```bash
 $ npm test
 ❌ FAIL src/apollo/github-proxy.integration.test.ts
@@ -1446,6 +1560,7 @@ $ npm test
   2. Add fallback: repositories ?? { nodes: [] }
   3. Update types in github-api.types.ts
 ```
+
 **→ СРАЗУ ВИДНО:** GitHub изменил schema, где нужно добавить fallback
 
 ---
@@ -1453,6 +1568,7 @@ $ npm test
 ### Сценарий 3: Рефакторим OAuth callback endpoint
 
 **БЕЗ рефакторинга:**
+
 ```bash
 $ npm test
 ✓ All tests passed (1302/1302)
@@ -1465,9 +1581,11 @@ $ npm test
 
 # Пользователь жалуется: "Каждый день выкидывает из аккаунта"
 ```
+
 **→ ПРОБЛЕМА:** Тесты не проверяют session activity update
 
 **ПОСЛЕ рефакторинга (с session lifecycle test):**
+
 ```bash
 $ npm test
 ❌ FAIL e2e/oauth-session-lifecycle.spec.ts
@@ -1488,6 +1606,7 @@ $ npm test
   DIAGNOSIS: updateSessionActivity() not called in github-proxy.ts
   Check: api/github-proxy.ts:150 (after successful API request)
 ```
+
 **→ СРАЗУ ВИДНО:** lastActivity не обновляется, где добавить вызов
 
 ---
@@ -1495,17 +1614,20 @@ $ npm test
 ## 📚 REFERENCES
 
 **Созданные документы:**
+
 - `docs/PHASE_7_ENHANCEMENTS.md` — описание Phase 7 фич
 - `docs/testing-guide.md` — полный гайд по тестированию
 - Этот документ — план рефакторинга
 
 **Файлы с критическими проблемами:**
+
 - `src/components/UserProfile.tsx:41` — rate limit bug
 - `api/analytics/logger.ts` — без тестов, silent failures
 - `api/analytics/oauth-usage.ts` — без тестов
 - `src/components/layout/ErrorBoundary.tsx` — без тестов (CRITICAL!)
 
 **Существующие хорошие примеры:**
+
 - `api/auth/callback.test.ts` — отличные OAuth тесты
 - `src/lib/metrics/quality.test.ts` — детальные тесты calculations
 - `e2e/oauth-flow.spec.ts` — хорошие E2E тесты
@@ -1524,6 +1646,7 @@ $ npm test
 5. **Iterate:** После Этапа 1 → review → adjust plan для Этапа 2
 
 **Estimated timeline:**
+
 - **Этап 1 (критично):** 2-3 дня
 - **Этап 2 (качество):** 1 неделя
 - **Этап 3 (integration):** 2-3 недели
@@ -1563,20 +1686,21 @@ $ npm test
 
 ### Матрица приоритетов
 
-| Задача | Impact | Complexity | Effort | Priority |
-|--------|--------|-----------|--------|----------|
-| Rate Limit Bug | 🔴 HIGH | 🟢 LOW | 2-3h | **P0** |
-| Analytics Tests | 🔴 HIGH | 🟡 MED | 6-8h | **P0** |
-| OAuth Security | 🔴 HIGH | 🟡 MED | 4-5h | **P0** |
-| ErrorBoundary Tests | 🔴 HIGH | 🟢 LOW | 3-4h | **P1** |
-| Custom Assertions | 🟡 MED | 🟢 LOW | 4-6h | **P1** |
-| Structural Assertions | 🟡 MED | 🟡 MED | 6-7h | **P1** |
-| Cache Transition Test | 🟡 MED | 🟡 MED | 5-6h | **P2** |
-| Parallel Query Test | 🟢 LOW | 🟡 MED | 3-4h | **P2** |
-| Mock Data Consolidation | 🟢 LOW | 🟢 LOW | 5-6h | **P3** |
-| Documentation | 🟢 LOW | 🟢 LOW | 8h | **P3** |
+| Задача                  | Impact  | Complexity | Effort | Priority |
+| ----------------------- | ------- | ---------- | ------ | -------- |
+| Rate Limit Bug          | 🔴 HIGH | 🟢 LOW     | 2-3h   | **P0**   |
+| Analytics Tests         | 🔴 HIGH | 🟡 MED     | 6-8h   | **P0**   |
+| OAuth Security          | 🔴 HIGH | 🟡 MED     | 4-5h   | **P0**   |
+| ErrorBoundary Tests     | 🔴 HIGH | 🟢 LOW     | 3-4h   | **P1**   |
+| Custom Assertions       | 🟡 MED  | 🟢 LOW     | 4-6h   | **P1**   |
+| Structural Assertions   | 🟡 MED  | 🟡 MED     | 6-7h   | **P1**   |
+| Cache Transition Test   | 🟡 MED  | 🟡 MED     | 5-6h   | **P2**   |
+| Parallel Query Test     | 🟢 LOW  | 🟡 MED     | 3-4h   | **P2**   |
+| Mock Data Consolidation | 🟢 LOW  | 🟢 LOW     | 5-6h   | **P3**   |
+| Documentation           | 🟢 LOW  | 🟢 LOW     | 8h     | **P3**   |
 
 **Priority Legend:**
+
 - **P0** - Критично, делать НЕМЕДЛЕННО (production bugs, security)
 - **P1** - Высокий приоритет, делать на этой неделе (качество)
 - **P2** - Средний приоритет, делать в течение месяца (improvement)
@@ -1587,6 +1711,7 @@ $ npm test
 ### Измеримые цели на 4 недели
 
 #### Week 1 Goals
+
 - ✅ 0 критических production bugs
 - ✅ 100% API endpoints имеют unit tests
 - ✅ OAuth security edge cases покрыты
@@ -1594,18 +1719,21 @@ $ npm test
 - **Метрика:** API coverage 67% → **100%**
 
 #### Week 2 Goals
+
 - ✅ 100% критических assertions имеют custom messages
 - ✅ 100% component tests проверяют structure
 - ✅ 0 accessibility violations
 - **Метрика:** Test diagnostics quality 40% → **95%**
 
 #### Week 3 Goals
+
 - ✅ Все критические пути имеют integration tests
 - ✅ Cache transition протестирован
 - ✅ Parallel query failures протестированы
 - **Метрика:** Integration coverage 60% → **90%**
 
 #### Week 4 Goals
+
 - ✅ Mock data consolidation завершен
 - ✅ Документация обновлена
 - ✅ Команда обучена best practices
@@ -1638,6 +1766,7 @@ git push
 ```
 
 **После этого:**
+
 - Переходи к Analytics Tests (P0, 6-8h)
 - Или к ErrorBoundary Tests (P1, 3-4h) если нужна более простая задача
 
@@ -1650,18 +1779,21 @@ A: НЕТ для P0 (production bugs, security). ДА для P3 (cleanup). P1/P2
 
 **Q: Что если нет времени на всё?**
 A: Минимум:
+
 - Week 1 P0 задачи (12-16h) - ОБЯЗАТЕЛЬНО
 - Week 2 ErrorBoundary + Custom Assertions (7-10h) - КРАЙНЕ ЖЕЛАТЕЛЬНО
 - Week 3-4 - по возможности
 
 **Q: Как измерить прогресс?**
 A: Используй метрики из раздела "Метрики успеха":
+
 - API coverage % (текущее 67%, цель 100%)
 - Test diagnostics quality % (текущее 40%, цель 95%)
 - Integration coverage % (текущее 60%, цель 90%)
 
 **Q: Что если найду новые bugs во время рефакторинга?**
 A: Отлично! Это и есть цель.
+
 1. Создай тест, который ловит баг
 2. Исправь баг
 3. Verify тест теперь проходит
@@ -1669,6 +1801,7 @@ A: Отлично! Это и есть цель.
 
 **Q: Нужна ли code review для тестов?**
 A: ДА, обязательно. Тесты - это тоже код.
+
 - Review criteria: правильность, читаемость, покрытие edge cases
 - Особое внимание: assertions messages, структура тестов
 
@@ -1677,6 +1810,7 @@ A: ДА, обязательно. Тесты - это тоже код.
 ## ✅ CHECKLIST ДЛЯ ЗАВЕРШЕНИЯ
 
 ### Week 1 (Критические исправления)
+
 - [ ] Rate limit bug исправлен
 - [ ] Integration тест для rate limit создан
 - [ ] `api/analytics/logger.test.ts` создан (100% покрытие)
@@ -1688,6 +1822,7 @@ A: ДА, обязательно. Тесты - это тоже код.
 - [ ] Merged в main branch
 
 ### Week 2 (Качество диагностики)
+
 - [ ] `src/test/helpers/assertions.ts` создан
 - [ ] Custom assertions добавлены в metric tests
 - [ ] Structural assertions добавлены в component tests
@@ -1698,12 +1833,14 @@ A: ДА, обязательно. Тесты - это тоже код.
 - [ ] Accessibility violations = 0
 
 ### Week 3 (Integration Tests)
+
 - [ ] `cache-transition.integration.test.tsx` создан
 - [ ] Cache transition E2E тест создан
 - [ ] Parallel query failure test создан
 - [ ] Все критические пути покрыты integration tests
 
 ### Week 4 (Cleanup & Documentation)
+
 - [ ] Mock data factories обновлены
 - [ ] Дубликаты в тестах удалены
 - [ ] `testing-guide.md` обновлён
@@ -1716,16 +1853,19 @@ A: ДА, обязательно. Тесты - это тоже код.
 ## 📞 КОНТАКТЫ И ПОДДЕРЖКА
 
 **Вопросы по рефакторингу:**
+
 - См. этот документ: `docs/TEST_REFACTORING_REPORT.md`
 - Testing guide: `docs/testing-guide.md`
 - Component development: `docs/component-development.md`
 
 **Нужна помощь?**
+
 - Создай issue в GitHub с тегом `testing`
 - Добавь примеры failing tests
 - Опиши что пытаешься достичь
 
 **Прогресс трекинг:**
+
 - Weekly updates в команде
 - Metrics dashboard (TBD)
 - Bugs caught: `docs/bugs-caught-by-tests.md` (создать)

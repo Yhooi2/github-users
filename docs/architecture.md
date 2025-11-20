@@ -104,12 +104,12 @@ App (Root Component - Smart)
 
 **Component Responsibilities:**
 
-| Component | Type | Responsibilities |
-|-----------|------|-----------------|
-| **App** | Smart | State management, component orchestration |
-| **SearchForm** | Hybrid | Input capture, validation, form submission |
-| **UserProfile** | Smart | Data fetching via hook, async state handling |
-| **Button, Input, Label** | Presentational | UI rendering with Tailwind styling |
+| Component                | Type           | Responsibilities                             |
+| ------------------------ | -------------- | -------------------------------------------- |
+| **App**                  | Smart          | State management, component orchestration    |
+| **SearchForm**           | Hybrid         | Input capture, validation, form submission   |
+| **UserProfile**          | Smart          | Data fetching via hook, async state handling |
+| **Button, Input, Label** | Presentational | UI rendering with Tailwind styling           |
 
 ### 4. UI Component Library (shadcn/ui)
 
@@ -370,8 +370,8 @@ dist/
 
 ```typescript
 // Path alias: @ → ./src
-import { Button } from '@/components/ui/button'
-import useQueryUser from '@/apollo/useQueryUser'
+import { Button } from "@/components/ui/button";
+import useQueryUser from "@/apollo/useQueryUser";
 
 // Configured in:
 // - vite.config.ts (alias resolution)
@@ -423,9 +423,11 @@ import useQueryUser from '@/apollo/useQueryUser'
 ### Security Limitations
 
 ⚠️ **Token in localStorage** is vulnerable to XSS attacks
+
 - **Recommendation:** Move to httpOnly cookies with backend
 
 ⚠️ **No rate limiting** on client side
+
 - **Recommendation:** Implement request debouncing
 
 ## Scalability Considerations

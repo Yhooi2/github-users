@@ -42,20 +42,22 @@ Tailwind CSS v4 - это **мажорное обновление** с сущес
 ### 1. CSS-First конфигурация
 
 #### ❌ Старый подход (v3)
+
 ```javascript
 // tailwind.config.js
 module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#3b82f6',
+        primary: "#3b82f6",
       },
     },
   },
-}
+};
 ```
 
 #### ✅ Новый подход (v4)
+
 ```css
 /* src/index.css */
 @import "tailwindcss";
@@ -67,6 +69,7 @@ module.exports = {
 ```
 
 **Преимущества:**
+
 - Проще для понимания
 - Нет JavaScript конфигурации
 - Лучшая поддержка IDE
@@ -80,18 +83,19 @@ module.exports = {
 
 ```typescript
 // vite.config.ts
-import tailwindcss from "@tailwindcss/vite"
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(), // ✅ Используем Vite plugin
-    ViteMcp()
+    ViteMcp(),
   ],
-})
+});
 ```
 
 **Файл стилей:**
+
 ```css
 /* src/index.css */
 @import "tailwindcss";
@@ -121,6 +125,7 @@ Tailwind v4 переименовал многие утилиты для конс
 ```
 
 **Пример миграции:**
+
 ```diff
 - <div className="shadow-sm">
 + <div className="shadow-xs">
@@ -160,19 +165,21 @@ Tailwind v4 переименовал многие утилиты для конс
 ### 4. Container Utility
 
 #### ❌ Удалены опции (v3)
+
 ```javascript
 // tailwind.config.js (v3)
 module.exports = {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      padding: "2rem",
     },
   },
-}
+};
 ```
 
 #### ✅ Новый подход (v4)
+
 ```css
 /* Нужно добавлять классы вручную */
 <div className="container mx-auto px-4">
@@ -181,6 +188,7 @@ module.exports = {
 ```
 
 **Миграция:**
+
 ```diff
 - <div className="container">
 + <div className="container mx-auto px-4">
@@ -219,6 +227,7 @@ Borders теперь наследуют цвет текста. Если нуже
 ```
 
 **Если нужен старый размер:**
+
 ```tsx
 <button className="ring-3">Click me</button>
 ```
@@ -261,8 +270,8 @@ Borders теперь наследуют цвет текста. Если нуже
   --radius-button: 0.25rem;
 
   /* Fonts */
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'Fira Code', monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "Fira Code", monospace;
 
   /* Breakpoints */
   --breakpoint-sm: 640px;
@@ -272,6 +281,7 @@ Borders теперь наследуют цвет текста. Если нуже
 ```
 
 **Использование:**
+
 ```tsx
 <div className="bg-primary text-white">
   Primary background
@@ -290,19 +300,22 @@ Borders теперь наследуют цвет текста. Если нуже
 
 ```css
 @utility card-base {
-  @apply rounded-lg shadow-md p-6 bg-white;
+  @apply rounded-lg bg-white p-6 shadow-md;
 }
 
 @utility gradient-primary {
-  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-secondary)
+  );
 }
 ```
 
 **Использование:**
+
 ```tsx
-<div className="card-base">
-  Base card styles
-</div>
+<div className="card-base">Base card styles</div>
 ```
 
 ---
@@ -329,27 +342,27 @@ Borders теперь наследуют цвет текста. Если нуже
 
 ### Полная таблица изменений
 
-| v3 Класс | v4 Класс | Описание |
-|----------|----------|----------|
-| `shadow-sm` | `shadow-xs` | Маленькая тень |
-| `shadow` | `shadow-sm` | Стандартная тень |
-| `shadow-md` | `shadow` | Средняя тень |
-| `shadow-lg` | `shadow-md` | Большая тень |
-| `shadow-xl` | `shadow-lg` | Очень большая |
-| `shadow-2xl` | `shadow-xl` | Максимальная |
-| | |
-| `rounded-sm` | `rounded-xs` | Маленький радиус |
-| `rounded` | `rounded-sm` | Стандартный |
-| `rounded-md` | `rounded` | Средний |
-| `rounded-lg` | `rounded-md` | Большой |
-| `rounded-xl` | `rounded-lg` | Очень большой |
-| | |
-| `blur-sm` | `blur-xs` | Маленькое размытие |
-| `blur` | `blur-sm` | Стандартное |
-| `blur-md` | `blur` | Среднее |
-| `blur-lg` | `blur-md` | Большое |
-| | |
-| `outline-none` | `outline-hidden` | Скрыть outline |
+| v3 Класс       | v4 Класс         | Описание           |
+| -------------- | ---------------- | ------------------ |
+| `shadow-sm`    | `shadow-xs`      | Маленькая тень     |
+| `shadow`       | `shadow-sm`      | Стандартная тень   |
+| `shadow-md`    | `shadow`         | Средняя тень       |
+| `shadow-lg`    | `shadow-md`      | Большая тень       |
+| `shadow-xl`    | `shadow-lg`      | Очень большая      |
+| `shadow-2xl`   | `shadow-xl`      | Максимальная       |
+|                |                  |
+| `rounded-sm`   | `rounded-xs`     | Маленький радиус   |
+| `rounded`      | `rounded-sm`     | Стандартный        |
+| `rounded-md`   | `rounded`        | Средний            |
+| `rounded-lg`   | `rounded-md`     | Большой            |
+| `rounded-xl`   | `rounded-lg`     | Очень большой      |
+|                |                  |
+| `blur-sm`      | `blur-xs`        | Маленькое размытие |
+| `blur`         | `blur-sm`        | Стандартное        |
+| `blur-md`      | `blur`           | Среднее            |
+| `blur-lg`      | `blur-md`        | Большое            |
+|                |                  |
+| `outline-none` | `outline-hidden` | Скрыть outline     |
 
 ---
 
@@ -402,10 +415,12 @@ Borders теперь наследуют цвет текста. Если нуже
 Все Tailwind значения доступны как CSS переменные:
 
 ```tsx
-<div style={{
-  padding: 'var(--spacing-4)',
-  background: 'var(--color-primary)'
-}}>
+<div
+  style={{
+    padding: "var(--spacing-4)",
+    background: "var(--color-primary)",
+  }}
+>
   Direct CSS variables access
 </div>
 ```
@@ -425,9 +440,7 @@ Borders теперь наследуют цвет текста. Если нуже
 ```
 
 ```tsx
-<div className="tw:flex tw:items-center">
-  Prefixed utilities
-</div>
+<div className="tw:flex tw:items-center">Prefixed utilities</div>
 ```
 
 ### 4. Better IDE Support
@@ -475,6 +488,7 @@ yarn upgrade tailwindcss @tailwindcss/vite --latest
 - [ ] Найти и заменить `outline-none` → `outline-hidden`
 
 **Regex для поиска:**
+
 ```regex
 (shadow|rounded|blur)-(sm|md|lg|xl|2xl)
 ```
@@ -537,6 +551,7 @@ yarn upgrade tailwindcss @tailwindcss/vite --latest
 так как shadcn обновляет свои компоненты для новых версий Tailwind.
 
 **Действие:** Обновить shadcn компоненты после миграции:
+
 ```bash
 npx shadcn@latest update
 ```
@@ -550,6 +565,7 @@ npx shadcn@latest update
 **Причина:** Не импортирован Tailwind CSS
 
 **Решение:**
+
 ```css
 /* src/index.css - должен быть в самом верху */
 @import "tailwindcss";
@@ -560,10 +576,11 @@ npx shadcn@latest update
 **Причина:** Неправильный синтаксис в @theme
 
 **Решение:**
+
 ```css
 @theme {
   /* ❌ Неправильно */
-  primary: '#3b82f6';
+  primary: "#3b82f6";
 
   /* ✅ Правильно */
   --color-primary: #3b82f6;
@@ -575,6 +592,7 @@ npx shadcn@latest update
 **Причина:** В v4 border по умолчанию `currentColor`
 
 **Решение:**
+
 ```tsx
 {/* Явно указать цвет */}
 <div className="border border-gray-200">
@@ -585,6 +603,7 @@ npx shadcn@latest update
 **Причина:** В v4 ring по умолчанию 1px (было 3px)
 
 **Решение:**
+
 ```tsx
 <button className="focus:ring-3">
   {/* Или другое значение: ring-2, ring-4 */}
@@ -596,6 +615,7 @@ npx shadcn@latest update
 **Причина:** В v4 нет auto-center
 
 **Решение:**
+
 ```tsx
 <div className="container mx-auto px-4">
 ```

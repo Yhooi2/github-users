@@ -1,14 +1,14 @@
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { AlertTriangle, Info } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Info } from "lucide-react";
 
 export interface RateLimitBannerProps {
-  remaining: number
-  limit: number
-  reset: number // Unix timestamp
-  isDemo: boolean // Flag indicating demo mode (true) or authenticated mode (false)
-  onAuthClick?: () => void
-  onLogoutClick?: () => void // Callback for logout button (authenticated mode)
+  remaining: number;
+  limit: number;
+  reset: number; // Unix timestamp
+  isDemo: boolean; // Flag indicating demo mode (true) or authenticated mode (false)
+  onAuthClick?: () => void;
+  onLogoutClick?: () => void; // Callback for logout button (authenticated mode)
 }
 
 export function RateLimitBanner({
@@ -19,20 +19,24 @@ export function RateLimitBanner({
   onAuthClick,
   onLogoutClick,
 }: RateLimitBannerProps) {
-  const percentage = (remaining / limit) * 100
-  const resetDate = new Date(reset * 1000)
-  const timeUntilReset = Math.ceil((resetDate.getTime() - Date.now()) / 1000 / 60)
+  const percentage = (remaining / limit) * 100;
+  const resetDate = new Date(reset * 1000);
+  const timeUntilReset = Math.ceil(
+    (resetDate.getTime() - Date.now()) / 1000 / 60,
+  );
 
   // Show banner only when remaining < 10% (both demo and auth modes)
-  if (percentage >= 10) return null
+  if (percentage >= 10) return null;
 
-  const variant = percentage < 5 ? 'destructive' : 'default'
-  const Icon = percentage < 5 ? AlertTriangle : Info
+  const variant = percentage < 5 ? "destructive" : "default";
+  const Icon = percentage < 5 ? AlertTriangle : Info;
 
   // Title depends on mode
   const title = isDemo
-    ? (percentage < 5 ? '⚠️ Demo limit almost exhausted' : '📊 Demo mode active')
-    : '✅ Authenticated'
+    ? percentage < 5
+      ? "⚠️ Demo limit almost exhausted"
+      : "📊 Demo mode active"
+    : "✅ Authenticated";
 
   return (
     <Alert variant={variant} className="mb-4">
@@ -40,8 +44,8 @@ export function RateLimitBanner({
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription className="mt-2 space-y-2">
         <p>
-          <strong>{remaining}</strong> of {limit} requests remaining
-          ({percentage.toFixed(1)}% left).
+          <strong>{remaining}</strong> of {limit} requests remaining (
+          {percentage.toFixed(1)}% left).
           {timeUntilReset > 0 && ` Resets in ${timeUntilReset} minutes.`}
         </p>
 
@@ -53,7 +57,7 @@ export function RateLimitBanner({
             </p>
             <Button
               onClick={onAuthClick}
-              variant={percentage < 5 ? 'default' : 'outline'}
+              variant={percentage < 5 ? "default" : "outline"}
               size="sm"
             >
               Sign in with GitHub
@@ -74,5 +78,5 @@ export function RateLimitBanner({
         )}
       </AlertDescription>
     </Alert>
-  )
+  );
 }

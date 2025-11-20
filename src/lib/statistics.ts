@@ -1,9 +1,9 @@
 import type {
+  ContributionsCollection,
   Repository,
   RepositoryContributions,
-  ContributionsCollection,
   YearlyContributions,
-} from '@/apollo/github-api.types';
+} from "@/apollo/github-api.types";
 
 /**
  * Commit statistics by repository
@@ -58,7 +58,7 @@ export type CommitActivity = {
  * ```
  */
 export function calculateCommitsByRepository(
-  contributionsByRepo: RepositoryContributions[]
+  contributionsByRepo: RepositoryContributions[],
 ): RepositoryCommitStats[] {
   if (!contributionsByRepo || contributionsByRepo.length === 0) {
     return [];
@@ -93,7 +93,9 @@ export function calculateCommitsByRepository(
  * // Returns: [{ name: 'TypeScript', size: 500000, percentage: 45.5, ... }, ...]
  * ```
  */
-export function calculateLanguageStatistics(repositories: Repository[]): LanguageStats[] {
+export function calculateLanguageStatistics(
+  repositories: Repository[],
+): LanguageStats[] {
   if (!repositories || repositories.length === 0) {
     return [];
   }
@@ -159,7 +161,10 @@ export function calculateLanguageStatistics(repositories: Repository[]): Languag
  * // Returns: ['TypeScript', 'JavaScript', 'CSS']
  * ```
  */
-export function getTopLanguages(repositories: Repository[], limit: number = 5): string[] {
+export function getTopLanguages(
+  repositories: Repository[],
+  limit: number = 5,
+): string[] {
   const langStats = calculateLanguageStatistics(repositories);
   return langStats.slice(0, limit).map((stat) => stat.name);
 }
@@ -187,7 +192,7 @@ export function calculateYearlyCommitStats(
     year2: YearlyContributions;
     year3: YearlyContributions;
   },
-  currentDate: Date = new Date()
+  currentDate: Date = new Date(),
 ): YearlyCommitStats[] {
   const currentYear = currentDate.getFullYear();
 
@@ -222,7 +227,7 @@ export function calculateYearlyCommitStats(
  */
 export function calculateCommitActivity(
   totalCommits: number,
-  periodDays: number
+  periodDays: number,
 ): CommitActivity {
   if (periodDays <= 0) {
     return { total: totalCommits, perDay: 0, perWeek: 0, perMonth: 0 };
@@ -256,7 +261,7 @@ export function calculateCommitActivity(
  */
 export function getMostActiveRepositories(
   repositories: Repository[],
-  limit: number = 5
+  limit: number = 5,
 ): Array<{ name: string; commits: number }> {
   // Filter out forked repositories
   const originalRepositories = repositories.filter((repo) => !repo.isFork);
@@ -310,7 +315,7 @@ export function getTotalCommits(repositories: Repository[]): number {
  */
 export function getRepositoriesByLanguage(
   repositories: Repository[],
-  language: string
+  language: string,
 ): Repository[] {
   return repositories.filter((repo) => {
     // Check primary language
@@ -389,7 +394,7 @@ export function calculateLanguageDiversity(repositories: Repository[]): number {
  */
 export function getCommitStatsSummary(
   contributions: ContributionsCollection,
-  repositories: Repository[]
+  repositories: Repository[],
 ): {
   totalUserCommits: number;
   totalRepoCommits: number;
@@ -407,7 +412,8 @@ export function getCommitStatsSummary(
 
   const mostActive = getMostActiveRepositories(repositories, 1);
   const topRepository = mostActive.length > 0 ? mostActive[0].name : null;
-  const topRepositoryCommits = mostActive.length > 0 ? mostActive[0].commits : 0;
+  const topRepositoryCommits =
+    mostActive.length > 0 ? mostActive[0].commits : 0;
 
   return {
     totalUserCommits,
@@ -436,12 +442,16 @@ export function formatNumber(value: number): string {
   if (value >= 1000000) {
     const formatted = (value / 1000000).toFixed(1);
     // Remove .0 if the decimal is .0
-    return formatted.endsWith('.0') ? `${formatted.slice(0, -2)}M` : `${formatted}M`;
+    return formatted.endsWith(".0")
+      ? `${formatted.slice(0, -2)}M`
+      : `${formatted}M`;
   }
   if (value >= 1000) {
     const formatted = (value / 1000).toFixed(1);
     // Remove .0 if the decimal is .0
-    return formatted.endsWith('.0') ? `${formatted.slice(0, -2)}K` : `${formatted}K`;
+    return formatted.endsWith(".0")
+      ? `${formatted.slice(0, -2)}K`
+      : `${formatted}K`;
   }
   return value.toString();
 }
@@ -459,9 +469,9 @@ export function formatNumber(value: number): string {
  * ```
  */
 export function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) return "0 B";
 
-  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const value = bytes / Math.pow(1024, i);
 

@@ -15,11 +15,13 @@
 **Impact:** ~2000 lines of duplicate content
 
 **Evidence:**
+
 - Both files describe same phases (0-6)
 - Both have "Security Status", "Technology Stack", "What NOT to Change" sections
 - REFACTORING_MASTER_PLAN.md is newer and better organized (modular phases/)
 
 **Action Required:**
+
 ```bash
 git rm docs/IMPLEMENTATION_PLAN_HYBRID.md
 ```
@@ -30,18 +32,21 @@ git rm docs/IMPLEMENTATION_PLAN_HYBRID.md
 
 **Status:** ❌ Should have been merged in Stage 3
 **Files:**
+
 - `api-reference.md` (966 lines)
 - `api-strategy.md` (846 lines)
 
 **Issue:** These should have been merged into `github-api-guide.md`, but merge never happened
 
 **Duplication:**
+
 - Both describe GitHub GraphQL API
 - Both have rate limiting info
 - Both have example queries
 
 **Recommendations:**
 Either:
+
 1. **Keep as-is** (accept duplication for clarity)
 2. **Merge now** (create github-api-guide.md as originally planned)
 3. **Delete api-strategy.md** (most content is in apollo-client-guide.md)
@@ -57,6 +62,7 @@ Either:
 **Issue:** Content duplicates apollo-client-guide.md basics
 
 **Action Required:**
+
 ```bash
 git rm docs/api-reference.md
 ```
@@ -82,16 +88,20 @@ git rm docs/api-strategy.md               # -846 lines (optional)
 ### Step 2: Update Cross-References (5 minutes)
 
 **Files to update:**
+
 - `REFACTORING_MASTER_PLAN.md` - Remove reference to IMPLEMENTATION_PLAN_HYBRID.md
 - `apollo-client-guide.md` - Remove reference to api-reference.md
 - `.claude/CLAUDE.md` - Update plan reference
 
 **Example changes:**
+
 ```markdown
 # Before:
+
 See [Implementation Plan](./IMPLEMENTATION_PLAN_HYBRID.md)
 
 # After:
+
 See [Refactoring Plan](./REFACTORING_MASTER_PLAN.md)
 ```
 
@@ -116,16 +126,19 @@ Related: DOCUMENTATION_CLEANUP_REPORT.md Stage 2 completion"
 ## 📊 Impact Analysis
 
 ### Before Stage 4:
+
 - Total docs: 22 files
 - Total lines: 21,882
 - Duplicates: ~3,400 lines (15%)
 
 ### After Stage 4:
+
 - Total docs: 19 files (-3 files)
 - Total lines: ~18,500 (-15%)
 - Duplicates: ~0 lines (✅ eliminated)
 
 ### Files Remaining (19):
+
 1. REFACTORING_MASTER_PLAN.md (master plan)
 2. phases/phase-0-backend-security.md
 3. phases/phase-1-graphql-multi-query.md
@@ -152,6 +165,7 @@ Related: DOCUMENTATION_CLEANUP_REPORT.md Stage 2 completion"
 ## ✅ Success Criteria
 
 Cleanup is successful when:
+
 - ✅ Zero duplication between docs
 - ✅ All references point to correct files
 - ✅ Total documentation <19,000 lines

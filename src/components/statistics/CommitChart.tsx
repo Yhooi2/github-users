@@ -1,12 +1,26 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, AreaChart, Area } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LoadingState } from '@/components/layout/LoadingState';
-import { ErrorState } from '@/components/layout/ErrorState';
-import { EmptyState } from '@/components/layout/EmptyState';
-import type { YearlyCommitStats } from '@/lib/statistics';
-import { TrendingUp } from 'lucide-react';
+import { EmptyState } from "@/components/layout/EmptyState";
+import { ErrorState } from "@/components/layout/ErrorState";
+import { LoadingState } from "@/components/layout/LoadingState";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import type { YearlyCommitStats } from "@/lib/statistics";
+import { TrendingUp } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "recharts";
 
-type ChartVariant = 'line' | 'bar' | 'area';
+type ChartVariant = "line" | "bar" | "area";
 
 type Props = {
   /**
@@ -61,8 +75,8 @@ type Props = {
 
 const chartConfig = {
   commits: {
-    label: 'Commits',
-    color: 'hsl(var(--chart-1))',
+    label: "Commits",
+    color: "hsl(var(--chart-1))",
   },
 };
 
@@ -93,14 +107,14 @@ const chartConfig = {
  */
 export function CommitChart({
   data,
-  variant = 'line',
+  variant = "line",
   loading = false,
   error = null,
-  loadingMessage = 'Loading commit statistics...',
+  loadingMessage = "Loading commit statistics...",
   errorTitle,
   errorDescription,
-  emptyTitle = 'No Commit Data',
-  emptyDescription = 'No commit statistics available for this period.',
+  emptyTitle = "No Commit Data",
+  emptyDescription = "No commit statistics available for this period.",
   showTrend = true,
 }: Props) {
   // Loading state
@@ -112,7 +126,7 @@ export function CommitChart({
   if (error) {
     return (
       <ErrorState
-        title={errorTitle || 'Failed to load commit statistics'}
+        title={errorTitle || "Failed to load commit statistics"}
         message={errorDescription || error.message}
       />
     );
@@ -128,7 +142,7 @@ export function CommitChart({
   const trendPercentage =
     data.length >= 2 && data[1].commits > 0
       ? ((trend / data[1].commits) * 100).toFixed(1)
-      : '0.0';
+      : "0.0";
 
   const trendUp = trend > 0;
   const totalCommits = data.reduce((sum, item) => sum + item.commits, 0);
@@ -139,18 +153,19 @@ export function CommitChart({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Commit Activity</h3>
-          <p className="text-muted-foreground text-sm">
-            {totalCommits.toLocaleString()} total commits across {data.length} years
+          <p className="text-sm text-muted-foreground">
+            {totalCommits.toLocaleString()} total commits across {data.length}{" "}
+            years
           </p>
         </div>
         {showTrend && data.length >= 2 && (
           <div className="flex items-center gap-2 text-sm">
             <TrendingUp
-              className={`h-4 w-4 ${trendUp ? 'text-green-500' : 'rotate-180 text-red-500'}`}
+              className={`h-4 w-4 ${trendUp ? "text-green-500" : "rotate-180 text-red-500"}`}
               aria-hidden="true"
             />
-            <span className={trendUp ? 'text-green-600' : 'text-red-600'}>
-              {trendUp ? '+' : ''}
+            <span className={trendUp ? "text-green-600" : "text-red-600"}>
+              {trendUp ? "+" : ""}
               {trendPercentage}%
             </span>
             <span className="text-muted-foreground">vs. previous year</span>
@@ -160,8 +175,11 @@ export function CommitChart({
 
       {/* Chart */}
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
-        {variant === 'line' ? (
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        {variant === "line" ? (
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="year"
@@ -179,7 +197,7 @@ export function CommitChart({
             />
             <ChartTooltip
               content={<ChartTooltipContent />}
-              cursor={{ stroke: 'hsl(var(--border))' }}
+              cursor={{ stroke: "hsl(var(--border))" }}
             />
             <Line
               type="monotone"
@@ -190,8 +208,11 @@ export function CommitChart({
               activeDot={{ r: 6 }}
             />
           </LineChart>
-        ) : variant === 'bar' ? (
-          <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        ) : variant === "bar" ? (
+          <BarChart
+            data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="year"
@@ -207,11 +228,21 @@ export function CommitChart({
               className="text-xs"
               tickFormatter={(value) => value.toLocaleString()}
             />
-            <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'hsl(var(--muted))' }} />
-            <Bar dataKey="commits" fill="var(--color-commits)" radius={[4, 4, 0, 0]} />
+            <ChartTooltip
+              content={<ChartTooltipContent />}
+              cursor={{ fill: "hsl(var(--muted))" }}
+            />
+            <Bar
+              dataKey="commits"
+              fill="var(--color-commits)"
+              radius={[4, 4, 0, 0]}
+            />
           </BarChart>
         ) : (
-          <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <AreaChart
+            data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="year"
@@ -227,7 +258,10 @@ export function CommitChart({
               className="text-xs"
               tickFormatter={(value) => value.toLocaleString()}
             />
-            <ChartTooltip content={<ChartTooltipContent />} cursor={{ stroke: 'hsl(var(--border))' }} />
+            <ChartTooltip
+              content={<ChartTooltipContent />}
+              cursor={{ stroke: "hsl(var(--border))" }}
+            />
             <Area
               type="monotone"
               dataKey="commits"

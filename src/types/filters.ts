@@ -7,19 +7,19 @@
  * Sort options for repository lists
  */
 export type SortBy =
-  | 'stars'
-  | 'forks'
-  | 'watchers'
-  | 'commits'
-  | 'size'
-  | 'updated'
-  | 'created'
-  | 'name';
+  | "stars"
+  | "forks"
+  | "watchers"
+  | "commits"
+  | "size"
+  | "updated"
+  | "created"
+  | "name";
 
 /**
  * Sort direction
  */
-export type SortDirection = 'asc' | 'desc';
+export type SortDirection = "asc" | "desc";
 
 /**
  * Filter options for repository lists

@@ -1,5 +1,5 @@
-import type { Repository } from '@/apollo/github-api.types';
-import type { SortBy, SortDirection, RepositoryFilter } from '@/types/filters';
+import type { Repository } from "@/apollo/github-api.types";
+import type { RepositoryFilter, SortBy, SortDirection } from "@/types/filters";
 
 /**
  * Sorts repositories by specified criteria
@@ -18,7 +18,7 @@ import type { SortBy, SortDirection, RepositoryFilter } from '@/types/filters';
 export function sortRepositories(
   repositories: Repository[],
   sortBy: SortBy,
-  direction: SortDirection = 'desc'
+  direction: SortDirection = "desc",
 ): Repository[] {
   const sorted = [...repositories];
 
@@ -26,38 +26,41 @@ export function sortRepositories(
     let compareValue = 0;
 
     switch (sortBy) {
-      case 'stars':
+      case "stars":
         compareValue = (a.stargazerCount || 0) - (b.stargazerCount || 0);
         break;
 
-      case 'forks':
+      case "forks":
         compareValue = (a.forkCount || 0) - (b.forkCount || 0);
         break;
 
-      case 'watchers':
-        compareValue = (a.watchers?.totalCount || 0) - (b.watchers?.totalCount || 0);
+      case "watchers":
+        compareValue =
+          (a.watchers?.totalCount || 0) - (b.watchers?.totalCount || 0);
         break;
 
-      case 'commits': {
+      case "commits": {
         const aCommits = a.defaultBranchRef?.target?.history?.totalCount || 0;
         const bCommits = b.defaultBranchRef?.target?.history?.totalCount || 0;
         compareValue = aCommits - bCommits;
         break;
       }
 
-      case 'size':
+      case "size":
         compareValue = (a.diskUsage || 0) - (b.diskUsage || 0);
         break;
 
-      case 'updated':
-        compareValue = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+      case "updated":
+        compareValue =
+          new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
         break;
 
-      case 'created':
-        compareValue = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case "created":
+        compareValue =
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         break;
 
-      case 'name':
+      case "name":
         compareValue = a.name.localeCompare(b.name);
         break;
 
@@ -65,7 +68,7 @@ export function sortRepositories(
         compareValue = 0;
     }
 
-    return direction === 'asc' ? compareValue : -compareValue;
+    return direction === "asc" ? compareValue : -compareValue;
   });
 
   return sorted;
@@ -89,7 +92,7 @@ export function sortRepositories(
  */
 export function filterRepositories(
   repositories: Repository[],
-  filters: RepositoryFilter
+  filters: RepositoryFilter,
 ): Repository[] {
   let filtered = [...repositories];
 
@@ -119,7 +122,9 @@ export function filterRepositories(
 
   // Filter: Minimum stars
   if (filters.minStars !== undefined && filters.minStars > 0) {
-    filtered = filtered.filter((repo) => (repo.stargazerCount || 0) >= filters.minStars!);
+    filtered = filtered.filter(
+      (repo) => (repo.stargazerCount || 0) >= filters.minStars!,
+    );
   }
 
   // Filter: Search query (name or description)
@@ -127,7 +132,7 @@ export function filterRepositories(
     const query = filters.searchQuery.toLowerCase().trim();
     filtered = filtered.filter((repo) => {
       const name = repo.name.toLowerCase();
-      const description = (repo.description || '').toLowerCase();
+      const description = (repo.description || "").toLowerCase();
       return name.includes(query) || description.includes(query);
     });
   }
@@ -191,7 +196,7 @@ export function getUniqueLanguages(repositories: Repository[]): string[] {
  */
 export function groupRepositories(
   repositories: Repository[],
-  groupBy: 'language' | 'year' | 'fork-status'
+  groupBy: "language" | "year" | "fork-status",
 ): Record<string, Repository[]> {
   const groups: Record<string, Repository[]> = {};
 
@@ -199,20 +204,20 @@ export function groupRepositories(
     let key: string;
 
     switch (groupBy) {
-      case 'language':
-        key = repo.primaryLanguage?.name || 'Unknown';
+      case "language":
+        key = repo.primaryLanguage?.name || "Unknown";
         break;
 
-      case 'year':
+      case "year":
         key = new Date(repo.createdAt).getFullYear().toString();
         break;
 
-      case 'fork-status':
-        key = repo.isFork ? 'Forked' : 'Original';
+      case "fork-status":
+        key = repo.isFork ? "Forked" : "Original";
         break;
 
       default:
-        key = 'Unknown';
+        key = "Unknown";
     }
 
     if (!groups[key]) {

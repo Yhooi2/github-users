@@ -1,32 +1,32 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Button } from "./button";
 import {
   Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-  CardAction,
-} from './card';
-import { Button } from './button';
+} from "./card";
 
 const meta: Meta<typeof Card> = {
-  title: 'UI/Card',
+  title: "UI/Card",
   component: Card,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A flexible card component with header, content, and footer sections. Perfect for displaying grouped content.',
+          "A flexible card component with header, content, and footer sections. Perfect for displaying grouped content.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     className: {
-      description: 'Additional CSS classes',
-      control: 'text',
+      description: "Additional CSS classes",
+      control: "text",
     },
   },
 };
@@ -147,7 +147,7 @@ export const WithForm: Story = {
               id="username"
               type="text"
               placeholder="Enter username"
-              className="border-input placeholder:text-muted-foreground flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none"
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none"
             />
           </div>
           <div className="space-y-2">
@@ -158,7 +158,7 @@ export const WithForm: Story = {
               id="email"
               type="email"
               placeholder="Enter email"
-              className="border-input placeholder:text-muted-foreground flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none"
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none"
             />
           </div>
         </div>
@@ -183,8 +183,8 @@ export const Wide: Story = {
       </CardHeader>
       <CardContent>
         <p>
-          Wide cards are useful for displaying content that requires more horizontal space,
-          such as tables, charts, or detailed information.
+          Wide cards are useful for displaying content that requires more
+          horizontal space, such as tables, charts, or detailed information.
         </p>
       </CardContent>
     </Card>
@@ -201,9 +201,10 @@ export const LongContent: Story = {
       </CardHeader>
       <CardContent>
         <p className="text-sm">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-          incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat.
         </p>
       </CardContent>
       <CardFooter>
@@ -218,7 +219,7 @@ export const LongContent: Story = {
 // Story 9: Multiple cards in a grid
 export const Grid: Story = {
   render: () => (
-    <div className="grid gap-4 md:grid-cols-2" style={{ width: '720px' }}>
+    <div className="grid gap-4 md:grid-cols-2" style={{ width: "720px" }}>
       <Card>
         <CardHeader>
           <CardTitle>Card 1</CardTitle>
@@ -264,7 +265,7 @@ export const EmptyState: Story = {
   render: () => (
     <Card className="w-[350px]">
       <CardContent className="pt-6 text-center">
-        <div className="text-muted-foreground mb-2">
+        <div className="mb-2 text-muted-foreground">
           <svg
             className="mx-auto h-12 w-12"
             fill="none"
@@ -280,7 +281,9 @@ export const EmptyState: Story = {
           </svg>
         </div>
         <h3 className="mb-1 font-semibold">No data available</h3>
-        <p className="text-muted-foreground mb-4 text-sm">Get started by adding some content</p>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Get started by adding some content
+        </p>
         <Button>Add Content</Button>
       </CardContent>
     </Card>

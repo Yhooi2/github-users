@@ -15,6 +15,7 @@
 **When to use:** Production deployment broken, need instant fix
 
 **Steps:**
+
 1. Go to Vercel Dashboard → Deployments
 2. Find previous working deployment
 3. Click "⋮" menu → "Promote to Production"
@@ -23,11 +24,13 @@
 **No code changes required!**
 
 **Pros:**
+
 - ✅ Instant rollback
 - ✅ No git operations
 - ✅ Preserves broken deployment for debugging
 
 **Cons:**
+
 - ⚠️ Doesn't fix code in git (manual fix still needed)
 
 ---
@@ -37,6 +40,7 @@
 **When to use:** Code needs to be fixed in repository
 
 **Steps:**
+
 ```bash
 # 1. Revert last commit
 git revert HEAD
@@ -49,11 +53,13 @@ git push origin main
 ```
 
 **Pros:**
+
 - ✅ Fixes code in git history
 - ✅ Creates new commit (preserves history)
 - ✅ Auto-deploys via Vercel
 
 **Cons:**
+
 - ⚠️ Slower than Vercel Dashboard
 - ⚠️ Requires git knowledge
 
@@ -64,6 +70,7 @@ git push origin main
 **When to use:** Specific file(s) need to be reverted
 
 **Steps:**
+
 ```bash
 # 1. Checkout specific files from previous commit
 git checkout main~1 src/apollo/ApolloAppProvider.tsx
@@ -77,10 +84,12 @@ vercel --prod
 ```
 
 **Pros:**
+
 - ✅ Surgical fix (only specific files)
 - ✅ Faster than full build
 
 **Cons:**
+
 - ⚠️ Manual process
 - ⚠️ Requires knowing which files to revert
 
@@ -93,6 +102,7 @@ vercel --prod
 **Scenario:** Vercel Functions not working, app broken
 
 **Quick Fix (Temporary Insecure Mode):**
+
 ```bash
 # 1. Revert Apollo Client to direct GitHub API
 git checkout main src/apollo/ApolloAppProvider.tsx
@@ -108,6 +118,7 @@ npm run build && vercel --prod
 **TODO:** Fix Vercel Functions ASAP!
 
 **Common Issues:**
+
 - `502 Bad Gateway` → Vercel Function timeout (increase to 60s)
 - `Environment variable not found` → Check Vercel Dashboard → Settings → Env Vars
 - `KV_REST_API_URL missing` → Re-create Vercel KV database
@@ -119,10 +130,12 @@ npm run build && vercel --prod
 **Scenario:** Year-by-year queries causing errors/slowness
 
 **Quick Fix:**
+
 ```typescript
 // src/hooks/useUserAnalytics.ts
 // Add feature flag:
-const ENABLE_YEAR_BY_YEAR = import.meta.env.VITE_FEATURE_YEAR_BY_YEAR === 'true';
+const ENABLE_YEAR_BY_YEAR =
+  import.meta.env.VITE_FEATURE_YEAR_BY_YEAR === "true";
 
 export function useUserAnalytics(username: string) {
   if (!ENABLE_YEAR_BY_YEAR) {
@@ -136,6 +149,7 @@ export function useUserAnalytics(username: string) {
 ```
 
 **.env.local:**
+
 ```bash
 VITE_FEATURE_YEAR_BY_YEAR=false  # ← Instant disable, no code change!
 ```
@@ -149,6 +163,7 @@ VITE_FEATURE_YEAR_BY_YEAR=false  # ← Instant disable, no code change!
 **Scenario:** Fraud detection causing false positives
 
 **Quick Fix (Feature Flag):**
+
 ```typescript
 // src/lib/metrics/fraud-detection.ts
 const ENABLE_FRAUD = import.meta.env.VITE_FEATURE_FRAUD === 'true';
@@ -164,6 +179,7 @@ export function calculateFraudDetection(...) {
 ```
 
 **.env.local:**
+
 ```bash
 VITE_FEATURE_FRAUD=false  # ← Disable fraud detection
 ```
@@ -175,6 +191,7 @@ VITE_FEATURE_FRAUD=false  # ← Disable fraud detection
 **Scenario:** New metrics calculation errors
 
 **Fallback to Old Authenticity Score:**
+
 ```typescript
 // src/components/assessment/QuickAssessment.tsx
 try {
@@ -208,11 +225,13 @@ Production error rate > 5%?
 ```
 
 **Metrics to monitor:**
+
 - Error rate (should be <1%)
 - Response time (p95 <2s)
 - Success rate (should be >99%)
 
 **Rollback if:**
+
 - Error rate >5% for >5 minutes
 - Response time p95 >5s
 - Success rate <95%
@@ -247,6 +266,7 @@ After rolling back:
 **Cause:** Issue is in database/cache, not code
 
 **Solution:**
+
 ```bash
 # Clear Vercel KV cache
 vercel kv flushall --yes
@@ -261,6 +281,7 @@ vercel kv flushall --yes
 **Cause:** Need to rollback 2+ commits
 
 **Solution:**
+
 ```bash
 # Find last working commit
 git log --oneline -10
@@ -279,6 +300,7 @@ vercel --prod
 **Cause:** Account issues
 
 **Solution:**
+
 ```bash
 # Force deploy previous version via CLI
 vercel rollback <deployment-url>
@@ -294,10 +316,10 @@ git push --force origin main  # ⚠️ USE WITH CAUTION!
 
 Track rollback frequency to identify systemic issues:
 
-| Week | Rollbacks | Reason | Prevention |
-|------|-----------|--------|------------|
-| 2025-11-17 | 0 | - | - |
-| 2025-11-24 | 1 | Phase 0 env vars | Better verification script |
+| Week       | Rollbacks | Reason           | Prevention                 |
+| ---------- | --------- | ---------------- | -------------------------- |
+| 2025-11-17 | 0         | -                | -                          |
+| 2025-11-24 | 1         | Phase 0 env vars | Better verification script |
 
 **If rollbacks >2/week:** Review deployment process!
 
@@ -308,8 +330,9 @@ Track rollback frequency to identify systemic issues:
 **To minimize rollbacks:**
 
 1. **Feature Flags** (recommended):
+
    ```typescript
-   const FEATURE_X = import.meta.env.VITE_FEATURE_X === 'true';
+   const FEATURE_X = import.meta.env.VITE_FEATURE_X === "true";
    ```
 
 2. **Gradual Rollouts:**

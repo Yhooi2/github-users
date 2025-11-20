@@ -105,7 +105,7 @@ Open your production URL and verify:
 - [ ] Can search for GitHub users
 - [ ] Profile displays with metrics
 - [ ] DevTools → Network shows `/api/github-proxy` (not `api.github.com`)
-- [ ] DevTools → Sources search for "ghp_" shows 0 results (secure!)
+- [ ] DevTools → Sources search for "ghp\_" shows 0 results (secure!)
 
 **All checks pass?** 🎉 You're live in production!
 

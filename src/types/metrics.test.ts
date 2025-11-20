@@ -1,28 +1,28 @@
-import { describe, it, expectTypeOf, expect } from 'vitest';
+import { describe, expect, expectTypeOf, it } from "vitest";
 import type {
   AuthenticityScore,
-  LanguageStats,
-  RepositoryCommitStats,
-  YearlyCommitStats,
   CommitActivity,
   CommitStatsSummary,
   LanguageDiversity,
+  LanguageStats,
+  RepositoryCommitStats,
   RepositoryStats,
-} from './metrics';
+  YearlyCommitStats,
+} from "./metrics";
 
-describe('Metrics Types', () => {
-  describe('AuthenticityScore', () => {
-    it('should have required properties', () => {
+describe("Metrics Types", () => {
+  describe("AuthenticityScore", () => {
+    it("should have required properties", () => {
       const score: AuthenticityScore = {
         score: 75,
-        category: 'High',
+        category: "High",
         breakdown: {
           originalityScore: 20,
           activityScore: 18,
           engagementScore: 15,
           codeOwnershipScore: 22,
         },
-        flags: ['hasForkedRepos'],
+        flags: ["hasForkedRepos"],
         metadata: {
           totalRepos: 10,
           originalRepos: 8,
@@ -35,26 +35,33 @@ describe('Metrics Types', () => {
       expectTypeOf(score).toEqualTypeOf<AuthenticityScore>();
     });
 
-    it('should have score as number', () => {
-      expectTypeOf<AuthenticityScore>().toHaveProperty('score').toEqualTypeOf<number>();
-    });
-
-    it('should have category as string literal union', () => {
+    it("should have score as number", () => {
       expectTypeOf<AuthenticityScore>()
-        .toHaveProperty('category')
-        .toEqualTypeOf<'High' | 'Medium' | 'Low' | 'Suspicious'>();
+        .toHaveProperty("score")
+        .toEqualTypeOf<number>();
     });
 
-    it('should accept all valid categories', () => {
-      const categories: AuthenticityScore['category'][] = ['High', 'Medium', 'Low', 'Suspicious'];
+    it("should have category as string literal union", () => {
+      expectTypeOf<AuthenticityScore>()
+        .toHaveProperty("category")
+        .toEqualTypeOf<"High" | "Medium" | "Low" | "Suspicious">();
+    });
+
+    it("should accept all valid categories", () => {
+      const categories: AuthenticityScore["category"][] = [
+        "High",
+        "Medium",
+        "Low",
+        "Suspicious",
+      ];
 
       categories.forEach((category) => {
-        expectTypeOf(category).toEqualTypeOf<AuthenticityScore['category']>();
+        expectTypeOf(category).toEqualTypeOf<AuthenticityScore["category"]>();
       });
     });
 
-    it('should have breakdown with all score components', () => {
-      expectTypeOf<AuthenticityScore['breakdown']>().toMatchTypeOf<{
+    it("should have breakdown with all score components", () => {
+      expectTypeOf<AuthenticityScore["breakdown"]>().toMatchTypeOf<{
         originalityScore: number;
         activityScore: number;
         engagementScore: number;
@@ -62,12 +69,14 @@ describe('Metrics Types', () => {
       }>();
     });
 
-    it('should have flags as string array', () => {
-      expectTypeOf<AuthenticityScore>().toHaveProperty('flags').toEqualTypeOf<string[]>();
+    it("should have flags as string array", () => {
+      expectTypeOf<AuthenticityScore>()
+        .toHaveProperty("flags")
+        .toEqualTypeOf<string[]>();
     });
 
-    it('should have metadata with repository counts', () => {
-      expectTypeOf<AuthenticityScore['metadata']>().toMatchTypeOf<{
+    it("should have metadata with repository counts", () => {
+      expectTypeOf<AuthenticityScore["metadata"]>().toMatchTypeOf<{
         totalRepos: number;
         originalRepos: number;
         forkedRepos: number;
@@ -77,11 +86,11 @@ describe('Metrics Types', () => {
     });
   });
 
-  describe('LanguageStats', () => {
-    it('should have all required properties', () => {
+  describe("LanguageStats", () => {
+    it("should have all required properties", () => {
       const stats: LanguageStats = {
-        name: 'TypeScript',
-        color: '#3178c6',
+        name: "TypeScript",
+        color: "#3178c6",
         bytes: 50000,
         percentage: 45.5,
         repositoryCount: 5,
@@ -90,22 +99,32 @@ describe('Metrics Types', () => {
       expectTypeOf(stats).toEqualTypeOf<LanguageStats>();
     });
 
-    it('should have name and color as strings', () => {
-      expectTypeOf<LanguageStats>().toHaveProperty('name').toEqualTypeOf<string>();
-      expectTypeOf<LanguageStats>().toHaveProperty('color').toEqualTypeOf<string>();
+    it("should have name and color as strings", () => {
+      expectTypeOf<LanguageStats>()
+        .toHaveProperty("name")
+        .toEqualTypeOf<string>();
+      expectTypeOf<LanguageStats>()
+        .toHaveProperty("color")
+        .toEqualTypeOf<string>();
     });
 
-    it('should have numeric properties', () => {
-      expectTypeOf<LanguageStats>().toHaveProperty('bytes').toEqualTypeOf<number>();
-      expectTypeOf<LanguageStats>().toHaveProperty('percentage').toEqualTypeOf<number>();
-      expectTypeOf<LanguageStats>().toHaveProperty('repositoryCount').toEqualTypeOf<number>();
+    it("should have numeric properties", () => {
+      expectTypeOf<LanguageStats>()
+        .toHaveProperty("bytes")
+        .toEqualTypeOf<number>();
+      expectTypeOf<LanguageStats>()
+        .toHaveProperty("percentage")
+        .toEqualTypeOf<number>();
+      expectTypeOf<LanguageStats>()
+        .toHaveProperty("repositoryCount")
+        .toEqualTypeOf<number>();
     });
   });
 
-  describe('RepositoryCommitStats', () => {
-    it('should have repository name and commit counts', () => {
+  describe("RepositoryCommitStats", () => {
+    it("should have repository name and commit counts", () => {
       const stats: RepositoryCommitStats = {
-        repositoryName: 'awesome-project',
+        repositoryName: "awesome-project",
         commits: 150,
         percentage: 25.5,
       };
@@ -114,8 +133,8 @@ describe('Metrics Types', () => {
     });
   });
 
-  describe('YearlyCommitStats', () => {
-    it('should have year, commits, and repository count', () => {
+  describe("YearlyCommitStats", () => {
+    it("should have year, commits, and repository count", () => {
       const stats: YearlyCommitStats = {
         year: 2024,
         commits: 500,
@@ -125,15 +144,21 @@ describe('Metrics Types', () => {
       expectTypeOf(stats).toEqualTypeOf<YearlyCommitStats>();
     });
 
-    it('should have all numeric properties', () => {
-      expectTypeOf<YearlyCommitStats>().toHaveProperty('year').toEqualTypeOf<number>();
-      expectTypeOf<YearlyCommitStats>().toHaveProperty('commits').toEqualTypeOf<number>();
-      expectTypeOf<YearlyCommitStats>().toHaveProperty('repositories').toEqualTypeOf<number>();
+    it("should have all numeric properties", () => {
+      expectTypeOf<YearlyCommitStats>()
+        .toHaveProperty("year")
+        .toEqualTypeOf<number>();
+      expectTypeOf<YearlyCommitStats>()
+        .toHaveProperty("commits")
+        .toEqualTypeOf<number>();
+      expectTypeOf<YearlyCommitStats>()
+        .toHaveProperty("repositories")
+        .toEqualTypeOf<number>();
     });
   });
 
-  describe('CommitActivity', () => {
-    it('should have activity rates for all time periods', () => {
+  describe("CommitActivity", () => {
+    it("should have activity rates for all time periods", () => {
       const activity: CommitActivity = {
         perDay: 1.5,
         perWeek: 10.5,
@@ -144,21 +169,29 @@ describe('Metrics Types', () => {
       expectTypeOf(activity).toEqualTypeOf<CommitActivity>();
     });
 
-    it('should have all numeric properties', () => {
-      expectTypeOf<CommitActivity>().toHaveProperty('perDay').toEqualTypeOf<number>();
-      expectTypeOf<CommitActivity>().toHaveProperty('perWeek').toEqualTypeOf<number>();
-      expectTypeOf<CommitActivity>().toHaveProperty('perMonth').toEqualTypeOf<number>();
-      expectTypeOf<CommitActivity>().toHaveProperty('perYear').toEqualTypeOf<number>();
+    it("should have all numeric properties", () => {
+      expectTypeOf<CommitActivity>()
+        .toHaveProperty("perDay")
+        .toEqualTypeOf<number>();
+      expectTypeOf<CommitActivity>()
+        .toHaveProperty("perWeek")
+        .toEqualTypeOf<number>();
+      expectTypeOf<CommitActivity>()
+        .toHaveProperty("perMonth")
+        .toEqualTypeOf<number>();
+      expectTypeOf<CommitActivity>()
+        .toHaveProperty("perYear")
+        .toEqualTypeOf<number>();
     });
   });
 
-  describe('CommitStatsSummary', () => {
-    it('should have comprehensive commit statistics', () => {
+  describe("CommitStatsSummary", () => {
+    it("should have comprehensive commit statistics", () => {
       const summary: CommitStatsSummary = {
         total: 1000,
         byRepository: [
-          { repositoryName: 'repo1', commits: 500, percentage: 50 },
-          { repositoryName: 'repo2', commits: 500, percentage: 50 },
+          { repositoryName: "repo1", commits: 500, percentage: 50 },
+          { repositoryName: "repo2", commits: 500, percentage: 50 },
         ],
         byYear: [
           { year: 2024, commits: 600, repositories: 5 },
@@ -170,93 +203,99 @@ describe('Metrics Types', () => {
           perMonth: 70,
           perYear: 840,
         },
-        mostActiveRepository: 'repo1',
+        mostActiveRepository: "repo1",
         averagePerRepository: 100,
       };
 
       expectTypeOf(summary).toEqualTypeOf<CommitStatsSummary>();
     });
 
-    it('should have total as number', () => {
-      expectTypeOf<CommitStatsSummary>().toHaveProperty('total').toEqualTypeOf<number>();
+    it("should have total as number", () => {
+      expectTypeOf<CommitStatsSummary>()
+        .toHaveProperty("total")
+        .toEqualTypeOf<number>();
     });
 
-    it('should have byRepository as array', () => {
+    it("should have byRepository as array", () => {
       expectTypeOf<CommitStatsSummary>()
-        .toHaveProperty('byRepository')
+        .toHaveProperty("byRepository")
         .toEqualTypeOf<RepositoryCommitStats[]>();
     });
 
-    it('should have byYear as array', () => {
+    it("should have byYear as array", () => {
       expectTypeOf<CommitStatsSummary>()
-        .toHaveProperty('byYear')
+        .toHaveProperty("byYear")
         .toEqualTypeOf<YearlyCommitStats[]>();
     });
 
-    it('should have activity object', () => {
+    it("should have activity object", () => {
       expectTypeOf<CommitStatsSummary>()
-        .toHaveProperty('activity')
+        .toHaveProperty("activity")
         .toEqualTypeOf<CommitActivity>();
     });
 
-    it('should have mostActiveRepository as string or null', () => {
+    it("should have mostActiveRepository as string or null", () => {
       expectTypeOf<CommitStatsSummary>()
-        .toHaveProperty('mostActiveRepository')
+        .toHaveProperty("mostActiveRepository")
         .toEqualTypeOf<string | null>();
     });
 
-    it('should have averagePerRepository as number', () => {
+    it("should have averagePerRepository as number", () => {
       expectTypeOf<CommitStatsSummary>()
-        .toHaveProperty('averagePerRepository')
+        .toHaveProperty("averagePerRepository")
         .toEqualTypeOf<number>();
     });
   });
 
-  describe('LanguageDiversity', () => {
-    it('should have diversity metrics', () => {
+  describe("LanguageDiversity", () => {
+    it("should have diversity metrics", () => {
       const diversity: LanguageDiversity = {
         score: 75,
         uniqueLanguages: 8,
-        primaryLanguage: 'TypeScript',
-        distribution: 'Diverse',
+        primaryLanguage: "TypeScript",
+        distribution: "Diverse",
       };
 
       expectTypeOf(diversity).toEqualTypeOf<LanguageDiversity>();
     });
 
-    it('should have score and uniqueLanguages as numbers', () => {
-      expectTypeOf<LanguageDiversity>().toHaveProperty('score').toEqualTypeOf<number>();
-      expectTypeOf<LanguageDiversity>().toHaveProperty('uniqueLanguages').toEqualTypeOf<number>();
+    it("should have score and uniqueLanguages as numbers", () => {
+      expectTypeOf<LanguageDiversity>()
+        .toHaveProperty("score")
+        .toEqualTypeOf<number>();
+      expectTypeOf<LanguageDiversity>()
+        .toHaveProperty("uniqueLanguages")
+        .toEqualTypeOf<number>();
     });
 
-    it('should have primaryLanguage as string or null', () => {
+    it("should have primaryLanguage as string or null", () => {
       expectTypeOf<LanguageDiversity>()
-        .toHaveProperty('primaryLanguage')
+        .toHaveProperty("primaryLanguage")
         .toEqualTypeOf<string | null>();
     });
 
-    it('should have distribution as string literal union', () => {
+    it("should have distribution as string literal union", () => {
       expectTypeOf<LanguageDiversity>()
-        .toHaveProperty('distribution')
-        .toEqualTypeOf<'Diverse' | 'Moderate' | 'Focused' | 'Single'>();
+        .toHaveProperty("distribution")
+        .toEqualTypeOf<"Diverse" | "Moderate" | "Focused" | "Single">();
     });
 
-    it('should accept all valid distribution values', () => {
-      const distributions: LanguageDiversity['distribution'][] = [
-        'Diverse',
-        'Moderate',
-        'Focused',
-        'Single',
+    it("should accept all valid distribution values", () => {
+      const distributions: LanguageDiversity["distribution"][] = [
+        "Diverse",
+        "Moderate",
+        "Focused",
+        "Single",
       ];
 
       distributions.forEach((dist) => {
-        expectTypeOf(dist).toEqualTypeOf<LanguageDiversity['distribution']>();
+        expectTypeOf(dist).toEqualTypeOf<LanguageDiversity["distribution"]>();
       });
     });
   });
 
-  describe('RepositoryStats', () => {
-    it('should have comprehensive repository statistics', () => {
+  describe("RepositoryStats", () => {
+    it("should have comprehensive repository statistics", () => {
       const stats: RepositoryStats = {
         total: 20,
         original: 18,
@@ -276,62 +315,99 @@ describe('Metrics Types', () => {
       expectTypeOf(stats).toEqualTypeOf<RepositoryStats>();
     });
 
-    it('should have all count properties as numbers', () => {
-      expectTypeOf<RepositoryStats>().toHaveProperty('total').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('original').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('forked').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('archived').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('templates').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('withTopics').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('withLicense').toEqualTypeOf<number>();
+    it("should have all count properties as numbers", () => {
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("total")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("original")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("forked")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("archived")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("templates")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("withTopics")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("withLicense")
+        .toEqualTypeOf<number>();
     });
 
-    it('should have all average properties as numbers', () => {
-      expectTypeOf<RepositoryStats>().toHaveProperty('averageStars').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('averageForks').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('averageSize').toEqualTypeOf<number>();
+    it("should have all average properties as numbers", () => {
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("averageStars")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("averageForks")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("averageSize")
+        .toEqualTypeOf<number>();
     });
 
-    it('should have all total properties as numbers', () => {
-      expectTypeOf<RepositoryStats>().toHaveProperty('totalStars').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('totalForks').toEqualTypeOf<number>();
-      expectTypeOf<RepositoryStats>().toHaveProperty('totalSize').toEqualTypeOf<number>();
+    it("should have all total properties as numbers", () => {
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("totalStars")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("totalForks")
+        .toEqualTypeOf<number>();
+      expectTypeOf<RepositoryStats>()
+        .toHaveProperty("totalSize")
+        .toEqualTypeOf<number>();
     });
   });
 
-  describe('Type compositions', () => {
-    it('should use RepositoryCommitStats in CommitStatsSummary', () => {
-      expectTypeOf<CommitStatsSummary['byRepository']>().toEqualTypeOf<RepositoryCommitStats[]>();
+  describe("Type compositions", () => {
+    it("should use RepositoryCommitStats in CommitStatsSummary", () => {
+      expectTypeOf<CommitStatsSummary["byRepository"]>().toEqualTypeOf<
+        RepositoryCommitStats[]
+      >();
     });
 
-    it('should use YearlyCommitStats in CommitStatsSummary', () => {
-      expectTypeOf<CommitStatsSummary['byYear']>().toEqualTypeOf<YearlyCommitStats[]>();
+    it("should use YearlyCommitStats in CommitStatsSummary", () => {
+      expectTypeOf<CommitStatsSummary["byYear"]>().toEqualTypeOf<
+        YearlyCommitStats[]
+      >();
     });
 
-    it('should use CommitActivity in CommitStatsSummary', () => {
-      expectTypeOf<CommitStatsSummary['activity']>().toEqualTypeOf<CommitActivity>();
+    it("should use CommitActivity in CommitStatsSummary", () => {
+      expectTypeOf<
+        CommitStatsSummary["activity"]
+      >().toEqualTypeOf<CommitActivity>();
     });
   });
 
-  describe('Metric type guards', () => {
-    it('should validate AuthenticityScore category values', () => {
-      const validCategories: AuthenticityScore['category'][] = ['High', 'Medium', 'Low', 'Suspicious'];
+  describe("Metric type guards", () => {
+    it("should validate AuthenticityScore category values", () => {
+      const validCategories: AuthenticityScore["category"][] = [
+        "High",
+        "Medium",
+        "Low",
+        "Suspicious",
+      ];
 
       validCategories.forEach((category) => {
-        expect(['High', 'Medium', 'Low', 'Suspicious']).toContain(category);
+        expect(["High", "Medium", "Low", "Suspicious"]).toContain(category);
       });
     });
 
-    it('should validate LanguageDiversity distribution values', () => {
-      const validDistributions: LanguageDiversity['distribution'][] = [
-        'Diverse',
-        'Moderate',
-        'Focused',
-        'Single',
+    it("should validate LanguageDiversity distribution values", () => {
+      const validDistributions: LanguageDiversity["distribution"][] = [
+        "Diverse",
+        "Moderate",
+        "Focused",
+        "Single",
       ];
 
       validDistributions.forEach((dist) => {
-        expect(['Diverse', 'Moderate', 'Focused', 'Single']).toContain(dist);
+        expect(["Diverse", "Moderate", "Focused", "Single"]).toContain(dist);
       });
     });
   });

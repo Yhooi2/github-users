@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Activity } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity } from "lucide-react";
 
 type Repository = {
   repository: { name: string };
@@ -11,7 +11,10 @@ type RecentActivityProps = {
   maxItems?: number;
 };
 
-export function RecentActivity({ repositories, maxItems = 5 }: RecentActivityProps) {
+export function RecentActivity({
+  repositories,
+  maxItems = 5,
+}: RecentActivityProps) {
   if (repositories.length === 0) {
     return null;
   }
@@ -31,10 +34,10 @@ export function RecentActivity({ repositories, maxItems = 5 }: RecentActivityPro
           {displayedRepos.map((repo, index) => (
             <div
               key={`${repo.repository.name}-${index}`}
-              className="bg-card hover:bg-accent flex items-center justify-between rounded-lg border p-3 transition-colors"
+              className="flex items-center justify-between rounded-lg border bg-card p-3 transition-colors hover:bg-accent"
             >
               <span className="font-medium">{repo.repository.name}</span>
-              <span className="text-muted-foreground text-sm">
+              <span className="text-sm text-muted-foreground">
                 {repo.contributions.totalCount.toLocaleString()} commits
               </span>
             </div>

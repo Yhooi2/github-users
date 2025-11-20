@@ -1,41 +1,41 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import * as React from 'react'
-import { Input } from './input'
-import { Label } from './label'
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import * as React from "react";
+import { Input } from "./input";
+import { Label } from "./label";
 
 const meta: Meta<typeof Input> = {
-  title: 'UI/Input',
+  title: "UI/Input",
   component: Input,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   argTypes: {
     type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'number', 'search', 'tel', 'url'],
-      description: 'HTML input type',
+      control: "select",
+      options: ["text", "email", "password", "number", "search", "tel", "url"],
+      description: "HTML input type",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Whether the input is disabled',
+      control: "boolean",
+      description: "Whether the input is disabled",
     },
     placeholder: {
-      control: 'text',
-      description: 'Placeholder text',
+      control: "text",
+      description: "Placeholder text",
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    type: 'text',
-    placeholder: 'Enter text...',
+    type: "text",
+    placeholder: "Enter text...",
   },
-}
+};
 
 export const WithLabel: Story = {
   render: () => (
@@ -44,7 +44,7 @@ export const WithLabel: Story = {
       <Input id="username" type="text" placeholder="Enter your username" />
     </div>
   ),
-}
+};
 
 export const Email: Story = {
   render: () => (
@@ -53,7 +53,7 @@ export const Email: Story = {
       <Input id="email" type="email" placeholder="Enter your email" />
     </div>
   ),
-}
+};
 
 export const Password: Story = {
   render: () => (
@@ -62,7 +62,7 @@ export const Password: Story = {
       <Input id="password" type="password" placeholder="Enter your password" />
     </div>
   ),
-}
+};
 
 export const Number: Story = {
   render: () => (
@@ -71,7 +71,7 @@ export const Number: Story = {
       <Input id="age" type="number" placeholder="Enter your age" />
     </div>
   ),
-}
+};
 
 export const Search: Story = {
   render: () => (
@@ -80,23 +80,23 @@ export const Search: Story = {
       <Input id="search" type="search" placeholder="Search..." />
     </div>
   ),
-}
+};
 
 export const Disabled: Story = {
   args: {
-    type: 'text',
-    placeholder: 'Disabled input',
+    type: "text",
+    placeholder: "Disabled input",
     disabled: true,
   },
-}
+};
 
 export const WithValue: Story = {
   args: {
-    type: 'text',
-    placeholder: 'Enter text...',
-    defaultValue: 'Pre-filled value',
+    type: "text",
+    placeholder: "Enter text...",
+    defaultValue: "Pre-filled value",
   },
-}
+};
 
 export const ErrorState: Story = {
   render: () => (
@@ -109,12 +109,12 @@ export const ErrorState: Story = {
         aria-invalid="true"
         defaultValue="invalid-username!"
       />
-      <p className="text-destructive mt-1 text-sm">
+      <p className="mt-1 text-sm text-destructive">
         Username must be alphanumeric
       </p>
     </div>
   ),
-}
+};
 
 export const File: Story = {
   render: () => (
@@ -123,7 +123,7 @@ export const File: Story = {
       <Input id="file" type="file" />
     </div>
   ),
-}
+};
 
 export const AllTypes: Story = {
   render: () => (
@@ -158,11 +158,11 @@ export const AllTypes: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const Interactive: Story = {
   render: () => {
-    const [value, setValue] = React.useState('')
+    const [value, setValue] = React.useState("");
 
     return (
       <div className="w-[300px]">
@@ -174,10 +174,10 @@ export const Interactive: Story = {
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
-        <p className="text-muted-foreground mt-2 text-sm">
-          Current value: <strong>{value || '(empty)'}</strong>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Current value: <strong>{value || "(empty)"}</strong>
         </p>
       </div>
-    )
+    );
   },
-}
+};

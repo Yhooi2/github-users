@@ -12,42 +12,49 @@ All critical refactoring phases (P0-P2) are **100% complete** and **production-r
 ## Key Changes
 
 ### 🔒 Phase 0: Backend Security
+
 - Backend proxy for GitHub API (`api/github-proxy.ts`)
 - Token secured server-side (never exposed to client)
 - Rate limit monitoring UI components
 - All security tests passing
 
 ### 📊 Phase 1: Year-by-Year Data
+
 - Dynamic year ranges (account creation to present)
 - Parallel GraphQL queries
 - Repository separation (owned vs contributions)
 - 26 tests passing
 
 ### 📈 Phase 2: Metrics Calculation
+
 - **4 new metrics:** Activity, Impact, Quality, Growth
 - 100% test coverage (76 tests)
 - Following `authenticity.ts` pattern
 - All calculations verified
 
 ### 🎨 Phase 3: Core Components
+
 - MetricCard component (11 tests + 17 stories)
 - QuickAssessment grid (9 tests + 7 stories)
 - MetricExplanationModal
 - Full Storybook coverage
 
 ### 📅 Phase 4: Timeline Components
+
 - ActivityTimeline (year-by-year view)
 - TimelineYear (collapsible rows)
 - YearExpandedView (top projects)
 - 29 tests passing
 
 ### 🎯 Phase 5: Layout Refactoring
+
 - Single-page vertical scroll (tabs removed)
 - SearchHeader component
 - ProjectSection (owned vs contributions)
 - Progressive disclosure UX
 
 ### ✅ Phase 6: Testing & Polish
+
 - E2E tests (21 scenarios)
 - Accessibility testing (WCAG 2.1 AA)
 - Performance optimization
@@ -88,6 +95,7 @@ Total:   ~184 KB gzipped ✅
 **Status:** ✅ READY FOR PRODUCTION
 
 **Next Steps:**
+
 1. Create GitHub Personal Access Token ([instructions](../DEPLOY_NOW.md))
 2. Test locally: `npm run dev`
 3. Deploy: `vercel --prod`

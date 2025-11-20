@@ -1,13 +1,13 @@
-import { PieChart, Pie, Cell, Legend } from 'recharts';
-import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
-import { LoadingState } from '@/components/layout/LoadingState';
-import { ErrorState } from '@/components/layout/ErrorState';
-import { EmptyState } from '@/components/layout/EmptyState';
-import type { LanguageStats } from '@/lib/statistics';
-import { formatBytes } from '@/lib/statistics';
-import { Code2 } from 'lucide-react';
+import { EmptyState } from "@/components/layout/EmptyState";
+import { ErrorState } from "@/components/layout/ErrorState";
+import { LoadingState } from "@/components/layout/LoadingState";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import type { LanguageStats } from "@/lib/statistics";
+import { formatBytes } from "@/lib/statistics";
+import { Code2 } from "lucide-react";
+import { Cell, Legend, Pie, PieChart } from "recharts";
 
-type ChartVariant = 'pie' | 'donut';
+type ChartVariant = "pie" | "donut";
 
 type Props = {
   /**
@@ -67,16 +67,16 @@ type Props = {
 
 // Predefined color palette for languages
 const LANGUAGE_COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  '#8884d8',
-  '#82ca9d',
-  '#ffc658',
-  '#ff8042',
-  '#a4de6c',
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#ff8042",
+  "#a4de6c",
 ];
 
 /**
@@ -104,15 +104,15 @@ const LANGUAGE_COLORS = [
  */
 export function LanguageChart({
   data,
-  variant = 'pie',
+  variant = "pie",
   maxLanguages = 5,
   loading = false,
   error = null,
-  loadingMessage = 'Loading language statistics...',
+  loadingMessage = "Loading language statistics...",
   errorTitle,
   errorDescription,
-  emptyTitle = 'No Language Data',
-  emptyDescription = 'No programming language statistics available.',
+  emptyTitle = "No Language Data",
+  emptyDescription = "No programming language statistics available.",
   showLegend = true,
 }: Props) {
   // Loading state
@@ -124,7 +124,7 @@ export function LanguageChart({
   if (error) {
     return (
       <ErrorState
-        title={errorTitle || 'Failed to load language statistics'}
+        title={errorTitle || "Failed to load language statistics"}
         message={errorDescription || error.message}
       />
     );
@@ -150,12 +150,12 @@ export function LanguageChart({
         percentage: acc.percentage + lang.percentage,
         repos: acc.repos + lang.repositoryCount,
       }),
-      { size: 0, percentage: 0, repos: 0 }
+      { size: 0, percentage: 0, repos: 0 },
     );
 
     if (otherTotal.size > 0) {
       chartData.push({
-        name: 'Other',
+        name: "Other",
         size: otherTotal.size,
         percentage: otherTotal.percentage,
         repositoryCount: otherTotal.repos,
@@ -166,15 +166,18 @@ export function LanguageChart({
   const totalLanguages = data.length;
 
   // Prepare chart config
-  const chartConfig = chartData.reduce((config, lang, index) => {
-    config[lang.name] = {
-      label: lang.name,
-      color: LANGUAGE_COLORS[index % LANGUAGE_COLORS.length],
-    };
-    return config;
-  }, {} as Record<string, { label: string; color: string }>);
+  const chartConfig = chartData.reduce(
+    (config, lang, index) => {
+      config[lang.name] = {
+        label: lang.name,
+        color: LANGUAGE_COLORS[index % LANGUAGE_COLORS.length],
+      };
+      return config;
+    },
+    {} as Record<string, { label: string; color: string }>,
+  );
 
-  const innerRadius = variant === 'donut' ? 60 : 0;
+  const innerRadius = variant === "donut" ? 60 : 0;
 
   return (
     <div className="space-y-4">
@@ -182,12 +185,13 @@ export function LanguageChart({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">Language Distribution</h3>
-          <p className="text-muted-foreground text-sm">
-            {totalLanguages} language{totalLanguages !== 1 ? 's' : ''} across repositories
+          <p className="text-sm text-muted-foreground">
+            {totalLanguages} language{totalLanguages !== 1 ? "s" : ""} across
+            repositories
             {totalLanguages > maxLanguages && ` (showing top ${maxLanguages})`}
           </p>
         </div>
-        <Code2 className="text-muted-foreground h-5 w-5" aria-hidden="true" />
+        <Code2 className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
       </div>
 
       {/* Chart */}
@@ -202,7 +206,9 @@ export function LanguageChart({
             innerRadius={innerRadius}
             outerRadius={80}
             paddingAngle={2}
-            label={({ name, percentage }) => `${name} ${percentage.toFixed(1)}%`}
+            label={({ name, percentage }) =>
+              `${name} ${percentage.toFixed(1)}%`
+            }
           >
             {chartData.map((entry, index) => (
               <Cell
@@ -217,14 +223,15 @@ export function LanguageChart({
 
               const data = payload[0].payload as LanguageStats;
               return (
-                <div className="bg-background rounded-lg border p-2 shadow-sm">
+                <div className="rounded-lg border bg-background p-2 shadow-sm">
                   <div className="flex flex-col gap-1">
                     <span className="font-semibold">{data.name}</span>
-                    <span className="text-muted-foreground text-sm">
+                    <span className="text-sm text-muted-foreground">
                       {data.percentage.toFixed(2)}% • {formatBytes(data.size)}
                     </span>
-                    <span className="text-muted-foreground text-xs">
-                      {data.repositoryCount} repositor{data.repositoryCount !== 1 ? 'ies' : 'y'}
+                    <span className="text-xs text-muted-foreground">
+                      {data.repositoryCount} repositor
+                      {data.repositoryCount !== 1 ? "ies" : "y"}
                     </span>
                   </div>
                 </div>
@@ -254,16 +261,20 @@ export function LanguageChart({
             <div className="flex items-center gap-2">
               <div
                 className="h-3 w-3 rounded-full"
-                style={{ backgroundColor: LANGUAGE_COLORS[index % LANGUAGE_COLORS.length] }}
+                style={{
+                  backgroundColor:
+                    LANGUAGE_COLORS[index % LANGUAGE_COLORS.length],
+                }}
                 aria-hidden="true"
               />
               <span className="font-medium">{lang.name}</span>
             </div>
-            <div className="text-muted-foreground flex gap-4">
+            <div className="flex gap-4 text-muted-foreground">
               <span>{lang.percentage.toFixed(1)}%</span>
               <span>{formatBytes(lang.size)}</span>
               <span>
-                {lang.repositoryCount} repo{lang.repositoryCount !== 1 ? 's' : ''}
+                {lang.repositoryCount} repo
+                {lang.repositoryCount !== 1 ? "s" : ""}
               </span>
             </div>
           </div>
@@ -272,9 +283,10 @@ export function LanguageChart({
 
       {/* Other languages note */}
       {otherLanguages.length > 0 && (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           * "Other" includes {otherLanguages.length} additional language
-          {otherLanguages.length !== 1 ? 's' : ''}: {otherLanguages.map((l) => l.name).join(', ')}
+          {otherLanguages.length !== 1 ? "s" : ""}:{" "}
+          {otherLanguages.map((l) => l.name).join(", ")}
         </p>
       )}
     </div>

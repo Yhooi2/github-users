@@ -1,8 +1,8 @@
-import { useQuery } from "@apollo/client"
-import { useMemo } from "react"
+import { useQuery } from "@apollo/client";
+import { useEffect, useMemo } from "react";
 import { getQueryDates, getThreeYearRanges } from "./date-helpers";
-import { GET_USER_INFO } from "./queriers";
 import type { GitHubGraphQLResponse, RateLimit } from "./github-api.types";
+import { GET_USER_INFO } from "./queriers";
 
 /**
  * Options for useQueryUser hook
@@ -49,7 +49,7 @@ export interface UseQueryUserOptions {
 function useQueryUser(
   login: string,
   daysBack: number = 365,
-  options?: UseQueryUserOptions
+  options?: UseQueryUserOptions,
 ) {
   const variables = useMemo(() => {
     const queryDates = getQueryDates(daysBack);
@@ -68,18 +68,22 @@ function useQueryUser(
     };
   }, [login, daysBack]);
 
-  return useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
+  const queryResult = useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
     variables,
     skip: !login,
-    errorPolicy: 'all',
+    errorPolicy: "all",
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {
-      // Call rate limit callback if provided and rate limit exists in response
-      if (options?.onRateLimitUpdate && data.rateLimit) {
-        options.onRateLimitUpdate(data.rateLimit);
-      }
-    },
   });
+
+  const onRateLimitUpdate = options?.onRateLimitUpdate;
+
+  useEffect(() => {
+    if (onRateLimitUpdate && queryResult.data?.rateLimit) {
+      onRateLimitUpdate(queryResult.data.rateLimit);
+    }
+  }, [onRateLimitUpdate, queryResult.data?.rateLimit]);
+
+  return queryResult;
 }
 
-export default useQueryUser
+export default useQueryUser;

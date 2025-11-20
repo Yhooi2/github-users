@@ -9,10 +9,12 @@
 ## 🤖 Recommended Agents
 
 **Before starting:**
+
 - **Explore agent:** "Study src/components/user/UserAuthenticity.tsx as UI template"
 - **Plan agent:** "Create component implementation checklist for Phase 3"
 
 **During implementation:**
+
 - **general-purpose agent:** "Implement Step 3.1 - MetricCard component"
 - **general-purpose agent:** "Create MetricCard.stories.tsx"
 - **test-runner-fixer agent:** "Run tests for MetricCard.test.tsx"
@@ -20,12 +22,14 @@
 - **test-runner-fixer agent:** "Run all component tests"
 
 **After each component:**
+
 ```bash
 npm run build-storybook  # Build Storybook for MCP
 code-review-specialist agent: "Review component against shadcn/ui patterns"
 ```
 
 **Final verification:**
+
 - **code-review-specialist agent:** "Verify >90% test coverage for all components"
 - **Explore agent:** "Check Storybook has stories for all components"
 
@@ -36,11 +40,13 @@ code-review-specialist agent: "Review component against shadcn/ui patterns"
 Build UI components for displaying metrics and assessments.
 
 **Current State:**
+
 - `UserAuthenticity.tsx` exists as perfect template
 - shadcn/ui components already installed (28+ components)
 - Storybook workflow established
 
 **Target State:**
+
 - MetricCard component (like UserAuthenticity card)
 - QuickAssessment (4-metric grid)
 - MetricExplanationModal
@@ -74,6 +80,7 @@ See [REFACTORING_MASTER_PLAN.md](../REFACTORING_MASTER_PLAN.md#-development-phil
 ### Step 3.1: MetricCard Component
 
 **Install shadcn Card (if not already):**
+
 ```bash
 npx shadcn@latest add card
 npx shadcn@latest add progress
@@ -175,71 +182,71 @@ export function MetricCard({
 **File:** `src/components/assessment/MetricCard.stories.tsx`
 
 ```typescript
-import type { Meta, StoryObj } from '@storybook/react'
-import { MetricCard } from './MetricCard'
+import type { Meta, StoryObj } from "@storybook/react";
+import { MetricCard } from "./MetricCard";
 
 const meta: Meta<typeof MetricCard> = {
-  title: 'Assessment/MetricCard',
+  title: "Assessment/MetricCard",
   component: MetricCard,
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof MetricCard>
+export default meta;
+type Story = StoryObj<typeof MetricCard>;
 
 export const ActivityHigh: Story = {
   args: {
-    title: 'Activity',
+    title: "Activity",
     score: 85,
-    level: 'High',
+    level: "High",
     breakdown: [
-      { label: 'Recent commits', value: 40, max: 40 },
-      { label: 'Consistency', value: 30, max: 30 },
-      { label: 'Diversity', value: 15, max: 30 },
+      { label: "Recent commits", value: 40, max: 40 },
+      { label: "Consistency", value: 30, max: 30 },
+      { label: "Diversity", value: 15, max: 30 },
     ],
   },
-}
+};
 
 export const ImpactStrong: Story = {
   args: {
-    title: 'Impact',
+    title: "Impact",
     score: 72,
-    level: 'Strong',
+    level: "Strong",
   },
-}
+};
 
 export const QualityExcellent: Story = {
   args: {
-    title: 'Quality',
+    title: "Quality",
     score: 90,
-    level: 'Excellent',
+    level: "Excellent",
     breakdown: [
-      { label: 'Originality', value: 30, max: 30 },
-      { label: 'Documentation', value: 22, max: 25 },
-      { label: 'Ownership', value: 18, max: 20 },
-      { label: 'Maturity', value: 12, max: 15 },
-      { label: 'Stack', value: 8, max: 10 },
+      { label: "Originality", value: 30, max: 30 },
+      { label: "Documentation", value: 22, max: 25 },
+      { label: "Ownership", value: 18, max: 20 },
+      { label: "Maturity", value: 12, max: 15 },
+      { label: "Stack", value: 8, max: 10 },
     ],
   },
-}
+};
 
 export const Loading: Story = {
   args: {
-    title: 'Activity',
+    title: "Activity",
     score: 0,
-    level: 'Low',
+    level: "Low",
     loading: true,
   },
-}
+};
 
 export const WithExplainButton: Story = {
   args: {
-    title: 'Growth',
+    title: "Growth",
     score: 45,
-    level: 'Moderate',
-    onExplainClick: () => alert('Explain Growth metric'),
+    level: "Moderate",
+    onExplainClick: () => alert("Explain Growth metric"),
   },
-}
+};
 ```
 
 **File:** `src/components/assessment/MetricCard.test.tsx`
@@ -378,6 +385,7 @@ export function QuickAssessment({
 ### Step 3.3: MetricExplanationModal
 
 **Install Dialog:**
+
 ```bash
 npx shadcn@latest add dialog
 ```
@@ -464,6 +472,7 @@ export function MetricExplanationModal({
 ### Step 3.4: AssessmentSummary (Optional AI Summary)
 
 **Optional component for Phase 3+:**
+
 - Display AI-generated summary of user profile
 - Based on all 4 metrics
 - Can be implemented later
@@ -479,7 +488,7 @@ export function MetricExplanationModal({
 - [ ] All components have `.stories.tsx`
 - [ ] All components have `.test.tsx`
 - [ ] Storybook built and indexed (`npm run build-storybook`)
-- [ ] >90% test coverage
+- [ ] > 90% test coverage
 - [ ] Uses existing shadcn/ui components (Card, Progress, Badge, Dialog)
 - [ ] Responsive (1 col mobile, 2 cols tablet, 4 cols desktop)
 
@@ -488,11 +497,13 @@ export function MetricExplanationModal({
 ## 📊 Performance Expectations
 
 **Rendering Times:**
+
 - MetricCard: <16ms (60fps)
 - QuickAssessment (4 cards): <50ms
 - Modal open/close: <200ms
 
 **Bundle Impact:**
+
 - MetricCard: ~2KB
 - QuickAssessment: ~1KB
 - Modal: ~3KB (Dialog component)
@@ -503,12 +514,14 @@ export function MetricExplanationModal({
 ## 🎨 Design Patterns
 
 **Follow existing patterns:**
+
 - Card layout from UserAuthenticity.tsx
 - Color coding from theme (primary, muted, etc.)
 - Hover effects: `hover:shadow-lg hover:-translate-y-0.5`
 - Loading states: `animate-pulse` with skeleton
 
 **Accessibility:**
+
 - Proper ARIA labels
 - Keyboard navigation
 - Focus management
@@ -519,6 +532,7 @@ export function MetricExplanationModal({
 ## 🧪 Testing Strategy
 
 **Test Coverage:**
+
 - Component rendering (all states)
 - Props validation (score, level, breakdown)
 - User interactions (button clicks, modal open/close)
@@ -527,6 +541,7 @@ export function MetricExplanationModal({
 - Accessibility (axe-core)
 
 **Storybook Coverage:**
+
 - Default state
 - Loading state
 - With breakdown
@@ -541,11 +556,13 @@ export function MetricExplanationModal({
 **If components fail:**
 
 1. **Hide new components:**
+
    ```typescript
    {FEATURE_FLAGS.NEW_METRICS && <QuickAssessment />}
    ```
 
 2. **Use fallback UI:**
+
    ```typescript
    {metrics ? <QuickAssessment /> : <UserAuthenticity />}
    ```
@@ -559,16 +576,19 @@ export function MetricExplanationModal({
 ## 📚 Resources
 
 **shadcn/ui Components:**
+
 - [Card](https://ui.shadcn.com/docs/components/card)
 - [Progress](https://ui.shadcn.com/docs/components/progress)
 - [Badge](https://ui.shadcn.com/docs/components/badge)
 - [Dialog](https://ui.shadcn.com/docs/components/dialog)
 
 **Storybook:**
+
 - [Writing Stories](https://storybook.js.org/docs/writing-stories)
 - [Testing](https://storybook.js.org/docs/writing-tests)
 
 **Testing:**
+
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Vitest](https://vitest.dev/)
 

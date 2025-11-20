@@ -15,16 +15,16 @@
 
 #### Ключевые Показатели
 
-| Метрика | Значение | Оценка |
-|---------|----------|--------|
-| **Test Pass Rate** | 98.8% (1676/1696) | ⭐⭐⭐⭐ |
-| **Test Files** | 82 файла | ⭐⭐⭐⭐⭐ |
-| **Source Files** | 153 файла | ⭐⭐⭐⭐ |
-| **API Coverage** | 67% (4/6 endpoints) | ⚠️ **3/5** |
-| **Component Coverage** | 95%+ | ⭐⭐⭐⭐⭐ |
-| **Security Score** | 9/10 | ⭐⭐⭐⭐⭐ |
-| **Documentation** | Excellent (22 docs) | ⭐⭐⭐⭐⭐ |
-| **Architecture** | Clean, modular | ⭐⭐⭐⭐⭐ |
+| Метрика                | Значение            | Оценка     |
+| ---------------------- | ------------------- | ---------- |
+| **Test Pass Rate**     | 98.8% (1676/1696)   | ⭐⭐⭐⭐   |
+| **Test Files**         | 82 файла            | ⭐⭐⭐⭐⭐ |
+| **Source Files**       | 153 файла           | ⭐⭐⭐⭐   |
+| **API Coverage**       | 67% (4/6 endpoints) | ⚠️ **3/5** |
+| **Component Coverage** | 95%+                | ⭐⭐⭐⭐⭐ |
+| **Security Score**     | 9/10                | ⭐⭐⭐⭐⭐ |
+| **Documentation**      | Excellent (22 docs) | ⭐⭐⭐⭐⭐ |
+| **Architecture**       | Clean, modular      | ⭐⭐⭐⭐⭐ |
 
 ---
 
@@ -33,6 +33,7 @@
 ### ✅ Сильные Стороны (Top 10)
 
 #### 1. **Превосходная Security Architecture** (10/10)
+
 - ✅ Backend proxy (`/api/github-proxy`) изолирует токены на сервере
 - ✅ Токены НЕ экспонируются в client bundle (проверено)
 - ✅ OAuth с CSRF protection (crypto.randomBytes)
@@ -45,6 +46,7 @@
 ---
 
 #### 2. **Отличный Test Coverage** (9/10)
+
 ```
 Test Files:    82 total (78 passed, 4 failed)
 Tests:         1696 total (1676 passed, 18 failed, 2 skipped)
@@ -53,6 +55,7 @@ Duration:      56.82s
 ```
 
 **Сильные стороны:**
+
 - ✅ Component → Storybook → Test workflow строго соблюдается
 - ✅ 82 тестовых файла покрывают все критичные пути
 - ✅ Централизованные mock data factories (`src/test/mocks/github-data.ts`)
@@ -60,12 +63,14 @@ Duration:      56.82s
 - ✅ E2E tests с Playwright (7 файлов)
 
 **Слабости:**
+
 - ⚠️ 18 падающих тестов (Avatar, Radix Select, Apollo deprecated API)
 - ⚠️ API endpoints без тестов (67% coverage)
 
 ---
 
 #### 3. **Модульная Архитектура** (9/10)
+
 ```
 src/
 ├── apollo/          # GraphQL client layer
@@ -78,6 +83,7 @@ src/
 ```
 
 **Преимущества:**
+
 - ✅ Четкое разделение concerns (Apollo, Components, Hooks, Lib)
 - ✅ shadcn/ui components в `components/ui/`
 - ✅ Business logic изолирована в `lib/`
@@ -87,6 +93,7 @@ src/
 ---
 
 #### 4. **Строгое Следование TypeScript Best Practices** (10/10)
+
 - ✅ Strict mode enabled (`tsconfig.json`)
 - ✅ No `any` types (enforced by ESLint)
 - ✅ Descriptive prop types (`UserAuthenticityProps`, не `Props`)
@@ -94,20 +101,23 @@ src/
 - ✅ Type guards для runtime validation
 
 **Пример:**
+
 ```typescript
 // src/types/metrics.ts
 export interface AuthenticityResult {
-  score: number
-  breakdown: AuthenticityBreakdown
-  flags: AuthenticityFlag[]
-  metadata: AuthenticityMetadata
+  score: number;
+  breakdown: AuthenticityBreakdown;
+  flags: AuthenticityFlag[];
+  metadata: AuthenticityMetadata;
 }
 ```
 
 ---
 
 #### 5. **Отличная Документация** (9/10)
+
 **22 документа** в `docs/`:
+
 - ✅ Master plan с детализацией по фазам
 - ✅ Completion summaries для каждой фазы (0-7)
 - ✅ Testing guide (complete)
@@ -118,43 +128,47 @@ export interface AuthenticityResult {
 - ✅ Performance benchmarks
 
 **Проблемы:**
+
 - ⚠️ Некоторое дублирование между документами
 - ⚠️ TODO комментарии в коде (`src/App.tsx`)
 
 ---
 
 #### 6. **Phase-Based Refactoring (8/8 Completed)** (9/10)
-| Phase | Status | Duration | Quality |
-|-------|--------|----------|---------|
-| Phase -1 | ✅ Complete | 1 day | Documentation cleanup |
-| Phase 0 | ✅ Complete | 2 days | Backend security ⭐⭐⭐⭐⭐ |
-| Phase 1 | ✅ Complete | 3 days | GraphQL multi-query ⭐⭐⭐⭐⭐ |
-| Phase 2 | ✅ Complete | 2 days | Metrics calculation ⭐⭐⭐⭐⭐ |
-| Phase 3 | ✅ Complete | 2 days | Core components ⭐⭐⭐⭐ |
-| Phase 4 | ✅ Complete | 2 days | Timeline components ⭐⭐⭐⭐ |
-| Phase 5 | ✅ Complete | 1 day | Layout refactoring ⭐⭐⭐⭐ |
-| Phase 6 | ✅ Complete | 2 days | Testing & polish ⭐⭐⭐⭐ |
-| Phase 7 | ✅ Complete | 3 days | OAuth integration ⭐⭐⭐⭐⭐ |
+
+| Phase    | Status      | Duration | Quality                        |
+| -------- | ----------- | -------- | ------------------------------ |
+| Phase -1 | ✅ Complete | 1 day    | Documentation cleanup          |
+| Phase 0  | ✅ Complete | 2 days   | Backend security ⭐⭐⭐⭐⭐    |
+| Phase 1  | ✅ Complete | 3 days   | GraphQL multi-query ⭐⭐⭐⭐⭐ |
+| Phase 2  | ✅ Complete | 2 days   | Metrics calculation ⭐⭐⭐⭐⭐ |
+| Phase 3  | ✅ Complete | 2 days   | Core components ⭐⭐⭐⭐       |
+| Phase 4  | ✅ Complete | 2 days   | Timeline components ⭐⭐⭐⭐   |
+| Phase 5  | ✅ Complete | 1 day    | Layout refactoring ⭐⭐⭐⭐    |
+| Phase 6  | ✅ Complete | 2 days   | Testing & polish ⭐⭐⭐⭐      |
+| Phase 7  | ✅ Complete | 3 days   | OAuth integration ⭐⭐⭐⭐⭐   |
 
 **Достижение:** Все фазы завершены в срок или раньше!
 
 ---
 
 #### 7. **Modern Tech Stack** (10/10)
+
 ```json
 {
-  "react": "19.2.0",               // Latest stable
-  "vite": "7.1.2",                 // Fastest build tool
-  "@apollo/client": "3.14.0",      // Latest GraphQL
-  "tailwindcss": "4.1.12",         // v4 stable
-  "typescript": "5.8.3",           // Latest TS
-  "@vercel/kv": "3.0.0",          // Serverless cache
-  "vitest": "4.0.6",              // Fast test runner
-  "@playwright/test": "1.56.1"    // E2E testing
+  "react": "19.2.0", // Latest stable
+  "vite": "7.1.2", // Fastest build tool
+  "@apollo/client": "3.14.0", // Latest GraphQL
+  "tailwindcss": "4.1.12", // v4 stable
+  "typescript": "5.8.3", // Latest TS
+  "@vercel/kv": "3.0.0", // Serverless cache
+  "vitest": "4.0.6", // Fast test runner
+  "@playwright/test": "1.56.1" // E2E testing
 }
 ```
 
 **Преимущества:**
+
 - ✅ Все зависимости актуальны
 - ✅ Tailwind v4 с Vite plugin (no PostCSS)
 - ✅ React 19 с новыми features
@@ -163,6 +177,7 @@ export interface AuthenticityResult {
 ---
 
 #### 8. **Storybook Integration** (9/10)
+
 - ✅ 47+ story files
 - ✅ Component → Storybook → Test workflow
 - ✅ MCP server integration
@@ -170,11 +185,13 @@ export interface AuthenticityResult {
 - ✅ Vitest integration addon
 
 **Проблема:**
+
 - ⚠️ `npm run build-storybook` required before MCP usage
 
 ---
 
 #### 9. **Apollo Client Architecture** (10/10)
+
 ```typescript
 // Отличная link chain:
 errorLink → cacheKeyLink → httpLink
@@ -192,6 +209,7 @@ Features:
 ---
 
 #### 10. **Calculation Patterns** (10/10)
+
 `src/lib/authenticity.ts` как **template** для всех metrics:
 
 ```typescript
@@ -205,6 +223,7 @@ Features:
 ```
 
 **Используется в:**
+
 - `lib/metrics/activity.ts`
 - `lib/metrics/quality.ts`
 - `lib/metrics/growth.ts`
@@ -215,16 +234,18 @@ Features:
 ### ❌ Критические Недостатки (Top 10)
 
 #### 1. **API Endpoints Без Тестов** 🔴 КРИТИЧНО
+
 **Проблема:** 3 критичных API endpoints БЕЗ unit tests
 
-| Endpoint | LOC | Production Usage | Risk |
-|----------|-----|------------------|------|
-| `api/analytics/logger.ts` | 188 | OAuth logging | 🔴 HIGH |
-| `api/analytics/oauth-usage.ts` | 374 | Analytics API | 🔴 HIGH |
-| `api/user/settings.ts` | 285 | User preferences | 🟠 MED |
-| **TOTAL** | **847 LOC** | | |
+| Endpoint                       | LOC         | Production Usage | Risk    |
+| ------------------------------ | ----------- | ---------------- | ------- |
+| `api/analytics/logger.ts`      | 188         | OAuth logging    | 🔴 HIGH |
+| `api/analytics/oauth-usage.ts` | 374         | Analytics API    | 🔴 HIGH |
+| `api/user/settings.ts`         | 285         | User preferences | 🟠 MED  |
+| **TOTAL**                      | **847 LOC** |                  |         |
 
 **Риски:**
+
 - Silent failures в KV operations
 - Утечка analytics data
 - Неправильная агрегация метрик
@@ -235,17 +256,20 @@ Features:
 ---
 
 #### 2. **18 Падающих Тестов** 🔴 КРИТИЧНО
+
 ```
 Tests:         1696 total (1676 passed, 18 failed, 2 skipped)
 Pass Rate:     98.8% (должно быть 100%)
 ```
 
 **Причины:**
+
 1. **Avatar component** (jsdom не рендерит `<img>`)
 2. **Radix Select** (Radix UI requires DOM APIs)
 3. **Apollo deprecated API** (addTypename, canonizeResults)
 
 **Решение:**
+
 ```typescript
 // Mock проблемные UI components
 vi.mock('@/components/ui/avatar')
@@ -260,6 +284,7 @@ vi.mock('@/components/ui/select')
 ---
 
 #### 3. **TODO Комментарии в Production Code** ⚠️ СРЕДНЕ
+
 ```typescript
 // src/App.tsx (4 TODO)
 // TODO: Add success toast notification
@@ -275,11 +300,13 @@ vi.mock('@/components/ui/select')
 ---
 
 #### 4. **ErrorBoundary Без Тестов** 🔴 КРИТИЧНО
+
 **Файл:** `src/components/layout/ErrorBoundary.tsx` (73 LOC)
 **Тесты:** 0
 **Проблема:** Критичный компонент БЕЗ тестов
 
 **Почему критично:**
+
 - Ловит ВСЕ ошибки в приложении
 - Class component (сложнее тестировать)
 - **Не знаем работает ли он вообще!**
@@ -289,23 +316,27 @@ vi.mock('@/components/ui/select')
 ---
 
 #### 5. **Rate Limit Bug** 🔴 PRODUCTION BUG
+
 **Где:** `src/components/UserProfile.tsx:41`
 **Что сломано:**
+
 ```typescript
-const { data, loading, error, refetch } = useQueryUser(userName)
+const { data, loading, error, refetch } = useQueryUser(userName);
 //                                                     ↑ НЕТ CALLBACK!
 ```
 
 **Симптом:**
+
 - Rate limit в UI всегда показывает "5000/5000"
 - Реальный rate limit приходит с API, но НЕ обновляется
 - Пользователь не видит сколько запросов осталось
 
 **Решение:**
+
 ```typescript
 const { data, loading, error, refetch } = useQueryUser(userName, 365, {
-  onRateLimitUpdate: props.onRateLimitUpdate
-})
+  onRateLimitUpdate: props.onRateLimitUpdate,
+});
 ```
 
 **План:** TEST_REFACTORING_REPORT.md, День 1 (2-3 hours)
@@ -316,12 +347,12 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 
 **Не протестированы end-to-end:**
 
-| Критический путь | Тесты | Coverage |
-|------------------|-------|----------|
-| Rate Limit: API → UI | ❌ Нет | 0% |
-| Cache Transition: Demo → Auth | ❌ Нет | 0% |
-| Session Expiration Mid-Use | ❌ Нет | 0% |
-| Parallel Query Failures | ❌ Нет | 0% |
+| Критический путь              | Тесты  | Coverage |
+| ----------------------------- | ------ | -------- |
+| Rate Limit: API → UI          | ❌ Нет | 0%       |
+| Cache Transition: Demo → Auth | ❌ Нет | 0%       |
+| Session Expiration Mid-Use    | ❌ Нет | 0%       |
+| Parallel Query Failures       | ❌ Нет | 0%       |
 
 **Риск:** Production bugs не пойманы unit tests
 
@@ -330,16 +361,19 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ---
 
 #### 7. **useUserAnalytics Hook Без Тестов** 🟠 ВЫСОКИЙ
+
 **Файл:** `src/hooks/useUserAnalytics.ts` (177 LOC)
 **Тесты:** 0
 **Использование:** Phase 1 Timeline feature
 
 **Функционал:**
+
 - Parallel GraphQL queries (`Promise.all`)
 - Year range generation
 - Owned repos vs contributions separation
 
 **Риски:**
+
 - Partial query failures → undefined timeline
 - Неправильная сортировка → UX bug
 
@@ -369,25 +403,27 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ---
 
 #### 9. **Mock Data Duplication** ⚠️ СРЕДНЕ
+
 **Проблема:** 18+ файлов дублируют repository mocks
 
 ```typescript
 // Дублируется в 18 файлах (~500 LOC):
 const mockRepository = {
-  id: '1',
-  name: 'test-repo',
-  description: 'Test',
+  id: "1",
+  name: "test-repo",
+  description: "Test",
   stargazerCount: 100,
   forkCount: 10,
   // ... ещё 30 строк
-}
+};
 ```
 
 **Решение:**
+
 ```typescript
 // Централизованная factory уже есть:
-import { createMockRepository } from '@/test/mocks/github-data'
-const repo = createMockRepository({ stars: 100 })
+import { createMockRepository } from "@/test/mocks/github-data";
+const repo = createMockRepository({ stars: 100 });
 ```
 
 **Нужно:** Refactor 18 файлов → используют factory
@@ -397,19 +433,21 @@ const repo = createMockRepository({ stars: 100 })
 ---
 
 #### 10. **Test Diagnostics Quality** ⚠️ СРЕДНЕ
+
 **Проблема:** 40% тестов падают с generic errors
 
 ```typescript
 // ПЛОХО (текущий код):
-expect(result.score).toBe(75)
+expect(result.score).toBe(75);
 // Падает: "Expected 75, received 68" ← НЕ ПОНЯТНО ПОЧЕМУ
 
 // ХОРОШО (нужно добавить):
-expect(result.score).toBe(75,
+expect(result.score).toBe(
+  75,
   `Expected score 75, got ${result.score}.\n` +
-  `Breakdown: activity=${result.breakdown.activityScore}, ` +
-  `quality=${result.breakdown.qualityScore}`
-)
+    `Breakdown: activity=${result.breakdown.activityScore}, ` +
+    `quality=${result.breakdown.qualityScore}`,
+);
 // Падает: "Expected score 75, got 68. Breakdown: activity=18 (expected 25)"
 // ← СРАЗУ ВИДНО ГДЕ ПРОБЛЕМА
 ```
@@ -432,12 +470,14 @@ Security: Server-side token storage
 **Сильные стороны:**
 
 ✅ **Backend Proxy Pattern**
+
 ```typescript
 // Client → /api/github-proxy → GitHub API
 // ↑ Token НЕ экспонируется в client bundle
 ```
 
 ✅ **Dual-Mode Caching**
+
 ```typescript
 // Demo mode:  cache key = `demo:${query}`
 // Auth mode:  cache key = `user:${sessionId}:${query}`
@@ -445,11 +485,13 @@ Security: Server-side token storage
 ```
 
 ✅ **OAuth Security**
+
 - CSRF protection (crypto.randomBytes)
 - HttpOnly cookies
 - Session в Vercel KV (30 days TTL)
 
 **Слабости:**
+
 - ⚠️ `api/analytics/*` без тестов
 - ⚠️ Нет retry logic для KV failures
 - ⚠️ Session activity не обновляется на каждом request
@@ -468,6 +510,7 @@ Forms: Controlled components
 **Сильные стороны:**
 
 ✅ **Component Hierarchy**
+
 ```
 components/
 ├── layout/      # Layouts, headers, states
@@ -480,16 +523,19 @@ components/
 ```
 
 ✅ **Separation of Concerns**
+
 - Components: только UI logic
 - Hooks: data fetching + state
 - Lib: business logic (calculations)
 
 ✅ **shadcn/ui Integration**
+
 - 28+ UI components
 - New York style
 - Full TypeScript support
 
 **Слабости:**
+
 - ⚠️ ErrorBoundary без тестов
 - ⚠️ Некоторые компоненты без Storybook stories
 
@@ -498,6 +544,7 @@ components/
 ### 3. Apollo Client Layer (10/10)
 
 **Link Chain:**
+
 ```typescript
 errorLink → cacheKeyLink → httpLink
 ```
@@ -556,6 +603,7 @@ UI updated
 ```
 
 **Проблемы:**
+
 - ⚠️ Rate limit callback не вызывается (bug)
 - ⚠️ Нет integration test для full flow
 
@@ -564,6 +612,7 @@ UI updated
 ### 5. Type System (10/10)
 
 **Структура:**
+
 ```
 src/types/
 ├── metrics.ts     # Authenticity, Quality, etc
@@ -574,33 +623,36 @@ src/types/
 **Сильные стороны:**
 
 ✅ **GraphQL Types**
+
 ```typescript
 // Auto-generated from GraphQL schema
 interface GitHubUser {
-  login: string
-  name: string | null
-  bio: string | null
-  avatarUrl: string
+  login: string;
+  name: string | null;
+  bio: string | null;
+  avatarUrl: string;
   // ...
 }
 ```
 
 ✅ **Domain Types**
+
 ```typescript
 // Descriptive, domain-specific
 export interface AuthenticityResult {
-  score: number // 0-100
-  breakdown: AuthenticityBreakdown
-  flags: AuthenticityFlag[]
-  metadata: AuthenticityMetadata
+  score: number; // 0-100
+  breakdown: AuthenticityBreakdown;
+  flags: AuthenticityFlag[];
+  metadata: AuthenticityMetadata;
 }
 ```
 
 ✅ **Type Guards**
+
 ```typescript
 // Runtime validation
 export function isValidPeriod(value: string): value is Period {
-  return ['hour', 'day', 'week', 'month'].includes(value)
+  return ["hour", "day", "week", "month"].includes(value);
 }
 ```
 
@@ -629,54 +681,56 @@ TOTAL                 | 82    | 1676  | 85%      | ⭐⭐⭐⭐ |
 
 ### 2. Test Quality Matrix
 
-| Aspect | Score | Details |
-|--------|-------|---------|
-| **Naming** | 9/10 | Descriptive, следуют convention |
-| **Assertions** | 7/10 | Часто generic, нужны custom messages |
-| **Edge Cases** | 8/10 | Большинство covered, но есть пробелы |
-| **Mocking** | 9/10 | Централизованные factories |
-| **Integration** | 6/10 | Пробелы в critical paths |
-| **E2E** | 8/10 | Хорошие сценарии, но не все пути |
-| **Speed** | 10/10 | 56.82s для 1696 tests (отлично!) |
+| Aspect          | Score | Details                              |
+| --------------- | ----- | ------------------------------------ |
+| **Naming**      | 9/10  | Descriptive, следуют convention      |
+| **Assertions**  | 7/10  | Часто generic, нужны custom messages |
+| **Edge Cases**  | 8/10  | Большинство covered, но есть пробелы |
+| **Mocking**     | 9/10  | Централизованные factories           |
+| **Integration** | 6/10  | Пробелы в critical paths             |
+| **E2E**         | 8/10  | Хорошие сценарии, но не все пути     |
+| **Speed**       | 10/10 | 56.82s для 1696 tests (отлично!)     |
 
 ### 3. Test Patterns (Good Examples)
 
 **✅ Отличный пример:** `api/auth/callback.test.ts`
+
 ```typescript
-describe('/api/auth/callback', () => {
+describe("/api/auth/callback", () => {
   // Happy path
-  it('успешно обменивает code на token', async () => {
+  it("успешно обменивает code на token", async () => {
     // Arrange: mock GitHub API
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ access_token: 'token123' })
-    })
+      json: async () => ({ access_token: "token123" }),
+    });
 
     // Act: call handler
-    await handler(mockRequest, mockResponse)
+    await handler(mockRequest, mockResponse);
 
     // Assert: specific checks
     expect(kv.set).toHaveBeenCalledWith(
       expect.stringMatching(/^session:/),
       expect.objectContaining({
         userId: 123,
-        login: 'testuser',
-        accessToken: 'token123'
-      })
-    )
-  })
+        login: "testuser",
+        accessToken: "token123",
+      }),
+    );
+  });
 
   // CSRF validation
-  it('отклоняет запрос с неправильным state', async () => {
-    const req = { query: { state: 'wrong', code: 'abc' } }
-    await handler(req, res)
+  it("отклоняет запрос с неправильным state", async () => {
+    const req = { query: { state: "wrong", code: "abc" } };
+    await handler(req, res);
 
-    expect(res.redirect).toHaveBeenCalledWith('/?error=csrf_failed')
-  })
-})
+    expect(res.redirect).toHaveBeenCalledWith("/?error=csrf_failed");
+  });
+});
 ```
 
 **Почему хорошо:**
+
 - ✅ Описательные названия
 - ✅ Arrange-Act-Assert pattern
 - ✅ Специфичные assertions
@@ -685,9 +739,10 @@ describe('/api/auth/callback', () => {
 ---
 
 **✅ Отличный пример:** `src/lib/metrics/quality.test.ts`
+
 ```typescript
-describe('calculateQualityScore', () => {
-  it('возвращает 100 для идеального репозитория', () => {
+describe("calculateQualityScore", () => {
+  it("возвращает 100 для идеального репозитория", () => {
     const result = calculateQualityScore({
       hasReadme: true,
       hasLicense: true,
@@ -697,14 +752,14 @@ describe('calculateQualityScore', () => {
       issuesOpen: 10, // 83% closure rate
       prsMerged: 40,
       prsOpen: 5, // 89% merge rate
-    })
+    });
 
-    expect(result.score).toBe(100)
-    expect(result.breakdown.documentationScore).toBe(100)
-    expect(result.breakdown.maintenanceScore).toBeGreaterThanOrEqual(80)
-  })
+    expect(result.score).toBe(100);
+    expect(result.breakdown.documentationScore).toBe(100);
+    expect(result.breakdown.maintenanceScore).toBeGreaterThanOrEqual(80);
+  });
 
-  it('обрабатывает repository без README', () => {
+  it("обрабатывает repository без README", () => {
     const result = calculateQualityScore({
       hasReadme: false,
       hasLicense: true,
@@ -714,13 +769,13 @@ describe('calculateQualityScore', () => {
       issuesOpen: 5,
       prsMerged: 10,
       prsOpen: 2,
-    })
+    });
 
-    expect(result.score).toBeLessThan(100)
-    expect(result.flags).toContain('no_readme')
-  })
+    expect(result.score).toBeLessThan(100);
+    expect(result.flags).toContain("no_readme");
+  });
 
-  it('обрабатывает деление на ноль (0 issues)', () => {
+  it("обрабатывает деление на ноль (0 issues)", () => {
     const result = calculateQualityScore({
       hasReadme: true,
       hasLicense: true,
@@ -730,15 +785,16 @@ describe('calculateQualityScore', () => {
       issuesOpen: 0, // ← Division by zero case
       prsMerged: 10,
       prsOpen: 2,
-    })
+    });
 
-    expect(result.breakdown.maintenanceScore).toBeGreaterThanOrEqual(0)
-    expect(result.breakdown.maintenanceScore).toBeLessThanOrEqual(100)
-  })
-})
+    expect(result.breakdown.maintenanceScore).toBeGreaterThanOrEqual(0);
+    expect(result.breakdown.maintenanceScore).toBeLessThanOrEqual(100);
+  });
+});
 ```
 
 **Почему хорошо:**
+
 - ✅ Happy path + edge cases
 - ✅ Проверка всех breakdown components
 - ✅ Деление на ноль обработано
@@ -749,6 +805,7 @@ describe('calculateQualityScore', () => {
 ### 4. Test Anti-Patterns (Bad Examples)
 
 **❌ Плохой пример:** Generic assertions
+
 ```typescript
 // src/components/analytics/OAuthMetricsDashboard.test.tsx
 it('displays metrics', () => {
@@ -760,6 +817,7 @@ it('displays metrics', () => {
 ```
 
 **Как исправить:**
+
 ```typescript
 it('displays active sessions count in Sessions card', () => {
   render(<OAuthMetricsDashboard metrics={mockMetrics} />)
@@ -773,6 +831,7 @@ it('displays active sessions count in Sessions card', () => {
 ---
 
 **❌ Плохой пример:** Deprecated Apollo API
+
 ```typescript
 <MockedProvider
   addTypename={false}      // ← Deprecated!
@@ -783,6 +842,7 @@ it('displays active sessions count in Sessions card', () => {
 ```
 
 **Как исправить:**
+
 ```typescript
 <MockedProvider mocks={mocks}>
   <Component />
@@ -799,11 +859,13 @@ it('displays active sessions count in Sessions card', () => {
 
 **Соблюдается:** ✅ Строго
 **Примеры:**
+
 - `RateLimitBanner`: Component + 8 stories + 22 tests
 - `UserMenu`: Component + 6 stories + 10 tests
 - `MetricCard`: Component + 5 stories + 8 tests
 
 **Преимущества:**
+
 - ✅ Storybook = visual documentation
 - ✅ Stories = test specification
 - ✅ Forces thinking about edge cases
@@ -861,6 +923,7 @@ export function calculateAuthenticityScore(
 ```
 
 **Используется в:**
+
 - ✅ `lib/metrics/activity.ts`
 - ✅ `lib/metrics/quality.ts`
 - ✅ `lib/metrics/growth.ts`
@@ -873,36 +936,39 @@ export function calculateAuthenticityScore(
 ### 3. Error Handling Pattern (8/10)
 
 **Apollo Client:**
+
 ```typescript
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, extensions }) => {
-      console.error(`[GraphQL error]: ${message}`)
-      toast.error(message)
+      console.error(`[GraphQL error]: ${message}`);
+      toast.error(message);
 
-      if (extensions?.code === 'UNAUTHENTICATED') {
-        localStorage.removeItem('github_token')
+      if (extensions?.code === "UNAUTHENTICATED") {
+        localStorage.removeItem("github_token");
       }
-    })
+    });
   }
 
   if (networkError) {
-    console.error(`[Network error]: ${networkError}`)
-    toast.error('Network error. Please check your connection.')
+    console.error(`[Network error]: ${networkError}`);
+    toast.error("Network error. Please check your connection.");
 
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
-      localStorage.removeItem('github_token')
+    if ("statusCode" in networkError && networkError.statusCode === 401) {
+      localStorage.removeItem("github_token");
     }
   }
-})
+});
 ```
 
 **Сильные стороны:**
+
 - ✅ User feedback (toast)
 - ✅ Logging (console.error)
 - ✅ Auto token cleanup на 401
 
 **Слабости:**
+
 - ⚠️ Нет retry logic
 - ⚠️ Нет circuit breaker pattern
 - ⚠️ API analytics errors молчаливо проглатываются
@@ -912,25 +978,28 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 ### 4. TypeScript Patterns (9/10)
 
 **✅ Good:** Discriminated Unions
+
 ```typescript
 type AuthenticityFlag =
-  | 'no_repositories'
-  | 'mostly_forks'
-  | 'low_activity'
-  | 'suspicious_pattern'
-  | 'high_quality'
+  | "no_repositories"
+  | "mostly_forks"
+  | "low_activity"
+  | "suspicious_pattern"
+  | "high_quality";
 ```
 
 **✅ Good:** Type Guards
+
 ```typescript
 export function isValidPeriod(value: string): value is Period {
-  return ['hour', 'day', 'week', 'month'].includes(value)
+  return ["hour", "day", "week", "month"].includes(value);
 }
 ```
 
 **✅ Good:** Utility Types
+
 ```typescript
-type RequiredAuth<T> = T & { isAuthenticated: true }
+type RequiredAuth<T> = T & { isAuthenticated: true };
 ```
 
 ---
@@ -938,17 +1007,19 @@ type RequiredAuth<T> = T & { isAuthenticated: true }
 ### 5. Caching Strategy (9/10)
 
 **Backend (Vercel KV):**
+
 ```typescript
 // Demo mode
-cacheKey = `demo:${query}`
-ttl = 1800 // 30 minutes
+cacheKey = `demo:${query}`;
+ttl = 1800; // 30 minutes
 
 // Authenticated mode
-cacheKey = `user:${sessionId}:${query}`
-ttl = 600 // 10 minutes (fresher data)
+cacheKey = `user:${sessionId}:${query}`;
+ttl = 600; // 10 minutes (fresher data)
 ```
 
 **Frontend (Apollo):**
+
 ```typescript
 const cache = new InMemoryCache({
   // Default cache policies
@@ -958,16 +1029,17 @@ const cache = new InMemoryCache({
         user: {
           // Cache by username
           read(existing, { args }) {
-            return existing
-          }
-        }
-      }
-    }
-  }
-})
+            return existing;
+          },
+        },
+      },
+    },
+  },
+});
 ```
 
 **Проблема:**
+
 - ⚠️ Нет cache transition test (Demo → Auth)
 - ⚠️ Cache invalidation strategy не документирована
 
@@ -978,6 +1050,7 @@ const cache = new InMemoryCache({
 ### Phase 0: Backend Security (10/10) ⭐⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ✅ Backend proxy (`api/github-proxy.ts`)
 - ✅ Token security (server-side)
 - ✅ Rate limit monitoring (UI + backend)
@@ -995,6 +1068,7 @@ const cache = new InMemoryCache({
 ### Phase 1: GraphQL Multi-Query (10/10) ⭐⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ✅ Year-by-year data fetching
 - ✅ `generateYearRanges()` utility
 - ✅ Parallel queries (`Promise.all`)
@@ -1012,6 +1086,7 @@ const cache = new InMemoryCache({
 ### Phase 2: Metrics Calculation (10/10) ⭐⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ✅ 4 metrics (Activity, Quality, Growth, Impact)
 - ✅ Следует `authenticity.ts` template
 - ✅ 100% test coverage for calculations
@@ -1028,6 +1103,7 @@ const cache = new InMemoryCache({
 ### Phase 3: Core Components (9/10) ⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ✅ `MetricCard` responsive
 - ✅ `QuickAssessment` grid (4 metrics)
 - ✅ Storybook stories complete
@@ -1038,6 +1114,7 @@ const cache = new InMemoryCache({
 **Accessibility:** WCAG 2.1 AA compliant
 
 **Проблема:**
+
 - ⚠️ `MetricExplanationModal` имеет сложную логику без integration test
 
 **Вердикт:** Отличные компоненты, minor issues.
@@ -1047,6 +1124,7 @@ const cache = new InMemoryCache({
 ### Phase 4: Timeline Components (9/10) ⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ✅ `ActivityTimeline` renders all years
 - ✅ Expand/collapse smooth (CSS transitions)
 - ✅ Visual bars proportional
@@ -1057,6 +1135,7 @@ const cache = new InMemoryCache({
 **UX:** Smooth interactions
 
 **Проблема:**
+
 - ⚠️ `useUserAnalytics` hook БЕЗ тестов (177 LOC)
 
 **Вердикт:** Хорошая реализация, но hook needs tests.
@@ -1066,6 +1145,7 @@ const cache = new InMemoryCache({
 ### Phase 5: Layout Refactoring (8/10) ⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ✅ Tabs removed
 - ✅ Single-page vertical scroll
 - ✅ Owned vs Contributions split (👤 / 👥)
@@ -1075,6 +1155,7 @@ const cache = new InMemoryCache({
 **UX:** Improved navigation
 
 **Проблема:**
+
 - ⚠️ Нет E2E test для mobile responsiveness
 
 **Вердикт:** Good refactoring, minor gaps.
@@ -1084,6 +1165,7 @@ const cache = new InMemoryCache({
 ### Phase 6: Testing & Polish (7/10) ⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ⚠️ E2E tests: 60+ scenarios (good)
 - ⚠️ Accessibility: 0 errors (excellent)
 - ⚠️ Performance: LCP <2.5s (need verification)
@@ -1091,6 +1173,7 @@ const cache = new InMemoryCache({
 - ⚠️ Production deployed (need verification)
 
 **Проблемы:**
+
 - ⚠️ 18 падающих тестов
 - ⚠️ API endpoints без тестов
 - ⚠️ Integration test gaps
@@ -1102,6 +1185,7 @@ const cache = new InMemoryCache({
 ### Phase 7: OAuth Integration (10/10) ⭐⭐⭐⭐⭐
 
 **Deliverables:**
+
 - ✅ OAuth endpoints (login, callback, logout)
 - ✅ CSRF protection (crypto.randomBytes)
 - ✅ Session management (Vercel KV)
@@ -1121,12 +1205,14 @@ const cache = new InMemoryCache({
 **Status:** ✅ Plan Complete, ⏳ Implementation Week 1 in progress
 
 **Planned:**
+
 - Week 1: Critical fixes (API tests, rate limit bug)
 - Week 2: Quality improvements (assertions, ErrorBoundary)
 - Week 3: Integration tests (critical paths)
 - Week 4: Cleanup (mock data, docs)
 
 **Current:**
+
 - ❌ API analytics tests: 0%
 - ❌ Rate limit bug: Not fixed
 - ❌ OAuth edge cases: Not tested
@@ -1140,13 +1226,13 @@ const cache = new InMemoryCache({
 
 ### Performance Metrics
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| **LCP** | <2.5s | 1.8s | ✅ Excellent |
-| **FID** | <100ms | 45ms | ✅ Excellent |
-| **CLS** | <0.1 | 0.05 | ✅ Excellent |
+| Metric          | Target | Current      | Status       |
+| --------------- | ------ | ------------ | ------------ |
+| **LCP**         | <2.5s  | 1.8s         | ✅ Excellent |
+| **FID**         | <100ms | 45ms         | ✅ Excellent |
+| **CLS**         | <0.1   | 0.05         | ✅ Excellent |
 | **Bundle Size** | <500KB | 141KB (gzip) | ✅ Excellent |
-| **API Queries** | <1s | ~800ms | ✅ Good |
+| **API Queries** | <1s    | ~800ms       | ✅ Good      |
 
 **Вердикт:** Performance отличный.
 
@@ -1217,6 +1303,7 @@ ESLint Warnings:      ~5 (mostly console.log)
 ### 🔴 P0 - КРИТИЧНО (Week 1: 12-16 hours)
 
 #### 1. Исправить Rate Limit Bug
+
 **Файлы:** `UserProfile.tsx`, `App.tsx`
 **Время:** 2-3 часа
 **Impact:** HIGH - production visible
@@ -1224,34 +1311,38 @@ ESLint Warnings:      ~5 (mostly console.log)
 ```typescript
 // src/components/UserProfile.tsx
 interface UserProfileProps {
-  userName: string
-  onRateLimitUpdate?: (rateLimit: RateLimit) => void // ADD
+  userName: string;
+  onRateLimitUpdate?: (rateLimit: RateLimit) => void; // ADD
 }
 
 const { data, loading, error, refetch } = useQueryUser(userName, 365, {
-  onRateLimitUpdate: props.onRateLimitUpdate // ADD
-})
+  onRateLimitUpdate: props.onRateLimitUpdate, // ADD
+});
 ```
 
 ---
 
 #### 2. Добавить API Analytics Tests
+
 **Файлы:** Create `api/analytics/logger.test.ts`, `oauth-usage.test.ts`
 **Время:** 6-8 часов
 **Impact:** HIGH - 375 LOC без тестов
 
 **Минимум:**
+
 - 15 tests для `logger.ts`
 - 20 tests для `oauth-usage.test.ts`
 
 ---
 
 #### 3. OAuth Security Edge Cases
+
 **Файлы:** `callback.test.ts`, `e2e/oauth-security.spec.ts`
 **Время:** 4-5 часов
 **Impact:** HIGH - security
 
 **Tests:**
+
 - CSRF state expiration (11+ min)
 - State reuse attack
 - Session expiration mid-use
@@ -1259,6 +1350,7 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ---
 
 #### 4. Исправить 18 Падающих Тестов
+
 **Файлы:** `UserMenu.test.tsx`, `OAuthMetricsDashboard.test.tsx`, hooks
 **Время:** 2-4 часа
 **Impact:** HIGH - pass rate должен быть 100%
@@ -1268,6 +1360,7 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ### 🟠 P1 - ВЫСОКИЙ (Week 2: 9-13 hours)
 
 #### 5. ErrorBoundary Tests
+
 **Файл:** Create `ErrorBoundary.test.tsx` + stories
 **Время:** 2-3 часа
 **Impact:** HIGH - критичный компонент
@@ -1275,6 +1368,7 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ---
 
 #### 6. useUserAnalytics Tests
+
 **Файл:** Create `useUserAnalytics.test.tsx`
 **Время:** 4-6 часов
 **Impact:** HIGH - Timeline feature
@@ -1282,6 +1376,7 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ---
 
 #### 7. Custom Assertion Messages
+
 **Файлы:** Update критичные тесты
 **Время:** 4-6 часов
 **Impact:** MEDIUM - улучшает debugging
@@ -1291,11 +1386,13 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ### 🟡 P2 - СРЕДНИЙ (Week 3-4: 10-15 hours)
 
 #### 8. Integration Tests для Critical Paths
+
 **Файлы:** Create integration tests
 **Время:** 8-12 часов
 **Impact:** MEDIUM
 
 **Tests:**
+
 - Rate Limit: API → UI
 - Cache Transition: Demo → Auth
 - Session Expiration Mid-Use
@@ -1303,6 +1400,7 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ---
 
 #### 9. Consolidate Mock Data
+
 **Файлы:** Refactor 18 test files
 **Время:** 2-3 часа
 **Impact:** LOW - cleanup
@@ -1310,6 +1408,7 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ---
 
 #### 10. Убрать TODO Comments
+
 **Файл:** `App.tsx`
 **Время:** 1 час
 **Impact:** LOW - polish
@@ -1319,20 +1418,21 @@ const { data, loading, error, refetch } = useQueryUser(userName, 365, {
 ### 🌟 P3 - NICE TO HAVE (Future)
 
 #### 11. Retry Logic для KV Operations
+
 **Файлы:** `api/analytics/logger.ts`
 **Время:** 4-6 часов
 
 ```typescript
 async function withRetry<T>(
   operation: () => Promise<T>,
-  maxRetries = 3
+  maxRetries = 3,
 ): Promise<T> {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      return await operation()
+      return await operation();
     } catch (error) {
-      if (i === maxRetries - 1) throw error
-      await sleep(2 ** i * 1000) // Exponential backoff
+      if (i === maxRetries - 1) throw error;
+      await sleep(2 ** i * 1000); // Exponential backoff
     }
   }
 }
@@ -1341,12 +1441,14 @@ async function withRetry<T>(
 ---
 
 #### 12. Circuit Breaker Pattern
+
 **Файлы:** Apollo Client
 **Время:** 6-8 часов
 
 ---
 
 #### 13. Performance Monitoring
+
 **Файлы:** Add Vercel Analytics
 **Время:** 2-3 часа
 
@@ -1355,6 +1457,7 @@ async function withRetry<T>(
 ## 📈 ROADMAP: СЛЕДУЮЩИЕ 4 НЕДЕЛИ
 
 ### Week 1: P0 - Critical Fixes (12-16h)
+
 ```
 Day 1:   Rate Limit Bug (2-3h)
 Day 2-3: Analytics API Tests (6-8h)
@@ -1362,6 +1465,7 @@ Day 4-5: OAuth Security + Fix Failing Tests (6-9h)
 ```
 
 **Success Criteria:**
+
 - ✅ 0 критических bugs
 - ✅ 100% API endpoints с тестами
 - ✅ 100% test pass rate
@@ -1369,6 +1473,7 @@ Day 4-5: OAuth Security + Fix Failing Tests (6-9h)
 ---
 
 ### Week 2: P1 - Quality (9-13h)
+
 ```
 Day 6-7: useUserAnalytics Tests (4-6h)
 Day 8:   ErrorBoundary Tests (2-3h)
@@ -1376,6 +1481,7 @@ Day 9-10: Custom Assertions (4-6h)
 ```
 
 **Success Criteria:**
+
 - ✅ Все hooks с тестами
 - ✅ ErrorBoundary покрыт
 - ✅ Test diagnostics 95%+
@@ -1383,11 +1489,13 @@ Day 9-10: Custom Assertions (4-6h)
 ---
 
 ### Week 3: P2 - Integration (8-12h)
+
 ```
 Day 11-13: Critical Path Integration Tests (8-12h)
 ```
 
 **Success Criteria:**
+
 - ✅ Rate Limit flow tested
 - ✅ Cache transition tested
 - ✅ Session lifecycle tested
@@ -1395,12 +1503,14 @@ Day 11-13: Critical Path Integration Tests (8-12h)
 ---
 
 ### Week 4: Cleanup & Docs (5-8h)
+
 ```
 Day 14-15: Mock Data Consolidation (2-3h)
 Day 16-18: Documentation Updates (3-5h)
 ```
 
 **Success Criteria:**
+
 - ✅ -500 LOC duplication
 - ✅ Docs updated
 - ✅ Team trained
@@ -1413,16 +1523,16 @@ Day 16-18: Documentation Updates (3-5h)
 
 **Детализация:**
 
-| Категория | Оценка | Вес | Взвешенная |
-|-----------|--------|-----|------------|
-| Architecture | 9/10 | 20% | 1.8 |
-| Code Quality | 9/10 | 15% | 1.35 |
-| Security | 9/10 | 20% | 1.8 |
-| Test Coverage | 7/10 | 20% | 1.4 |
-| Documentation | 9/10 | 10% | 0.9 |
-| Performance | 10/10 | 5% | 0.5 |
-| Best Practices | 9/10 | 10% | 0.9 |
-| **TOTAL** | | **100%** | **8.2/10** |
+| Категория      | Оценка | Вес      | Взвешенная |
+| -------------- | ------ | -------- | ---------- |
+| Architecture   | 9/10   | 20%      | 1.8        |
+| Code Quality   | 9/10   | 15%      | 1.35       |
+| Security       | 9/10   | 20%      | 1.8        |
+| Test Coverage  | 7/10   | 20%      | 1.4        |
+| Documentation  | 9/10   | 10%      | 0.9        |
+| Performance    | 10/10  | 5%       | 0.5        |
+| Best Practices | 9/10   | 10%      | 0.9        |
+| **TOTAL**      |        | **100%** | **8.2/10** |
 
 ---
 
@@ -1488,20 +1598,15 @@ Day 16-18: Documentation Updates (3-5h)
 ### Следующие Шаги
 
 **Immediate (Week 1):**
+
 1. Fix rate limit bug (2-3h)
 2. Add API analytics tests (6-8h)
 3. OAuth security tests (4-5h)
 4. Fix 18 failing tests (2-4h)
 
-**Short-term (Week 2-3):**
-5. ErrorBoundary tests (2-3h)
-6. useUserAnalytics tests (4-6h)
-7. Integration tests (8-12h)
+**Short-term (Week 2-3):** 5. ErrorBoundary tests (2-3h) 6. useUserAnalytics tests (4-6h) 7. Integration tests (8-12h)
 
-**Long-term (Week 4+):**
-8. Custom assertions (4-6h)
-9. Mock data cleanup (2-3h)
-10. Documentation updates (3-5h)
+**Long-term (Week 4+):** 8. Custom assertions (4-6h) 9. Mock data cleanup (2-3h) 10. Documentation updates (3-5h)
 
 ---
 

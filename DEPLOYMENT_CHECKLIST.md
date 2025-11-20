@@ -51,6 +51,7 @@ vercel --prod
 #### Step 1: Create GitHub Personal Access Token (5 min)
 
 **Action:**
+
 1. Open: https://github.com/settings/tokens/new
 2. Fill in:
    - **Token name:** `GitHub User Analytics`
@@ -69,6 +70,7 @@ vercel --prod
 #### Step 2: Test Locally (10 min)
 
 **Action:**
+
 ```bash
 # Create environment file
 cp .env.example .env.local
@@ -82,6 +84,7 @@ npm run dev
 ```
 
 **Test:**
+
 1. Open: http://localhost:5173
 2. Search for a GitHub user (e.g., "torvalds")
 3. Verify:
@@ -97,11 +100,13 @@ npm run dev
 #### Step 3: Login to Vercel (2 min)
 
 **Action:**
+
 ```bash
 vercel login
 ```
 
 **Choose your method:**
+
 - GitHub (recommended)
 - GitLab
 - Bitbucket
@@ -116,17 +121,20 @@ vercel login
 #### Step 4: Deploy to Production (5 min)
 
 **Action:**
+
 ```bash
 vercel --prod
 ```
 
 **What happens:**
+
 1. Vercel detects your project configuration
 2. Builds your app
 3. Deploys to production
 4. Returns a URL like: `https://github-user-analytics-xxxx.vercel.app`
 
 **Expected Output:**
+
 ```
 🔍  Inspect: https://vercel.com/...
 ✅  Production: https://your-app.vercel.app [ready]
@@ -143,6 +151,7 @@ vercel --prod
 **Option A: Via Vercel Dashboard (Recommended)**
 
 **Action:**
+
 1. Go to: https://vercel.com/dashboard
 2. Select your project
 3. Click: Settings → Environment Variables
@@ -162,6 +171,7 @@ vercel --prod
 **Option B: Via CLI (Alternative)**
 
 **Action:**
+
 ```bash
 vercel env add GITHUB_TOKEN
 
@@ -181,6 +191,7 @@ vercel --prod
 #### Step 6: Verify Production (3 min)
 
 **Action:**
+
 1. Open your production URL: `https://your-app.vercel.app`
 2. Search for a GitHub user
 3. Open DevTools (F12)
@@ -197,14 +208,17 @@ vercel --prod
 **Security Check:**
 
 **Network Tab:**
+
 - [ ] Requests go to `/api/github-proxy` ✅
 - [ ] NO requests to `api.github.com` directly ✅
 
 **Sources Tab:**
-- [ ] Search for "ghp_" → **0 results** ✅
+
+- [ ] Search for "ghp\_" → **0 results** ✅
 - [ ] Token is NOT visible in any file ✅
 
 **Console Tab:**
+
 - [ ] No errors related to authentication ✅
 - [ ] No rate limit errors ✅
 
@@ -235,6 +249,7 @@ If ALL of these are true, you're successfully deployed! 🎉
 **Why:** Reduces API rate limit usage with 30-minute cache
 
 **Action:**
+
 1. Vercel Dashboard → Storage
 2. Create Database → KV
 3. Name: `github-cache`
@@ -245,6 +260,7 @@ If ALL of these are true, you're successfully deployed! 🎉
 
 **Verify:**
 Check Function logs for:
+
 - `Cache SET: user:username:profile` (first request)
 - `Cache HIT: user:username:profile` (subsequent requests)
 
@@ -257,6 +273,7 @@ Check Function logs for:
 ### Issue: "GITHUB_TOKEN not configured"
 
 **Solution:**
+
 1. Verify token in Vercel Dashboard → Environment Variables
 2. Check token added to **Production** environment
 3. Redeploy after adding token
@@ -266,6 +283,7 @@ Check Function logs for:
 ### Issue: Token visible in browser
 
 **Solution:**
+
 1. Verify using `GITHUB_TOKEN` (NOT `VITE_GITHUB_TOKEN`)
 2. Check requests go to `/api/github-proxy`
 3. Clear browser cache and hard reload
@@ -275,6 +293,7 @@ Check Function logs for:
 ### Issue: Rate limit exceeded
 
 **Solution:**
+
 1. Wait 1 hour for rate limit reset
 2. Setup Vercel KV cache (see Optional step above)
 3. Monitor usage in rate limit banner
@@ -284,6 +303,7 @@ Check Function logs for:
 ### Issue: 401 Unauthorized
 
 **Solution:**
+
 1. Check token validity: https://github.com/settings/tokens
 2. Verify token has `read:user` scope
 3. Regenerate token if expired
@@ -295,11 +315,13 @@ Check Function logs for:
 ### Check Vercel Function Logs
 
 **Action:**
+
 ```
 Vercel Dashboard → Your Project → Functions → /api/github-proxy
 ```
 
 **Look for:**
+
 - ✅ Successful requests (200 status)
 - ✅ Cache HIT/SET messages (if KV configured)
 - ⚠️ Rate limit warnings
@@ -310,11 +332,13 @@ Vercel Dashboard → Your Project → Functions → /api/github-proxy
 ### Check Performance
 
 **Action:**
+
 ```
 Vercel Dashboard → Your Project → Analytics
 ```
 
 **Monitor:**
+
 - **LCP (Largest Contentful Paint):** Target <2.5s
 - **FID (First Input Delay):** Target <100ms
 - **CLS (Cumulative Layout Shift):** Target <0.1
@@ -326,16 +350,19 @@ Vercel Dashboard → Your Project → Analytics
 ## 📚 Next Steps (After Deployment)
 
 ### Immediate
+
 1. ✅ Share production URL with team/users
 2. ✅ Monitor error logs for first 24h
 3. ✅ Check rate limit usage
 
 ### This Week
+
 1. Create Pull Request to merge to main branch
 2. Setup continuous deployment (auto-deploy on push)
 3. Configure custom domain (optional)
 
 ### This Month
+
 1. Review analytics and usage patterns
 2. Optimize based on real user data
 3. Consider OAuth implementation (Phase 7 - optional)
@@ -354,6 +381,7 @@ Vercel Dashboard → Your Project → Analytics
 ## 🎉 You're Ready!
 
 **Current Status:**
+
 - ✅ All code complete and tested
 - ✅ Build successful
 - ✅ Documentation ready

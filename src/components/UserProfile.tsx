@@ -1,12 +1,12 @@
-import useQueryUser from '@/apollo/useQueryUser';
-import { getYearLabels } from '@/apollo/date-helpers';
-import { LoadingState, ErrorState, EmptyState } from '@/components/layout';
-import { UserHeader } from '@/components/user/UserHeader';
-import { UserStats } from '@/components/user/UserStats';
-import { ContributionHistory } from '@/components/user/ContributionHistory';
-import { RecentActivity } from '@/components/user/RecentActivity';
-import { UserAuthenticity } from '@/components/user/UserAuthenticity';
-import type { RateLimit } from '@/apollo/github-api.types';
+import { getYearLabels } from "@/apollo/date-helpers";
+import type { RateLimit } from "@/apollo/github-api.types";
+import useQueryUser from "@/apollo/useQueryUser";
+import { EmptyState, ErrorState, LoadingState } from "@/components/layout";
+import { ContributionHistory } from "@/components/user/ContributionHistory";
+import { RecentActivity } from "@/components/user/RecentActivity";
+import { UserAuthenticity } from "@/components/user/UserAuthenticity";
+import { UserHeader } from "@/components/user/UserHeader";
+import { UserStats } from "@/components/user/UserStats";
 
 type Props = {
   userName: string;
@@ -56,7 +56,13 @@ function UserProfile({ userName, onRateLimitUpdate }: Props) {
   }
 
   if (!data || !data.user) {
-    return <EmptyState title="User Not Found" description="The requested GitHub user could not be found." icon="user" />;
+    return (
+      <EmptyState
+        title="User Not Found"
+        description="The requested GitHub user could not be found."
+        icon="user"
+      />
+    );
   }
 
   const user = data.user;
@@ -95,7 +101,11 @@ function UserProfile({ userName, onRateLimitUpdate }: Props) {
         yearLabels={yearLabels}
       />
 
-      <RecentActivity repositories={user.contributionsCollection.commitContributionsByRepository} />
+      <RecentActivity
+        repositories={
+          user.contributionsCollection.commitContributionsByRepository
+        }
+      />
     </div>
   );
 }

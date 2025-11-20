@@ -1,24 +1,24 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Label } from './label'
-import { Input } from './input'
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Input } from "./input";
+import { Label } from "./label";
 
 const meta: Meta<typeof Label> = {
-  title: 'UI/Label',
+  title: "UI/Label",
   component: Label,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    children: 'Label text',
+    children: "Label text",
   },
-}
+};
 
 export const WithInput: Story = {
   render: () => (
@@ -27,7 +27,7 @@ export const WithInput: Story = {
       <Input id="name" type="text" placeholder="Enter your name" />
     </div>
   ),
-}
+};
 
 export const Required: Story = {
   render: () => (
@@ -35,31 +35,41 @@ export const Required: Story = {
       <Label htmlFor="email-required">
         Email <span className="text-destructive">*</span>
       </Label>
-      <Input id="email-required" type="email" placeholder="example@email.com" required />
+      <Input
+        id="email-required"
+        type="email"
+        placeholder="example@email.com"
+        required
+      />
     </div>
   ),
-}
+};
 
 export const WithDescription: Story = {
   render: () => (
     <div className="w-[300px]">
       <Label htmlFor="username">Username</Label>
       <Input id="username" type="text" placeholder="johndoe" />
-      <p className="text-muted-foreground mt-1 text-sm">
+      <p className="mt-1 text-sm text-muted-foreground">
         This will be your public display name
       </p>
     </div>
   ),
-}
+};
 
 export const Disabled: Story = {
   render: () => (
     <div className="w-[300px]" data-disabled="true">
       <Label htmlFor="disabled-input">Disabled field</Label>
-      <Input id="disabled-input" type="text" placeholder="Cannot edit" disabled />
+      <Input
+        id="disabled-input"
+        type="text"
+        placeholder="Cannot edit"
+        disabled
+      />
     </div>
   ),
-}
+};
 
 export const MultipleFields: Story = {
   render: () => (
@@ -76,11 +86,16 @@ export const MultipleFields: Story = {
         <Label htmlFor="email-multi">
           Email <span className="text-destructive">*</span>
         </Label>
-        <Input id="email-multi" type="email" placeholder="john.doe@example.com" required />
+        <Input
+          id="email-multi"
+          type="email"
+          placeholder="john.doe@example.com"
+          required
+        />
       </div>
     </div>
   ),
-}
+};
 
 export const WithCheckbox: Story = {
   render: () => (
@@ -88,23 +103,28 @@ export const WithCheckbox: Story = {
       <input
         type="checkbox"
         id="terms"
-        className="accent-primary h-4 w-4 cursor-pointer"
+        className="h-4 w-4 cursor-pointer accent-primary"
       />
       <Label htmlFor="terms" className="cursor-pointer font-normal">
         I accept the terms and conditions
       </Label>
     </div>
   ),
-}
+};
 
 export const ErrorState: Story = {
   render: () => (
     <div className="w-[300px]">
       <Label htmlFor="error-field">Username</Label>
-      <Input id="error-field" type="text" aria-invalid="true" defaultValue="invalid!" />
-      <p className="text-destructive mt-1 text-sm">
+      <Input
+        id="error-field"
+        type="text"
+        aria-invalid="true"
+        defaultValue="invalid!"
+      />
+      <p className="mt-1 text-sm text-destructive">
         Username must be at least 3 characters
       </p>
     </div>
   ),
-}
+};

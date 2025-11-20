@@ -14,11 +14,11 @@ This project is configured to work with **4 Model Context Protocol (MCP) servers
 ## Quick Status
 
 | MCP Server | Installation | Configuration | Status |
-|------------|-------------|---------------|---------|
-| Playwright | Ready | Needs setup | ⏳ |
-| Storybook | ✅ v0.4.0 | Needs setup | ⏳ |
-| shadcn UI | Ready | Needs setup | ⏳ |
-| Vite | ✅ Built-in | ✅ Done | ✅ |
+| ---------- | ------------ | ------------- | ------ |
+| Playwright | Ready        | Needs setup   | ⏳     |
+| Storybook  | ✅ v0.4.0    | Needs setup   | ⏳     |
+| shadcn UI  | Ready        | Needs setup   | ⏳     |
+| Vite       | ✅ Built-in  | ✅ Done       | ✅     |
 
 ---
 
@@ -35,6 +35,7 @@ This project is configured to work with **4 Model Context Protocol (MCP) servers
 ### Installation for VS Code (Claude Code)
 
 Using CLI:
+
 ```bash
 code --add-mcp '{"name":"playwright","command":"npx","args":["@playwright/mcp@latest"]}'
 ```
@@ -65,6 +66,7 @@ Add to your VS Code settings or `~/.vscode/mcp.json`:
 ### Usage Example
 
 Ask Claude:
+
 - "Run Playwright tests for user search"
 - "Take a screenshot of the home page"
 - "Inspect the search form element"
@@ -87,6 +89,7 @@ npm install -D storybook-mcp
 ✅ **Already built:** `storybook-static/index.json` exists
 
 Build Storybook to generate the index.json file:
+
 ```bash
 npm run build-storybook
 ```
@@ -96,6 +99,7 @@ npm run build-storybook
 ### Configuration
 
 Using CLI:
+
 ```bash
 code --add-mcp '{
   "name":"storybook",
@@ -105,6 +109,7 @@ code --add-mcp '{
 ```
 
 Or add manually to your MCP settings:
+
 ```json
 {
   "mcpServers": {
@@ -128,11 +133,13 @@ Or add manually to your MCP settings:
 ### Usage Example
 
 Ask Claude:
+
 - "Show me all Storybook stories"
 - "What are the props for the Button component?"
 - "Create a story for the UserProfile component"
 
 **Note:** You need to rebuild Storybook after adding new stories:
+
 ```bash
 npm run build-storybook
 ```
@@ -174,10 +181,12 @@ Add to your MCP settings with your GitHub token:
 ### Why GitHub Token?
 
 The shadcn UI MCP scrapes documentation from GitHub. Without a token:
+
 - 60 requests/hour limit
 - May hit rate limits quickly
 
 With a token:
+
 - 5000 requests/hour
 - Reliable access to docs
 
@@ -191,6 +200,7 @@ With a token:
 ### Usage Example
 
 Ask Claude:
+
 - "Show me how to use the shadcn Dialog component"
 - "What variants does the Button component have?"
 - "Install the Alert Dialog component"
@@ -204,11 +214,11 @@ Ask Claude:
 Already installed and configured in `vite.config.ts`!
 
 ```typescript
-import { ViteMcp } from 'vite-plugin-mcp'
+import { ViteMcp } from "vite-plugin-mcp";
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), ViteMcp()],
-})
+});
 ```
 
 ### How It Works
@@ -272,24 +282,28 @@ Once you've configured all MCP servers in Claude Code, verify they're working:
 2. **Test Each Server**
 
    **Playwright MCP:**
+
    ```
    Ask Claude: "Use Playwright MCP to list available test commands"
    Expected: Response with Playwright capabilities
    ```
 
    **Storybook MCP:**
+
    ```
    Ask Claude: "Use Storybook MCP to show all available components"
    Expected: List of Button, SearchForm, Header, Page stories
    ```
 
    **shadcn UI MCP:**
+
    ```
    Ask Claude: "Use shadcn MCP to show Button component variants"
    Expected: Response with default, destructive, outline, secondary, ghost, link
    ```
 
    **Vite MCP:**
+
    ```
    Ask Claude: "Show the current Vite configuration"
    Expected: Vite config from vite.config.ts
@@ -306,6 +320,7 @@ For a comprehensive verification with detailed troubleshooting, see:
 **[MCP Verification Checklist](./mcp-verification-checklist.md)**
 
 This includes:
+
 - Detailed verification steps for each MCP
 - Expected capabilities and responses
 - Common issues and solutions
@@ -319,22 +334,26 @@ This includes:
 ### Playwright MCP
 
 **Error: Browser not installed**
+
 ```bash
 npx playwright install chromium
 ```
 
 **Error: Permission denied**
+
 - Make sure npx is in your PATH
 - Try: `node --version` to verify Node.js is installed
 
 ### Storybook MCP
 
 **Error: Cannot find index.json**
+
 ```bash
 npm run build-storybook
 ```
 
 **Error: Module not found**
+
 ```bash
 npm install
 ```
@@ -342,21 +361,25 @@ npm install
 ### shadcn UI MCP
 
 **Error: Rate limit exceeded**
+
 - Add a GitHub Personal Access Token
 - Check token has correct permissions
 
 **Error: Token invalid**
+
 - Generate a new token at https://github.com/settings/tokens
 - Make sure token hasn't expired
 
 ### Vite MCP
 
 **Error: Module not found 'vite-plugin-mcp'**
+
 ```bash
 npm install -D vite-plugin-mcp
 ```
 
-**Error: Cannot access /__mcp/sse**
+**Error: Cannot access /\_\_mcp/sse**
+
 - Make sure dev server is running: `npm run dev`
 - Check port 5173 is not blocked
 
@@ -371,6 +394,7 @@ Can you list all available MCP servers and their status?
 ```
 
 You should see:
+
 - ✅ Playwright
 - ✅ Storybook (after building)
 - ✅ shadcn UI (with valid token)
@@ -415,6 +439,7 @@ You should see:
 ## Need Help?
 
 If you encounter issues:
+
 1. Check this documentation
 2. Verify all prerequisites are installed
 3. Check MCP server logs in VS Code output panel

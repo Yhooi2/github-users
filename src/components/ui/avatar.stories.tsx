@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Avatar, AvatarImage, AvatarFallback } from './avatar';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
 const meta: Meta<typeof Avatar> = {
-  title: 'UI/Avatar',
+  title: "UI/Avatar",
   component: Avatar,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'An avatar component that displays user profile images with fallback support.',
+          "An avatar component that displays user profile images with fallback support.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -86,7 +86,7 @@ export const GitHubUser: Story = {
       </Avatar>
       <div>
         <div className="text-sm font-semibold">Linus Torvalds</div>
-        <div className="text-muted-foreground text-xs">@torvalds</div>
+        <div className="text-xs text-muted-foreground">@torvalds</div>
       </div>
     </div>
   ),
@@ -97,19 +97,33 @@ export const UserList: Story = {
   render: () => (
     <div className="space-y-3">
       {[
-        { name: 'Alice Johnson', username: 'alice', initials: 'AJ', img: 'https://github.com/shadcn.png' },
-        { name: 'Bob Smith', username: 'bob', initials: 'BS', img: null },
-        { name: 'Charlie Brown', username: 'charlie', initials: 'CB', img: 'https://github.com/vercel.png' },
-        { name: 'Diana Prince', username: 'diana', initials: 'DP', img: null },
+        {
+          name: "Alice Johnson",
+          username: "alice",
+          initials: "AJ",
+          img: "https://github.com/shadcn.png",
+        },
+        { name: "Bob Smith", username: "bob", initials: "BS", img: null },
+        {
+          name: "Charlie Brown",
+          username: "charlie",
+          initials: "CB",
+          img: "https://github.com/vercel.png",
+        },
+        { name: "Diana Prince", username: "diana", initials: "DP", img: null },
       ].map((user) => (
         <div key={user.username} className="flex items-center gap-3">
           <Avatar>
-            {user.img && <AvatarImage src={user.img} alt={`@${user.username}`} />}
+            {user.img && (
+              <AvatarImage src={user.img} alt={`@${user.username}`} />
+            )}
             <AvatarFallback>{user.initials}</AvatarFallback>
           </Avatar>
           <div>
             <div className="text-sm font-medium">{user.name}</div>
-            <div className="text-muted-foreground text-xs">@{user.username}</div>
+            <div className="text-xs text-muted-foreground">
+              @{user.username}
+            </div>
           </div>
         </div>
       ))}
@@ -144,22 +158,24 @@ export const CustomBackground: Story = {
 export const AvatarGroup: Story = {
   render: () => (
     <div className="flex -space-x-2">
-      <Avatar className="border-background border-2">
+      <Avatar className="border-2 border-background">
         <AvatarImage src="https://github.com/shadcn.png" alt="User 1" />
         <AvatarFallback>U1</AvatarFallback>
       </Avatar>
-      <Avatar className="border-background border-2">
+      <Avatar className="border-2 border-background">
         <AvatarImage src="https://github.com/vercel.png" alt="User 2" />
         <AvatarFallback>U2</AvatarFallback>
       </Avatar>
-      <Avatar className="border-background border-2">
+      <Avatar className="border-2 border-background">
         <AvatarFallback>U3</AvatarFallback>
       </Avatar>
-      <Avatar className="border-background border-2">
+      <Avatar className="border-2 border-background">
         <AvatarFallback>U4</AvatarFallback>
       </Avatar>
-      <Avatar className="border-background border-2">
-        <AvatarFallback className="bg-muted text-muted-foreground">+5</AvatarFallback>
+      <Avatar className="border-2 border-background">
+        <AvatarFallback className="bg-muted text-muted-foreground">
+          +5
+        </AvatarFallback>
       </Avatar>
     </div>
   ),
@@ -208,10 +224,10 @@ export const RepositoryOwner: Story = {
       </Avatar>
       <div className="space-y-1">
         <div className="text-lg font-bold">facebook/react</div>
-        <div className="text-muted-foreground text-sm">
+        <div className="text-sm text-muted-foreground">
           The library for web and native user interfaces
         </div>
-        <div className="text-muted-foreground flex gap-3 text-xs">
+        <div className="flex gap-3 text-xs text-muted-foreground">
           <span>⭐ 234k</span>
           <span>🍴 48k</span>
         </div>

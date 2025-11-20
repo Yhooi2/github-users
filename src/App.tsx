@@ -1,19 +1,19 @@
-import { useState, useEffect } from 'react';
-import { SearchHeader } from './components/layout/SearchHeader';
-import { UserMenu } from './components/layout/UserMenu';
-import { useUserAnalytics } from './hooks/useUserAnalytics';
-import { RateLimitBanner } from './components/layout/RateLimitBanner';
-import { AuthRequiredModal } from './components/auth/AuthRequiredModal';
-import { ErrorBoundary } from './components/layout/ErrorBoundary';
-import UserProfile from './components/UserProfile';
-import { QuickAssessment } from './components/assessment/QuickAssessment';
-import { ActivityTimeline } from './components/timeline/ActivityTimeline';
-import { ProjectSection } from './components/projects/ProjectSection';
-import { calculateActivityScore } from './lib/metrics/activity';
-import { calculateImpactScore } from './lib/metrics/impact';
-import { calculateQualityScore } from './lib/metrics/quality';
-import { calculateGrowthScore } from './lib/metrics/growth';
-import type { Repository } from './apollo/github-api.types';
+import { useEffect, useState } from "react";
+import type { Repository } from "./apollo/github-api.types";
+import { QuickAssessment } from "./components/assessment/QuickAssessment";
+import { AuthRequiredModal } from "./components/auth/AuthRequiredModal";
+import { ErrorBoundary } from "./components/layout/ErrorBoundary";
+import { RateLimitBanner } from "./components/layout/RateLimitBanner";
+import { SearchHeader } from "./components/layout/SearchHeader";
+import { UserMenu } from "./components/layout/UserMenu";
+import { ProjectSection } from "./components/projects/ProjectSection";
+import { ActivityTimeline } from "./components/timeline/ActivityTimeline";
+import UserProfile from "./components/UserProfile";
+import { useUserAnalytics } from "./hooks/useUserAnalytics";
+import { calculateActivityScore } from "./lib/metrics/activity";
+import { calculateGrowthScore } from "./lib/metrics/growth";
+import { calculateImpactScore } from "./lib/metrics/impact";
+import { calculateQualityScore } from "./lib/metrics/quality";
 
 /**
  * Rate limit state interface
@@ -27,7 +27,7 @@ interface RateLimitState {
 }
 
 function App() {
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState("");
 
   // Rate limit state (updated from GraphQL responses)
   const [rateLimit, setRateLimit] = useState<RateLimitState>({
@@ -45,22 +45,22 @@ function App() {
   // Handle URL parameters after OAuth redirect
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const authStatus = params.get('auth');
-    const errorParam = params.get('error');
+    const authStatus = params.get("auth");
+    const errorParam = params.get("error");
 
-    if (authStatus === 'success') {
+    if (authStatus === "success") {
       // TODO: Add success toast notification
-      console.log('✅ Authentication successful!');
+      console.warn("✅ Authentication successful!");
       // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname);
-    } else if (authStatus === 'logged_out') {
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (authStatus === "logged_out") {
       // TODO: Add info toast notification
-      console.log('ℹ️ Logged out successfully');
-      window.history.replaceState({}, '', window.location.pathname);
+      console.warn("ℹ️ Logged out successfully");
+      window.history.replaceState({}, "", window.location.pathname);
     } else if (errorParam) {
       // TODO: Add error toast notification
-      console.error('❌ Authentication error:', errorParam);
-      window.history.replaceState({}, '', window.location.pathname);
+      console.error("❌ Authentication error:", errorParam);
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, []);
 
@@ -96,28 +96,28 @@ function App() {
   // Extract and categorize repositories from timeline
   const projects = {
     owned: timeline.flatMap((year) =>
-      year.ownedRepos.map((repo) => repo.repository)
+      year.ownedRepos.map((repo) => repo.repository),
     ) as Repository[],
     contributions: timeline.flatMap((year) =>
-      year.contributions.map((repo) => repo.repository)
+      year.contributions.map((repo) => repo.repository),
     ) as Repository[],
   };
 
   // OAuth handler - redirect to backend OAuth endpoint
   const handleGitHubAuth = () => {
-    window.location.href = '/api/auth/login';
+    window.location.href = "/api/auth/login";
   };
 
   // Logout handler - redirect to backend logout endpoint
   const handleLogout = () => {
-    window.location.href = '/api/auth/logout';
+    window.location.href = "/api/auth/logout";
   };
 
   // Determine authentication status
   const isAuthenticated = !rateLimit.isDemo && !!rateLimit.userLogin;
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto space-y-8 p-4 pb-16">
         {/* Header with Search and User Menu */}
         <div className="flex items-start justify-between gap-4">
@@ -156,7 +156,7 @@ function App() {
         {/* Error Display */}
         {error && (
           <div
-            className="border-destructive text-destructive rounded-lg border p-4"
+            className="rounded-lg border border-destructive p-4 text-destructive"
             role="alert"
             aria-live="assertive"
           >
@@ -168,7 +168,10 @@ function App() {
         {userName && profile && !error && (
           <ErrorBoundary>
             {/* User Profile Section */}
-            <UserProfile userName={userName} onRateLimitUpdate={handleRateLimitUpdate} />
+            <UserProfile
+              userName={userName}
+              onRateLimitUpdate={handleRateLimitUpdate}
+            />
 
             {/* Quick Assessment - 4 Key Metrics */}
             {metrics && <QuickAssessment metrics={metrics} loading={loading} />}
@@ -182,7 +185,12 @@ function App() {
         )}
 
         {/* Loading State - Show UserProfile for loading indication */}
-        {userName && loading && !profile && <UserProfile userName={userName} onRateLimitUpdate={handleRateLimitUpdate} />}
+        {userName && loading && !profile && (
+          <UserProfile
+            userName={userName}
+            onRateLimitUpdate={handleRateLimitUpdate}
+          />
+        )}
 
         {/* Auth Required Modal */}
         <AuthRequiredModal

@@ -39,7 +39,7 @@ Coverage: 100% for all hooks
 ### API
 
 ```typescript
-function useAuthenticityScore(repositories: Repository[]): AuthenticityScore
+function useAuthenticityScore(repositories: Repository[]): AuthenticityScore;
 ```
 
 ### Parameters
@@ -49,6 +49,7 @@ function useAuthenticityScore(repositories: Repository[]): AuthenticityScore
 ### Returns
 
 `AuthenticityScore` object containing:
+
 - `score` (number) - Total score 0-100
 - `category` ('High' | 'Medium' | 'Low' | 'Suspicious')
 - `breakdown` - Score breakdown by component (originality, activity, engagement, code ownership)
@@ -58,7 +59,7 @@ function useAuthenticityScore(repositories: Repository[]): AuthenticityScore
 ### Example Usage
 
 ```tsx
-import { useAuthenticityScore } from '@/hooks';
+import { useAuthenticityScore } from "@/hooks";
 
 function UserProfile({ repositories }) {
   const authenticityScore = useAuthenticityScore(repositories);
@@ -72,7 +73,7 @@ function UserProfile({ repositories }) {
 
       {authenticityScore.flags.length > 0 && (
         <ul>
-          {authenticityScore.flags.map(flag => (
+          {authenticityScore.flags.map((flag) => (
             <li key={flag}>{flag}</li>
           ))}
         </ul>
@@ -82,7 +83,9 @@ function UserProfile({ repositories }) {
         <p>Originality: {authenticityScore.breakdown.originalityScore}/25</p>
         <p>Activity: {authenticityScore.breakdown.activityScore}/25</p>
         <p>Engagement: {authenticityScore.breakdown.engagementScore}/25</p>
-        <p>Code Ownership: {authenticityScore.breakdown.codeOwnershipScore}/25</p>
+        <p>
+          Code Ownership: {authenticityScore.breakdown.codeOwnershipScore}/25
+        </p>
       </div>
     </div>
   );
@@ -109,12 +112,15 @@ function UserProfile({ repositories }) {
 function useRepositoryFilters(repositories: Repository[]): {
   filteredRepositories: Repository[];
   filters: RepositoryFilter;
-  updateFilter: <K extends keyof RepositoryFilter>(key: K, value: RepositoryFilter[K]) => void;
+  updateFilter: <K extends keyof RepositoryFilter>(
+    key: K,
+    value: RepositoryFilter[K],
+  ) => void;
   setMultipleFilters: (filters: Partial<RepositoryFilter>) => void;
   clearFilters: () => void;
   hasActiveFilters: boolean;
   activeFilterCount: number;
-}
+};
 ```
 
 ### Parameters
@@ -124,6 +130,7 @@ function useRepositoryFilters(repositories: Repository[]): {
 ### Returns
 
 Object with:
+
 - `filteredRepositories` - Filtered repository array (memoized)
 - `filters` - Current filter state
 - `updateFilter` - Update single filter
@@ -136,21 +143,21 @@ Object with:
 
 ```typescript
 type RepositoryFilter = {
-  originalOnly?: boolean;      // Show only original (non-forked) repos
-  forksOnly?: boolean;          // Show only forked repos
-  hideArchived?: boolean;       // Hide archived repos
-  language?: string;            // Filter by primary language
-  minStars?: number;            // Minimum star count
-  searchQuery?: string;         // Search in name/description
-  hasTopics?: boolean;          // Show only repos with topics
-  hasLicense?: boolean;         // Show only repos with license
-}
+  originalOnly?: boolean; // Show only original (non-forked) repos
+  forksOnly?: boolean; // Show only forked repos
+  hideArchived?: boolean; // Hide archived repos
+  language?: string; // Filter by primary language
+  minStars?: number; // Minimum star count
+  searchQuery?: string; // Search in name/description
+  hasTopics?: boolean; // Show only repos with topics
+  hasLicense?: boolean; // Show only repos with license
+};
 ```
 
 ### Example Usage
 
 ```tsx
-import { useRepositoryFilters } from '@/hooks';
+import { useRepositoryFilters } from "@/hooks";
 
 function RepositoryList({ repositories }) {
   const {
@@ -159,24 +166,30 @@ function RepositoryList({ repositories }) {
     updateFilter,
     clearFilters,
     hasActiveFilters,
-    activeFilterCount
+    activeFilterCount,
   } = useRepositoryFilters(repositories);
 
   return (
     <div>
       <div className="filters">
-        <button onClick={() => updateFilter('originalOnly', true)}>
+        <button onClick={() => updateFilter("originalOnly", true)}>
           Original Only
         </button>
-        <button onClick={() => updateFilter('hideArchived', true)}>
+        <button onClick={() => updateFilter("hideArchived", true)}>
           Hide Archived
         </button>
         <input
           type="number"
           placeholder="Min Stars"
-          onChange={(e) => updateFilter('minStars', Number(e.target.value) || undefined)}
+          onChange={(e) =>
+            updateFilter("minStars", Number(e.target.value) || undefined)
+          }
         />
-        <select onChange={(e) => updateFilter('language', e.target.value || undefined)}>
+        <select
+          onChange={(e) =>
+            updateFilter("language", e.target.value || undefined)
+          }
+        >
           <option value="">All Languages</option>
           <option value="TypeScript">TypeScript</option>
           <option value="JavaScript">JavaScript</option>
@@ -190,12 +203,15 @@ function RepositoryList({ repositories }) {
       </div>
 
       <ul>
-        {filteredRepositories.map(repo => (
+        {filteredRepositories.map((repo) => (
           <li key={repo.id}>{repo.name}</li>
         ))}
       </ul>
 
-      <p>Showing {filteredRepositories.length} of {repositories.length} repositories</p>
+      <p>
+        Showing {filteredRepositories.length} of {repositories.length}{" "}
+        repositories
+      </p>
     </div>
   );
 }
@@ -211,15 +227,16 @@ function RepositoryList({ repositories }) {
 ### Filter Removal
 
 Filters are automatically removed when:
+
 - Value is set to `undefined`
 - Value is set to `false` (for boolean filters)
 - Value is set to empty string `''` (for string filters)
 
 ```tsx
 // All of these remove the filter:
-updateFilter('language', undefined);
-updateFilter('language', '');
-updateFilter('originalOnly', false);
+updateFilter("language", undefined);
+updateFilter("language", "");
+updateFilter("originalOnly", false);
 ```
 
 ---
@@ -235,7 +252,7 @@ updateFilter('originalOnly', false);
 ```typescript
 function useRepositorySorting(
   repositories: Repository[],
-  initialSort?: RepositorySorting
+  initialSort?: RepositorySorting,
 ): {
   sortedRepositories: Repository[];
   sorting: RepositorySorting;
@@ -245,7 +262,7 @@ function useRepositorySorting(
   setSort: (field: SortBy, direction?: SortDirection) => void;
   resetSort: () => void;
   isDefaultSort: boolean;
-}
+};
 ```
 
 ### Parameters
@@ -256,6 +273,7 @@ function useRepositorySorting(
 ### Returns
 
 Object with:
+
 - `sortedRepositories` - Sorted repository array (memoized)
 - `sorting` - Current sort configuration
 - `setSortBy` - Update sort field only
@@ -269,22 +287,22 @@ Object with:
 
 ```typescript
 type SortBy =
-  | 'stars'      // Star count
-  | 'forks'      // Fork count
-  | 'watchers'   // Watcher count
-  | 'commits'    // Total commit count
-  | 'size'       // Repository disk size
-  | 'updated'    // Last updated date
-  | 'created'    // Creation date
-  | 'name';      // Alphabetical by name
+  | "stars" // Star count
+  | "forks" // Fork count
+  | "watchers" // Watcher count
+  | "commits" // Total commit count
+  | "size" // Repository disk size
+  | "updated" // Last updated date
+  | "created" // Creation date
+  | "name"; // Alphabetical by name
 
-type SortDirection = 'asc' | 'desc';
+type SortDirection = "asc" | "desc";
 ```
 
 ### Example Usage
 
 ```tsx
-import { useRepositorySorting } from '@/hooks';
+import { useRepositorySorting } from "@/hooks";
 
 function RepositoryList({ repositories }) {
   const {
@@ -293,17 +311,17 @@ function RepositoryList({ repositories }) {
     setSortBy,
     toggleDirection,
     resetSort,
-    isDefaultSort
+    isDefaultSort,
   } = useRepositorySorting(repositories);
 
   const SortButton = ({ field, label }: { field: SortBy; label: string }) => (
     <button
       onClick={() => setSortBy(field)}
-      className={sorting.field === field ? 'active' : ''}
+      className={sorting.field === field ? "active" : ""}
     >
       {label}
       {sorting.field === field && (
-        <span>{sorting.direction === 'asc' ? ' ↑' : ' ↓'}</span>
+        <span>{sorting.direction === "asc" ? " ↑" : " ↓"}</span>
       )}
     </button>
   );
@@ -321,13 +339,11 @@ function RepositoryList({ repositories }) {
           Toggle Direction ({sorting.direction})
         </button>
 
-        {!isDefaultSort && (
-          <button onClick={resetSort}>Reset Sort</button>
-        )}
+        {!isDefaultSort && <button onClick={resetSort}>Reset Sort</button>}
       </div>
 
       <ul>
-        {sortedRepositories.map(repo => (
+        {sortedRepositories.map((repo) => (
           <li key={repo.id}>
             {repo.name} - {repo.stargazerCount} stars
           </li>
@@ -341,30 +357,22 @@ function RepositoryList({ repositories }) {
 ### Advanced Example: Combined with Filters
 
 ```tsx
-import { useRepositoryFilters, useRepositorySorting } from '@/hooks';
+import { useRepositoryFilters, useRepositorySorting } from "@/hooks";
 
 function RepositoryList({ repositories }) {
   // Apply filters first
-  const {
-    filteredRepositories,
-    updateFilter,
-    clearFilters,
-    hasActiveFilters
-  } = useRepositoryFilters(repositories);
+  const { filteredRepositories, updateFilter, clearFilters, hasActiveFilters } =
+    useRepositoryFilters(repositories);
 
   // Then apply sorting to filtered results
-  const {
-    sortedRepositories,
-    setSortBy,
-    toggleDirection,
-    sorting
-  } = useRepositorySorting(filteredRepositories);
+  const { sortedRepositories, setSortBy, toggleDirection, sorting } =
+    useRepositorySorting(filteredRepositories);
 
   return (
     <div>
       {/* Filter controls */}
       <div className="filters">
-        <button onClick={() => updateFilter('originalOnly', true)}>
+        <button onClick={() => updateFilter("originalOnly", true)}>
           Original Only
         </button>
         {hasActiveFilters && (
@@ -374,23 +382,24 @@ function RepositoryList({ repositories }) {
 
       {/* Sort controls */}
       <div className="sort-controls">
-        <button onClick={() => setSortBy('stars')}>
-          Sort by Stars {sorting.field === 'stars' && '⭐'}
+        <button onClick={() => setSortBy("stars")}>
+          Sort by Stars {sorting.field === "stars" && "⭐"}
         </button>
         <button onClick={toggleDirection}>
-          {sorting.direction === 'asc' ? '↑' : '↓'}
+          {sorting.direction === "asc" ? "↑" : "↓"}
         </button>
       </div>
 
       {/* Results */}
       <ul>
-        {sortedRepositories.map(repo => (
+        {sortedRepositories.map((repo) => (
           <li key={repo.id}>{repo.name}</li>
         ))}
       </ul>
 
       <p>
-        Showing {sortedRepositories.length} of {repositories.length} repositories
+        Showing {sortedRepositories.length} of {repositories.length}{" "}
+        repositories
       </p>
     </div>
   );
@@ -411,6 +420,7 @@ function RepositoryList({ repositories }) {
 All three hooks have comprehensive test suites:
 
 ### useAuthenticityScore (26 tests)
+
 - ✅ Basic functionality (3 tests)
 - ✅ Score categories (4 tests)
 - ✅ Score breakdown (5 tests)
@@ -419,6 +429,7 @@ All three hooks have comprehensive test suites:
 - ✅ Edge cases (4 tests)
 
 ### useRepositoryFilters (28 tests)
+
 - ✅ Initial state (2 tests)
 - ✅ updateFilter (6 tests)
 - ✅ setMultipleFilters (3 tests)
@@ -428,6 +439,7 @@ All three hooks have comprehensive test suites:
 - ✅ Edge cases (2 tests)
 
 ### useRepositorySorting (33 tests)
+
 - ✅ Initial state (2 tests)
 - ✅ setSortBy (3 tests)
 - ✅ setSortDirection (2 tests)
@@ -467,10 +479,10 @@ const authenticityScore = useAuthenticityScore(filteredRepositories);
 
 ```tsx
 // ✅ Good: use barrel export
-import { useAuthenticityScore, useRepositoryFilters } from '@/hooks';
+import { useAuthenticityScore, useRepositoryFilters } from "@/hooks";
 
 // ❌ Avoid: direct imports
-import { useAuthenticityScore } from '@/hooks/useAuthenticityScore';
+import { useAuthenticityScore } from "@/hooks/useAuthenticityScore";
 ```
 
 ### 4. Stable Update Functions
@@ -482,7 +494,7 @@ const { updateFilter } = useRepositoryFilters(repositories);
 
 // ✅ Safe: updateFilter reference is stable
 useEffect(() => {
-  updateFilter('language', selectedLanguage);
+  updateFilter("language", selectedLanguage);
 }, [selectedLanguage, updateFilter]);
 ```
 
@@ -497,6 +509,7 @@ These hooks integrate with existing utilities:
 - `useRepositorySorting` → uses `lib/repository-filters.ts` (sortRepositories)
 
 All hooks use types from:
+
 - `apollo/github-api.types.ts` (Repository type)
 - `types/filters.ts` (SortBy, SortDirection, RepositoryFilter)
 - `types/metrics.ts` (AuthenticityScore)
@@ -510,11 +523,13 @@ With Phase 2.6 complete, the next phase is:
 **Phase 1.2: Install shadcn/ui Components**
 
 Install 17 shadcn/ui components required for the UI:
+
 ```bash
 npx shadcn@latest add card table tabs badge separator skeleton avatar tooltip scroll-area select checkbox switch accordion collapsible progress alert chart
 ```
 
 Each component installation should be followed by:
+
 1. Create Storybook story
 2. Visual check in Storybook
 3. Accessibility check (a11y addon)
@@ -526,6 +541,7 @@ Each component installation should be followed by:
 ## Summary
 
 ✅ **Phase 2.6 Complete**
+
 - 3 custom hooks created
 - 87 tests written (all passing)
 - 100% test coverage for all hooks
@@ -534,12 +550,14 @@ Each component installation should be followed by:
 - Ready for UI component integration
 
 **Files Created:**
+
 - `src/hooks/index.ts` (barrel export)
 - `src/hooks/useAuthenticityScore.ts` + tests
 - `src/hooks/useRepositoryFilters.ts` + tests
 - `src/hooks/useRepositorySorting.ts` + tests
 
 **Overall Project Test Stats:**
+
 - Total test files: 16
 - Total tests: 360 (all passing)
 - Overall coverage: 95.31%

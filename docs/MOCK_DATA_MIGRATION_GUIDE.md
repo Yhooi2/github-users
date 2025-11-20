@@ -9,12 +9,14 @@ This guide documents the migration from duplicate mock data scattered across 16+
 ## Problem Statement
 
 **Before migration:**
+
 - 30+ duplicate repository mock definitions across 16 test files
 - ~500+ lines of duplicated mock code
 - Inconsistent mock data between tests
 - Difficult to maintain and update mocks
 
 **After migration:**
+
 - Single source of truth: `src/test/mocks/github-data.ts`
 - Centralized factory functions for creating mocks
 - ~78 lines saved across 3 example files (with 13+ files remaining)
@@ -25,6 +27,7 @@ This guide documents the migration from duplicate mock data scattered across 16+
 **Location:** `src/test/mocks/github-data.ts`
 
 **Enhanced with (+320 lines):**
+
 - Repository mocks (already existed)
 - Authenticity Score mocks (4 pre-configured)
 - Contribution Repository mocks (for RecentActivity component)
@@ -36,39 +39,39 @@ This guide documents the migration from duplicate mock data scattered across 16+
 
 ```typescript
 import {
-  mockRepository,              // Default repository
-  mockForkedRepository,        // Forked repo
-  mockArchivedRepository,      // Archived repo
-  mockTemplateRepository,      // Template repo
-  mockEmptyRepository,         // No commits
-  mockPopularRepository,       // High stars/forks
+  mockRepository, // Default repository
+  mockForkedRepository, // Forked repo
+  mockArchivedRepository, // Archived repo
+  mockTemplateRepository, // Template repo
+  mockEmptyRepository, // No commits
+  mockPopularRepository, // High stars/forks
   mockLowEngagementRepository, // Low engagement
-  mockJavaScriptRepository,    // JS primary language
+  mockJavaScriptRepository, // JS primary language
   mockMultiLanguageRepository, // Multiple languages
-  createMockRepository,        // Factory function
-  createMockRepositories,      // Bulk factory
-} from '@/test/mocks/github-data';
+  createMockRepository, // Factory function
+  createMockRepositories, // Bulk factory
+} from "@/test/mocks/github-data";
 ```
 
 ### Authenticity Score Mocks
 
 ```typescript
 import {
-  mockHighAuthenticityScore,       // 85/100 - High
-  mockMediumAuthenticityScore,     // 62/100 - Medium
-  mockLowAuthenticityScore,        // 35/100 - Low
+  mockHighAuthenticityScore, // 85/100 - High
+  mockMediumAuthenticityScore, // 62/100 - Medium
+  mockLowAuthenticityScore, // 35/100 - Low
   mockSuspiciousAuthenticityScore, // 15/100 - Suspicious
-  createMockAuthenticityScore,     // Factory function
-} from '@/test/mocks/github-data';
+  createMockAuthenticityScore, // Factory function
+} from "@/test/mocks/github-data";
 ```
 
 ### Contribution Repository Mocks
 
 ```typescript
 import {
-  mockContributionRepositories,      // 5 pre-configured
-  createMockContributionRepository,   // Factory function
-} from '@/test/mocks/github-data';
+  mockContributionRepositories, // 5 pre-configured
+  createMockContributionRepository, // Factory function
+} from "@/test/mocks/github-data";
 ```
 
 ### Metric Mocks
@@ -83,7 +86,7 @@ import {
   mockExcellentQualityMetric,
   mockRapidGrowthMetric,
   mockStableGrowthMetric,
-} from '@/test/mocks/github-data';
+} from "@/test/mocks/github-data";
 ```
 
 ## Migration Examples
@@ -91,85 +94,81 @@ import {
 ### Example 1: RepositoryCard.test.tsx
 
 **Before (46 lines):**
+
 ```typescript
-import type { Repository } from '@/apollo/github-api.types';
+import type { Repository } from "@/apollo/github-api.types";
 
 const mockRepository: Repository = {
-  id: '1',
-  name: 'test-repo',
-  description: 'A test repository description',
-  url: 'https://github.com/user/test-repo',
+  id: "1",
+  name: "test-repo",
+  description: "A test repository description",
+  url: "https://github.com/user/test-repo",
   stargazerCount: 100,
   forkCount: 20,
   isFork: false,
   isTemplate: false,
   parent: null,
-  createdAt: '2023-01-01T00:00:00Z',
-  updatedAt: '2024-11-05T10:00:00Z',
-  pushedAt: '2024-11-05T10:00:00Z',
+  createdAt: "2023-01-01T00:00:00Z",
+  updatedAt: "2024-11-05T10:00:00Z",
+  pushedAt: "2024-11-05T10:00:00Z",
   diskUsage: 1000,
   isArchived: false,
   homepageUrl: null,
   watchers: { totalCount: 10 },
   issues: { totalCount: 5 },
   repositoryTopics: {
-    nodes: [
-      { topic: { name: 'react' } },
-      { topic: { name: 'typescript' } },
-    ],
+    nodes: [{ topic: { name: "react" } }, { topic: { name: "typescript" } }],
   },
-  licenseInfo: { name: 'MIT License' },
+  licenseInfo: { name: "MIT License" },
   defaultBranchRef: {
     target: {
       history: { totalCount: 50 },
     },
   },
-  primaryLanguage: { name: 'TypeScript' },
+  primaryLanguage: { name: "TypeScript" },
   languages: {
     totalSize: 1000,
     edges: [
-      { size: 800, node: { name: 'TypeScript' } },
-      { size: 200, node: { name: 'CSS' } },
+      { size: 800, node: { name: "TypeScript" } },
+      { size: 200, node: { name: "CSS" } },
     ],
   },
 };
 ```
 
 **After (40 lines):**
+
 ```typescript
-import { createMockRepository } from '@/test/mocks/github-data';
+import { createMockRepository } from "@/test/mocks/github-data";
 
 // Use centralized mock factory (Week 4 P3: Mock data consolidation)
 const mockRepository = createMockRepository({
-  id: '1',
-  name: 'test-repo',
-  description: 'A test repository description',
-  url: 'https://github.com/user/test-repo',
+  id: "1",
+  name: "test-repo",
+  description: "A test repository description",
+  url: "https://github.com/user/test-repo",
   stargazerCount: 100,
   forkCount: 20,
-  updatedAt: '2024-11-05T10:00:00Z',
-  pushedAt: '2024-11-05T10:00:00Z',
+  updatedAt: "2024-11-05T10:00:00Z",
+  pushedAt: "2024-11-05T10:00:00Z",
   diskUsage: 1000,
   watchers: { totalCount: 10 },
   issues: { totalCount: 5 },
   repositoryTopics: {
-    nodes: [
-      { topic: { name: 'react' } },
-      { topic: { name: 'typescript' } },
-    ],
+    nodes: [{ topic: { name: "react" } }, { topic: { name: "typescript" } }],
   },
-  licenseInfo: { name: 'MIT License' },
+  licenseInfo: { name: "MIT License" },
   defaultBranchRef: {
     target: {
       history: { totalCount: 50 },
     },
   },
-  primaryLanguage: { name: 'TypeScript' },
+  primaryLanguage: { name: "TypeScript" },
   languages: {
     totalSize: 1000,
     edges: [
-      { size: 800, node: { name: 'TypeScript' } },
-      { size: 200, node: { name: 'CSS' } },
+      { size: 800, node: { name: "TypeScript" } },
+      { size: 200, node: { name: "CSS" } },
     ],
   },
 });
@@ -182,12 +181,13 @@ const mockRepository = createMockRepository({
 ### Example 2: UserAuthenticity.test.tsx
 
 **Before (84 lines):**
+
 ```typescript
-import type { AuthenticityScore } from '@/types/metrics';
+import type { AuthenticityScore } from "@/types/metrics";
 
 const mockHighScore: AuthenticityScore = {
   score: 85,
-  category: 'High',
+  category: "High",
   breakdown: {
     originalityScore: 22,
     activityScore: 20,
@@ -218,13 +218,14 @@ const mockSuspiciousScore: AuthenticityScore = {
 ```
 
 **After (18 lines):**
+
 ```typescript
 import {
   mockHighAuthenticityScore,
   mockMediumAuthenticityScore,
   mockLowAuthenticityScore,
   mockSuspiciousAuthenticityScore,
-} from '@/test/mocks/github-data';
+} from "@/test/mocks/github-data";
 
 // Use centralized mock factory (Week 4 P3: Mock data consolidation)
 const mockHighScore = mockHighAuthenticityScore;
@@ -240,19 +241,24 @@ const mockSuspiciousScore = mockSuspiciousAuthenticityScore;
 ### Example 3: RecentActivity.test.tsx
 
 **Before (11 lines):**
+
 ```typescript
 const mockRepositories = [
-  { repository: { name: 'awesome-project' }, contributions: { totalCount: 127 } },
-  { repository: { name: 'web-app' }, contributions: { totalCount: 89 } },
-  { repository: { name: 'mobile-client' }, contributions: { totalCount: 56 } },
-  { repository: { name: 'api-server' }, contributions: { totalCount: 43 } },
-  { repository: { name: 'documentation' }, contributions: { totalCount: 21 } },
+  {
+    repository: { name: "awesome-project" },
+    contributions: { totalCount: 127 },
+  },
+  { repository: { name: "web-app" }, contributions: { totalCount: 89 } },
+  { repository: { name: "mobile-client" }, contributions: { totalCount: 56 } },
+  { repository: { name: "api-server" }, contributions: { totalCount: 43 } },
+  { repository: { name: "documentation" }, contributions: { totalCount: 21 } },
 ];
 ```
 
 **After (7 lines):**
+
 ```typescript
-import { mockContributionRepositories } from '@/test/mocks/github-data';
+import { mockContributionRepositories } from "@/test/mocks/github-data";
 
 // Use centralized mock factory (Week 4 P3: Mock data consolidation)
 const mockRepositories = mockContributionRepositories;
@@ -267,6 +273,7 @@ const mockRepositories = mockContributionRepositories;
 When migrating a test file:
 
 1. **Identify duplicate mocks**
+
    ```bash
    grep "const mockRepo" src/components/yourfile.test.tsx
    ```
@@ -276,16 +283,22 @@ When migrating a test file:
    - Look for pre-configured mocks or factory functions
 
 3. **Replace inline mock with import**
+
    ```typescript
    // Before
-   const mockRepo: Repository = { /* 40 lines */ };
+   const mockRepo: Repository = {
+     /* 40 lines */
+   };
 
    // After
-   import { createMockRepository } from '@/test/mocks/github-data';
-   const mockRepo = createMockRepository({ /* only overrides */ });
+   import { createMockRepository } from "@/test/mocks/github-data";
+   const mockRepo = createMockRepository({
+     /* only overrides */
+   });
    ```
 
 4. **Run tests to verify**
+
    ```bash
    npm test -- src/components/yourfile.test.tsx
    ```
@@ -300,6 +313,7 @@ When migrating a test file:
 **Files with duplicate mocks (13 remaining):**
 
 **Repository components (5 files):**
+
 - `src/components/repository/RepositoryList.test.tsx`
 - `src/components/repository/RepositoryTable.test.tsx`
 - `src/components/repository/RepositoryList.stories.tsx`
@@ -307,6 +321,7 @@ When migrating a test file:
 - `src/components/repository/RepositoryCard.stories.tsx`
 
 **Timeline components (5 files):**
+
 - `src/components/timeline/TimelineYear.test.tsx`
 - `src/components/timeline/YearExpandedView.test.tsx`
 - `src/components/timeline/ActivityTimeline.stories.tsx`
@@ -314,6 +329,7 @@ When migrating a test file:
 - `src/components/timeline/YearExpandedView.stories.tsx`
 
 **Lib/hooks (3 files):**
+
 - `src/lib/repository-filters.test.ts`
 - `src/lib/statistics.test.ts`
 - `src/lib/authenticity.test.ts`
@@ -332,6 +348,7 @@ When migrating a test file:
 ## Future Enhancements
 
 Potential additions to `github-data.ts`:
+
 - More metric variations (Medium Impact, Low Quality, etc.)
 - User mocks with different profiles
 - GraphQL response mocks

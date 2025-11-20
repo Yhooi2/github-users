@@ -1,11 +1,25 @@
-import { MetricCard } from './MetricCard';
+import { MetricCard } from "./MetricCard";
 
 export interface QuickAssessmentProps {
   metrics: {
-    activity: { score: number; level: 'High' | 'Moderate' | 'Low' };
-    impact: { score: number; level: 'Exceptional' | 'Strong' | 'Moderate' | 'Low' | 'Minimal' };
-    quality: { score: number; level: 'Excellent' | 'Strong' | 'Good' | 'Fair' | 'Weak' };
-    growth: { score: number; level: 'Rapid Growth' | 'Growing' | 'Stable' | 'Declining' | 'Rapid Decline' };
+    activity: { score: number; level: "High" | "Moderate" | "Low" };
+    impact: {
+      score: number;
+      level: "Exceptional" | "Strong" | "Moderate" | "Low" | "Minimal";
+    };
+    quality: {
+      score: number;
+      level: "Excellent" | "Strong" | "Good" | "Fair" | "Weak";
+    };
+    growth: {
+      score: number;
+      level:
+        | "Rapid Growth"
+        | "Growing"
+        | "Stable"
+        | "Declining"
+        | "Rapid Decline";
+    };
   };
   loading?: boolean;
   onExplainMetric?: (metric: string) => void;
@@ -26,28 +40,36 @@ export function QuickAssessment({
           score={metrics.activity.score}
           level={metrics.activity.level}
           loading={loading}
-          onExplainClick={onExplainMetric ? () => onExplainMetric('activity') : undefined}
+          onExplainClick={
+            onExplainMetric ? () => onExplainMetric("activity") : undefined
+          }
         />
         <MetricCard
           title="Impact"
           score={metrics.impact.score}
           level={metrics.impact.level}
           loading={loading}
-          onExplainClick={onExplainMetric ? () => onExplainMetric('impact') : undefined}
+          onExplainClick={
+            onExplainMetric ? () => onExplainMetric("impact") : undefined
+          }
         />
         <MetricCard
           title="Quality"
           score={metrics.quality.score}
           level={metrics.quality.level}
           loading={loading}
-          onExplainClick={onExplainMetric ? () => onExplainMetric('quality') : undefined}
+          onExplainClick={
+            onExplainMetric ? () => onExplainMetric("quality") : undefined
+          }
         />
         <MetricCard
           title="Growth"
           score={metrics.growth.score}
           level={metrics.growth.level}
           loading={loading}
-          onExplainClick={onExplainMetric ? () => onExplainMetric('growth') : undefined}
+          onExplainClick={
+            onExplainMetric ? () => onExplainMetric("growth") : undefined
+          }
         />
       </div>
     </section>

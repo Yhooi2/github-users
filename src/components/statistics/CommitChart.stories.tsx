@@ -1,7 +1,6 @@
- 
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CommitChart } from './CommitChart';
-import type { YearlyCommitStats } from '@/lib/statistics';
+import type { YearlyCommitStats } from "@/lib/statistics";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { CommitChart } from "./CommitChart";
 
 // Mock data generators - kept for potential future use
 // const createMockYearlyStats = (years: number = 3): YearlyCommitStats[] => {
@@ -57,12 +56,12 @@ const lowVolumeData: YearlyCommitStats[] = [
 ];
 
 const meta = {
-  title: 'Components/Statistics/CommitChart',
+  title: "Components/Statistics/CommitChart",
   component: CommitChart,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof CommitChart>;
 
 export default meta;
@@ -83,7 +82,7 @@ export const Default: Story = {
 export const LineChart: Story = {
   args: {
     data: threeYearsData,
-    variant: 'line',
+    variant: "line",
   },
 };
 
@@ -93,7 +92,7 @@ export const LineChart: Story = {
 export const BarChart: Story = {
   args: {
     data: threeYearsData,
-    variant: 'bar',
+    variant: "bar",
   },
 };
 
@@ -103,7 +102,7 @@ export const BarChart: Story = {
 export const AreaChart: Story = {
   args: {
     data: threeYearsData,
-    variant: 'area',
+    variant: "area",
   },
 };
 
@@ -191,7 +190,7 @@ export const LoadingWithMessage: Story = {
   args: {
     data: [],
     loading: true,
-    loadingMessage: 'Fetching commit statistics from GitHub...',
+    loadingMessage: "Fetching commit statistics from GitHub...",
   },
 };
 
@@ -201,7 +200,7 @@ export const LoadingWithMessage: Story = {
 export const Error: Story = {
   args: {
     data: [],
-    error: new Error('Failed to fetch commit data'),
+    error: new Error("Failed to fetch commit data"),
   },
 };
 
@@ -211,9 +210,10 @@ export const Error: Story = {
 export const CustomError: Story = {
   args: {
     data: [],
-    error: new Error('Network timeout'),
-    errorTitle: 'Connection Timeout',
-    errorDescription: 'Unable to connect to GitHub API. Please try again later.',
+    error: new Error("Network timeout"),
+    errorTitle: "Connection Timeout",
+    errorDescription:
+      "Unable to connect to GitHub API. Please try again later.",
   },
 };
 
@@ -232,8 +232,8 @@ export const Empty: Story = {
 export const CustomEmpty: Story = {
   args: {
     data: [],
-    emptyTitle: 'No Activity Yet',
-    emptyDescription: 'Start making commits to see your activity here.',
+    emptyTitle: "No Activity Yet",
+    emptyDescription: "Start making commits to see your activity here.",
   },
 };
 

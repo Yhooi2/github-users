@@ -17,6 +17,7 @@ This checklist ensures that the OAuth integration in Phase 7 follows security be
 ### 1. Secrets Protection
 
 #### Client-Side Protection
+
 - [x] **Client Secret NOT in client bundle**
   - ✅ Verified: Secret only in server environment variables
   - ✅ Verified: grep search in `dist/` returns 0 results
@@ -33,6 +34,7 @@ This checklist ensures that the OAuth integration in Phase 7 follows security be
   - ✅ Vercel environment variables encrypted
 
 #### Verification Commands
+
 ```bash
 # Build production bundle
 npm run build
@@ -75,15 +77,19 @@ grep ".env.local" .gitignore
   - ✅ Prevents state reuse
 
 #### Verification
+
 ```typescript
 // api/auth/login.ts
-const state = generateRandomState() // ✅ crypto.randomBytes
-res.setHeader('Set-Cookie', `oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Max-Age=600; Path=/`)
+const state = generateRandomState(); // ✅ crypto.randomBytes
+res.setHeader(
+  "Set-Cookie",
+  `oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Max-Age=600; Path=/`,
+);
 
 // api/auth/callback.ts
-const savedState = extractCookie(req.headers.cookie, 'oauth_state')
+const savedState = extractCookie(req.headers.cookie, "oauth_state");
 if (!savedState || savedState !== state) {
-  return res.redirect('/?error=csrf_failed') // ✅ CSRF validation
+  return res.redirect("/?error=csrf_failed"); // ✅ CSRF validation
 }
 ```
 
@@ -113,15 +119,16 @@ if (!savedState || savedState !== state) {
   - ✅ OAuth state cookie: 10 minutes (just enough for OAuth flow)
 
 #### Cookie Configuration
+
 ```typescript
 // Session cookie
 `session=${sessionId}; HttpOnly; Secure; SameSite=Lax; Max-Age=${86400 * 30}; Path=/`
-
 // OAuth state cookie
-`oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Max-Age=600; Path=/`
+`oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Max-Age=600; Path=/`;
 ```
 
 **Verification in Browser:**
+
 1. Open DevTools → Application → Cookies
 2. Check flags: HttpOnly ✅, Secure ✅, SameSite=Lax ✅
 
@@ -147,9 +154,10 @@ if (!savedState || savedState !== state) {
   - ✅ User explicitly grants access
 
 #### Scope Configuration
+
 ```typescript
 // api/auth/login.ts
-scope: 'read:user user:email' // ✅ Minimal read-only scope
+scope: "read:user user:email"; // ✅ Minimal read-only scope
 ```
 
 **Status:** ✅ **PASS** - Minimal necessary scope
@@ -179,17 +187,19 @@ scope: 'read:user user:email' // ✅ Minimal read-only scope
   - ✅ Seamless degradation
 
 #### Session Structure
+
 ```typescript
 interface Session {
-  userId: number
-  login: string
-  avatarUrl: string
-  accessToken: string
-  createdAt: number
+  userId: number;
+  login: string;
+  avatarUrl: string;
+  accessToken: string;
+  createdAt: number;
 }
 ```
 
 **Verification:**
+
 ```bash
 # Check session storage (Vercel CLI)
 vercel env ls
@@ -220,10 +230,13 @@ vercel env ls
   - ✅ No cross-user cache contamination
 
 #### Cache Key Generation
+
 ```typescript
 const finalCacheKey = cacheKey
-  ? (isDemo ? `demo:${cacheKey}` : `user:${sessionId}:${cacheKey}`)
-  : null
+  ? isDemo
+    ? `demo:${cacheKey}`
+    : `user:${sessionId}:${cacheKey}`
+  : null;
 ```
 
 **Status:** ✅ **PASS** - Rate limits properly isolated
@@ -248,13 +261,14 @@ const finalCacheKey = cacheKey
   - ✅ KV unavailable → demo mode
 
 #### Error Handling Example
+
 ```typescript
 // User sees
-res.redirect('/?error=auth_failed')
+res.redirect("/?error=auth_failed");
 
 // Server logs
-console.error('OAuth callback error:', error)
-console.error('Full error details:', errorMessage)
+console.error("OAuth callback error:", error);
+console.error("Full error details:", errorMessage);
 ```
 
 **Status:** ✅ **PASS** - Secure error handling
@@ -308,6 +322,7 @@ console.error('Full error details:', errorMessage)
 ### 10. Dependencies
 
 - [x] **No known vulnerabilities**
+
   ```bash
   npm audit
   # Check for critical/high vulnerabilities
@@ -319,6 +334,7 @@ console.error('Full error details:', errorMessage)
   - ✅ Regular updates scheduled
 
 **Run regularly:**
+
 ```bash
 npm audit
 npm outdated
@@ -332,6 +348,7 @@ npm update
 ## 🔐 Production Deployment Security Checklist
 
 ### Before Deploy
+
 - [ ] Run security audit: `npm audit`
 - [ ] Verify no secrets in build: `grep -r "ghp_" dist/`
 - [ ] Test OAuth flow in staging
@@ -339,11 +356,13 @@ npm update
 - [ ] Check Vercel KV configuration
 
 ### During Deploy
+
 - [ ] Set environment variables in Vercel Dashboard
 - [ ] Verify variables are encrypted
 - [ ] Test all environments (dev, preview, production)
 
 ### After Deploy
+
 - [ ] Test OAuth flow end-to-end
 - [ ] Verify cookies have correct flags (DevTools)
 - [ ] Check Vercel Function logs for errors
@@ -357,6 +376,7 @@ npm update
 ### Manual Testing
 
 #### Test 1: CSRF Protection
+
 ```
 1. Start OAuth flow → copy state from cookie
 2. Modify state parameter in callback URL
@@ -364,6 +384,7 @@ npm update
 ```
 
 #### Test 2: Token Security
+
 ```
 1. Build production bundle: npm run build
 2. Search for secrets: grep -r "ghp_" dist/
@@ -371,6 +392,7 @@ npm update
 ```
 
 #### Test 3: Cookie Security
+
 ```
 1. Open DevTools → Application → Cookies
 2. Check session cookie flags
@@ -378,6 +400,7 @@ npm update
 ```
 
 #### Test 4: Session Expiry
+
 ```
 1. Sign in → wait for session to expire (or manually delete from KV)
 2. Refresh page
@@ -385,6 +408,7 @@ npm update
 ```
 
 #### Test 5: Logout
+
 ```
 1. Sign in → sign out
 2. Check cookie is cleared (Max-Age=0)
@@ -430,6 +454,7 @@ npm update
 ## 📊 Security Metrics
 
 ### To Monitor
+
 - Failed authentication attempts
 - CSRF validation failures
 - Session creation rate
@@ -437,6 +462,7 @@ npm update
 - Error rates in OAuth endpoints
 
 ### Alerts to Set Up
+
 - High rate of auth failures (> 10/min)
 - CSRF failures (any occurrence)
 - OAuth endpoint errors (> 5%)
@@ -449,6 +475,7 @@ npm update
 **All critical security requirements:** ✅ **PASS**
 
 **Recommendations before production:**
+
 1. Run `npm audit` and fix any critical vulnerabilities
 2. Test OAuth flow in staging environment
 3. Set up monitoring and alerts

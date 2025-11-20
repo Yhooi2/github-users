@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Switch } from './switch';
-import * as React from 'react';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import * as React from "react";
+import { Switch } from "./switch";
 
 const meta: Meta<typeof Switch> = {
-  title: 'UI/Switch',
+  title: "UI/Switch",
   component: Switch,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
-        component: 'A switch component for boolean input.',
+        component: "A switch component for boolean input.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -52,12 +52,21 @@ export const Controlled: Story = {
     return (
       <div className="space-y-2">
         <div className="flex items-center space-x-2">
-          <Switch id="controlled" checked={checked} onCheckedChange={setChecked} />
-          <label htmlFor="controlled" className="cursor-pointer text-sm font-medium">
+          <Switch
+            id="controlled"
+            checked={checked}
+            onCheckedChange={setChecked}
+          />
+          <label
+            htmlFor="controlled"
+            className="cursor-pointer text-sm font-medium"
+          >
             Enable notifications
           </label>
         </div>
-        <p className="text-muted-foreground text-xs">Status: {checked ? 'On' : 'Off'}</p>
+        <p className="text-xs text-muted-foreground">
+          Status: {checked ? "On" : "Off"}
+        </p>
       </div>
     );
   },
@@ -69,13 +78,19 @@ export const RepositorySettings: Story = {
       <div className="text-sm font-semibold">Repository Settings</div>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label htmlFor="private" className="cursor-pointer text-sm font-medium">
+          <label
+            htmlFor="private"
+            className="cursor-pointer text-sm font-medium"
+          >
             Private repository
           </label>
           <Switch id="private" defaultChecked />
         </div>
         <div className="flex items-center justify-between">
-          <label htmlFor="issues" className="cursor-pointer text-sm font-medium">
+          <label
+            htmlFor="issues"
+            className="cursor-pointer text-sm font-medium"
+          >
             Issues
           </label>
           <Switch id="issues" defaultChecked />

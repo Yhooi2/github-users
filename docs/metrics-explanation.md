@@ -20,6 +20,7 @@ This document describes metrics v2.0 concepts. However, some GitHub GraphQL API 
 ## 📊 Overview
 
 This document explains the GitHub User Analytics metrics system:
+
 - **What** each metric measures
 - **How** it's calculated (formulas)
 - **Why** it matters for evaluating developers
@@ -52,6 +53,7 @@ Detect GitHub farming and fake activity created using tools that manipulate `GIT
 ### Fraud Score: 0-100
 
 **Formula:**
+
 ```
 Fraud Score = (empty_commits_ratio × 30) +
               (perfect_pattern_score × 25) +
@@ -64,26 +66,26 @@ Fraud Score = (empty_commits_ratio × 30) +
 
 ### Detection Signals
 
-| Signal | How to Detect | Weight | Criticality |
-|--------|---------------|--------|-------------|
-| **Empty commits** | `additions + deletions == 0` | 30% | 🔴 High |
-| **Backdated commits** | Commits before account creation | Auto-flag | 🔴 Critical |
-| **Bot patterns** | Perfect daily commits at same time | 25% | 🟡 Medium |
-| **Temporal anomalies** | Commits outside usual working hours | 20% | 🟢 Low |
-| **Mass commits** | >1000 lines in single commit | 15% | 🟡 Medium |
-| **Fork farming** | Many forks with no modifications | 10% | 🟡 Medium |
-| **Multiple emails** | >10 different emails in commits | Flag only | 🟡 Medium |
-| **No GPG signing** | All commits unverified | Flag only | 🟢 Low |
+| Signal                 | How to Detect                       | Weight    | Criticality |
+| ---------------------- | ----------------------------------- | --------- | ----------- |
+| **Empty commits**      | `additions + deletions == 0`        | 30%       | 🔴 High     |
+| **Backdated commits**  | Commits before account creation     | Auto-flag | 🔴 Critical |
+| **Bot patterns**       | Perfect daily commits at same time  | 25%       | 🟡 Medium   |
+| **Temporal anomalies** | Commits outside usual working hours | 20%       | 🟢 Low      |
+| **Mass commits**       | >1000 lines in single commit        | 15%       | 🟡 Medium   |
+| **Fork farming**       | Many forks with no modifications    | 10%       | 🟡 Medium   |
+| **Multiple emails**    | >10 different emails in commits     | Flag only | 🟡 Medium   |
+| **No GPG signing**     | All commits unverified              | Flag only | 🟢 Low      |
 
 ### Benchmark Ranges
 
-| Score | Level | Interpretation | Action |
-|-------|-------|----------------|--------|
-| 0-19 | Clean | No suspicious patterns | ✅ Safe to hire |
-| 20-39 | Low Risk | Minor irregularities | ⚠️ Monitor |
-| 40-59 | Medium Risk | Multiple red flags | 🟡 Investigate further |
-| 60-79 | High Risk | Significant fraud indicators | 🔴 Major concern |
-| 80-100 | Critical | Likely fake profile | ❌ Do not hire |
+| Score  | Level       | Interpretation               | Action                 |
+| ------ | ----------- | ---------------------------- | ---------------------- |
+| 0-19   | Clean       | No suspicious patterns       | ✅ Safe to hire        |
+| 20-39  | Low Risk    | Minor irregularities         | ⚠️ Monitor             |
+| 40-59  | Medium Risk | Multiple red flags           | 🟡 Investigate further |
+| 60-79  | High Risk   | Significant fraud indicators | 🔴 Major concern       |
+| 80-100 | Critical    | Likely fake profile          | ❌ Do not hire         |
 
 ### Example Output
 
@@ -132,6 +134,7 @@ Activity = Code Throughput (35) +
 **Why:** 1 commit can be 1 line or 10,000 lines. Lines changed is a more honest indicator.
 
 **Calculation:**
+
 ```typescript
 linesChanged = sum(mergedPRs.map(pr => pr.additions + pr.deletions))
 linesPerMonth = linesChanged / 3 // Last 3 months
@@ -146,6 +149,7 @@ Penalty: -10 points if >50% of code in mass commits (>1000 lines)
 ```
 
 **Anti-fake protection:**
+
 - Ignore repos with one massive commit (90% code in single PR = likely clone)
 - Flag if average PR size >1000 lines
 
@@ -156,6 +160,7 @@ Penalty: -10 points if >50% of code in mass commits (>1000 lines)
 **What it measures:** Regular work patterns and commit streaks.
 
 **Calculation:**
+
 ```typescript
 activeWeeks = count weeks with ≥1 commit (last 12 months)
 longestStreak = max consecutive active weeks
@@ -169,6 +174,7 @@ Bonus: +5 points if longestStreak ≥ 26 weeks (half year)
 ```
 
 **Temporal Pattern Analysis (Anti-bot):**
+
 ```typescript
 // Build hour histogram (0-23 hours)
 commitTimes = commits.map(c => hour(c.committedDate))
@@ -179,6 +185,7 @@ Penalty: -5 points for irregular patterns
 ```
 
 **Red flags:**
+
 - ❌ Commits every day at exactly 8:00 AM → bot pattern
 - ✅ Commits scattered 9 AM - 6 PM → normal human pattern
 - ⚠️ Sudden timezone change (was 9-17 UTC, became 2-5 UTC) → suspicious
@@ -192,6 +199,7 @@ Penalty: -5 points for irregular patterns
 **Why it matters:** Senior developers spend 30-50% of time on code reviews.
 
 **Calculation:**
+
 ```typescript
 reviewsDone = count substantive PR reviews (last 6 months)
 issuesParticipated = count unique issues with comments
@@ -204,6 +212,7 @@ Scoring:
 ```
 
 **Anti-fake protection:**
+
 - Filter out "LGTM" only reviews (less than 10 characters)
 - Filter out "me too" only comments
 
@@ -216,6 +225,7 @@ Scoring:
 **What it measures:** Specialization vs scatter across repositories.
 
 **The Paradox:**
+
 ```
 1 repo     = excellent (deep focus)
 2-5 repos  = ideal (perfect balance)
@@ -225,6 +235,7 @@ Scoring:
 ```
 
 **Calculation:**
+
 ```typescript
 activeRepos = count repos with commits in last 3 months
 
@@ -242,12 +253,12 @@ Penalties:
 
 ### Benchmark Ranges
 
-| Score | Level | Interpretation | Hiring Decision |
-|-------|-------|----------------|-----------------|
-| 0-39 | Low | Inactive or inconsistent work | ⚠️ Concern |
-| 40-59 | Moderate | Regular contributor | ✅ Consider |
-| 60-79 | High | Strong consistent productivity | ⭐ Strong candidate |
-| 80-100 | Very High | Elite developer productivity | 🌟 Excellent |
+| Score  | Level     | Interpretation                 | Hiring Decision     |
+| ------ | --------- | ------------------------------ | ------------------- |
+| 0-39   | Low       | Inactive or inconsistent work  | ⚠️ Concern          |
+| 40-59  | Moderate  | Regular contributor            | ✅ Consider         |
+| 60-79  | High      | Strong consistent productivity | ⭐ Strong candidate |
+| 80-100 | Very High | Elite developer productivity   | 🌟 Excellent        |
 
 ### Example Output
 
@@ -289,6 +300,7 @@ Impact = Adoption Signal (40) +
 **What it measures:** Real usage indicators.
 
 **Calculation:**
+
 ```typescript
 activeForks = forks with commits ahead of parent (real modifications)
 watchers = people following repo updates
@@ -303,6 +315,7 @@ Score =
 ```
 
 **Anti-fake protection:**
+
 - Check if forks have actual commits (not just empty forks)
 - Verify issues/PRs exist (sign of live project)
 
@@ -315,6 +328,7 @@ Score =
 **What it measures:** Live community activity.
 
 **Calculation:**
+
 ```typescript
 totalIssues = sum of all issues across repos
 closedIssues = issues marked as closed
@@ -337,6 +351,7 @@ Scoring:
 ```
 
 **Why issues matter:**
+
 - 0 issues ≠ perfect code
 - 0 issues = either nobody uses it OR maintainer ignores them
 
@@ -347,6 +362,7 @@ Scoring:
 **What it measures:** Stars and visibility (with logarithmic scale to prevent gaming).
 
 **Calculation:**
+
 ```typescript
 starsScore = min(log10(totalStars + 1) × 3, 15)
 trendingBonus = wasInTrending ? 5 : 0
@@ -355,6 +371,7 @@ Total = starsScore + trendingBonus
 ```
 
 **Why logarithmic scale:**
+
 ```
 10 stars → 1,000 stars = +2 points
 1,000 stars → 10,000 stars = +2 points (not +9000)
@@ -369,6 +386,7 @@ This prevents star farming from having outsized impact.
 **What it measures:** Real package downloads from npm/PyPI/crates.io/Docker Hub.
 
 **MVP Implementation:**
+
 ```typescript
 hasPackageJson = repo has package.json → 5 points
 hasDownloadStats = can fetch npm/PyPI stats → +5 points
@@ -378,13 +396,13 @@ hasDownloadStats = can fetch npm/PyPI stats → +5 points
 
 ### Benchmark Ranges
 
-| Score | Level | Interpretation | Hiring Decision |
-|-------|-------|----------------|-----------------|
-| 0-19 | None | No community presence | ⚠️ Junior |
-| 20-39 | Local | Small personal projects | ✅ Mid-level potential |
-| 40-59 | Community | Active in OSS community | ⭐ Mid to Senior |
-| 60-79 | Regional | Recognized in ecosystem | 🌟 Senior |
-| 80-100 | Global | Industry-wide impact | 💎 Staff/Principal |
+| Score  | Level     | Interpretation          | Hiring Decision        |
+| ------ | --------- | ----------------------- | ---------------------- |
+| 0-19   | None      | No community presence   | ⚠️ Junior              |
+| 20-39  | Local     | Small personal projects | ✅ Mid-level potential |
+| 40-59  | Community | Active in OSS community | ⭐ Mid to Senior       |
+| 60-79  | Regional  | Recognized in ecosystem | 🌟 Senior              |
+| 80-100 | Global    | Industry-wide impact    | 💎 Staff/Principal     |
 
 ### Example Output
 
@@ -434,6 +452,7 @@ Quality = Code Health Practices (35) +
 **What it measures:** Modern engineering habits.
 
 **Calculation:**
+
 ```typescript
 Scoring:
 • CI/CD (0-15 points):
@@ -466,6 +485,7 @@ Scoring:
 **What it measures:** How well projects are documented.
 
 **Calculation:**
+
 ```typescript
 Per repository:
 
@@ -491,6 +511,7 @@ Docs Site (0-5 points):
 ```
 
 **Anti-fake protection:**
+
 - Flag if README >90% copy of another project (fuzzy string matching)
 
 ---
@@ -500,6 +521,7 @@ Docs Site (0-5 points):
 **What it measures:** Responsiveness and project longevity.
 
 **Calculation:**
+
 ```typescript
 • Issue Response Time (0-10 points):
   medianResponseTime = median hours from issue creation to first response
@@ -536,6 +558,7 @@ Docs Site (0-5 points):
 **What it measures:** Technical depth and scale.
 
 **Calculation:**
+
 ```typescript
 • Project Size (0-5 points):
   avgDiskUsage = average disk usage across repos
@@ -560,18 +583,19 @@ Docs Site (0-5 points):
 ```
 
 **Anti-fake protection:**
+
 - If many languages but 99% one language → don't count
 - Check for real code vs just config files
 
 ### Benchmark Ranges
 
-| Score | Level | Interpretation | Hiring Decision |
-|-------|-------|----------------|-----------------|
-| 0-39 | Beginner | Basic or learning projects | ⚠️ Junior |
-| 40-59 | Intermediate | Decent practices | ✅ Mid-level |
-| 60-74 | Advanced | Strong engineering | ⭐ Senior |
-| 75-89 | Expert | Excellent practices | 🌟 Staff |
-| 90-100 | Master | Industry-leading quality | 💎 Principal |
+| Score  | Level        | Interpretation             | Hiring Decision |
+| ------ | ------------ | -------------------------- | --------------- |
+| 0-39   | Beginner     | Basic or learning projects | ⚠️ Junior       |
+| 40-59  | Intermediate | Decent practices           | ✅ Mid-level    |
+| 60-74  | Advanced     | Strong engineering         | ⭐ Senior       |
+| 75-89  | Expert       | Excellent practices        | 🌟 Staff        |
+| 90-100 | Master       | Industry-leading quality   | 💎 Principal    |
 
 ### Example Output
 
@@ -610,6 +634,7 @@ Growth = Skill Expansion (40) +
 **What it measures:** New technologies learned.
 
 **Calculation:**
+
 ```typescript
 recentLanguages = unique languages in repos created last 2 years
 olderLanguages = unique languages in repos created 3-5 years ago
@@ -619,6 +644,7 @@ score = min(newLanguages.size × 10, 40)
 ```
 
 **Examples:**
+
 - Was only JavaScript, added TypeScript + Rust = +20 points
 - Was Python, added Go + Kubernetes = +20 points
 - Same Java for 10 years = 0 points (stagnation)
@@ -630,6 +656,7 @@ score = min(newLanguages.size × 10, 40)
 **What it measures:** Growth in project complexity over time.
 
 **Calculation:**
+
 ```typescript
 recentProjects = repos created in last 2 years
 olderProjects = repos created 3-5 years ago
@@ -649,6 +676,7 @@ score = max(-30, min(growthRate / 3, 30))
 ```
 
 **Examples:**
+
 - 2020: tutorial projects, 0 stars → 2024: production apps, 100 stars = +30 points
 - 2020: 500 stars → 2024: 50 stars = -20 points (declining)
 
@@ -659,6 +687,7 @@ score = max(-30, min(growthRate / 3, 30))
 **What it measures:** Balance between learning (tutorials) and shipping (production).
 
 **Tutorial Project Detection:**
+
 ```typescript
 isTutorial(repo) =
   name includes 'tutorial', 'learning', 'course', 'homework', 'practice' OR
@@ -667,6 +696,7 @@ isTutorial(repo) =
 ```
 
 **Production Project Detection:**
+
 ```typescript
 isProduction(repo) =
   stars > 10 OR
@@ -678,6 +708,7 @@ isProduction(repo) =
 ```
 
 **Scoring:**
+
 ```typescript
 tutorialRatio = tutorial projects / total
 productionRatio = production projects / total
@@ -695,12 +726,12 @@ Scoring:
 
 ### Benchmark Ranges
 
-| Score | Trend | Interpretation | Hiring Decision |
-|-------|-------|----------------|-----------------|
-| -100 to -30 | Declining | Skills/projects deteriorating | 🔴 Concern |
-| -30 to +30 | Stable | Maintaining current level | ⚠️ Monitor |
-| +30 to +70 | Growing | Actively learning & improving | ⭐ Strong |
-| +70 to +100 | Accelerating | Rapid skill development | 🌟 Excellent |
+| Score       | Trend        | Interpretation                | Hiring Decision |
+| ----------- | ------------ | ----------------------------- | --------------- |
+| -100 to -30 | Declining    | Skills/projects deteriorating | 🔴 Concern      |
+| -30 to +30  | Stable       | Maintaining current level     | ⚠️ Monitor      |
+| +30 to +70  | Growing      | Actively learning & improving | ⭐ Strong       |
+| +70 to +100 | Accelerating | Rapid skill development       | 🌟 Excellent    |
 
 ### Example Output
 
@@ -741,17 +772,18 @@ declining growth doesn't penalize too harshly.
 
 ### Rank Classification
 
-| Rank | Overall Score | Requirements | Expected Level |
-|------|---------------|--------------|----------------|
-| **Junior** | 0-29 | Low activity, little experience | Entry-level |
-| **Mid** | 30-49 | Regular work, some projects | 2-4 years exp |
-| **Senior** | 50-69 | High Quality (>60), Impact (>40) | 5-8 years exp |
-| **Staff** | 70-84 | Senior + High Impact (>70) | 8-12 years exp |
-| **Principal** | 85-100 | Staff + Very High Activity (>70) + Global Impact (>80) | 12+ years exp |
+| Rank          | Overall Score | Requirements                                           | Expected Level |
+| ------------- | ------------- | ------------------------------------------------------ | -------------- |
+| **Junior**    | 0-29          | Low activity, little experience                        | Entry-level    |
+| **Mid**       | 30-49         | Regular work, some projects                            | 2-4 years exp  |
+| **Senior**    | 50-69         | High Quality (>60), Impact (>40)                       | 5-8 years exp  |
+| **Staff**     | 70-84         | Senior + High Impact (>70)                             | 8-12 years exp |
+| **Principal** | 85-100        | Staff + Very High Activity (>70) + Global Impact (>80) | 12+ years exp  |
 
 ### Example Rankings
 
 **Example 1: Linus Torvalds**
+
 ```
 Activity:  85 (High, delegates much work)
 Impact:    100 (Linux kernel — billions of devices)
@@ -766,6 +798,7 @@ Overall = 85×0.25 + 100×0.30 + 95×0.30 + 40×0.15
 ```
 
 **Example 2: Growing Junior Developer**
+
 ```
 Activity:  45 (Moderate consistency, learning)
 Impact:    15 (Local projects only, <100 stars)
@@ -780,6 +813,7 @@ Overall = 45×0.25 + 15×0.30 + 35×0.30 + 60×0.15
 ```
 
 **Example 3: Experienced Mid-Level**
+
 ```
 Activity:  62 (High, consistent contributor)
 Impact:    48 (Active OSS contributor, 1K+ stars)
@@ -800,6 +834,7 @@ Overall = 62×0.25 + 48×0.30 + 58×0.30 + 25×0.15
 ### ✅ Include (Core Features):
 
 **Activity (35 points):**
+
 - ✅ Code throughput (lines changed in merged PRs)
 - ✅ Consistency (3mo, 12mo, 3yr windows)
 - ✅ Collaboration (PR reviews, issue participation)
@@ -807,6 +842,7 @@ Overall = 62×0.25 + 48×0.30 + 58×0.30 + 25×0.15
 - ✅ Fraud detection: empty commits, backdating, multiple emails
 
 **Impact (30 points):**
+
 - ✅ Stars + Forks (logarithmic scale)
 - ✅ Watchers
 - ✅ Contributors count
@@ -814,12 +850,14 @@ Overall = 62×0.25 + 48×0.30 + 58×0.30 + 25×0.15
 - ⚠️ Package stats (if package.json exists) — simplified
 
 **Quality (30 points):**
+
 - ✅ CI/CD presence (GitHub Actions detection)
 - ✅ Test directory detection
 - ✅ README quality scoring (length + content)
 - ✅ Issue response time (median hours)
 
 **Growth (5 points, bonus):**
+
 - ✅ New languages (last 2 years vs 3-5 years ago)
 - ✅ Tutorial vs production detection (weighted)
 - ✅ Project complexity growth (year-over-year)
@@ -843,17 +881,20 @@ Overall = 62×0.25 + 48×0.30 + 58×0.30 + 25×0.15
 Current `GET_USER_INFO` query **does NOT include:**
 
 ❌ **For Activity:**
+
 - PR additions/deletions (for Code Throughput)
 - PR review comments (for Collaboration)
 - Issue comments by user (for Collaboration)
 - Commit timestamps with `occurredAt` (for Temporal Pattern Analysis)
 
 ❌ **For Fraud Detection:**
+
 - Commit `additions` and `deletions` (for Empty Commits detection)
 - Commit `authoredDate` vs `committedDate` (for Backdating)
 - Commit author email addresses (for Multiple Emails)
 
 ❌ **For Quality:**
+
 - Repository file tree (for CI/CD, test detection)
 - Issue timeline events (for Response Time)
 - Branch protection rules (for Code Review Process)

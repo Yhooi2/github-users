@@ -20,17 +20,23 @@
  *
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ApolloClient, InMemoryCache, gql, createHttpLink, ApolloLink } from '@apollo/client'
-import { onError } from '@apollo/client/link/error'
+import {
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  createHttpLink,
+  gql,
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock toast to prevent errors in tests
-vi.mock('sonner', () => ({
+vi.mock("sonner", () => ({
   toast: {
     error: vi.fn(),
     success: vi.fn(),
   },
-}))
+}));
 
 /**
  * Test Helpers
@@ -43,51 +49,51 @@ vi.mock('sonner', () => ({
  */
 function createTestApolloClient() {
   const cacheKeyLink = new ApolloLink((operation, forward) => {
-    const { cacheKey } = operation.getContext()
+    const { cacheKey } = operation.getContext();
     if (cacheKey) {
-      operation.extensions = { ...operation.extensions, cacheKey }
+      operation.extensions = { ...operation.extensions, cacheKey };
     }
-    return forward(operation)
-  })
+    return forward(operation);
+  });
 
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       graphQLErrors.forEach(({ message }) => {
-        console.error(`[GraphQL error]: ${message}`)
-      })
+        console.error(`[GraphQL error]: ${message}`);
+      });
     }
     if (networkError) {
-      console.error(`[Network error]: ${networkError}`)
+      console.error(`[Network error]: ${networkError}`);
     }
-  })
+  });
 
   const httpLink = createHttpLink({
-    uri: '/api/github-proxy',
+    uri: "/api/github-proxy",
     includeExtensions: true,
     fetch: (uri, options) => {
-      const body = JSON.parse(options?.body as string || '{}')
-      const extensions = body.extensions || {}
-      const cacheKey = extensions.cacheKey
+      const body = JSON.parse((options?.body as string) || "{}");
+      const extensions = body.extensions || {};
+      const cacheKey = extensions.cacheKey;
 
       const newBody = {
         query: body.query,
         variables: body.variables,
         ...(cacheKey && { cacheKey }),
-      }
+      };
 
       return fetch(uri, {
         ...options,
         body: JSON.stringify(newBody),
-      })
+      });
     },
-  })
+  });
 
-  const link = ApolloLink.from([cacheKeyLink, errorLink, httpLink])
+  const link = ApolloLink.from([cacheKeyLink, errorLink, httpLink]);
 
   return new ApolloClient({
     link,
     cache: new InMemoryCache(),
-  })
+  });
 }
 
 /**
@@ -97,17 +103,17 @@ function createMockUserData(overrides = {}) {
   return {
     data: {
       user: {
-        id: 'U_123',
-        login: 'testuser',
-        name: 'Test User',
-        avatarUrl: 'https://example.com/avatar.jpg',
-        bio: 'Test bio',
+        id: "U_123",
+        login: "testuser",
+        name: "Test User",
+        avatarUrl: "https://example.com/avatar.jpg",
+        bio: "Test bio",
         followers: { totalCount: 100 },
         following: { totalCount: 50 },
         ...overrides,
       },
     },
-  }
+  };
 }
 
 /**
@@ -119,7 +125,7 @@ function createSuccessResponse(data: unknown) {
     status: 200,
     text: async () => JSON.stringify(data),
     json: async () => data,
-  }
+  };
 }
 
 /**
@@ -129,24 +135,24 @@ function createErrorResponse(status: number, error: unknown) {
   return {
     ok: false,
     status,
-    statusText: status === 500 ? 'Internal Server Error' : 'Unauthorized',
+    statusText: status === 500 ? "Internal Server Error" : "Unauthorized",
     text: async () => JSON.stringify(error),
     json: async () => error,
-  }
+  };
 }
 
-describe('Apollo Client + GitHub Proxy Integration', () => {
-  let fetchMock: ReturnType<typeof vi.fn>
-  let client: ApolloClient<unknown>
+describe("Apollo Client + GitHub Proxy Integration", () => {
+  let fetchMock: ReturnType<typeof vi.fn>;
+  let client: ApolloClient<unknown>;
 
   beforeEach(() => {
     // Arrange: Setup fresh mocks and client for each test
-    fetchMock = vi.fn()
-    global.fetch = fetchMock
-    client = createTestApolloClient()
-  })
+    fetchMock = vi.fn();
+    global.fetch = fetchMock;
+    client = createTestApolloClient();
+  });
 
-  describe('User Search Scenarios', () => {
+  describe("User Search Scenarios", () => {
     const USER_QUERY = gql`
       query GetUser($login: String!) {
         user(login: $login) {
@@ -163,66 +169,69 @@ describe('Apollo Client + GitHub Proxy Integration', () => {
           }
         }
       }
-    `
+    `;
 
-    it('should successfully fetch and display user data', async () => {
+    it("should successfully fetch and display user data", async () => {
       // Arrange: Mock successful API response
-      const mockData = createMockUserData()
-      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockData))
+      const mockData = createMockUserData();
+      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockData));
 
       // Act: Query for user
       const result = await client.query({
         query: USER_QUERY,
-        variables: { login: 'testuser' },
-      })
+        variables: { login: "testuser" },
+      });
 
       // Assert: User receives expected data
-      expect(result.data.user.login).toBe('testuser')
-      expect(result.data.user.name).toBe('Test User')
-      expect(result.data.user.followers.totalCount).toBe(100)
-      expect(result.error).toBeUndefined()
-    })
+      expect(result.data.user.login).toBe("testuser");
+      expect(result.data.user.name).toBe("Test User");
+      expect(result.data.user.followers.totalCount).toBe(100);
+      expect(result.error).toBeUndefined();
+    });
 
-    it('should handle user not found scenario', async () => {
+    it("should handle user not found scenario", async () => {
       // Arrange: Mock GraphQL error response
       const mockError = {
         errors: [
           {
-            message: 'Could not resolve to a User with the login of "nonexistentuser".',
-            type: 'NOT_FOUND',
-            path: ['user'],
+            message:
+              'Could not resolve to a User with the login of "nonexistentuser".',
+            type: "NOT_FOUND",
+            path: ["user"],
           },
         ],
         data: null,
-      }
-      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockError))
+      };
+      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockError));
 
       // Act: Query for non-existent user
       const result = await client.query({
         query: USER_QUERY,
-        variables: { login: 'nonexistentuser' },
-        errorPolicy: 'all',
-      })
+        variables: { login: "nonexistentuser" },
+        errorPolicy: "all",
+      });
 
       // Assert: User sees appropriate error message
-      expect(result.errors).toBeDefined()
-      expect(result.errors?.[0].message).toContain('Could not resolve to a User')
-      expect(result.data).toBeNull()
-    })
+      expect(result.errors).toBeDefined();
+      expect(result.errors?.[0].message).toContain(
+        "Could not resolve to a User",
+      );
+      expect(result.data).toBeNull();
+    });
 
-    it('should fetch user with contributions statistics', async () => {
+    it("should fetch user with contributions statistics", async () => {
       // Arrange: Mock user data with contribution stats
       const mockData = {
         data: {
           user: {
-            login: 'testuser',
+            login: "testuser",
             contributionsCollection: {
               totalCommitContributions: 250,
             },
           },
         },
-      }
-      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockData))
+      };
+      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockData));
 
       const CONTRIBUTIONS_QUERY = gql`
         query GetUserContributions(
@@ -237,97 +246,99 @@ describe('Apollo Client + GitHub Proxy Integration', () => {
             }
           }
         }
-      `
+      `;
 
       // Act: Query for user with date range
       const result = await client.query({
         query: CONTRIBUTIONS_QUERY,
         variables: {
-          login: 'testuser',
-          from: '2024-01-01T00:00:00Z',
-          to: '2024-12-31T23:59:59Z',
+          login: "testuser",
+          from: "2024-01-01T00:00:00Z",
+          to: "2024-12-31T23:59:59Z",
         },
-      })
+      });
 
       // Assert: User sees contribution statistics
-      expect(result.data.user.contributionsCollection.totalCommitContributions).toBe(250)
-    })
-  })
+      expect(
+        result.data.user.contributionsCollection.totalCommitContributions,
+      ).toBe(250);
+    });
+  });
 
-  describe('Error Scenarios - User Experience', () => {
+  describe("Error Scenarios - User Experience", () => {
     const SIMPLE_QUERY = gql`
       query GetUser($login: String!) {
         user(login: $login) {
           login
         }
       }
-    `
+    `;
 
-    it('should inform user when API is unavailable', async () => {
+    it("should inform user when API is unavailable", async () => {
       // Arrange: Mock server error
       fetchMock.mockResolvedValueOnce(
-        createErrorResponse(500, { error: 'Internal Server Error' })
-      )
+        createErrorResponse(500, { error: "Internal Server Error" }),
+      );
 
       // Act & Assert: User sees error
       await expect(
         client.query({
           query: SIMPLE_QUERY,
-          variables: { login: 'testuser' },
-        })
-      ).rejects.toThrow()
-    })
+          variables: { login: "testuser" },
+        }),
+      ).rejects.toThrow();
+    });
 
-    it('should inform user when authentication fails', async () => {
+    it("should inform user when authentication fails", async () => {
       // Arrange: Mock authentication error
       fetchMock.mockResolvedValueOnce(
-        createErrorResponse(401, { error: 'GITHUB_TOKEN not configured' })
-      )
+        createErrorResponse(401, { error: "GITHUB_TOKEN not configured" }),
+      );
 
       // Act & Assert: User sees authentication error
       await expect(
         client.query({
           query: SIMPLE_QUERY,
-          variables: { login: 'testuser' },
-        })
-      ).rejects.toThrow()
-    })
+          variables: { login: "testuser" },
+        }),
+      ).rejects.toThrow();
+    });
 
-    it('should handle network connectivity issues', async () => {
+    it("should handle network connectivity issues", async () => {
       // Arrange: Mock network failure
-      fetchMock.mockRejectedValueOnce(new Error('Network request failed'))
+      fetchMock.mockRejectedValueOnce(new Error("Network request failed"));
 
       // Act & Assert: User sees network error
       await expect(
         client.query({
           query: SIMPLE_QUERY,
-          variables: { login: 'testuser' },
-        })
-      ).rejects.toThrow('Network request failed')
-    })
+          variables: { login: "testuser" },
+        }),
+      ).rejects.toThrow("Network request failed");
+    });
 
-    it('should handle invalid server responses gracefully', async () => {
+    it("should handle invalid server responses gracefully", async () => {
       // Arrange: Mock malformed JSON response
       fetchMock.mockResolvedValueOnce({
         ok: true,
         status: 200,
-        text: async () => 'Invalid JSON{{{',
+        text: async () => "Invalid JSON{{{",
         json: async () => {
-          throw new SyntaxError('Unexpected token')
+          throw new SyntaxError("Unexpected token");
         },
-      })
+      });
 
       // Act & Assert: User sees error instead of crash
       await expect(
         client.query({
           query: SIMPLE_QUERY,
-          variables: { login: 'testuser' },
-        })
-      ).rejects.toThrow()
-    })
-  })
+          variables: { login: "testuser" },
+        }),
+      ).rejects.toThrow();
+    });
+  });
 
-  describe('Performance - Caching Behavior', () => {
+  describe("Performance - Caching Behavior", () => {
     const CACHE_QUERY = gql`
       query GetUser($login: String!) {
         user(login: $login) {
@@ -335,85 +346,85 @@ describe('Apollo Client + GitHub Proxy Integration', () => {
           name
         }
       }
-    `
+    `;
 
-    it('should use Apollo cache for repeated queries to improve performance', async () => {
+    it("should use Apollo cache for repeated queries to improve performance", async () => {
       // Arrange: Mock successful response
-      const mockData = createMockUserData({ login: 'testuser', name: 'Test' })
-      fetchMock.mockResolvedValue(createSuccessResponse(mockData))
+      const mockData = createMockUserData({ login: "testuser", name: "Test" });
+      fetchMock.mockResolvedValue(createSuccessResponse(mockData));
 
       // Act: Query same data twice
       await client.query({
         query: CACHE_QUERY,
-        variables: { login: 'testuser' },
-      })
+        variables: { login: "testuser" },
+      });
 
       await client.query({
         query: CACHE_QUERY,
-        variables: { login: 'testuser' },
-        fetchPolicy: 'cache-first',
-      })
+        variables: { login: "testuser" },
+        fetchPolicy: "cache-first",
+      });
 
       // Assert: Network called only once (second request uses cache)
-      expect(fetchMock).toHaveBeenCalledTimes(1)
-    })
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
 
-    it('should bypass cache when user requests fresh data', async () => {
+    it("should bypass cache when user requests fresh data", async () => {
       // Arrange: Mock successful response
-      const mockData = createMockUserData({ login: 'testuser', name: 'Test' })
-      fetchMock.mockResolvedValue(createSuccessResponse(mockData))
+      const mockData = createMockUserData({ login: "testuser", name: "Test" });
+      fetchMock.mockResolvedValue(createSuccessResponse(mockData));
 
       // Act: Query with cache, then force fresh data
       await client.query({
         query: CACHE_QUERY,
-        variables: { login: 'testuser' },
-      })
+        variables: { login: "testuser" },
+      });
 
       await client.query({
         query: CACHE_QUERY,
-        variables: { login: 'testuser' },
-        fetchPolicy: 'network-only', // User wants fresh data
-      })
+        variables: { login: "testuser" },
+        fetchPolicy: "network-only", // User wants fresh data
+      });
 
       // Assert: Network called twice (cache bypassed)
-      expect(fetchMock).toHaveBeenCalledTimes(2)
-    })
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
 
-    it('should support backend caching via cacheKey for faster responses', async () => {
+    it("should support backend caching via cacheKey for faster responses", async () => {
       // Arrange: Mock successful response
-      const mockData = createMockUserData()
-      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockData))
+      const mockData = createMockUserData();
+      fetchMock.mockResolvedValueOnce(createSuccessResponse(mockData));
 
       // Act: Query with cacheKey (enables server-side caching)
       await client.query({
         query: CACHE_QUERY,
-        variables: { login: 'testuser' },
-        context: { cacheKey: 'user:testuser:profile' },
-      })
+        variables: { login: "testuser" },
+        context: { cacheKey: "user:testuser:profile" },
+      });
 
       // Assert: Request includes cacheKey for backend optimization
-      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body)
-      expect(requestBody.cacheKey).toBe('user:testuser:profile')
-    })
-  })
+      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(requestBody.cacheKey).toBe("user:testuser:profile");
+    });
+  });
 
-  describe('Data Integrity', () => {
-    it('should not corrupt data during transmission', async () => {
+  describe("Data Integrity", () => {
+    it("should not corrupt data during transmission", async () => {
       // Arrange: Mock complex data structure
       const complexData = {
         data: {
           user: {
-            login: 'testuser',
+            login: "testuser",
             repositories: {
               nodes: [
-                { name: 'repo1', stargazerCount: 100 },
-                { name: 'repo2', stargazerCount: 200 },
+                { name: "repo1", stargazerCount: 100 },
+                { name: "repo2", stargazerCount: 200 },
               ],
             },
           },
         },
-      }
-      fetchMock.mockResolvedValueOnce(createSuccessResponse(complexData))
+      };
+      fetchMock.mockResolvedValueOnce(createSuccessResponse(complexData));
 
       const REPOS_QUERY = gql`
         query GetRepos($login: String!) {
@@ -427,20 +438,20 @@ describe('Apollo Client + GitHub Proxy Integration', () => {
             }
           }
         }
-      `
+      `;
 
       // Act: Fetch complex nested data
       const result = await client.query({
         query: REPOS_QUERY,
-        variables: { login: 'testuser' },
-      })
+        variables: { login: "testuser" },
+      });
 
       // Assert: All data received correctly
-      expect(result.data.user.repositories.nodes).toHaveLength(2)
-      expect(result.data.user.repositories.nodes[0].name).toBe('repo1')
-      expect(result.data.user.repositories.nodes[0].stargazerCount).toBe(100)
-      expect(result.data.user.repositories.nodes[1].name).toBe('repo2')
-      expect(result.data.user.repositories.nodes[1].stargazerCount).toBe(200)
-    })
-  })
-})
+      expect(result.data.user.repositories.nodes).toHaveLength(2);
+      expect(result.data.user.repositories.nodes[0].name).toBe("repo1");
+      expect(result.data.user.repositories.nodes[0].stargazerCount).toBe(100);
+      expect(result.data.user.repositories.nodes[1].name).toBe("repo2");
+      expect(result.data.user.repositories.nodes[1].stargazerCount).toBe(200);
+    });
+  });
+});

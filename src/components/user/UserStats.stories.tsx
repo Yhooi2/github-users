@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { UserStats } from './UserStats';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { UserStats } from "./UserStats";
 
 const meta: Meta<typeof UserStats> = {
-  title: 'User/UserStats',
+  title: "User/UserStats",
   component: UserStats,
-  parameters: { layout: 'padded' },
-  tags: ['autodocs'],
+  parameters: { layout: "padded" },
+  tags: ["autodocs"],
 };
 
 export default meta;

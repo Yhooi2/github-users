@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
 type LoadingStateProps = {
   /**
@@ -8,7 +8,7 @@ type LoadingStateProps = {
    * - 'profile': User profile skeleton
    * - 'list': List of items skeleton
    */
-  variant?: 'default' | 'card' | 'profile' | 'list';
+  variant?: "default" | "card" | "profile" | "list";
   /**
    * Number of items to show for list variant
    */
@@ -28,10 +28,14 @@ type LoadingStateProps = {
  * <LoadingState variant="list" count={5} />
  * ```
  */
-export function LoadingState({ variant = 'default', count = 3, message }: LoadingStateProps) {
+export function LoadingState({
+  variant = "default",
+  count = 3,
+  message,
+}: LoadingStateProps) {
   return (
     <div className="max-w-full space-y-4" role="status" aria-label="Loading">
-      {variant === 'default' && (
+      {variant === "default" && (
         <>
           <Skeleton className="h-4 w-full max-w-lg" />
           <Skeleton className="h-4 w-3/4 max-w-md" />
@@ -39,7 +43,7 @@ export function LoadingState({ variant = 'default', count = 3, message }: Loadin
         </>
       )}
 
-      {variant === 'card' && (
+      {variant === "card" && (
         <div className="space-y-3 rounded-lg border p-6">
           <Skeleton className="h-6 w-1/3" />
           <Skeleton className="h-4 w-full" />
@@ -51,7 +55,7 @@ export function LoadingState({ variant = 'default', count = 3, message }: Loadin
         </div>
       )}
 
-      {variant === 'profile' && (
+      {variant === "profile" && (
         <div className="flex gap-6">
           <Skeleton className="h-32 w-32 rounded-full" />
           <div className="flex-1 space-y-3">
@@ -68,7 +72,7 @@ export function LoadingState({ variant = 'default', count = 3, message }: Loadin
         </div>
       )}
 
-      {variant === 'list' && (
+      {variant === "list" && (
         <div className="space-y-3">
           {Array.from({ length: count }).map((_, index) => (
             <div key={index} className="flex gap-4 rounded-lg border p-4">
@@ -84,7 +88,9 @@ export function LoadingState({ variant = 'default', count = 3, message }: Loadin
       )}
 
       {message && (
-        <p className="text-muted-foreground mt-4 text-center text-sm">{message}</p>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          {message}
+        </p>
       )}
       <span className="sr-only">Loading content...</span>
     </div>

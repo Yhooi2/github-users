@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Separator } from './separator';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Separator } from "./separator";
 
 const meta: Meta<typeof Separator> = {
-  title: 'UI/Separator',
+  title: "UI/Separator",
   component: Separator,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component:
-          'A separator component for dividing content visually, supports horizontal and vertical orientations.',
+          "A separator component for dividing content visually, supports horizontal and vertical orientations.",
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -25,7 +25,9 @@ export const Default: Story = {
     <div className="w-[300px]">
       <div className="space-y-1">
         <h4 className="text-sm leading-none font-medium">Radix Primitives</h4>
-        <p className="text-muted-foreground text-sm">An open-source UI component library.</p>
+        <p className="text-sm text-muted-foreground">
+          An open-source UI component library.
+        </p>
       </div>
       <Separator className="my-4" />
       <div className="flex h-5 items-center space-x-4 text-sm">
@@ -68,15 +70,15 @@ export const InNavigation: Story = {
   render: () => (
     <div className="space-y-4">
       <nav className="flex items-center space-x-4 text-sm font-medium">
-        <a href="#" className="hover:text-primary transition-colors">
+        <a href="#" className="transition-colors hover:text-primary">
           Home
         </a>
         <Separator orientation="vertical" className="h-4" />
-        <a href="#" className="hover:text-primary transition-colors">
+        <a href="#" className="transition-colors hover:text-primary">
           About
         </a>
         <Separator orientation="vertical" className="h-4" />
-        <a href="#" className="hover:text-primary transition-colors">
+        <a href="#" className="transition-colors hover:text-primary">
           Contact
         </a>
       </nav>
@@ -90,17 +92,23 @@ export const InCardSections: Story = {
     <div className="w-[350px] rounded-lg border p-4">
       <div>
         <h3 className="font-semibold">User Profile</h3>
-        <p className="text-muted-foreground text-sm">Manage your profile settings</p>
+        <p className="text-sm text-muted-foreground">
+          Manage your profile settings
+        </p>
       </div>
       <Separator className="my-4" />
       <div>
         <h4 className="text-sm font-medium">Personal Information</h4>
-        <p className="text-muted-foreground text-xs">Update your personal details</p>
+        <p className="text-xs text-muted-foreground">
+          Update your personal details
+        </p>
       </div>
       <Separator className="my-4" />
       <div>
         <h4 className="text-sm font-medium">Security</h4>
-        <p className="text-muted-foreground text-xs">Manage your security settings</p>
+        <p className="text-xs text-muted-foreground">
+          Manage your security settings
+        </p>
       </div>
     </div>
   ),
@@ -111,24 +119,24 @@ export const RepositoryStats: Story = {
   render: () => (
     <div className="w-[500px] rounded-lg border p-4">
       <h3 className="text-lg font-bold">facebook/react</h3>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         The library for web and native user interfaces
       </p>
       <Separator className="my-3" />
       <div className="flex items-center justify-around text-center">
         <div>
           <div className="text-2xl font-bold">234k</div>
-          <div className="text-muted-foreground text-xs">Stars</div>
+          <div className="text-xs text-muted-foreground">Stars</div>
         </div>
         <Separator orientation="vertical" className="h-12" />
         <div>
           <div className="text-2xl font-bold">48k</div>
-          <div className="text-muted-foreground text-xs">Forks</div>
+          <div className="text-xs text-muted-foreground">Forks</div>
         </div>
         <Separator orientation="vertical" className="h-12" />
         <div>
           <div className="text-2xl font-bold">1.8k</div>
-          <div className="text-muted-foreground text-xs">Issues</div>
+          <div className="text-xs text-muted-foreground">Issues</div>
         </div>
       </div>
     </div>
@@ -212,12 +220,12 @@ export const Semantic: Story = {
     <div className="w-[400px]">
       <div className="space-y-1">
         <h4 className="text-sm leading-none font-medium">Section 1</h4>
-        <p className="text-muted-foreground text-sm">First section content</p>
+        <p className="text-sm text-muted-foreground">First section content</p>
       </div>
       <Separator decorative={false} className="my-4" />
       <div className="space-y-1">
         <h4 className="text-sm leading-none font-medium">Section 2</h4>
-        <p className="text-muted-foreground text-sm">Second section content</p>
+        <p className="text-sm text-muted-foreground">Second section content</p>
       </div>
     </div>
   ),
@@ -228,7 +236,7 @@ export const UserProfileHeader: Story = {
   render: () => (
     <div className="w-[600px] space-y-4">
       <div className="flex items-center gap-4">
-        <div className="bg-muted flex size-20 items-center justify-center rounded-full">
+        <div className="flex size-20 items-center justify-center rounded-full bg-muted">
           <span className="text-2xl">LT</span>
         </div>
         <div>
@@ -239,15 +247,15 @@ export const UserProfileHeader: Story = {
       <Separator />
       <div className="flex gap-8">
         <div>
-          <div className="text-muted-foreground text-sm">Followers</div>
+          <div className="text-sm text-muted-foreground">Followers</div>
           <div className="text-xl font-bold">142k</div>
         </div>
         <div>
-          <div className="text-muted-foreground text-sm">Following</div>
+          <div className="text-sm text-muted-foreground">Following</div>
           <div className="text-xl font-bold">0</div>
         </div>
         <div>
-          <div className="text-muted-foreground text-sm">Repositories</div>
+          <div className="text-sm text-muted-foreground">Repositories</div>
           <div className="text-xl font-bold">8</div>
         </div>
       </div>

@@ -11,6 +11,7 @@
 ## ✨ Features
 
 ### Core Features
+
 - 🔍 **Search GitHub Users** - Find any public GitHub user by username
 - 🔐 **OAuth Authentication** - Sign in with GitHub for higher rate limits (Phase 7)
 - 📊 **Comprehensive Statistics** - Detailed profile information with advanced analytics
@@ -20,6 +21,7 @@
 - 🧪 **Fully Tested** - 1302 tests with 90%+ coverage (Unit + Integration + E2E)
 
 ### Advanced Features
+
 - 🎯 **Authenticity Score** - AI-powered analysis to detect genuine vs. forked/inactive profiles
   - Original repositories percentage
   - Activity score (recent contributions)
@@ -71,12 +73,14 @@ npm run dev
 The application supports two modes of operation:
 
 ### 1. Demo Mode (Default)
+
 - **No sign-in required** - Start using the app immediately
 - Uses shared GitHub API token
 - 5000 requests/hour shared across all users
 - Perfect for trying out the app
 
 ### 2. OAuth Mode (Sign in with GitHub)
+
 - **Personal rate limits** - 5000 requests/hour per user
 - **Fresher data** - 10-minute cache vs 30-minute in demo mode
 - **Seamless upgrade** - Sign in anytime during usage
@@ -92,6 +96,7 @@ The application supports two modes of operation:
    - Authorization callback URL: `https://your-domain.vercel.app/api/auth/callback`
 
 2. **Set environment variables**:
+
    ```bash
    # Required for both modes
    GITHUB_TOKEN=ghp_xxxxx              # Demo mode token
@@ -117,6 +122,7 @@ Get token at: https://github.com/settings/tokens
 Required scopes: `read:user`, `user:email`
 
 **Documentation:**
+
 - [OAuth Security Checklist](./docs/PHASE_7_SECURITY_CHECKLIST.md)
 - [Phase 7 Implementation Summary](./docs/PHASE_7_COMPLETION_SUMMARY.md)
 
@@ -147,6 +153,7 @@ npm run storybook         # Component documentation
 ```
 
 **Test Breakdown:**
+
 - Utilities & Hooks: 95%+ coverage
 - Components: 85%+ coverage
 - Integration Tests: 80%+ coverage
@@ -186,6 +193,7 @@ npm run storybook         # Component documentation
 ## 🤖 MCP Servers
 
 Supports 4 MCP servers for AI development:
+
 - Playwright MCP
 - Storybook MCP
 - shadcn UI MCP
@@ -284,6 +292,7 @@ The application follows a clean **layered architecture**:
 5. **UI Library** - Reusable components built on Radix UI
 
 **Authentication Architecture:**
+
 - **Demo Mode**: Shared GitHub token, 30-minute cache, no authentication required
 - **OAuth Mode**: User-specific tokens, 10-minute cache, httpOnly session cookies
 - **Graceful Degradation**: Automatic fallback from OAuth to demo mode on errors

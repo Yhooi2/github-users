@@ -1,5 +1,5 @@
-import SearchForm from '@/components/SearchForm';
-import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import SearchForm from "@/components/SearchForm";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export interface SearchHeaderProps {
   /**

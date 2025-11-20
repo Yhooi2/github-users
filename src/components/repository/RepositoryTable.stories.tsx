@@ -1,10 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { RepositoryTable } from './RepositoryTable';
-import { createMockRepository as createMockRepo } from '@/test/mocks/github-data';
-import type { Repository } from '@/apollo/github-api.types';
+import type { Repository } from "@/apollo/github-api.types";
+import { createMockRepository as createMockRepo } from "@/test/mocks/github-data";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { RepositoryTable } from "./RepositoryTable";
 
 // Use centralized mock factory (Week 4 P3: Mock data consolidation)
-const createMockRepository = (id: number, overrides?: Partial<Repository>): Repository =>
+const createMockRepository = (
+  id: number,
+  overrides?: Partial<Repository>,
+): Repository =>
   createMockRepo({
     id: `repo-${id}`,
     name: `repository-${id}`,
@@ -12,45 +15,44 @@ const createMockRepository = (id: number, overrides?: Partial<Repository>): Repo
     url: `https://github.com/user/repository-${id}`,
     stargazerCount: Math.floor(Math.random() * 1000) + 10,
     forkCount: Math.floor(Math.random() * 100) + 5,
-    createdAt: new Date(2023, id % 12, id % 28 + 1).toISOString(),
-    updatedAt: new Date(2024, 10, id % 28 + 1).toISOString(),
-    pushedAt: new Date(2024, 10, id % 28 + 1).toISOString(),
+    createdAt: new Date(2023, id % 12, (id % 28) + 1).toISOString(),
+    updatedAt: new Date(2024, 10, (id % 28) + 1).toISOString(),
+    pushedAt: new Date(2024, 10, (id % 28) + 1).toISOString(),
     diskUsage: Math.floor(Math.random() * 10000),
     watchers: { totalCount: Math.floor(Math.random() * 50) + 1 },
     issues: { totalCount: Math.floor(Math.random() * 20) },
     repositoryTopics: {
-      nodes: [
-        { topic: { name: 'react' } },
-        { topic: { name: 'typescript' } },
-      ],
+      nodes: [{ topic: { name: "react" } }, { topic: { name: "typescript" } }],
     },
     defaultBranchRef: {
       target: {
         history: { totalCount: Math.floor(Math.random() * 200) + 10 },
       },
     },
-    primaryLanguage: { name: ['TypeScript', 'JavaScript', 'Python', 'Go'][id % 4] },
+    primaryLanguage: {
+      name: ["TypeScript", "JavaScript", "Python", "Go"][id % 4],
+    },
     languages: {
       totalSize: 5000,
       edges: [
-        { size: 4000, node: { name: 'TypeScript' } },
-        { size: 1000, node: { name: 'CSS' } },
+        { size: 4000, node: { name: "TypeScript" } },
+        { size: 1000, node: { name: "CSS" } },
       ],
     },
     ...overrides,
   });
 
 const mockRepositories: Repository[] = Array.from({ length: 5 }, (_, i) =>
-  createMockRepository(i + 1)
+  createMockRepository(i + 1),
 );
 
 const meta = {
-  title: 'Components/Repository/RepositoryTable',
+  title: "Components/Repository/RepositoryTable",
   component: RepositoryTable,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof RepositoryTable>;
 
 export default meta;
@@ -82,7 +84,7 @@ export const LoadingWithMessage: Story = {
   args: {
     repositories: [],
     loading: true,
-    loadingMessage: 'Fetching your repositories...',
+    loadingMessage: "Fetching your repositories...",
   },
 };
 
@@ -92,7 +94,7 @@ export const LoadingWithMessage: Story = {
 export const Error: Story = {
   args: {
     repositories: [],
-    error: new Error('Failed to fetch repositories from GitHub API'),
+    error: new Error("Failed to fetch repositories from GitHub API"),
   },
 };
 
@@ -102,9 +104,10 @@ export const Error: Story = {
 export const CustomError: Story = {
   args: {
     repositories: [],
-    error: new Error('Network error'),
-    errorTitle: 'Connection Failed',
-    errorDescription: 'Unable to connect to GitHub. Please check your internet connection.',
+    error: new Error("Network error"),
+    errorTitle: "Connection Failed",
+    errorDescription:
+      "Unable to connect to GitHub. Please check your internet connection.",
   },
 };
 
@@ -134,8 +137,8 @@ export const CustomEmpty: Story = {
   args: {
     repositories: [],
     hasActiveFilters: false,
-    emptyTitle: 'No Public Repositories',
-    emptyDescription: 'This user has not created any public repositories yet.',
+    emptyTitle: "No Public Repositories",
+    emptyDescription: "This user has not created any public repositories yet.",
   },
 };
 
@@ -162,7 +165,9 @@ export const TwoRepositories: Story = {
  */
 export const ManyRepositories: Story = {
   args: {
-    repositories: Array.from({ length: 10 }, (_, i) => createMockRepository(i + 1)),
+    repositories: Array.from({ length: 10 }, (_, i) =>
+      createMockRepository(i + 1),
+    ),
   },
 };
 
@@ -212,7 +217,7 @@ export const PopularRepositories: Story = {
       createMockRepository(i + 1, {
         stargazerCount: 10000 + i * 5000,
         forkCount: 1000 + i * 500,
-      })
+      }),
     ),
   },
 };
@@ -224,14 +229,14 @@ export const LongContent: Story = {
   args: {
     repositories: [
       createMockRepository(1, {
-        name: 'very-long-repository-name-that-might-cause-layout-issues',
+        name: "very-long-repository-name-that-might-cause-layout-issues",
         description:
-          'This is a very long description that might cause layout issues in the table view. It contains lots of information about the repository and its purpose.',
+          "This is a very long description that might cause layout issues in the table view. It contains lots of information about the repository and its purpose.",
       }),
       createMockRepository(2, {
-        name: 'another-long-name',
+        name: "another-long-name",
         description:
-          'Another repository with a long description to test how the table handles text overflow and truncation.',
+          "Another repository with a long description to test how the table handles text overflow and truncation.",
       }),
     ],
   },
@@ -243,7 +248,7 @@ export const LongContent: Story = {
 export const NoDescriptions: Story = {
   args: {
     repositories: Array.from({ length: 3 }, (_, i) =>
-      createMockRepository(i + 1, { description: null })
+      createMockRepository(i + 1, { description: null }),
     ),
   },
 };
@@ -254,7 +259,7 @@ export const NoDescriptions: Story = {
 export const NoLanguages: Story = {
   args: {
     repositories: Array.from({ length: 3 }, (_, i) =>
-      createMockRepository(i + 1, { primaryLanguage: null })
+      createMockRepository(i + 1, { primaryLanguage: null }),
     ),
   },
 };

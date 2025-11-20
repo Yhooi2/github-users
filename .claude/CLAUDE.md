@@ -46,6 +46,7 @@ npm test MyComponent.test.tsx
 ```
 
 **Never skip Storybook!** Even for simple components. This ensures:
+
 - Visual regression testing capability
 - Complete documentation
 - All edge cases covered
@@ -54,23 +55,27 @@ npm test MyComponent.test.tsx
 ### Quality Standards
 
 **Test Coverage:**
+
 - ✅ Minimum 90% coverage for all new code
 - ✅ 100% coverage for calculation functions (metrics, utilities)
 - ✅ Current baseline: 99.85% test pass rate (1302/1304 tests)
 
 **TypeScript:**
+
 - ✅ Strict mode enabled
 - ✅ No `any` types allowed
 - ✅ Props use descriptive, component-specific type names
 - ✅ All event handlers properly typed
 
 **Component Standards:**
+
 - ✅ Use shadcn/ui components (New York style) when possible
 - ✅ Follow existing component patterns (see `UserAuthenticity.tsx` as template)
 - ✅ Include loading, error, and empty states
 - ✅ Accessibility: WCAG 2.1 AA compliance
 
 **Code Reusability:**
+
 - ✅ Check existing components before creating new ones (`npm run storybook`)
 - ✅ Reuse calculation patterns (see `src/lib/authenticity.ts` as template)
 - ✅ Extend existing helpers instead of duplicating (e.g., date-helpers)
@@ -79,6 +84,7 @@ npm test MyComponent.test.tsx
 ### MCP Integration Requirements
 
 **Active MCP Servers:**
+
 1. **Playwright MCP** - E2E test automation
 2. **Storybook MCP** - Component documentation (requires `npm run build-storybook`)
 3. **shadcn UI MCP** - UI component library docs
@@ -87,6 +93,7 @@ npm test MyComponent.test.tsx
 6. **Graphiti Memory MCP** - Project knowledge persistence
 
 **MCP Usage Pattern:**
+
 - Query shadcn MCP before creating UI components
 - Query Context7 MCP for library API documentation (Apollo, Recharts, etc.)
 - Build Storybook before using Storybook MCP
@@ -95,6 +102,7 @@ npm test MyComponent.test.tsx
 ### Architectural Decisions
 
 **What NOT to Change:**
+
 - ✅ Apollo Client 3.14.0 setup (working error handling, auth, cache)
 - ✅ Component → Story → Test workflow (proven with 99.85% pass rate)
 - ✅ shadcn/ui (New York style) consistency
@@ -102,6 +110,7 @@ npm test MyComponent.test.tsx
 - ✅ Existing calculation patterns (`authenticity.ts` as template)
 
 **When Adding New Features:**
+
 1. Check if similar component exists in Storybook
 2. Reuse existing patterns (see `docs/component-development.md`)
 3. Follow the Component → Story → Test workflow
@@ -109,6 +118,7 @@ npm test MyComponent.test.tsx
 5. Run full test suite before committing
 
 **Migration Strategy:**
+
 - Incremental over full replacement
 - Keep old code working while adding new
 - Feature flags for gradual rollout
@@ -117,6 +127,7 @@ npm test MyComponent.test.tsx
 ## Development Commands
 
 ### Essential Commands
+
 ```bash
 npm run dev              # Start dev server (http://localhost:5173)
 npm run build            # TypeScript compile + Vite production build
@@ -137,6 +148,7 @@ npm run build-storybook  # Build static Storybook (required for MCP)
 ```
 
 ### Single Test Execution
+
 ```bash
 # Run specific test file
 npx vitest src/components/SearchForm.test.tsx
@@ -207,6 +219,7 @@ npx vitest -t "renders search input and button"
   - Shows warning flags and repository metadata
 
 **UI Components:** `src/components/ui/`
+
 - shadcn/ui library (New York style)
 - Uses `class-variance-authority` for variants
 - Utility: `src/lib/utils.ts` - `cn()` function for className merging
@@ -214,9 +227,10 @@ npx vitest -t "renders search input and button"
 ### Path Aliases
 
 TypeScript and Vite configured with `@` alias:
+
 ```typescript
-import { Button } from "@/components/ui/button"
-import useQueryUser from "@/apollo/useQueryUser"
+import { Button } from "@/components/ui/button";
+import useQueryUser from "@/apollo/useQueryUser";
 ```
 
 Resolves to `./src/`
@@ -224,16 +238,19 @@ Resolves to `./src/`
 ### Environment Variables
 
 **Backend Configuration:**
+
 - GitHub token is now stored server-side for security
 - Token handled by `/api/github-proxy` endpoint
 - Prevents token exposure in client bundle
 
 **Previous Setup (Deprecated):**
+
 - Previously used `VITE_GITHUB_TOKEN` environment variable
 - Token was accessible in client code via `import.meta.env.VITE_GITHUB_TOKEN`
 - Migrated to server-side authentication for enhanced security
 
 **Migration Path:**
+
 1. ~~Copy `.env.example` to `.env.local`~~ (no longer needed for client)
 2. Configure token on backend/proxy server
 3. Scopes still required: `read:user`, `user:email`
@@ -243,6 +260,7 @@ Resolves to `./src/`
 **Status:** ✅ Fully Implemented (Phase 7 Complete)
 
 **Documentation:**
+
 - `docs/PHASE_7_COMPLETION_SUMMARY.md` - Complete implementation details
 - `docs/PHASE_7_SECURITY_CHECKLIST.md` - Security verification checklist
 - `docs/PHASE_7_IMPLEMENTATION_PLAN_RU.md` - Original implementation plan (Russian)
@@ -268,6 +286,7 @@ The application supports **dual-mode operation**:
    - Higher rate limits, personal data access
 
 **User Experience Flow:**
+
 ```
 1. User visits app → Demo mode (instant access)
 2. User searches GitHub users → Shared rate limit
@@ -277,6 +296,7 @@ The application supports **dual-mode operation**:
 ```
 
 **Graceful Degradation:**
+
 - OAuth failures → automatically fall back to demo mode
 - Expired sessions → automatically fall back to demo mode
 - No error dialogs → seamless user experience
@@ -290,15 +310,18 @@ The application supports **dual-mode operation**:
 **Purpose:** Starts GitHub OAuth flow with CSRF protection
 
 **Flow:**
+
 1. Generate cryptographically secure state (32 bytes, `crypto.randomBytes`)
 2. Store state in httpOnly cookie (`oauth_state`, 10-minute TTL)
 3. Redirect to GitHub OAuth authorization URL
 
 **Environment Variables Required:**
+
 - `GITHUB_OAUTH_CLIENT_ID` - OAuth App client ID
 - `GITHUB_OAUTH_CLIENT_SECRET` - OAuth App client secret (used in callback)
 
 **Security Features:**
+
 - CSRF protection via state parameter
 - HttpOnly cookie (prevents XSS)
 - Secure flag (HTTPS only in production)
@@ -306,9 +329,10 @@ The application supports **dual-mode operation**:
 - 10-minute expiry (enough for OAuth flow)
 
 **Example:**
+
 ```typescript
 // User clicks "Sign in with GitHub"
-window.location.href = '/api/auth/login'
+window.location.href = "/api/auth/login";
 
 // Endpoint generates:
 // - State: 64-char hex string (256 bits entropy)
@@ -321,6 +345,7 @@ window.location.href = '/api/auth/login'
 **Purpose:** Receives OAuth code from GitHub, exchanges for token, creates session
 
 **Flow:**
+
 1. Extract state from URL parameter and cookie
 2. Validate state matches (CSRF check)
 3. Exchange code for access token (GitHub API)
@@ -331,23 +356,26 @@ window.location.href = '/api/auth/login'
 8. Redirect to homepage with success parameter
 
 **Session Structure:**
+
 ```typescript
 interface Session {
-  userId: number          // GitHub user ID
-  login: string           // GitHub username
-  avatarUrl: string       // Avatar URL
-  accessToken: string     // OAuth access token
-  createdAt: number       // Unix timestamp
+  userId: number; // GitHub user ID
+  login: string; // GitHub username
+  avatarUrl: string; // Avatar URL
+  accessToken: string; // OAuth access token
+  createdAt: number; // Unix timestamp
 }
 ```
 
 **Storage:**
+
 - Key: `session:{randomSessionId}`
 - Storage: Vercel KV
 - TTL: 30 days (2592000 seconds)
 - Auto-cleanup by Vercel KV
 
 **Security Features:**
+
 - CSRF validation (state parameter)
 - HttpOnly session cookie (prevents XSS)
 - Secure flag (HTTPS only)
@@ -356,6 +384,7 @@ interface Session {
 - Graceful error handling (redirects to demo mode)
 
 **Error Handling:**
+
 ```typescript
 // All errors redirect to homepage with error parameter
 /?error=missing_code    // No code in callback
@@ -370,15 +399,17 @@ interface Session {
 **Purpose:** Deletes session and clears cookies
 
 **Flow:**
+
 1. Extract session ID from cookie
 2. Delete session from Vercel KV
 3. Clear session cookie (Max-Age=0)
 4. Redirect to homepage
 
 **Example:**
+
 ```typescript
 // User clicks "Sign out"
-window.location.href = '/api/auth/logout'
+window.location.href = "/api/auth/logout";
 
 // Result:
 // - Session deleted from KV
@@ -417,6 +448,7 @@ KV_REST_API_READ_ONLY_TOKEN=...         # Auto-configured by Vercel
    - Save and copy Client ID and Client Secret
 
 2. **Configure Vercel Environment Variables:**
+
    ```bash
    # Production
    vercel env add GITHUB_OAUTH_CLIENT_ID production
@@ -520,15 +552,15 @@ const isAuthenticated = !rateLimit.isDemo && !!rateLimit.userLogin
 const httpLink = createHttpLink({
   uri: "/api/github-proxy",
   includeExtensions: true,
-  credentials: 'include', // ← CRITICAL: Include cookies for OAuth session
+  credentials: "include", // ← CRITICAL: Include cookies for OAuth session
   fetch: (uri, options) => {
     return fetch(uri, {
       ...options,
-      credentials: 'include', // ← Ensure cookies sent with every request
+      credentials: "include", // ← Ensure cookies sent with every request
       body: JSON.stringify(newBody),
-    })
+    });
   },
-})
+});
 ```
 
 **Hook Integration:**
@@ -537,26 +569,26 @@ const httpLink = createHttpLink({
 // src/apollo/useQueryUser.ts
 
 export interface UseQueryUserOptions {
-  onRateLimitUpdate?: (rateLimit: RateLimit) => void
+  onRateLimitUpdate?: (rateLimit: RateLimit) => void;
 }
 
 function useQueryUser(
   login: string,
   daysBack: number = 365,
-  options?: UseQueryUserOptions
+  options?: UseQueryUserOptions,
 ) {
   return useQuery<GitHubGraphQLResponse>(GET_USER_INFO, {
     variables,
     skip: !login,
-    errorPolicy: 'all',
+    errorPolicy: "all",
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
       // Extract rate limit from response and notify parent
       if (options?.onRateLimitUpdate && data.rateLimit) {
-        options.onRateLimitUpdate(data.rateLimit)
+        options.onRateLimitUpdate(data.rateLimit);
       }
     },
-  })
+  });
 }
 ```
 
@@ -568,50 +600,56 @@ The proxy automatically detects demo vs authenticated mode:
 
 ```typescript
 // 1. Extract session from cookie
-const sessionId = extractSessionFromCookie(req.headers.cookie)
-let token = process.env.GITHUB_TOKEN  // Default to demo token
-let isDemo = true
-let userLogin: string | undefined
+const sessionId = extractSessionFromCookie(req.headers.cookie);
+let token = process.env.GITHUB_TOKEN; // Default to demo token
+let isDemo = true;
+let userLogin: string | undefined;
 
 // 2. Check for authenticated session
 if (sessionId && kv) {
-  const session = await kv.get<Session>(`session:${sessionId}`)
+  const session = await kv.get<Session>(`session:${sessionId}`);
   if (session && session.accessToken) {
-    token = session.accessToken     // Use user's token
-    isDemo = false
-    userLogin = session.login
+    token = session.accessToken; // Use user's token
+    isDemo = false;
+    userLogin = session.login;
   }
 }
 
 // 3. Select cache key prefix
 const finalCacheKey = cacheKey
-  ? (isDemo ? `demo:${cacheKey}` : `user:${sessionId}:${cacheKey}`)
-  : null
+  ? isDemo
+    ? `demo:${cacheKey}`
+    : `user:${sessionId}:${cacheKey}`
+  : null;
 
 // 4. Select cache TTL
-const ttl = isDemo ? 1800 : 600  // 30min demo, 10min user
+const ttl = isDemo ? 1800 : 600; // 30min demo, 10min user
 
 // 5. Include rate limit in response
-const rateLimit = extractRateLimit(response.headers, isDemo, userLogin)
+const rateLimit = extractRateLimit(response.headers, isDemo, userLogin);
 
 res.json({
   ...result.data,
-  rateLimit,  // ← Frontend uses this to update UI
-})
+  rateLimit, // ← Frontend uses this to update UI
+});
 ```
 
 **Rate Limit Extraction:**
 
 ```typescript
-function extractRateLimit(headers: Headers, isDemo: boolean, userLogin?: string): RateLimit {
+function extractRateLimit(
+  headers: Headers,
+  isDemo: boolean,
+  userLogin?: string,
+): RateLimit {
   return {
-    remaining: parseInt(headers.get('x-ratelimit-remaining') || '5000'),
-    limit: parseInt(headers.get('x-ratelimit-limit') || '5000'),
-    reset: parseInt(headers.get('x-ratelimit-reset') || '0'),
-    used: parseInt(headers.get('x-ratelimit-used') || '0'),
+    remaining: parseInt(headers.get("x-ratelimit-remaining") || "5000"),
+    limit: parseInt(headers.get("x-ratelimit-limit") || "5000"),
+    reset: parseInt(headers.get("x-ratelimit-reset") || "0"),
+    used: parseInt(headers.get("x-ratelimit-used") || "0"),
     isDemo,
     userLogin,
-  }
+  };
 }
 ```
 
@@ -693,25 +731,30 @@ npm run dev
 ### Troubleshooting
 
 **Problem:** OAuth redirect fails with 404
+
 - **Solution:** Ensure callback URL in GitHub OAuth App matches: `https://your-domain.vercel.app/api/auth/callback`
 - **Check:** OAuth App settings on GitHub
 
 **Problem:** CSRF validation fails (/?error=csrf_failed)
+
 - **Solution:** Check cookies are enabled in browser
 - **Check:** Secure flag disabled for localhost (development)
 - **Check:** SameSite=Lax allows OAuth redirects
 
 **Problem:** Session not persisted after OAuth
+
 - **Solution:** Check Vercel KV is configured and accessible
 - **Check:** Environment variables (KV_URL, KV_REST_API_URL, etc.)
 - **Check:** Vercel Function logs for KV errors
 
 **Problem:** Rate limit not updating after OAuth
+
 - **Solution:** Check `/api/github-proxy` returns `rateLimit` in response
 - **Check:** Apollo Client includes `credentials: 'include'`
 - **Check:** `useQueryUser` calls `onRateLimitUpdate` callback
 
 **Problem:** Demo mode after successful OAuth
+
 - **Solution:** Check session cookie is set (DevTools → Application → Cookies)
 - **Check:** Session exists in Vercel KV (`session:{sessionId}`)
 - **Check:** `/api/github-proxy` successfully extracts session from cookie
@@ -738,6 +781,7 @@ vercel logs --follow
 **Setup:** `src/test/setup.ts` - imports `@testing-library/jest-dom`, auto-cleanup after each test
 
 **Test Coverage:**
+
 - 58+ test files across the codebase
 - **Apollo Layer**:
   - `date-helpers.test.ts` - date utility functions
@@ -760,6 +804,7 @@ vercel logs --follow
   - `filters.test.ts` - filter type guards
 
 **Mocking:**
+
 - Apollo: Use `vi.mock('@/apollo/useQueryUser')` to mock hook return values
 - Toast: `vi.mock('sonner')` for error assertions
 
@@ -778,8 +823,9 @@ vercel logs --follow
 ### Important: Vitest Excludes E2E Tests
 
 Vitest config explicitly excludes Playwright tests:
+
 ```typescript
-exclude: ['node_modules/**', 'dist/**', 'e2e/**', '**/*.spec.ts']
+exclude: ["node_modules/**", "dist/**", "e2e/**", "**/*.spec.ts"];
 ```
 
 E2E tests use `.spec.ts` extension, unit tests use `.test.tsx`/`.test.ts`
@@ -791,9 +837,11 @@ E2E tests use `.spec.ts` extension, unit tests use `.test.tsx`/`.test.ts`
 **Config:** `eslint.config.js` (flat config format)
 
 **Custom Rules:**
+
 - `no-console`: `warn` (allows `console.warn` and `console.error`, blocks `console.log`)
 
 **Plugins:**
+
 - TypeScript ESLint, React Hooks, React Refresh, Tailwind CSS, Storybook, Prettier
 
 ### TypeScript
@@ -801,6 +849,7 @@ E2E tests use `.spec.ts` extension, unit tests use `.test.tsx`/`.test.ts`
 **Version:** 5.8.3
 
 **Configs:**
+
 - `tsconfig.json` - base config
 - `tsconfig.app.json` - app build (excludes test files)
 - `tsconfig.node.json` - build tools
@@ -823,6 +872,7 @@ E2E tests use `.spec.ts` extension, unit tests use `.test.tsx`/`.test.ts`
 **Port:** 6006
 
 **Addons:**
+
 - `@chromatic-com/storybook` - visual regression testing platform
 - `@storybook/addon-docs` - auto-generated component documentation
 - `@storybook/addon-onboarding` - first-time user guidance
@@ -832,6 +882,7 @@ E2E tests use `.spec.ts` extension, unit tests use `.test.tsx`/`.test.ts`
 - `@storybook/addon-mcp` - MCP server integration for AI assistance
 
 **Stories Coverage:**
+
 - 47+ story files across all components
 - **UI Components** (`src/components/ui/*.stories.tsx`):
   - shadcn UI component variants (button, card, badge, table, select, etc.)
@@ -868,6 +919,7 @@ Project supports 6 MCP servers for AI-assisted development:
 **Verification:** `docs/mcp-verification-checklist.md`
 
 **Important Notes:**
+
 - Storybook MCP requires `npm run build-storybook` before component indexing
 - Context7 MCP helps query external library documentation without web search
 - Graphiti Memory MCP maintains conversation context across sessions
@@ -879,6 +931,7 @@ Project supports 6 MCP servers for AI-assisted development:
 **Config:** `vite.config.ts`
 
 **Plugins:**
+
 - `@vitejs/plugin-react` - React Fast Refresh
 - `@tailwindcss/vite` - Tailwind CSS v4
 - `vite-plugin-mcp` - MCP server integration
@@ -898,11 +951,13 @@ Project supports 6 MCP servers for AI-assisted development:
 ## Git Workflow
 
 **Main Branches:**
+
 - `alt-main` - main branch for PRs and active development
 
 **Commit Convention:** Standard descriptive commits (no strict convention enforced)
 
 **Previous Branch Structure (Deprecated):**
+
 - ~~`alt-main`~~ - previous main branch
 - ~~`ui-main`~~ - previous working branch
 - Now consolidated to `main` for simplicity
@@ -912,6 +967,7 @@ Project supports 6 MCP servers for AI-assisted development:
 ### Error Handling
 
 **Apollo GraphQL:** Errors handled globally in `ApolloAppProvider` via `onError` link
+
 - GraphQL errors: toast notification + console.error
 - Network errors: toast notification + console.error + 401 handling
 - Component level: `useQuery` returns `error` object for UI display
@@ -935,6 +991,7 @@ Project supports 6 MCP servers for AI-assisted development:
 ### Apollo Client Warnings
 
 UserProfile tests show Apollo warnings about `InMemoryCache.addTypename` option:
+
 ```
 An error occurred! For more details, see the full error text at https://go.apollo.dev/c/err#...
 ```
@@ -944,6 +1001,7 @@ An error occurred! For more details, see the full error text at https://go.apoll
 ### TypeScript Build
 
 Test files must be excluded from production build (`tsconfig.app.json`) to avoid:
+
 - Import errors for test utilities (`vitest`, `@testing-library`)
 - Compilation of `.test.tsx` and `.stories.tsx` files
 
@@ -952,6 +1010,7 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 **Bundle Size:** ~466 KB (gzip: 141 KB) - acceptable for this app size
 
 **GraphQL Optimization:**
+
 - Single query fetches all needed data (user + contribution stats)
 - Variables computed once via `useMemo` in `useQueryUser`
 - Apollo cache prevents redundant network requests
@@ -971,6 +1030,7 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 **Project Docs:** `docs/` directory
 
 **Core Documentation:**
+
 - `mcp-setup.md` - MCP server installation guide
 - `mcp-verification-checklist.md` - MCP testing procedures
 - `architecture.md` - System architecture overview
@@ -978,6 +1038,7 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 - `testing-guide.md` - Testing strategy and best practices
 
 **Technical Guides:**
+
 - `apollo-client-guide.md` - Apollo Client setup and usage
 - `graphql-api.md` - GraphQL API integration
 - `typescript-guide.md` - TypeScript patterns and conventions
@@ -985,11 +1046,13 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 - `hooks-documentation.md` - Custom hooks reference
 
 **Technology-Specific:**
+
 - `react-19-features.md` - React 19 feature usage
 - `tailwind-v4-migration.md` - Tailwind CSS v4 migration guide
 - `dependencies.md` - Dependency management
 
 **Strategy & Planning:**
+
 - `api-strategy.md` - API integration strategy
 - `api-reference.md` - API endpoint documentation
 - `metrics-explanation.md` - Authenticity metrics calculation
@@ -1008,6 +1071,7 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 ## Graphiti Memory Integration
 
 This project uses Graphiti Memory MCP for knowledge management:
+
 - Always check existing memory before responding to project questions
 - Save important project information to memory
 - Update memory when inconsistencies are detected
