@@ -52,7 +52,25 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Chromium flags for container stability
+        launchOptions: {
+          args: [
+            '--no-sandbox', // Required for containers
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage', // Overcome limited resource problems
+            '--disable-gpu', // Disable GPU hardware acceleration
+            '--disable-software-rasterizer',
+            '--disable-webgl',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gl-drawing-for-tests',
+            '--disable-web-security', // For CORS issues in tests
+            '--single-process', // Run in single process (more stable in containers)
+            '--no-zygote', // Disable zygote process
+          ],
+        },
+      },
     },
 
     {
