@@ -48,7 +48,10 @@ describe('OAuth Analytics Logger', () => {
       await logOAuthLogin(event)
 
       // Проверяем zadd вызов
-      expect(kv.zadd).toHaveBeenCalledWith('analytics:oauth:logins', {
+      expect(
+        kv.zadd,
+        'logOAuthLogin should store login event in analytics:oauth:logins sorted set with timestamp as score'
+      ).toHaveBeenCalledWith('analytics:oauth:logins', {
         score: event.timestamp,
         member: JSON.stringify({
           timestamp: event.timestamp,
@@ -59,10 +62,16 @@ describe('OAuth Analytics Logger', () => {
       })
 
       // Проверяем expire (30 дней)
-      expect(kv.expire).toHaveBeenCalledWith('analytics:oauth:logins', 2592000)
+      expect(
+        kv.expire,
+        'logOAuthLogin should set 30-day TTL (2592000 seconds) on login analytics data'
+      ).toHaveBeenCalledWith('analytics:oauth:logins', 2592000)
 
       // Проверяем console.log
-      expect(console.log).toHaveBeenCalledWith('OAuth login logged: octocat (12345)')
+      expect(
+        console.log,
+        'logOAuthLogin should log user login with username and userId for monitoring'
+      ).toHaveBeenCalledWith('OAuth login logged: octocat (12345)')
     })
 
     it('должен пропустить логирование если KV недоступен', async () => {

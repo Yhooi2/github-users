@@ -91,9 +91,18 @@ describe('User Settings API - Integration Tests', () => {
 
       await handler(req as VercelRequest, res as VercelResponse)
 
-      expect(kv.del).toHaveBeenCalledWith('user:12345:settings')
-      expect(res.status).toHaveBeenCalledWith(204)
-      expect(res.send).toHaveBeenCalledWith('')
+      expect(
+        kv.del,
+        'DELETE endpoint should call kv.del with correct settings key when deleting user settings'
+      ).toHaveBeenCalledWith('user:12345:settings')
+      expect(
+        res.status,
+        'DELETE endpoint should return 204 No Content status after successful settings deletion'
+      ).toHaveBeenCalledWith(204)
+      expect(
+        res.send,
+        'DELETE endpoint should send empty response body with 204 status code'
+      ).toHaveBeenCalledWith('')
     })
 
     it('должен вернуть 401 если нет session cookie', async () => {
@@ -102,9 +111,18 @@ describe('User Settings API - Integration Tests', () => {
 
       await handler(req as VercelRequest, res as VercelResponse)
 
-      expect(kv.del).not.toHaveBeenCalled()
-      expect(res.status).toHaveBeenCalledWith(401)
-      expect(res.json).toHaveBeenCalledWith({
+      expect(
+        kv.del,
+        'DELETE endpoint should NOT attempt to delete settings when session cookie is missing'
+      ).not.toHaveBeenCalled()
+      expect(
+        res.status,
+        'DELETE endpoint should return 401 Unauthorized when session cookie is missing'
+      ).toHaveBeenCalledWith(401)
+      expect(
+        res.json,
+        'DELETE endpoint should return error message prompting user to sign in when no session cookie'
+      ).toHaveBeenCalledWith({
         error: 'Unauthorized',
         message: 'No valid session found. Please sign in.',
       })
@@ -278,9 +296,18 @@ describe('User Settings API - Integration Tests', () => {
 
       await handler(req as VercelRequest, res as VercelResponse)
 
-      expect(kv.del).toHaveBeenCalledWith('user:12345:settings')
-      expect(res.status).toHaveBeenCalledWith(204)
-      expect(res.send).toHaveBeenCalledWith('')
+      expect(
+        kv.del,
+        'DELETE endpoint should call kv.del with correct settings key when deleting user settings'
+      ).toHaveBeenCalledWith('user:12345:settings')
+      expect(
+        res.status,
+        'DELETE endpoint should return 204 No Content status after successful settings deletion'
+      ).toHaveBeenCalledWith(204)
+      expect(
+        res.send,
+        'DELETE endpoint should send empty response body with 204 status code'
+      ).toHaveBeenCalledWith('')
     })
 
     it('должен создать defaults при PUT если настроек нет', async () => {
@@ -423,9 +450,18 @@ describe('User Settings API - Integration Tests', () => {
 
       await handler(req as VercelRequest, res as VercelResponse)
 
-      expect(kv.del).toHaveBeenCalledWith('user:12345:settings')
-      expect(res.status).toHaveBeenCalledWith(204)
-      expect(res.send).toHaveBeenCalledWith('')
+      expect(
+        kv.del,
+        'DELETE endpoint should call kv.del with correct settings key when deleting user settings'
+      ).toHaveBeenCalledWith('user:12345:settings')
+      expect(
+        res.status,
+        'DELETE endpoint should return 204 No Content status after successful settings deletion'
+      ).toHaveBeenCalledWith(204)
+      expect(
+        res.send,
+        'DELETE endpoint should send empty response body with 204 status code'
+      ).toHaveBeenCalledWith('')
     })
   })
 })

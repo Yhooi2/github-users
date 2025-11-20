@@ -56,8 +56,14 @@ describe('OAuth Usage Analytics Endpoint', () => {
 
       await handler(req as VercelRequest, res as VercelResponse)
 
-      expect(res.status).toHaveBeenCalledWith(405)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+      expect(
+        res.status,
+        'OAuth usage endpoint should return 405 Method Not Allowed for POST requests (read-only endpoint)'
+      ).toHaveBeenCalledWith(405)
+      expect(
+        res.json,
+        'OAuth usage endpoint should return method not allowed error message for POST requests'
+      ).toHaveBeenCalledWith({ error: 'Method not allowed' })
     })
 
     it('должен отклонить PUT запрос', async () => {
@@ -65,8 +71,14 @@ describe('OAuth Usage Analytics Endpoint', () => {
 
       await handler(req as VercelRequest, res as VercelResponse)
 
-      expect(res.status).toHaveBeenCalledWith(405)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+      expect(
+        res.status,
+        'OAuth usage endpoint should return 405 Method Not Allowed for POST requests (read-only endpoint)'
+      ).toHaveBeenCalledWith(405)
+      expect(
+        res.json,
+        'OAuth usage endpoint should return method not allowed error message for POST requests'
+      ).toHaveBeenCalledWith({ error: 'Method not allowed' })
     })
 
     it('должен отклонить DELETE запрос', async () => {
@@ -74,8 +86,14 @@ describe('OAuth Usage Analytics Endpoint', () => {
 
       await handler(req as VercelRequest, res as VercelResponse)
 
-      expect(res.status).toHaveBeenCalledWith(405)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Method not allowed' })
+      expect(
+        res.status,
+        'OAuth usage endpoint should return 405 Method Not Allowed for POST requests (read-only endpoint)'
+      ).toHaveBeenCalledWith(405)
+      expect(
+        res.json,
+        'OAuth usage endpoint should return method not allowed error message for POST requests'
+      ).toHaveBeenCalledWith({ error: 'Method not allowed' })
     })
 
     it('должен принять GET запрос', async () => {
