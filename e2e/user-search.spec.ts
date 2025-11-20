@@ -6,7 +6,7 @@ test.describe('GitHub User Search', () => {
   })
 
   test('should load the homepage', async ({ page }) => {
-    await expect(page).toHaveTitle(/Vite \+ React \+ TS/)
+    await expect(page).toHaveTitle(/Github Users Info/)
     await expect(page.getByPlaceholderText(/Search GitHub User/i)).toBeVisible()
   })
 
