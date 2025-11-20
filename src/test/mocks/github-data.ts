@@ -160,6 +160,36 @@ export const mockUser: GitHubUser = {
 };
 
 /**
+ * Helper function to create complete GraphQL response with rate limit
+ * Used in integration tests to simulate backend proxy responses
+ */
+export function createMockGraphQLResponse(
+  userOverrides: Partial<GitHubUser> = {},
+  rateLimitOverrides: Partial<{
+    remaining: number;
+    limit: number;
+    reset: number;
+    used: number;
+    isDemo: boolean;
+    userLogin?: string;
+  }> = {}
+) {
+  return {
+    data: {
+      user: createMockUser(userOverrides),
+      rateLimit: {
+        remaining: 5000,
+        limit: 5000,
+        reset: Math.floor(Date.now() / 1000) + 3600,
+        used: 0,
+        isDemo: true,
+        ...rateLimitOverrides,
+      },
+    },
+  };
+}
+
+/**
  * Factory function to create a custom repository with overrides
  *
  * @param overrides - Partial repository properties to override defaults
