@@ -17,38 +17,46 @@
 
 ### 1. Data Layer (Apollo Client)
 
-The data layer is responsible for fetching data from the GitHub GraphQL API and managing the application's cache.
+For complete Apollo Client setup, best practices, and troubleshooting, see the [Apollo Client Guide](./apollo-client-guide.md).
+
+**High-Level Overview:**
 
 ```
-┌─────────────────────────────────────────────┐
-│         GitHub GraphQL API                   │
-│     https://api.github.com/graphql          │
-└──────────────────┬──────────────────────────┘
+┌───────────────────────────────────────────┐
+│         GitHub GraphQL API                │
+│     https://api.github.com/graphql        │
+└──────────────────┬────────────────────────┘
                    │
                    │ HTTP POST
                    ↓
-┌─────────────────────────────────────────────┐
-│          Apollo Client                       │
-│  ┌───────────────────────────────────────┐ │
-│  │  Link Chain (Request/Response Flow)   │ │
-│  │                                        │ │
-│  │  errorLink (catches all errors)       │ │
-│  │       ↓                                │ │
-│  │  authLink (adds Bearer token)         │ │
-│  │       ↓                                │ │
-│  │  httpLink (makes HTTP request)        │ │
-│  └───────────────────────────────────────┘ │
-│                                             │
-│  InMemoryCache (normalized data storage)   │
-└─────────────────────────────────────────────┘
+┌───────────────────────────────────────────┐
+│          Apollo Client                    │
+│  ┌─────────────────────────────────────┐  │
+│  │  Link Chain (Request/Response Flow) │  │
+│  │                                     │  │
+│  │  errorLink (catches all errors)    │  │
+│  │       ↓                             │  │
+│  │  authLink (adds Bearer token)      │  │
+│  │       ↓                             │  │
+│  │  httpLink (makes HTTP request)     │  │
+│  └─────────────────────────────────────┘  │
+│                                           │
+│  InMemoryCache (normalized data storage) │
+└───────────────────────────────────────────┘
 ```
 
 **Key Components:**
 
-- **errorLink:** Global error handler that catches both GraphQL and network errors, displays toast notifications, and clears auth tokens on 401/UNAUTHENTICATED
-- **authLink:** Middleware that injects the GitHub token from `VITE_GITHUB_TOKEN` environment variable or `localStorage`
-- **httpLink:** Terminal link that performs the actual HTTP request
-- **InMemoryCache:** Apollo's default cache with automatic normalization
+- **errorLink:** Global error handler ([details](./apollo-client-guide.md#error-link))
+- **authLink:** Token injection from env/localStorage ([details](./apollo-client-guide.md#auth-link))
+- **httpLink:** HTTP transport to GitHub API
+- **InMemoryCache:** Automatic query result caching
+
+**Configuration:** See `src/apollo/ApolloAppProvider.tsx`
+
+**Custom Hooks:** See [Custom Hooks section](./apollo-client-guide.md#custom-hooks)
+
+**Testing:** See [Testing Apollo Client](./testing-guide.md#apollo-client-mockedprovider)
 
 ### 2. Business Logic Layer (Hooks & Utilities)
 
