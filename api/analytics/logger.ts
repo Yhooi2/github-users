@@ -1,10 +1,20 @@
-import { kv } from "@vercel/kv";
-
 /**
  * OAuth Analytics Logger
  *
  * Helper functions to log OAuth events to Vercel KV for analytics
  */
+
+// Check if Vercel KV is configured
+const isKVConfigured = Boolean(
+  process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN,
+);
+
+// Lazy load KV only if configured
+let kv: (typeof import("@vercel/kv"))["kv"] | null = null;
+if (isKVConfigured) {
+  const kvModule = await import("@vercel/kv");
+  kv = kvModule.kv;
+}
 
 export interface OAuthLoginEvent {
   timestamp: number;
@@ -34,7 +44,6 @@ export interface RateLimitSnapshot {
  */
 export async function logOAuthLogin(event: OAuthLoginEvent): Promise<void> {
   if (!kv) {
-    console.warn("KV not available, skipping OAuth login logging");
     return;
   }
 
@@ -66,7 +75,6 @@ export async function logOAuthLogin(event: OAuthLoginEvent): Promise<void> {
  */
 export async function logOAuthLogout(event: OAuthLogoutEvent): Promise<void> {
   if (!kv) {
-    console.warn("KV not available, skipping OAuth logout logging");
     return;
   }
 

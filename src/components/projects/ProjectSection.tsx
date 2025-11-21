@@ -3,91 +3,80 @@ import { RepositoryCard } from "@/components/repository/RepositoryCard";
 import { Badge } from "@/components/ui/badge";
 
 export interface ProjectSectionProps {
-  /**
-   * Categorized projects
-   */
   projects: {
     owned: Repository[];
     contributions: Repository[];
   };
-
-  /**
-   * Loading state
-   * @default false
-   */
   loading?: boolean;
 }
 
-/**
- * Project Section Component
- *
- * Displays user's projects separated into:
- * - Owned Projects (👤): Repositories owned by the user
- * - Open Source Contributions (👥): Repositories contributed to but not owned
- *
- * Features responsive grid layout (1 column mobile, 2 columns desktop).
- *
- * @example
- * ```tsx
- * <ProjectSection
- *   projects={{
- *     owned: [repo1, repo2],
- *     contributions: [repo3, repo4]
- *   }}
- * />
- *
- * // With loading state
- * <ProjectSection projects={{ owned: [], contributions: [] }} loading />
- * ```
- */
 export function ProjectSection({
-  projects,
+  projects: rawProjects,
   loading = false,
 }: ProjectSectionProps) {
   if (loading) {
     return <ProjectSectionSkeleton />;
   }
 
-  const hasOwnedProjects = projects.owned.length > 0;
-  const hasContributions = projects.contributions.length > 0;
-  const hasNoProjects = !hasOwnedProjects && !hasContributions;
+  // Дедупликация и фильтрация по id (самый надёжный способ)
+  const seenIds = new Set<string>();
+  const owned: Repository[] = [];
+  const contributions: Repository[] = [];
+
+  // Сначала добавляем owned
+  for (const repo of rawProjects.owned) {
+    if (!seenIds.has(repo.id)) {
+      seenIds.add(repo.id);
+      owned.push(repo);
+    }
+  }
+
+  // Потом contributions — только если не owned
+  for (const repo of rawProjects.contributions) {
+    if (!seenIds.has(repo.id)) {
+      seenIds.add(repo.id);
+      contributions.push(repo);
+    }
+  }
+
+  const hasOwned = owned.length > 0;
+  const hasContributions = contributions.length > 0;
 
   return (
     <section className="space-y-6" aria-label="Projects and contributions">
       <h2 className="text-2xl font-bold">🔥 Top Projects & Contributions</h2>
 
-      {/* Owned Projects */}
-      {hasOwnedProjects && (
+      {/* Your Original Projects */}
+      {hasOwned && (
         <div>
           <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold">
             👤 Your Original Projects
-            <Badge variant="default">{projects.owned.length}</Badge>
+            <Badge variant="default">{owned.length}</Badge>
           </h3>
           <div className="grid gap-4 md:grid-cols-2">
-            {projects.owned.map((repo) => (
+            {owned.map((repo) => (
               <RepositoryCard key={repo.id} repository={repo} />
             ))}
           </div>
         </div>
       )}
 
-      {/* Contributions */}
+      {/* Open Source Contributions */}
       {hasContributions && (
         <div>
           <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold">
             👥 Open Source Contributions
-            <Badge variant="secondary">{projects.contributions.length}</Badge>
+            <Badge variant="secondary">{contributions.length}</Badge>
           </h3>
           <div className="grid gap-4 md:grid-cols-2">
-            {projects.contributions.map((repo) => (
+            {contributions.map((repo) => (
               <RepositoryCard key={repo.id} repository={repo} />
             ))}
           </div>
         </div>
       )}
 
-      {/* Empty State */}
-      {hasNoProjects && (
+      {!hasOwned && !hasContributions && (
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
           No repositories found
         </div>
@@ -96,9 +85,6 @@ export function ProjectSection({
   );
 }
 
-/**
- * Loading skeleton for ProjectSection
- */
 function ProjectSectionSkeleton() {
   return (
     <section className="space-y-6" aria-label="Loading projects">

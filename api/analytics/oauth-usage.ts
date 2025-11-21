@@ -3,42 +3,12 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 /**
  * OAuth Usage Analytics Endpoint
+ * GET /api/analytics/oauth-usage
  *
- * Provides metrics and statistics about OAuth usage:
- * - Active sessions count
- * - Login/logout events
- * - Rate limit usage
- * - User engagement
- *
- * Endpoint: GET /api/analytics/oauth-usage
- *
- * Query Parameters:
- * - period: 'hour' | 'day' | 'week' | 'month' (default: 'day')
- * - detailed: 'true' | 'false' (default: 'false')
- *
- * Response:
- * {
- *   period: string
- *   timestamp: number
- *   metrics: {
- *     activeSessions: number
- *     totalLogins: number
- *     totalLogouts: number
- *     uniqueUsers: number
- *     avgSessionDuration: number
- *     rateLimit: {
- *       avgUsage: number
- *       peakUsage: number
- *       avgRemaining: number
- *     }
- *   }
- *   detailed?: {
- *     sessions: Session[]
- *     timeline: TimelineEntry[]
- *   }
- * }
+ * Query parameters:
+ *   - period: 'hour' | 'day' | 'week' | 'month' (default: 'day')
+ *   - detailed: 'true' | 'false' (default: 'false') — includes full session list and timeline
  */
-
 interface Session {
   sessionId: string;
   userId: number;
@@ -63,7 +33,7 @@ interface OAuthMetrics {
     totalLogins: number;
     totalLogouts: number;
     uniqueUsers: number;
-    avgSessionDuration: number;
+    avgSessionDuration: number; // in milliseconds
     rateLimit: {
       avgUsage: number;
       peakUsage: number;
@@ -76,47 +46,39 @@ interface OAuthMetrics {
   };
 }
 
-/**
- * Get time range in milliseconds for the specified period
- */
+/** Returns the duration of the selected period in milliseconds */
 function getPeriodMs(period: string): number {
   switch (period) {
     case "hour":
-      return 3600000; // 1 hour
+      return 3_600_000; // 1 hour
     case "day":
-      return 86400000; // 24 hours
+      return 86_400_000; // 24 hours
     case "week":
-      return 604800000; // 7 days
+      return 604_800_000; // 7 days
     case "month":
-      return 2592000000; // 30 days
+      return 2_592_000_000; // 30 days
     default:
-      return 86400000; // default to day
+      return 86_400_000; // fallback to day
   }
 }
 
-/**
- * Get all active sessions from Vercel KV
- */
+/** Fetch all currently active sessions from Vercel KV */
 async function getActiveSessions(): Promise<Session[]> {
-  if (!kv) {
-    return [];
-  }
+  if (!kv) return [];
+
+  const sessions: Session[] = [];
+  let cursor: string = "0";
 
   try {
-    // Scan for all session keys
-    const sessions: Session[] = [];
-    let cursor = 0;
-
     do {
-      const result = await kv.scan(cursor, {
+      // In @vercel/kv ≥1.0+, scan returns [string, string[]]
+      const [nextCursor, keys] = await kv.scan(cursor, {
         match: "session:*",
         count: 100,
       });
 
-      cursor = result[0];
-      const keys = result[1] as string[];
+      cursor = nextCursor;
 
-      // Fetch session data for each key
       for (const key of keys) {
         const sessionData = await kv.get<{
           userId: number;
@@ -137,7 +99,7 @@ async function getActiveSessions(): Promise<Session[]> {
           });
         }
       }
-    } while (cursor !== 0);
+    } while (cursor !== "0");
 
     return sessions;
   } catch (error) {
@@ -146,46 +108,33 @@ async function getActiveSessions(): Promise<Session[]> {
   }
 }
 
-/**
- * Get OAuth events from analytics store
- */
-async function getOAuthEvents(
-  periodMs: number,
-): Promise<{ logins: number; logouts: number; timeline: TimelineEntry[] }> {
-  if (!kv) {
-    return { logins: 0, logouts: 0, timeline: [] };
-  }
+/** Retrieve login/logout events for the selected time period */
+async function getOAuthEvents(periodMs: number) {
+  if (!kv) return { logins: 0, logouts: 0, timeline: [] };
 
   try {
     const now = Date.now();
     const startTime = now - periodMs;
 
-    // Get login events
     const loginEvents = (await kv.zrange(
       "analytics:oauth:logins",
       startTime,
       now,
-      {
-        byScore: true,
-      },
+      { byScore: true },
     )) as string[];
 
-    // Get logout events
     const logoutEvents = (await kv.zrange(
       "analytics:oauth:logouts",
       startTime,
       now,
-      {
-        byScore: true,
-      },
+      { byScore: true },
     )) as string[];
 
-    // Parse timeline
     const timeline: TimelineEntry[] = [];
 
-    for (const event of loginEvents) {
+    for (const raw of loginEvents) {
       try {
-        const data = JSON.parse(event);
+        const data = JSON.parse(raw);
         timeline.push({
           timestamp: data.timestamp,
           event: "login",
@@ -193,13 +142,13 @@ async function getOAuthEvents(
           login: data.login,
         });
       } catch {
-        // Skip invalid events
+        // Skip malformed entries
       }
     }
 
-    for (const event of logoutEvents) {
+    for (const raw of logoutEvents) {
       try {
-        const data = JSON.parse(event);
+        const data = JSON.parse(raw);
         timeline.push({
           timestamp: data.timestamp,
           event: "logout",
@@ -207,11 +156,10 @@ async function getOAuthEvents(
           login: data.login,
         });
       } catch {
-        // Skip invalid events
+        // Skip malformed entries
       }
     }
 
-    // Sort timeline by timestamp
     timeline.sort((a, b) => a.timestamp - b.timestamp);
 
     return {
@@ -225,62 +173,49 @@ async function getOAuthEvents(
   }
 }
 
-/**
- * Calculate average session duration
- */
+/** Calculate average session duration in milliseconds */
 function calculateAvgSessionDuration(sessions: Session[]): number {
-  if (sessions.length === 0) {
-    return 0;
-  }
+  if (sessions.length === 0) return 0;
 
   const now = Date.now();
-  const durations = sessions.map((session) => {
-    const lastActivity = session.lastActivity || now;
-    return lastActivity - session.createdAt;
-  });
+  const total = sessions.reduce((sum, s) => {
+    const end = s.lastActivity || now;
+    return sum + (end - s.createdAt);
+  }, 0);
 
-  const total = durations.reduce((sum, duration) => sum + duration, 0);
-  return Math.round(total / durations.length);
+  return Math.round(total / sessions.length);
 }
 
-/**
- * Get rate limit statistics
- */
-async function getRateLimitStats(
-  periodMs: number,
-): Promise<{ avgUsage: number; peakUsage: number; avgRemaining: number }> {
-  if (!kv) {
-    return { avgUsage: 0, peakUsage: 0, avgRemaining: 5000 };
-  }
+/** Gather rate-limit usage statistics over the period */
+async function getRateLimitStats(periodMs: number) {
+  if (!kv) return { avgUsage: 0, peakUsage: 0, avgRemaining: 5000 };
 
   try {
     const now = Date.now();
-    const startTime = now - periodMs;
+    const start = now - periodMs;
 
-    // Get rate limit snapshots
-    const snapshots = (await kv.zrange("analytics:ratelimit", startTime, now, {
+    const snapshots = (await kv.zrange("analytics:ratelimit", start, now, {
       byScore: true,
     })) as string[];
 
-    if (snapshots.length === 0) {
+    if (snapshots.length === 0)
       return { avgUsage: 0, peakUsage: 0, avgRemaining: 5000 };
-    }
 
     let totalUsage = 0;
     let totalRemaining = 0;
     let peakUsage = 0;
 
-    for (const snapshot of snapshots) {
+    for (const raw of snapshots) {
       try {
-        const data = JSON.parse(snapshot);
-        const usage = data.used || 0;
-        const remaining = data.remaining || 5000;
+        const data = JSON.parse(raw);
+        const used = data.used ?? 0;
+        const remaining = data.remaining ?? 5000;
 
-        totalUsage += usage;
+        totalUsage += used;
         totalRemaining += remaining;
-        peakUsage = Math.max(peakUsage, usage);
+        if (used > peakUsage) peakUsage = used;
       } catch {
-        // Skip invalid snapshots
+        // Skip malformed snapshots
       }
     }
 
@@ -295,16 +230,12 @@ async function getRateLimitStats(
   }
 }
 
-/**
- * Main handler
- */
+/** Main request handler */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Only allow GET requests
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // Check if KV is available
   if (!kv) {
     return res.status(503).json({
       error: "Analytics service unavailable",
@@ -313,37 +244,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Parse query parameters
     const period = (req.query.period as string) || "day";
     const detailed = req.query.detailed === "true";
 
-    // Validate period
     const validPeriods = ["hour", "day", "week", "month"];
     if (!validPeriods.includes(period)) {
-      return res.status(400).json({
-        error: "Invalid period",
-        message: "Period must be one of: hour, day, week, month",
-      });
+      return res
+        .status(400)
+        .json({
+          error: "Invalid period",
+          message: "Allowed values: hour, day, week, month",
+        });
     }
 
     const periodMs = getPeriodMs(period);
 
-    // Fetch data in parallel
+    // Parallel data fetching for better performance
     const [sessions, events, rateLimitStats] = await Promise.all([
       getActiveSessions(),
       getOAuthEvents(periodMs),
       getRateLimitStats(periodMs),
     ]);
 
-    // Calculate unique users
-    const uniqueUserIds = new Set(sessions.map((s) => s.userId));
-    const uniqueUsers = uniqueUserIds.size;
-
-    // Calculate average session duration
+    const uniqueUsers = new Set(sessions.map((s) => s.userId)).size;
     const avgSessionDuration = calculateAvgSessionDuration(sessions);
 
-    // Build response
-    const metrics: OAuthMetrics = {
+    const response: OAuthMetrics = {
       period,
       timestamp: Date.now(),
       metrics: {
@@ -356,11 +282,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     };
 
-    // Add detailed data if requested
+    // Include detailed data only when explicitly requested (privacy + performance)
     if (detailed) {
-      metrics.detailed = {
+      response.detailed = {
         sessions: sessions.map((s) => ({
-          sessionId: s.sessionId.substring(0, 8) + "...", // Truncate for privacy
+          sessionId: s.sessionId.slice(0, 8) + "...", // Truncate for privacy
           userId: s.userId,
           login: s.login,
           createdAt: s.createdAt,
@@ -370,13 +296,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     }
 
-    // Set cache headers (cache for 5 minutes)
+    // Cache publicly for 5 minutes, allow stale-while-revalidate for 10 min
     res.setHeader(
       "Cache-Control",
       "public, s-maxage=300, stale-while-revalidate=600",
     );
 
-    return res.status(200).json(metrics);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("OAuth analytics error:", error);
     return res.status(500).json({

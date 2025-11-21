@@ -62,7 +62,9 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
               avatarUrl
             }
             parent {
+              id #
               name
+              nameWithOwner
               url
               owner {
                 login
@@ -110,7 +112,6 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
     }
   }
 `;
-
 /**
  * Repository with contribution count
  */

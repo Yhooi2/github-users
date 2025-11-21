@@ -99,8 +99,40 @@ const link = ApolloLink.from([cacheKeyLink, errorLink, httpLink]);
 // 6. Instantiate ApolloClient with cache and link chain
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache(),
-  // Use the new `devtools.enabled` configuration (replaces connectToDevTools)
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          user: {
+            merge: true, // Просто заменять весь объект user
+          },
+        },
+      },
+      Repository: {
+        keyFields: ["id"], // Теперь все запросы возвращают id
+        fields: {
+          licenseInfo: {
+            merge: true,
+          },
+          defaultBranchRef: {
+            merge: true,
+          },
+          primaryLanguage: {
+            merge: true,
+          },
+        },
+      },
+      License: {
+        keyFields: false, // Не нормализовать
+      },
+      Ref: {
+        keyFields: false,
+      },
+      Language: {
+        keyFields: false,
+      },
+    },
+  }),
   devtools: { enabled: process.env.NODE_ENV !== "production" },
 });
 

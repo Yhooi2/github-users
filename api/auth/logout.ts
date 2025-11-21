@@ -1,6 +1,6 @@
 import { kv } from "@vercel/kv";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { logOAuthLogout } from "../analytics/logger";
+import { logOAuthLogout } from "../analytics/logger.js";
 
 /**
  * Extract session ID from cookie header

@@ -9,7 +9,7 @@ import { gql } from "@apollo/client";
  * - Yearly contribution statistics (last 3 years)
  * - Contribution details for a specified date range
  * - Repository list with metadata (max 100 repos per query)
- * - Rate limit information (injected by proxy or available from schema)
+ * - Rate limit information (from GitHub API)
  *
  * @remarks
  * The query uses 9 date-time variables to support multiple time ranges:
@@ -17,6 +17,9 @@ import { gql } from "@apollo/client";
  * - $year1From, $year1To: Year 1 (current-2 years)
  * - $year2From, $year2To: Year 2 (current-1 year)
  * - $year3From, $year3To: Year 3 (current year)
+ *
+ * Note: Fields like `isDemo` and `userLogin` are added by the proxy server
+ * after the GitHub API response, not requested from GitHub.
  */
 export const GET_USER_INFO = gql`
   query GetUser(
@@ -64,7 +67,9 @@ export const GET_USER_INFO = gql`
             totalCount
           }
           repository {
+            id # ← ДОБАВИТЬ
             name
+            nameWithOwner # ← ДОБАВИТЬ
           }
         }
       }
@@ -77,6 +82,7 @@ export const GET_USER_INFO = gql`
         nodes {
           id
           name
+          nameWithOwner # ← ДОБАВИТЬ (если нет)
           description
           forkCount
           stargazerCount
@@ -84,7 +90,9 @@ export const GET_USER_INFO = gql`
           isFork
           isTemplate
           parent {
+            id
             name
+            nameWithOwner
             owner {
               login
             }
@@ -139,10 +147,8 @@ export const GET_USER_INFO = gql`
     rateLimit {
       remaining
       limit
-      reset
-      used
-      isDemo
-      userLogin
+      cost
+      resetAt
     }
   }
 `;

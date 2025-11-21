@@ -6,25 +6,16 @@ export interface YearExpandedViewProps {
   year: YearData;
 }
 
-/**
- * Year Expanded View Component
- *
- * Displays detailed breakdown of a year's activity including:
- * - Summary statistics
- * - Top owned repositories
- * - Top open source contributions
- *
- * @example
- * ```tsx
- * <YearExpandedView year={yearData} />
- * ```
- */
 export function YearExpandedView({ year }: YearExpandedViewProps) {
   const topOwnedRepos = year.ownedRepos
     .sort((a, b) => b.repository.stargazerCount - a.repository.stargazerCount)
     .slice(0, 5);
 
+  // Создаём Set owned репозиториев по id (или по nameWithOwner)
+  const ownedRepoIds = new Set(topOwnedRepos.map((r) => r.repository.id));
+
   const topContributions = year.contributions
+    .filter((c) => !ownedRepoIds.has(c.repository.id)) // убираем свои репозитории
     .sort((a, b) => b.contributions.totalCount - a.contributions.totalCount)
     .slice(0, 5);
 
@@ -49,10 +40,10 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
             <Badge variant="secondary">{year.ownedRepos.length}</Badge>
           </h3>
           <div className="grid gap-3 md:grid-cols-2">
-            {topOwnedRepos.map((repo) => (
+            {topOwnedRepos.map((item) => (
               <RepositoryCard
-                key={repo.repository.url}
-                repository={repo.repository}
+                key={item.repository.id} // ← используем id — глобально уникально
+                repository={item.repository}
                 compact
               />
             ))}
@@ -60,7 +51,7 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
         </div>
       )}
 
-      {/* Top Contributions */}
+      {/* Top Contributions (только чужие) */}
       {topContributions.length > 0 && (
         <div>
           <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold">
@@ -68,10 +59,10 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
             <Badge variant="secondary">{year.contributions.length}</Badge>
           </h3>
           <div className="grid gap-3 md:grid-cols-2">
-            {topContributions.map((repo) => (
+            {topContributions.map((item) => (
               <RepositoryCard
-                key={repo.repository.url}
-                repository={repo.repository}
+                key={item.repository.id} // ← то же самое
+                repository={item.repository}
                 compact
               />
             ))}
@@ -89,9 +80,6 @@ export function YearExpandedView({ year }: YearExpandedViewProps) {
   );
 }
 
-/**
- * Stat Card Component
- */
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg border p-3">

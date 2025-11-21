@@ -1,7 +1,7 @@
 import { kv } from "@vercel/kv";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { randomBytes } from "crypto";
-import { logOAuthLogin } from "../analytics/logger";
+import { logOAuthLogin } from "../analytics/logger.js";
 
 /**
  * Session data stored in Vercel KV

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Repository } from "./apollo/github-api.types";
 import { QuickAssessment } from "./components/assessment/QuickAssessment";
 import { AuthRequiredModal } from "./components/auth/AuthRequiredModal";
@@ -65,22 +65,25 @@ function App() {
   }, []);
 
   // Handle rate limit updates from GraphQL responses
-  const handleRateLimitUpdate = (newRateLimit: {
-    remaining: number;
-    limit: number;
-    reset: number;
-    used: number;
-    isDemo: boolean;
-    userLogin?: string;
-  }) => {
-    setRateLimit({
-      remaining: newRateLimit.remaining,
-      limit: newRateLimit.limit,
-      reset: newRateLimit.reset,
-      isDemo: newRateLimit.isDemo,
-      userLogin: newRateLimit.userLogin,
-    });
-  };
+  const handleRateLimitUpdate = useCallback(
+    (newRateLimit: {
+      remaining: number;
+      limit: number;
+      reset: number;
+      used: number;
+      isDemo: boolean;
+      userLogin?: string;
+    }) => {
+      setRateLimit({
+        remaining: newRateLimit.remaining,
+        limit: newRateLimit.limit,
+        reset: newRateLimit.reset,
+        isDemo: newRateLimit.isDemo,
+        userLogin: newRateLimit.userLogin,
+      });
+    },
+    [],
+  );
 
   // Calculate metrics from timeline data
   const metrics =

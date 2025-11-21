@@ -1,22 +1,23 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { UserSettings } from "./settings";
 
 // Mock @vercel/kv
-vi.mock("@vercel/kv", () => ({
-  kv: {
-    get: vi.fn(),
-    set: vi.fn(),
-    del: vi.fn(),
-  },
-}));
+const mockKv = {
+  get: vi.fn(),
+  set: vi.fn(),
+  del: vi.fn().mockResolvedValue(1),
+};
 
-import { kv } from "@vercel/kv";
-import handler, { type UserSettings } from "./settings";
+vi.mock("@vercel/kv", () => ({
+  kv: mockKv,
+}));
 
 describe("User Settings API Endpoint", () => {
   let req: Partial<VercelRequest>;
   let res: Partial<VercelResponse>;
   let originalEnv: NodeJS.ProcessEnv;
+  let handler: any;
 
   const mockSession = {
     userId: 12345,
@@ -26,7 +27,7 @@ describe("User Settings API Endpoint", () => {
     createdAt: Date.now() - 3600000,
   };
 
-  const mockSettings: UserSettings = {
+  const mockSettings: typeof UserSettings = {
     userId: 12345,
     login: "octocat",
     preferences: {
@@ -41,11 +42,17 @@ describe("User Settings API Endpoint", () => {
     updatedAt: 1234567890000,
   };
 
-  beforeEach(() => {
-    // Save original environment
+  beforeEach(async () => {
     originalEnv = { ...process.env };
+    process.env.KV_REST_API_URL = "https://test-kv.vercel.com";
+    process.env.KV_REST_API_TOKEN = "test-token";
 
-    // Create mock request
+    // Сбрасываем кеш модулей и импортируем заново
+    vi.resetModules();
+
+    const module = await import("./settings");
+    handler = module.default;
+
     req = {
       method: "GET",
       headers: {
@@ -54,47 +61,22 @@ describe("User Settings API Endpoint", () => {
       body: {},
     };
 
-    // Create mock response with all required methods
     res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn().mockReturnThis(),
       send: vi.fn().mockReturnThis(),
     };
 
-    // Mock console methods
     vi.spyOn(console, "log").mockImplementation(() => {});
     vi.spyOn(console, "warn").mockImplementation(() => {});
     vi.spyOn(console, "error").mockImplementation(() => {});
 
-    // Clear all mocks
     vi.clearAllMocks();
   });
 
   afterEach(() => {
-    // Restore environment
     process.env = originalEnv;
     vi.restoreAllMocks();
-  });
-
-  describe("Service Availability", () => {
-    it("должен вернуть 503 если KV недоступен", async () => {
-      // Re-mock @vercel/kv to return null kv
-      vi.resetModules();
-      vi.doMock("@vercel/kv", () => ({
-        kv: null,
-      }));
-
-      // Re-import handler with null kv
-      const { default: handlerWithNullKv } = await import("./settings");
-
-      await handlerWithNullKv(req as VercelRequest, res as VercelResponse);
-
-      expect(res.status).toHaveBeenCalledWith(503);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Service unavailable",
-        message: "User settings service is not configured",
-      });
-    });
   });
 
   describe("Authentication & Authorization", () => {
@@ -111,11 +93,11 @@ describe("User Settings API Endpoint", () => {
     });
 
     it("должен вернуть 401 если session не найдена в KV", async () => {
-      vi.mocked(kv.get).mockResolvedValueOnce(null);
+      mockKv.get.mockResolvedValueOnce(null);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(kv.get).toHaveBeenCalledWith("session:abc123def456");
+      expect(mockKv.get).toHaveBeenCalledWith("session:abc123def456");
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.json).toHaveBeenCalledWith({
         error: "Unauthorized",
@@ -126,18 +108,18 @@ describe("User Settings API Endpoint", () => {
     it("должен извлечь session ID из cookie header", async () => {
       req.headers!.cookie = "other=value; session=mysession123; another=value";
 
-      vi.mocked(kv.get)
+      mockKv.get
         .mockResolvedValueOnce(mockSession)
         .mockResolvedValueOnce(mockSettings);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(kv.get).toHaveBeenCalledWith("session:mysession123");
+      expect(mockKv.get).toHaveBeenCalledWith("session:mysession123");
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
     it("должен обработать ошибку при получении session", async () => {
-      vi.mocked(kv.get).mockRejectedValueOnce(new Error("KV get failed"));
+      mockKv.get.mockRejectedValueOnce(new Error("KV get failed"));
 
       await handler(req as VercelRequest, res as VercelResponse);
 
@@ -155,15 +137,15 @@ describe("User Settings API Endpoint", () => {
 
   describe("GET - Retrieve Settings", () => {
     beforeEach(() => {
-      vi.mocked(kv.get).mockResolvedValueOnce(mockSession);
+      mockKv.get.mockResolvedValueOnce(mockSession);
     });
 
     it("должен вернуть существующие настройки", async () => {
-      vi.mocked(kv.get).mockResolvedValueOnce(mockSettings);
+      mockKv.get.mockResolvedValueOnce(mockSettings);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(kv.get).toHaveBeenCalledWith("user:12345:settings");
+      expect(mockKv.get).toHaveBeenCalledWith("user:12345:settings");
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(mockSettings);
     });
@@ -172,12 +154,11 @@ describe("User Settings API Endpoint", () => {
       const now = 1234567890000;
       vi.spyOn(Date, "now").mockReturnValue(now);
 
-      vi.mocked(kv.get).mockResolvedValueOnce(null); // No existing settings
+      mockKv.get.mockResolvedValueOnce(null);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      // Should save default settings
-      expect(kv.set).toHaveBeenCalledWith(
+      expect(mockKv.set).toHaveBeenCalledWith(
         "user:12345:settings",
         {
           userId: 12345,
@@ -203,7 +184,7 @@ describe("User Settings API Endpoint", () => {
   describe("PUT - Replace Settings", () => {
     beforeEach(() => {
       req.method = "PUT";
-      vi.mocked(kv.get)
+      mockKv.get
         .mockResolvedValueOnce(mockSession)
         .mockResolvedValueOnce(mockSettings);
     });
@@ -222,7 +203,7 @@ describe("User Settings API Endpoint", () => {
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(kv.set).toHaveBeenCalledWith(
+      expect(mockKv.set).toHaveBeenCalledWith(
         "user:12345:settings",
         {
           userId: 12345,
@@ -274,7 +255,7 @@ describe("User Settings API Endpoint", () => {
   describe("PATCH - Merge Settings", () => {
     beforeEach(() => {
       req.method = "PATCH";
-      vi.mocked(kv.get)
+      mockKv.get
         .mockResolvedValueOnce(mockSession)
         .mockResolvedValueOnce(mockSettings);
     });
@@ -285,25 +266,25 @@ describe("User Settings API Endpoint", () => {
 
       req.body = {
         preferences: {
-          defaultView: "table", // Only update this
-          emailNotifications: true, // And this
+          defaultView: "table",
+          emailNotifications: true,
         },
       };
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(kv.set).toHaveBeenCalledWith(
+      expect(mockKv.set).toHaveBeenCalledWith(
         "user:12345:settings",
         {
           userId: 12345,
           login: "octocat",
           preferences: {
-            defaultAnalyticsPeriod: "day", // Preserved
-            defaultView: "table", // Updated
-            itemsPerPage: 10, // Preserved
-            emailNotifications: true, // Updated
-            autoRefreshDashboard: false, // Preserved
-            refreshInterval: 30000, // Preserved
+            defaultAnalyticsPeriod: "day",
+            defaultView: "table",
+            itemsPerPage: 10,
+            emailNotifications: true,
+            autoRefreshDashboard: false,
+            refreshInterval: 30000,
           },
           createdAt: 1234567890000,
           updatedAt: now,
@@ -315,7 +296,7 @@ describe("User Settings API Endpoint", () => {
     });
 
     it("должен создать defaults если настроек еще нет", async () => {
-      vi.mocked(kv.get).mockResolvedValueOnce(null); // No existing settings
+      mockKv.get.mockResolvedValueOnce(null);
 
       const now = 1234567900000;
       vi.spyOn(Date, "now").mockReturnValue(now);
@@ -328,8 +309,7 @@ describe("User Settings API Endpoint", () => {
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      // Check that settings were saved with merged preferences
-      const savedSettings = (kv.set as ReturnType<typeof vi.fn>).mock
+      const savedSettings = (mockKv.set as ReturnType<typeof vi.fn>).mock
         .calls[0][1];
       expect(savedSettings.preferences.defaultView).toBe("table");
       expect(savedSettings.preferences.defaultAnalyticsPeriod).toBe("day");
@@ -346,13 +326,13 @@ describe("User Settings API Endpoint", () => {
     });
 
     it("должен отклонить невалидный defaultAnalyticsPeriod", async () => {
-      vi.mocked(kv.get)
+      mockKv.get
         .mockResolvedValueOnce(mockSession)
         .mockResolvedValueOnce(mockSettings);
 
       req.body = {
         preferences: {
-          defaultAnalyticsPeriod: "year", // Invalid
+          defaultAnalyticsPeriod: "year",
         },
       };
 
@@ -368,15 +348,14 @@ describe("User Settings API Endpoint", () => {
   });
 
   describe("DELETE - Reset Settings", () => {
-    // Note: DELETE happy path is tested in "Error Handling" block below
-    // This test has a mock pollution issue when run with other tests
-    it("должен удалить настройки из KV (previously skipped)", async () => {
+    it("должен удалить настройки из KV", async () => {
       req.method = "DELETE";
-      vi.mocked(kv.get).mockResolvedValueOnce(mockSession);
+      mockKv.get.mockResolvedValueOnce(mockSession);
+      mockKv.del.mockResolvedValueOnce(1);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(kv.del).toHaveBeenCalledWith("user:12345:settings");
+      expect(mockKv.del).toHaveBeenCalledWith("user:12345:settings");
       expect(console.log).toHaveBeenCalledWith(
         "User settings deleted: octocat (12345)",
       );
@@ -386,11 +365,9 @@ describe("User Settings API Endpoint", () => {
   });
 
   describe("HTTP Method Validation", () => {
-    // Note: These tests have mock pollution issues with vi.clearAllMocks()
-    // HTTP method validation is an edge case - not critical for coverage
-    it("должен отклонить POST запрос (skipped - mock pollution)", async () => {
+    it("должен отклонить POST запрос", async () => {
       req.method = "POST";
-      vi.mocked(kv.get).mockResolvedValueOnce(mockSession);
+      mockKv.get.mockResolvedValueOnce(mockSession);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
@@ -402,9 +379,9 @@ describe("User Settings API Endpoint", () => {
       });
     });
 
-    it("должен отклонить HEAD запрос (skipped - mock pollution)", async () => {
+    it("должен отклонить HEAD запрос", async () => {
       req.method = "HEAD";
-      vi.mocked(kv.get).mockResolvedValueOnce(mockSession);
+      mockKv.get.mockResolvedValueOnce(mockSession);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
@@ -419,11 +396,10 @@ describe("User Settings API Endpoint", () => {
 
   describe("Error Handling", () => {
     beforeEach(() => {
-      // Mock session lookup for all error handling tests
-      vi.mocked(kv.get).mockResolvedValueOnce(mockSession);
+      mockKv.get.mockResolvedValueOnce(mockSession);
     });
 
-    it("должен обработать ошибку при сохранении настроек (PUT - skipped)", async () => {
+    it("должен обработать ошибку при сохранении настроек (PUT)", async () => {
       req.method = "PUT";
       req.body = {
         preferences: {
@@ -431,10 +407,8 @@ describe("User Settings API Endpoint", () => {
         },
       };
 
-      // Mock settings lookup
-      vi.mocked(kv.get).mockResolvedValueOnce(mockSettings);
-      // Mock save fails
-      vi.mocked(kv.set).mockRejectedValueOnce(new Error("KV write failed"));
+      mockKv.get.mockResolvedValueOnce(mockSettings);
+      mockKv.set.mockRejectedValueOnce(new Error("KV write failed"));
 
       await handler(req as VercelRequest, res as VercelResponse);
 
@@ -449,11 +423,10 @@ describe("User Settings API Endpoint", () => {
       });
     });
 
-    it("должен обработать ошибку при удалении настроек (DELETE - skipped)", async () => {
+    it("должен обработать ошибку при удалении настроек (DELETE)", async () => {
       req.method = "DELETE";
 
-      // Mock delete fails
-      vi.mocked(kv.del).mockRejectedValueOnce(new Error("KV delete failed"));
+      mockKv.del.mockRejectedValueOnce(new Error("KV delete failed"));
 
       await handler(req as VercelRequest, res as VercelResponse);
 

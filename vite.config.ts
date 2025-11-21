@@ -13,11 +13,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Split Recharts (used in all chart components) into separate chunk
           charts: ["recharts"],
-          // Split large UI libraries
           apollo: ["@apollo/client", "graphql"],
-          // Split Radix UI components
           "radix-ui": [
             "@radix-ui/react-accordion",
             "@radix-ui/react-avatar",
@@ -43,14 +40,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // server: {
-  //   proxy: {
-  //     "/api": {
-  //       target: "http://localhost:3001",
-  //       changeOrigin: true,
-  //     },
-  //   },
-  // },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",
