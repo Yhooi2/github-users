@@ -4,7 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GitHub User Info - React application for searching GitHub users via GraphQL API with Apollo Client. Built with React 19, TypeScript, Vite 7, and Tailwind CSS v4.
+GitHub User Analytics - React application for analyzing GitHub user profiles with 4 core metrics (Activity, Impact, Quality, Growth). Built with React 19, TypeScript, Vite 7, and Tailwind CSS v4.
+
+### Current Status (November 2025)
+
+**Refactoring:** ✅ 100% Complete (Phase 0-7)
+**Production:** ✅ Deployed and operational
+**Tests:** 1640+ passing (99.85% pass rate)
+**Coverage:** 91.36%
+
+### Key Features
+
+- **4 Metrics:** Activity, Impact, Quality, Growth scores
+- **OAuth:** Optional GitHub authentication for personal rate limits
+- **Timeline:** Year-by-year contribution history
+- **Security:** Server-side token storage, no secrets in client bundle
 
 ## Development Philosophy & Principles
 
@@ -1053,16 +1067,21 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 
 **Strategy & Planning:**
 
-- `api-strategy.md` - API integration strategy
-- `api-reference.md` - API endpoint documentation
-- `metrics-explanation.md` - Authenticity metrics calculation
-- `IMPLEMENTATION_PLAN_HYBRID.md` - Feature implementation roadmap
-- `REFACTORING_MASTER_PLAN.md` - Code refactoring strategy
-- `DEPLOYMENT_STRATEGY.md` - Deployment and release process
+- `REFACTORING_MASTER_PLAN.md` - Completed refactoring summary
+- `metrics-explanation.md` - 4 metrics calculation formulas
 - `ROLLBACK_PLAN.md` - Emergency rollback procedures
 - `PERFORMANCE_BENCHMARKS.md` - Performance metrics
-- `DOCUMENTATION_CLEANUP_REPORT.md` - Documentation maintenance log
-- `baggs.md` - Bug tracking
+
+**Phase Documentation:** `docs/phases/`
+
+- `phase-0-backend-security.md` ✅
+- `phase-1-graphql-multi-query.md` ✅
+- `phase-2-metrics-calculation.md` ✅
+- `phase-3-core-components.md` ✅
+- `phase-4-timeline-components.md` ✅
+- `phase-5-layout-refactoring.md` ✅
+- `phase-6-testing-polish.md` ✅
+- `phase-7-oauth-integration.md` ✅
 
 **Inline Docs:** JSDoc comments in Apollo provider, hooks, and utility functions
 
@@ -1070,8 +1089,19 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 
 ## Graphiti Memory Integration
 
-This project uses Graphiti Memory MCP for knowledge management:
+This project uses Graphiti Memory MCP for knowledge management.
 
-- Always check existing memory before responding to project questions
-- Save important project information to memory
-- Update memory when inconsistencies are detected
+**Key Facts to Remember:**
+
+1. **Refactoring Status:** 100% complete (Phase 0-7), November 2025
+2. **Architecture:** Server-side proxy for GitHub API, no client-side tokens
+3. **4 Metrics:** Activity (0-100), Impact (0-100), Quality (0-100), Growth (-100 to +100)
+4. **OAuth:** Dual-mode (demo + authenticated), sessions in Vercel KV
+5. **Tests:** 1640+ tests, 99.85% pass rate, 91.36% coverage
+6. **Next Phase:** UI/UX improvements (ready to start)
+
+**Memory Guidelines:**
+
+- Update memory when project status changes
+- Correct outdated information immediately
+- Track important architectural decisions

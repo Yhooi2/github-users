@@ -23,34 +23,42 @@ For complete Apollo Client setup, best practices, and troubleshooting, see the [
 
 ```
 ┌───────────────────────────────────────────┐
-│         GitHub GraphQL API                │
-│     https://api.github.com/graphql        │
+│              React App                     │
+│  ┌─────────────────────────────────────┐  │
+│  │          Apollo Client               │  │
+│  │  errorLink → httpLink                │  │
+│  │  (no authLink - tokens server-side)  │  │
+│  └─────────────────────────────────────┘  │
 └──────────────────┬────────────────────────┘
-                   │
                    │ HTTP POST
                    ↓
 ┌───────────────────────────────────────────┐
-│          Apollo Client                    │
+│       Vercel Serverless Functions         │
 │  ┌─────────────────────────────────────┐  │
-│  │  Link Chain (Request/Response Flow) │  │
-│  │                                     │  │
-│  │  errorLink (catches all errors)    │  │
-│  │       ↓                             │  │
-│  │  authLink (adds Bearer token)      │  │
-│  │       ↓                             │  │
-│  │  httpLink (makes HTTP request)     │  │
+│  │  /api/github-proxy                   │  │
+│  │    - Adds GITHUB_TOKEN               │  │
+│  │    - Caches in Vercel KV             │  │
+│  │    - Forwards rate limits            │  │
 │  └─────────────────────────────────────┘  │
-│                                           │
-│  InMemoryCache (normalized data storage) │
+│  ┌─────────────────────────────────────┐  │
+│  │  /api/auth/* (OAuth endpoints)       │  │
+│  └─────────────────────────────────────┘  │
+└──────────────────┬────────────────────────┘
+                   │ HTTP POST + Bearer Token
+                   ↓
+┌───────────────────────────────────────────┐
+│         GitHub GraphQL API                │
+│     https://api.github.com/graphql        │
 └───────────────────────────────────────────┘
 ```
 
 **Key Components:**
 
 - **errorLink:** Global error handler ([details](./apollo-client-guide.md#error-link))
-- **authLink:** Token injection from env/localStorage ([details](./apollo-client-guide.md#auth-link))
-- **httpLink:** HTTP transport to GitHub API
+- **httpLink:** HTTP transport to `/api/github-proxy` (no direct GitHub access)
 - **InMemoryCache:** Automatic query result caching
+
+**Note:** Authentication is handled server-side. No `authLink` needed in client.
 
 **Configuration:** See `src/apollo/ApolloAppProvider.tsx`
 
@@ -414,29 +422,43 @@ import useQueryUser from "@/apollo/useQueryUser";
 
 ## Security Considerations
 
-### Current Security Measures
+### Current Security Measures (Post-Refactoring)
 
-1. **Token Storage**
-   - Environment variable: `VITE_GITHUB_TOKEN`
-   - localStorage fallback: `github_token`
+1. **Token Storage** ✅
+   - Server-side only via `/api/github-proxy`
+   - No tokens in client bundle
+   - OAuth tokens stored in Vercel KV (server-side)
 
-2. **Error Handling**
-   - Automatic token clearing on 401/UNAUTHENTICATED
-   - Prevents repeated failed requests
+2. **Session Management** ✅
+   - httpOnly cookies for sessions
+   - CSRF protection on OAuth endpoints
+   - 30-day session TTL with automatic cleanup
 
-3. **Input Validation**
+3. **Error Handling** ✅
+   - Graceful fallback to demo mode on auth failures
+   - Rate limit headers forwarded to client
+   - No secrets in error messages
+
+4. **Input Validation** ✅
    - Client-side validation before API calls
    - XSS protection via React's built-in escaping
 
-### Security Limitations
+### Security Architecture
 
-⚠️ **Token in localStorage** is vulnerable to XSS attacks
+```
+Client (Browser)         Server (Vercel)           External
+     │                        │                       │
+     │  GraphQL request       │                       │
+     ├───────────────────────►│                       │
+     │  (no token)            │                       │
+     │                        │   + GITHUB_TOKEN      │
+     │                        ├──────────────────────►│ GitHub API
+     │                        │                       │
+     │  Response + rate limit │◄──────────────────────┤
+     │◄───────────────────────┤                       │
+```
 
-- **Recommendation:** Move to httpOnly cookies with backend
-
-⚠️ **No rate limiting** on client side
-
-- **Recommendation:** Implement request debouncing
+See [Phase 0: Backend Security](./phases/phase-0-backend-security.md) and [Phase 7: OAuth Integration](./phases/phase-7-oauth-integration.md) for details.
 
 ## Scalability Considerations
 
