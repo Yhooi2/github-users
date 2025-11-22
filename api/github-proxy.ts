@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   logRateLimitSnapshot,
   updateSessionActivity,
-} from "./analytics/logger.ts";
+} from "./analytics/logger.js";
 
 /**
  * GraphQL request body structure
