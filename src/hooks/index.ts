@@ -6,5 +6,15 @@
  */
 
 export { useAuthenticityScore } from "./useAuthenticityScore";
+export { useProgressiveDisclosure } from "./useProgressiveDisclosure";
+export type {
+  ProgressiveDisclosureState,
+  ProgressiveDisclosureActions,
+  UseProgressiveDisclosureOptions,
+  TabName,
+} from "./useProgressiveDisclosure";
+export { useReducedMotion } from "./useReducedMotion";
 export { useRepositoryFilters } from "./useRepositoryFilters";
 export { useRepositorySorting } from "./useRepositorySorting";
+export { useResponsive, BREAKPOINTS } from "./useResponsive";
+export type { Breakpoint, ResponsiveState } from "./useResponsive";

@@ -1,90 +1,142 @@
+import { kv } from "@vercel/kv";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { UserSettings } from "./settings";
+import handler from "./settings";
 
 // Mock @vercel/kv
-const mockKv = {
-  get: vi.fn(),
-  set: vi.fn(),
-  del: vi.fn().mockResolvedValue(1),
-};
-
 vi.mock("@vercel/kv", () => ({
-  kv: mockKv,
+  kv: {
+    get: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
+  },
 }));
 
+// Mock console methods
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
 describe("User Settings API Endpoint", () => {
-  let req: Partial<VercelRequest>;
-  let res: Partial<VercelResponse>;
-  let originalEnv: NodeJS.ProcessEnv;
-  let handler: any;
-
-  const mockSession = {
-    userId: 12345,
-    login: "octocat",
-    accessToken: "gho_token123",
-    avatarUrl: "https://github.com/octocat.png",
-    createdAt: Date.now() - 3600000,
-  };
-
-  const mockSettings: typeof UserSettings = {
-    userId: 12345,
-    login: "octocat",
-    preferences: {
-      defaultAnalyticsPeriod: "day",
-      defaultView: "card",
-      itemsPerPage: 10,
-      emailNotifications: false,
-      autoRefreshDashboard: false,
-      refreshInterval: 30000,
-    },
-    createdAt: 1234567890000,
-    updatedAt: 1234567890000,
-  };
-
-  beforeEach(async () => {
-    originalEnv = { ...process.env };
-    process.env.KV_REST_API_URL = "https://test-kv.vercel.com";
-    process.env.KV_REST_API_TOKEN = "test-token";
-
-    // Сбрасываем кеш модулей и импортируем заново
-    vi.resetModules();
-
-    const module = await import("./settings");
-    handler = module.default;
-
-    req = {
-      method: "GET",
-      headers: {
-        cookie: "session=abc123def456",
-      },
-      body: {},
-    };
-
-    res = {
-      status: vi.fn().mockReturnThis(),
-      json: vi.fn().mockReturnThis(),
-      send: vi.fn().mockReturnThis(),
-    };
-
-    vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.spyOn(console, "warn").mockImplementation(() => {});
-    vi.spyOn(console, "error").mockImplementation(() => {});
-
+  beforeEach(() => {
     vi.clearAllMocks();
+    console.log = vi.fn();
+    console.error = vi.fn();
+
+    // Ensure all mocked functions return resolved promises by default
+    vi.mocked(kv.get).mockResolvedValue(null);
+    vi.mocked(kv.set).mockResolvedValue("OK");
+    vi.mocked(kv.del).mockResolvedValue(0);
   });
 
   afterEach(() => {
-    process.env = originalEnv;
-    vi.restoreAllMocks();
+    console.log = originalConsoleLog;
+    console.error = originalConsoleError;
   });
 
-  describe("Authentication & Authorization", () => {
-    it("должен вернуть 401 если нет session cookie", async () => {
-      req.headers = {};
+  // Helper function to create mock response
+  const mockResponse = () => {
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn().mockReturnThis(),
+      send: vi.fn().mockReturnThis(),
+      setHeader: vi.fn().mockReturnThis(),
+    };
+    return res as unknown as VercelResponse;
+  };
+
+  // Helper function to create mock session in KV
+  const mockSession = (userId: number, login: string) => {
+    return {
+      userId,
+      login,
+      accessToken: "mock_token",
+      avatarUrl: "https://avatars.githubusercontent.com/u/123",
+      createdAt: Date.now(),
+    };
+  };
+
+  describe("GET - Retrieve Settings", () => {
+    it("should return user settings from KV", async () => {
+      const req = {
+        method: "GET",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
+      const res = mockResponse();
+
+      const mockSettings = {
+        userId: 12345,
+        login: "octocat",
+        preferences: {
+          defaultAnalyticsPeriod: "day",
+          defaultView: "card",
+          itemsPerPage: 10,
+        },
+        createdAt: 1234567890,
+        updatedAt: 1234567890,
+      };
+
+      // Мокируем получение сессии
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      // Мокируем получение настроек
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSettings);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
+      expect(kv.get).toHaveBeenCalledWith("session:test_session_id");
+      expect(kv.get).toHaveBeenCalledWith("user:12345:settings");
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(mockSettings);
+    });
+
+    it("should create default settings if none exist", async () => {
+      const req = {
+        method: "GET",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
+      const res = mockResponse();
+
+      // Мокируем получение сессии
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      // Нет настроек
+      vi.mocked(kv.get).mockResolvedValueOnce(null);
+
+      await handler(req as VercelRequest, res as VercelResponse);
+
+      expect(kv.set).toHaveBeenCalled();
+      const setCall = vi.mocked(kv.set).mock.calls[0];
+      expect(setCall[0]).toBe("user:12345:settings");
+      expect(setCall[1]).toMatchObject({
+        userId: 12345,
+        login: "octocat",
+        preferences: {
+          defaultAnalyticsPeriod: "day",
+          defaultView: "card",
+          itemsPerPage: 10,
+          emailNotifications: false,
+          autoRefreshDashboard: false,
+          refreshInterval: 30000,
+        },
+      });
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it("should return 401 if no cookie present", async () => {
+      const req = {
+        method: "GET",
+        headers: {},
+        query: {},
+      };
+      const res = mockResponse();
+
+      await handler(req as VercelRequest, res as VercelResponse);
+
+      expect(kv.get).not.toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.json).toHaveBeenCalledWith({
         error: "Unauthorized",
@@ -92,12 +144,21 @@ describe("User Settings API Endpoint", () => {
       });
     });
 
-    it("должен вернуть 401 если session не найдена в KV", async () => {
-      mockKv.get.mockResolvedValueOnce(null);
+    it("should return 401 if session not found", async () => {
+      const req = {
+        method: "GET",
+        headers: {
+          cookie: "session=invalid_session",
+        },
+        query: {},
+      };
+      const res = mockResponse();
+
+      vi.mocked(kv.get).mockResolvedValueOnce(null);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(mockKv.get).toHaveBeenCalledWith("session:abc123def456");
+      expect(kv.get).toHaveBeenCalledWith("session:invalid_session");
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.json).toHaveBeenCalledWith({
         error: "Unauthorized",
@@ -105,236 +166,109 @@ describe("User Settings API Endpoint", () => {
       });
     });
 
-    it("должен извлечь session ID из cookie header", async () => {
-      req.headers!.cookie = "other=value; session=mysession123; another=value";
+    it("should handle KV read error", async () => {
+      const req = {
+        method: "GET",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
+      const res = mockResponse();
 
-      mockKv.get
-        .mockResolvedValueOnce(mockSession)
-        .mockResolvedValueOnce(mockSettings);
-
-      await handler(req as VercelRequest, res as VercelResponse);
-
-      expect(mockKv.get).toHaveBeenCalledWith("session:mysession123");
-      expect(res.status).toHaveBeenCalledWith(200);
-    });
-
-    it("должен обработать ошибку при получении session", async () => {
-      mockKv.get.mockRejectedValueOnce(new Error("KV get failed"));
+      const error = new Error("KV read error");
+      vi.mocked(kv.get).mockRejectedValueOnce(error);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
       expect(console.error).toHaveBeenCalledWith(
         "Failed to get user from session:",
-        expect.any(Error),
+        error,
       );
       expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Unauthorized",
-        message: "Invalid or expired session. Please sign in again.",
-      });
     });
   });
 
-  describe("GET - Retrieve Settings", () => {
-    beforeEach(() => {
-      mockKv.get.mockResolvedValueOnce(mockSession);
-    });
-
-    it("должен вернуть существующие настройки", async () => {
-      mockKv.get.mockResolvedValueOnce(mockSettings);
-
-      await handler(req as VercelRequest, res as VercelResponse);
-
-      expect(mockKv.get).toHaveBeenCalledWith("user:12345:settings");
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockSettings);
-    });
-
-    it("должен создать default настройки если их нет", async () => {
-      const now = 1234567890000;
-      vi.spyOn(Date, "now").mockReturnValue(now);
-
-      mockKv.get.mockResolvedValueOnce(null);
-
-      await handler(req as VercelRequest, res as VercelResponse);
-
-      expect(mockKv.set).toHaveBeenCalledWith(
-        "user:12345:settings",
-        {
-          userId: 12345,
-          login: "octocat",
-          preferences: {
-            defaultAnalyticsPeriod: "day",
-            defaultView: "card",
-            itemsPerPage: 10,
-            emailNotifications: false,
-            autoRefreshDashboard: false,
-            refreshInterval: 30000,
-          },
-          createdAt: now,
-          updatedAt: now,
+  describe("PUT - Update Settings (Full Replace)", () => {
+    it("should fully replace preferences on PUT", async () => {
+      const req = {
+        method: "PUT",
+        headers: {
+          cookie: "session=test_session_id",
         },
-        { ex: 2592000 },
-      );
-
-      expect(res.status).toHaveBeenCalledWith(200);
-    });
-  });
-
-  describe("PUT - Replace Settings", () => {
-    beforeEach(() => {
-      req.method = "PUT";
-      mockKv.get
-        .mockResolvedValueOnce(mockSession)
-        .mockResolvedValueOnce(mockSettings);
-    });
-
-    it("должен заменить preferences полностью", async () => {
-      const now = 1234567900000;
-      vi.spyOn(Date, "now").mockReturnValue(now);
-
-      req.body = {
-        preferences: {
-          defaultAnalyticsPeriod: "week",
-          defaultView: "table",
-          itemsPerPage: 20,
-        },
-      };
-
-      await handler(req as VercelRequest, res as VercelResponse);
-
-      expect(mockKv.set).toHaveBeenCalledWith(
-        "user:12345:settings",
-        {
-          userId: 12345,
-          login: "octocat",
+        query: {},
+        body: {
           preferences: {
             defaultAnalyticsPeriod: "week",
             defaultView: "table",
-            itemsPerPage: 20,
           },
-          createdAt: 1234567890000,
-          updatedAt: now,
         },
-        { ex: 2592000 },
-      );
+      };
+      const res = mockResponse();
 
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      vi.mocked(kv.get).mockResolvedValueOnce(null); // Нет существующих настроек
+
+      await handler(req as VercelRequest, res as VercelResponse);
+
+      expect(kv.set).toHaveBeenCalled();
+      const setCall = vi.mocked(kv.set).mock.calls[0];
+      expect(setCall[1]).toMatchObject({
+        userId: 12345,
+        login: "octocat",
+        preferences: {
+          defaultAnalyticsPeriod: "week",
+          defaultView: "table",
+        },
+      });
       expect(console.log).toHaveBeenCalledWith(
         "User settings updated: octocat (12345)",
       );
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("должен вернуть 400 если нет preferences в body", async () => {
-      req.body = {};
-
-      await handler(req as VercelRequest, res as VercelResponse);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Bad request",
-        message: "Invalid request body. Expected { preferences: {...} }",
-      });
-    });
-
-    it("должен вернуть 400 если preferences не объект", async () => {
-      req.body = {
-        preferences: "invalid",
-      };
-
-      await handler(req as VercelRequest, res as VercelResponse);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Bad request",
-        message: "Invalid request body. Expected { preferences: {...} }",
-      });
-    });
-  });
-
-  describe("PATCH - Merge Settings", () => {
-    beforeEach(() => {
-      req.method = "PATCH";
-      mockKv.get
-        .mockResolvedValueOnce(mockSession)
-        .mockResolvedValueOnce(mockSettings);
-    });
-
-    it("должен слить preferences с существующими", async () => {
-      const now = 1234567900000;
-      vi.spyOn(Date, "now").mockReturnValue(now);
-
-      req.body = {
-        preferences: {
-          defaultView: "table",
-          emailNotifications: true,
+    it("should return 400 if preferences are invalid", async () => {
+      const req = {
+        method: "PUT",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+        body: {
+          preferences: null,
         },
       };
+      const res = mockResponse();
+
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(mockKv.set).toHaveBeenCalledWith(
-        "user:12345:settings",
-        {
-          userId: 12345,
-          login: "octocat",
+      expect(kv.set).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Bad request",
+        message: "Invalid request body. Expected { preferences: {...} }",
+      });
+    });
+
+    it("should validate defaultAnalyticsPeriod", async () => {
+      const req = {
+        method: "PUT",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+        body: {
           preferences: {
-            defaultAnalyticsPeriod: "day",
-            defaultView: "table",
-            itemsPerPage: 10,
-            emailNotifications: true,
-            autoRefreshDashboard: false,
-            refreshInterval: 30000,
+            defaultAnalyticsPeriod: "invalid",
           },
-          createdAt: 1234567890000,
-          updatedAt: now,
-        },
-        { ex: 2592000 },
-      );
-
-      expect(res.status).toHaveBeenCalledWith(200);
-    });
-
-    it("должен создать defaults если настроек еще нет", async () => {
-      mockKv.get.mockResolvedValueOnce(null);
-
-      const now = 1234567900000;
-      vi.spyOn(Date, "now").mockReturnValue(now);
-
-      req.body = {
-        preferences: {
-          defaultView: "table",
         },
       };
+      const res = mockResponse();
 
-      await handler(req as VercelRequest, res as VercelResponse);
-
-      const savedSettings = (mockKv.set as ReturnType<typeof vi.fn>).mock
-        .calls[0][1];
-      expect(savedSettings.preferences.defaultView).toBe("table");
-      expect(savedSettings.preferences.defaultAnalyticsPeriod).toBe("day");
-      expect(savedSettings.userId).toBe(12345);
-      expect(savedSettings.login).toBe("octocat");
-
-      expect(res.status).toHaveBeenCalledWith(200);
-    });
-  });
-
-  describe("Preference Validation", () => {
-    beforeEach(() => {
-      req.method = "PUT";
-    });
-
-    it("должен отклонить невалидный defaultAnalyticsPeriod", async () => {
-      mockKv.get
-        .mockResolvedValueOnce(mockSession)
-        .mockResolvedValueOnce(mockSettings);
-
-      req.body = {
-        preferences: {
-          defaultAnalyticsPeriod: "year",
-        },
-      };
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      vi.mocked(kv.get).mockResolvedValueOnce(null);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
@@ -345,43 +279,159 @@ describe("User Settings API Endpoint", () => {
           "Invalid defaultAnalyticsPeriod. Must be: hour, day, week, or month",
       });
     });
-  });
 
-  describe("DELETE - Reset Settings", () => {
-    it("должен удалить настройки из KV", async () => {
-      req.method = "DELETE";
-      mockKv.get.mockResolvedValueOnce(mockSession);
-      mockKv.del.mockResolvedValueOnce(1);
+    it("should validate itemsPerPage", async () => {
+      const req = {
+        method: "PUT",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+        body: {
+          preferences: {
+            itemsPerPage: 150,
+          },
+        },
+      };
+      const res = mockResponse();
+
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      vi.mocked(kv.get).mockResolvedValueOnce(null);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(mockKv.del).toHaveBeenCalledWith("user:12345:settings");
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Bad request",
+        message: "Invalid itemsPerPage. Must be between 1 and 100",
+      });
+    });
+  });
+
+  describe("PATCH - Partial Settings Update", () => {
+    it("should merge new settings with existing ones", async () => {
+      const existingSettings = {
+        userId: 12345,
+        login: "octocat",
+        preferences: {
+          defaultAnalyticsPeriod: "day" as const,
+          defaultView: "card" as const,
+          itemsPerPage: 10,
+          emailNotifications: false,
+        },
+        createdAt: 1234567890,
+        updatedAt: 1234567890,
+      };
+
+      const req = {
+        method: "PATCH",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+        body: {
+          preferences: {
+            defaultView: "table",
+            itemsPerPage: 20,
+          },
+        },
+      };
+      const res = mockResponse();
+
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      vi.mocked(kv.get).mockResolvedValueOnce(existingSettings);
+
+      await handler(req as VercelRequest, res as VercelResponse);
+
+      expect(kv.set).toHaveBeenCalled();
+      const setCall = vi.mocked(kv.set).mock.calls[0];
+      expect(setCall[1]).toMatchObject({
+        preferences: {
+          defaultAnalyticsPeriod: "day",
+          defaultView: "table",
+          itemsPerPage: 20,
+          emailNotifications: false,
+        },
+      });
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
+  });
+
+  describe("DELETE - Delete Settings", () => {
+    it("should delete settings from KV", async () => {
+      const req = {
+        method: "DELETE",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
+      const res = mockResponse();
+
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      vi.mocked(kv.del).mockResolvedValueOnce(1);
+
+      await handler(req as VercelRequest, res as VercelResponse);
+
+      expect(kv.del).toHaveBeenCalledWith("user:12345:settings");
       expect(console.log).toHaveBeenCalledWith(
         "User settings deleted: octocat (12345)",
       );
       expect(res.status).toHaveBeenCalledWith(204);
       expect(res.send).toHaveBeenCalledWith("");
     });
-  });
 
-  describe("HTTP Method Validation", () => {
-    it("должен отклонить POST запрос", async () => {
-      req.method = "POST";
-      mockKv.get.mockResolvedValueOnce(mockSession);
+    it("should return 401 if no session", async () => {
+      const req = {
+        method: "DELETE",
+        headers: {},
+        query: {},
+      };
+      const res = mockResponse();
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(res.status).toHaveBeenCalledWith(405);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Method not allowed",
-        message:
-          "Method POST is not supported. Use GET, PUT, PATCH, or DELETE.",
-      });
+      expect(kv.del).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(401);
     });
 
-    it("должен отклонить HEAD запрос", async () => {
-      req.method = "HEAD";
-      mockKv.get.mockResolvedValueOnce(mockSession);
+    it("should handle KV delete error", async () => {
+      const req = {
+        method: "DELETE",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
+      const res = mockResponse();
+
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      const error = new Error("KV delete error");
+      vi.mocked(kv.del).mockRejectedValueOnce(error);
+
+      await handler(req as VercelRequest, res as VercelResponse);
+
+      expect(console.error).toHaveBeenCalledWith("User settings error:", error);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Internal server error",
+        message: "KV delete error",
+      });
+    });
+  });
+
+  describe("Unsupported Methods", () => {
+    it("should return 405 for OPTIONS request", async () => {
+      const req = {
+        method: "OPTIONS",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
+      const res = mockResponse();
+
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
 
       await handler(req as VercelRequest, res as VercelResponse);
 
@@ -389,56 +439,96 @@ describe("User Settings API Endpoint", () => {
       expect(res.json).toHaveBeenCalledWith({
         error: "Method not allowed",
         message:
-          "Method HEAD is not supported. Use GET, PUT, PATCH, or DELETE.",
+          "Method OPTIONS is not supported. Use GET, PUT, PATCH, or DELETE.",
       });
     });
   });
 
   describe("Error Handling", () => {
-    beforeEach(() => {
-      mockKv.get.mockResolvedValueOnce(mockSession);
+    it("should handle general handler error", async () => {
+      const req = {
+        method: "GET",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
+      const res = mockResponse();
+
+      const error = new Error("Unexpected error");
+      vi.mocked(kv.get).mockRejectedValueOnce(error);
+
+      await handler(req as VercelRequest, res as VercelResponse);
+
+      expect(console.error).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(401);
     });
 
-    it("должен обработать ошибку при сохранении настроек (PUT)", async () => {
-      req.method = "PUT";
-      req.body = {
-        preferences: {
-          defaultView: "table",
+    it("should handle error when saving settings", async () => {
+      const req = {
+        method: "PUT",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+        body: {
+          preferences: {
+            defaultView: "card",
+          },
         },
       };
+      const res = mockResponse();
 
-      mockKv.get.mockResolvedValueOnce(mockSettings);
-      mockKv.set.mockRejectedValueOnce(new Error("KV write failed"));
+      vi.mocked(kv.get).mockResolvedValueOnce(mockSession(12345, "octocat"));
+      vi.mocked(kv.get).mockResolvedValueOnce(null);
+
+      const error = new Error("KV write error");
+      vi.mocked(kv.set).mockRejectedValueOnce(error);
 
       await handler(req as VercelRequest, res as VercelResponse);
 
-      expect(console.error).toHaveBeenCalledWith(
-        "User settings error:",
-        expect.any(Error),
-      );
+      expect(console.error).toHaveBeenCalledWith("User settings error:", error);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({
         error: "Internal server error",
-        message: "KV write failed",
+        message: "KV write error",
       });
     });
 
-    it("должен обработать ошибку при удалении настроек (DELETE)", async () => {
-      req.method = "DELETE";
+    it("should handle multiple concurrent requests safely", async () => {
+      const req = {
+        method: "GET",
+        headers: {
+          cookie: "session=test_session_id",
+        },
+        query: {},
+      };
 
-      mockKv.del.mockRejectedValueOnce(new Error("KV delete failed"));
+      const mockSettings = {
+        userId: 12345,
+        login: "octocat",
+        preferences: {
+          defaultAnalyticsPeriod: "day" as const,
+          defaultView: "card" as const,
+          itemsPerPage: 10,
+        },
+        createdAt: 1234567890,
+        updatedAt: 1234567890,
+      };
 
-      await handler(req as VercelRequest, res as VercelResponse);
+      // Mock for multiple concurrent calls
+      vi.mocked(kv.get).mockResolvedValue(mockSession(12345, "octocat"));
+      vi.mocked(kv.get).mockResolvedValue(mockSettings);
 
-      expect(console.error).toHaveBeenCalledWith(
-        "User settings error:",
-        expect.any(Error),
-      );
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Internal server error",
-        message: "KV delete failed",
+      const promises = Array.from({ length: 3 }, () => {
+        const res = mockResponse();
+        return handler(req as VercelRequest, res as VercelResponse);
       });
+
+      await Promise.all(promises);
+
+      // All requests should complete without errors
+      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,83 +1,51 @@
 # Documentation Index
 
-> Complete reference for GitHub User Analytics project documentation
-
-**Last Updated:** November 2025
-**Project Status:** ✅ Phase 0-7 Complete, Production Ready
+> Complete reference for GitHub User Analytics + Profile Analyzer  
+> **Last Updated:** November 22, 2025  
+> **Project Status:** Phase 0-7 Complete | Phase 8 (UX/UI Refactor) In Progress
 
 ## Quick Start
 
-**New to the project?** Start here:
-
-1. [README.md](../README.md) - Project overview & setup
-2. [Architecture Overview](./architecture.md) - System design
-3. [Refactoring Master Plan](./REFACTORING_MASTER_PLAN.md) - Completed phases
+1. [README.md](../README.md)
+2. [Architecture Overview](./architecture.md)
+3. [.claude/CLAUDE.md](../.claude/CLAUDE.md) ← Entry point для Claude
 
 ## Core Documentation
 
 ### Development Guides
 
-- [Component Development](./components-guide.md) - React component workflow
-- [Testing Guide](./phases/testing-guide.md) - Testing strategy (Vitest, Playwright, RTL)
-- [Apollo Client Guide](./apollo-client-guide.md) - GraphQL integration
+- [Component Development](./components-guide.md)
+- [Testing Guide](./phases/testing-guide.md)
+- [Apollo Client Guide](./apollo-client-guide.md)
 
-### API & Architecture
+### New UX/UI Refactor (Phase 8)
 
-- [Architecture Overview](./architecture.md) - System design
-- [Metrics Explanation](./metrics-explanation.md) - Score calculations
+| Phase | Name                      | Status      | Documentation                                                             |
+| ----- | ------------------------- | ----------- | ------------------------------------------------------------------------- |
+| 8     | UX/UI Refactoring         | In Progress | [master-plan.md](./phases/master-plan.md)                                 |
+| 8.1   | Research & Architecture   | Complete    | [phase-research-architecture.md](./phases/phase-research-architecture.md) |
+| 8.2   | Level Specifications      | Complete    | [phase-level-specs.md](./phases/phase-level-specs.md)                     |
+| 8.3   | Responsive Design         | Complete    | [phase-responsive-design.md](./phases/phase-responsive-design.md)         |
+| 8.4   | Tech Stack                | Complete    | [phase-tech-stack.md](./phases/phase-tech-stack.md)                       |
+| 8.5   | Agents Configuration      | Complete    | [phase-agents-config.md](./phases/phase-agents-config.md)                 |
+| 8.6   | Implementation Phases 1-3 | Complete    | [phase-implementation-1-3.md](./phases/phase-implementation-1-3.md)       |
 
-## Refactoring Phases (All Complete)
+### Quick References (.claude/quick-ref/)
 
-### Phase Documentation
+- [3-Level Summary](./../.claude/quick-ref/3-levels-summary.md)
+- [Responsive Rules](./../.claude/quick-ref/responsive-rules.md)
+- [Design Tokens](./../.claude/quick-ref/design_tokens.md)
+- [Tech Stack](./../.claude/quick-ref/tech_stack.md)
 
-| Phase | Name | Status | Documentation |
-|-------|------|--------|---------------|
-| 0 | Backend Security | ✅ Done | [phase-0-backend-security.md](./phases/phase-0-backend-security.md) |
-| 1 | GraphQL Multi-Query | ✅ Done | [phase-1-graphql-multi-query.md](./phases/phase-1-graphql-multi-query.md) |
-| 2 | Metrics Calculation | ✅ Done | [phase-2-metrics-calculation.md](./phases/phase-2-metrics-calculation.md) |
-| 3 | Core Components | ✅ Done | [phase-3-core-components.md](./phases/phase-3-core-components.md) |
-| 4 | Timeline Components | ✅ Done | [phase-4-timeline-components.md](./phases/phase-4-timeline-components.md) |
-| 5 | Layout Refactoring | ✅ Done | [phase-5-layout-refactoring.md](./phases/phase-5-layout-refactoring.md) |
-| 6 | Testing & Polish | ✅ Done | [phase-6-testing-polish.md](./phases/phase-6-testing-polish.md) |
-| 7 | OAuth Integration | ✅ Done | [phase-7-oauth-integration.md](./phases/phase-7-oauth-integration.md) |
+### Specs (.claude/specs/)
 
-### Supporting Documents
+- [Level 0 - Compact List](./../.claude/specs/level-0-compact-list.md)
+- [Level 1 - Expandable Card](./../.claude/specs/level-1-expandable-card.md)
+- [Level 2 - Modal + Tabs](./../.claude/specs/level-2-modal-tabs.md)
 
-- [Rollback Plan](./ROLLBACK_PLAN.md)
-- [Performance Benchmarks](./PERFORMANCE_BENCHMARKS.md)
+### Guides (.claude/guides/)
 
-## By Topic
-
-### Authentication & Security
-
-- [Phase 0: Backend Security](./phases/phase-0-backend-security.md)
-- [Phase 7: OAuth Integration](./phases/phase-7-oauth-integration.md)
-
-### Metrics
-
-- [Metrics Explanation](./metrics-explanation.md) - All 4 metrics formulas
-- [Phase 2: Metrics Calculation](./phases/phase-2-metrics-calculation.md)
-
-### Testing
-
-- [Testing Guide](./phases/testing-guide.md) - Complete testing philosophy
-- [Phase 6: Testing & Polish](./phases/phase-6-testing-polish.md)
-
-### Components
-
-- [Components Guide](./components-guide.md) - All components
-- [Phase 3: Core Components](./phases/phase-3-core-components.md)
-- [Phase 4: Timeline Components](./phases/phase-4-timeline-components.md)
-
-## Project Status
-
-**Completed:** All 8 Phases (Phase 0-7) ✅
-**Tests:** 1640+ passing (99.85%)
-**Coverage:** 91.36%
-
-## External Resources
-
-- [GitHub GraphQL API Docs](https://docs.github.com/en/graphql)
-- [React 19 Docs](https://react.dev/)
-- [Apollo Client Docs](https://www.apollographql.com/docs/react/)
-- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Phase 1 - Setup](./../.claude/guides/phase-1-setup.md)
+- [Phase 2 - Level 0](./../.claude/guides/phase-2-level-0.md)
+- [Phase 3 - Level 1](./../.claude/guides/phase-3-level-1.md)
+- [Phase 4 - Level 2](./../.claude/guides/phase-4-level-2.md)

@@ -15,7 +15,9 @@ You have access to project-specific context from CLAUDE.md files. This Next.js 1
 - Clean architecture with feature-based organization
 - Repository pattern with Drizzle ORM and SQLite
 - Tailwind CSS v4 with custom configuration in CSS files
-- TypeScript 5 with strict type safety
+- TypeScript 5 with strict type safety No `any` allowed
+  — flag any usage and suggest fixes (e.g., replace with union types or generics).
+- Invoke ESLint if needed to check.
 - Zod for runtime validation
 - Vitest for testing (unit: .spec.ts, integration: .test.ts)
 - shadcn/ui components with Radix UI primitives
