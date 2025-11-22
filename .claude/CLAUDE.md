@@ -138,6 +138,66 @@ npm test MyComponent.test.tsx
 - Feature flags for gradual rollout
 - Always maintain deployable `alt-main` branch
 
+## Project Structure
+
+```
+git-user-info/
+├── api/                          # Vercel serverless functions
+│   ├── github-proxy.ts           # Main GitHub API proxy
+│   ├── auth/                     # OAuth endpoints
+│   │   ├── login.ts              # OAuth initiation
+│   │   ├── callback.ts           # OAuth callback
+│   │   └── logout.ts             # Session cleanup
+│   ├── user/                     # User settings
+│   │   └── settings.ts
+│   └── analytics/                # Analytics endpoints
+│       └── oauth-usage.ts
+├── src/
+│   ├── apollo/                   # Apollo Client setup
+│   │   ├── ApolloAppProvider.tsx # Client configuration
+│   │   ├── useQueryUser.ts       # Main query hook
+│   │   ├── queriers.ts           # GraphQL queries
+│   │   ├── date-helpers.ts       # Date utilities
+│   │   └── github-api.types.ts   # TypeScript types
+│   ├── components/               # React components (10 folders)
+│   │   ├── assessment/           # MetricCard, QuickAssessment, Modal
+│   │   ├── auth/                 # AuthRequiredModal
+│   │   ├── layout/               # EmptyState, LoadingState, UserMenu, etc.
+│   │   ├── projects/             # ProjectSection
+│   │   ├── repository/           # RepositoryCard, List, Table, Filters
+│   │   ├── statistics/           # StatsOverview, Charts
+│   │   ├── timeline/             # ActivityTimeline, TimelineYear
+│   │   ├── ui/                   # shadcn/ui components (18+)
+│   │   ├── user/                 # UserHeader, UserStats, UserAuthenticity
+│   │   └── analytics/            # OAuthMetricsDashboard
+│   ├── hooks/                    # Custom React hooks
+│   │   ├── useAuthenticityScore.ts
+│   │   ├── useRepositoryFilters.ts
+│   │   ├── useRepositorySorting.ts
+│   │   └── useUserAnalytics.ts
+│   ├── lib/                      # Utilities and business logic
+│   │   ├── metrics/              # 4 metrics calculations
+│   │   │   ├── activity.ts
+│   │   │   ├── impact.ts
+│   │   │   ├── quality.ts
+│   │   │   └── growth.ts
+│   │   ├── authenticity.ts       # Authenticity calculations
+│   │   ├── statistics.ts         # Statistical functions
+│   │   ├── repository-filters.ts # Filter logic
+│   │   └── date-utils.ts         # Date utilities
+│   ├── types/                    # TypeScript types
+│   │   ├── metrics.ts
+│   │   └── filters.ts
+│   ├── test/                     # Test utilities and mocks
+│   ├── App.tsx                   # Main app component
+│   └── main.tsx                  # Entry point
+├── e2e/                          # Playwright E2E tests (10 files)
+├── docs/                         # Documentation
+│   ├── phases/                   # Phase documentation (8 files)
+│   └── *.md                      # Various guides
+└── .storybook/                   # Storybook configuration
+```
+
 ## Development Commands
 
 ### Essential Commands
@@ -1043,30 +1103,13 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 
 **Project Docs:** `docs/` directory
 
-**Core Documentation:**
+**Existing Documents:**
 
-- `mcp-setup.md` - MCP server installation guide
-- `mcp-verification-checklist.md` - MCP testing procedures
+- `INDEX.md` - Documentation index
+- `NAVIGATION.md` - Quick navigation guide
 - `architecture.md` - System architecture overview
-- `component-development.md` - Component development patterns
-- `testing-guide.md` - Testing strategy and best practices
-
-**Technical Guides:**
-
 - `apollo-client-guide.md` - Apollo Client setup and usage
-- `graphql-api.md` - GraphQL API integration
-- `typescript-guide.md` - TypeScript patterns and conventions
 - `components-guide.md` - Component library overview
-- `hooks-documentation.md` - Custom hooks reference
-
-**Technology-Specific:**
-
-- `react-19-features.md` - React 19 feature usage
-- `tailwind-v4-migration.md` - Tailwind CSS v4 migration guide
-- `dependencies.md` - Dependency management
-
-**Strategy & Planning:**
-
 - `REFACTORING_MASTER_PLAN.md` - Completed refactoring summary
 - `metrics-explanation.md` - 4 metrics calculation formulas
 - `ROLLBACK_PLAN.md` - Emergency rollback procedures
@@ -1082,6 +1125,7 @@ Test files must be excluded from production build (`tsconfig.app.json`) to avoid
 - `phase-5-layout-refactoring.md` ✅
 - `phase-6-testing-polish.md` ✅
 - `phase-7-oauth-integration.md` ✅
+- `testing-guide.md` - Testing strategy
 
 **Inline Docs:** JSDoc comments in Apollo provider, hooks, and utility functions
 

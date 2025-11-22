@@ -41,9 +41,9 @@ Activity = Recent Commits (40) + Consistency (30) + Diversity (30)
 
 | Score | Label |
 |-------|-------|
-| 70-100 | High |
-| 40-69 | Moderate |
-| 0-39 | Low |
+| 71-100 | High |
+| 41-70 | Moderate |
+| 0-40 | Low |
 
 ### Implementation
 
@@ -87,11 +87,11 @@ Impact = Stars (35) + Forks (20) + Contributors (15) + Reach (20) + Engagement (
 
 | Score | Label |
 |-------|-------|
-| 90-100 | Exceptional |
-| 70-89 | Strong |
-| 50-69 | Moderate |
-| 25-49 | Low |
-| 0-24 | Minimal |
+| 81-100 | Exceptional |
+| 61-80 | Strong |
+| 41-60 | Moderate |
+| 21-40 | Low |
+| 0-20 | Minimal |
 
 ### Implementation
 
@@ -137,11 +137,11 @@ Quality = Originality (30) + Documentation (25) + Ownership (20) + Maturity (15)
 
 | Score | Label |
 |-------|-------|
-| 85-100 | Excellent |
-| 70-84 | Strong |
-| 50-69 | Good |
-| 30-49 | Fair |
-| 0-29 | Weak |
+| 81-100 | Excellent |
+| 61-80 | Strong |
+| 41-60 | Good |
+| 21-40 | Fair |
+| 0-20 | Weak |
 
 ### Implementation
 
@@ -185,11 +185,11 @@ Growth = Activity Growth (40) + Impact Growth (30) + Skills Growth (30)
 
 | Score | Label |
 |-------|-------|
-| 50 to 100 | Rapid Growth |
-| 15 to 49 | Growing |
-| -14 to 14 | Stable |
-| -49 to -15 | Declining |
-| -100 to -50 | Rapid Decline |
+| 51 to 100 | Rapid Growth |
+| 21 to 50 | Growing |
+| -20 to 20 | Stable |
+| -50 to -21 | Declining |
+| -100 to -51 | Rapid Decline |
 
 ### Implementation
 
@@ -289,12 +289,12 @@ All metrics have comprehensive test coverage:
 
 | File | Tests | Coverage |
 |------|-------|----------|
-| `activity.test.ts` | 30+ | 100% |
-| `impact.test.ts` | 40+ | 100% |
-| `quality.test.ts` | 50+ | 100% |
-| `growth.test.ts` | 60+ | 100% |
+| `activity.test.ts` | 28 | 100% |
+| `impact.test.ts` | 44 | 100% |
+| `quality.test.ts` | 47 | 100% |
+| `growth.test.ts` | 42 | 100% |
 
-**Total:** 180+ metric-specific tests
+**Total:** 161 metric-specific tests
 
 ---
 
