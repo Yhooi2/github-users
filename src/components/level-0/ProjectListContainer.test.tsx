@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CompactProject } from "./CompactProjectRow";
 import { ProjectListContainer } from "./ProjectListContainer";
 
-// Mock useResponsive hook
+// Mock hooks
 vi.mock("@/hooks", () => ({
   useResponsive: vi.fn(() => ({
     isMobile: false,
@@ -13,6 +13,7 @@ vi.mock("@/hooks", () => ({
     breakpoint: "desktop",
     width: 1440,
   })),
+  useReducedMotion: vi.fn(() => true), // Disable animations in tests
 }));
 
 describe("ProjectListContainer", () => {

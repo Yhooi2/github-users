@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
-  ChevronUp,
   ExternalLink,
   LineChart,
   Star,
@@ -98,7 +97,14 @@ export function ExpandableProjectCard({
   };
 
   return (
-    <Card className={cn("overflow-hidden transition-shadow", isExpanded && "shadow-md")}>
+    <Card
+      className={cn(
+        "overflow-hidden transition-all duration-200",
+        isExpanded
+          ? "shadow-md ring-2 ring-primary/20"
+          : "hover:shadow-sm",
+      )}
+    >
       {/* Header row - always visible */}
       <div
         role="button"
@@ -175,12 +181,16 @@ export function ExpandableProjectCard({
           )}
         </div>
 
-        {/* Expand/collapse icon */}
-        {isExpanded ? (
-          <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden="true" />
-        ) : (
+        {/* Expand/collapse icon with rotation animation */}
+        <motion.div
+          animate={{ rotate: isExpanded ? 180 : 0 }}
+          transition={{
+            duration: prefersReducedMotion ? 0 : 0.2,
+            ease: [0.4, 0, 0.2, 1],
+          }}
+        >
           <ChevronDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden="true" />
-        )}
+        </motion.div>
       </div>
 
       {/* Expandable content */}
@@ -206,35 +216,45 @@ export function ExpandableProjectCard({
               {/* Custom content (ExpandedCardContent) */}
               {children}
 
-              {/* Action buttons */}
+              {/* Action buttons with micro-interactions */}
               <div className="mt-4 flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenAnalytics();
-                  }}
-                  className="gap-1"
+                <motion.div
+                  whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+                  whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                 >
-                  <LineChart className="h-4 w-4" />
-                  View Analytics
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  asChild
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <a
-                    href={project.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenAnalytics();
+                    }}
                     className="gap-1"
                   >
-                    <ExternalLink className="h-4 w-4" />
-                    GitHub
-                  </a>
-                </Button>
+                    <LineChart className="h-4 w-4" />
+                    View Analytics
+                  </Button>
+                </motion.div>
+                <motion.div
+                  whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+                  whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                >
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    asChild
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="gap-1"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      GitHub
+                    </a>
+                  </Button>
+                </motion.div>
               </div>
             </div>
           </motion.div>

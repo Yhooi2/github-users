@@ -7,7 +7,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useReducedMotion } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import { ArrowDownNarrowWide, ChevronDown, FolderGit2 } from "lucide-react";
 import { useMemo } from "react";
 import { CompactProjectRow, type CompactProject } from "./CompactProjectRow";
@@ -67,6 +69,32 @@ export function ProjectListContainer({
   onProjectClick,
   expandedProjects,
 }: ProjectListContainerProps) {
+  const prefersReducedMotion = useReducedMotion();
+
+  // Stagger animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: prefersReducedMotion ? 0 : 0.05,
+        delayChildren: prefersReducedMotion ? 0 : 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: prefersReducedMotion ? 0 : 0.2,
+        ease: [0.4, 0, 0.2, 1] as const,
+      },
+    },
+  };
+
   // Sort and group projects
   const { ownedProjects, contributedProjects, maxCommits } = useMemo(() => {
     // Sort function
@@ -155,15 +183,23 @@ export function ProjectListContainer({
                 >
                   Your Projects ({ownedProjects.length})
                 </h3>
-                {ownedProjects.map((project) => (
-                  <CompactProjectRow
-                    key={project.id}
-                    project={project}
-                    maxCommits={maxCommits}
-                    onClick={() => onProjectClick(project.id)}
-                    isExpanded={expandedProjects.has(project.id)}
-                  />
-                ))}
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-1"
+                >
+                  {ownedProjects.map((project) => (
+                    <motion.div key={project.id} variants={itemVariants}>
+                      <CompactProjectRow
+                        project={project}
+                        maxCommits={maxCommits}
+                        onClick={() => onProjectClick(project.id)}
+                        isExpanded={expandedProjects.has(project.id)}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
               </section>
             )}
 
@@ -181,15 +217,23 @@ export function ProjectListContainer({
                 >
                   Contributions ({contributedProjects.length})
                 </h3>
-                {contributedProjects.map((project) => (
-                  <CompactProjectRow
-                    key={project.id}
-                    project={project}
-                    maxCommits={maxCommits}
-                    onClick={() => onProjectClick(project.id)}
-                    isExpanded={expandedProjects.has(project.id)}
-                  />
-                ))}
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-1"
+                >
+                  {contributedProjects.map((project) => (
+                    <motion.div key={project.id} variants={itemVariants}>
+                      <CompactProjectRow
+                        project={project}
+                        maxCommits={maxCommits}
+                        onClick={() => onProjectClick(project.id)}
+                        isExpanded={expandedProjects.has(project.id)}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
               </section>
             )}
           </div>

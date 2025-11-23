@@ -17,7 +17,7 @@ import {
   toProjectForModal,
 } from "@/lib/adapters/project-adapter";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 
 export interface TimelineYearV2Props {
@@ -138,12 +138,16 @@ export function TimelineYearV2({
             </div>
           </div>
 
-          {/* Expand icon */}
-          {isYearExpanded ? (
-            <ChevronUp className="h-5 w-5" aria-hidden="true" />
-          ) : (
+          {/* Expand icon with rotation animation */}
+          <motion.div
+            animate={{ rotate: isYearExpanded ? 180 : 0 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : 0.2,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+          >
             <ChevronDown className="h-5 w-5" aria-hidden="true" />
-          )}
+          </motion.div>
         </div>
       </button>
 
