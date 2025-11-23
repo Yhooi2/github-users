@@ -2,9 +2,15 @@
  * ActivityTimelineV2 - Timeline with 3-level progressive disclosure
  *
  * Drop-in replacement for ActivityTimeline with new Level 0/1/2 components.
+ *
+ * Responsive behavior:
+ * - Desktop (>=1440px): 33/67 split layout with year cards sidebar
+ * - Tablet/Mobile (<1440px): Vertical accordion layout
  */
 
+import { useResponsive } from "@/hooks";
 import type { YearData } from "@/hooks/useUserAnalytics";
+import { DesktopTimelineLayout } from "./DesktopTimelineLayout";
 import { TimelineYearV2 } from "./TimelineYearV2";
 
 export interface ActivityTimelineV2Props {
@@ -24,6 +30,10 @@ export interface ActivityTimelineV2Props {
  * - Level 1: Expanded year with project cards (Framer Motion)
  * - Level 2: Full analytics modal with 4 tabs
  *
+ * Responsive layout:
+ * - Desktop (>=1440px): 33/67 split with sidebar navigation
+ * - Tablet/Mobile (<1440px): Vertical accordion
+ *
  * @example
  * ```tsx
  * const { timeline, loading } = useUserAnalytics(username);
@@ -40,8 +50,10 @@ export function ActivityTimelineV2({
   loading = false,
   username,
 }: ActivityTimelineV2Props) {
+  const { isDesktop } = useResponsive();
+
   if (loading) {
-    return <TimelineSkeleton />;
+    return <TimelineSkeleton isDesktop={isDesktop} />;
   }
 
   if (!timeline.length) {
@@ -55,6 +67,12 @@ export function ActivityTimelineV2({
     );
   }
 
+  // Desktop: 33/67 split layout
+  if (isDesktop) {
+    return <DesktopTimelineLayout timeline={timeline} username={username} />;
+  }
+
+  // Tablet/Mobile: Accordion layout
   // Calculate max commits across all years for consistent bar scaling
   const maxCommits = Math.max(...timeline.map((y) => y.totalCommits));
 
@@ -78,8 +96,56 @@ export function ActivityTimelineV2({
 
 /**
  * Loading skeleton for timeline
+ * Adapts to desktop/mobile layout
  */
-function TimelineSkeleton() {
+function TimelineSkeleton({ isDesktop }: { isDesktop: boolean }) {
+  if (isDesktop) {
+    // Desktop: 33/67 split skeleton
+    return (
+      <section
+        className="h-[calc(100vh-200px)] min-h-[600px]"
+        aria-label="Loading activity timeline"
+      >
+        <div className="mb-4 h-8 w-64 animate-pulse rounded bg-muted" />
+        <div className="grid h-[calc(100%-48px)] grid-cols-[1fr_2fr] gap-6">
+          {/* Left panel skeleton */}
+          <div className="rounded-lg border bg-card p-4">
+            <div className="mb-4 h-6 w-24 animate-pulse rounded bg-muted" />
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="h-24 animate-pulse rounded-lg bg-muted"
+                />
+              ))}
+            </div>
+          </div>
+          {/* Right panel skeleton */}
+          <div className="rounded-lg border bg-card p-6">
+            <div className="mb-6 h-8 w-48 animate-pulse rounded bg-muted" />
+            <div className="mb-6 grid grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="h-20 animate-pulse rounded-lg bg-muted"
+                />
+              ))}
+            </div>
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-16 animate-pulse rounded-lg bg-muted"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Mobile/Tablet: Accordion skeleton
   return (
     <section className="space-y-4" aria-label="Loading activity timeline">
       <div className="h-8 w-64 animate-pulse rounded bg-muted" />

@@ -1,7 +1,9 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -9,14 +11,15 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReducedMotion, useResponsive, type TabName } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { BarChart3, Clock, Code2, Users } from "lucide-react";
-import { Suspense, lazy } from "react";
+import { BarChart3, Clock, Code2, Download, ExternalLink, Users } from "lucide-react";
+import { Suspense, lazy, useCallback } from "react";
 
 // Lazy load tab content
 const OverviewTab = lazy(() =>
@@ -90,9 +93,32 @@ export function ProjectAnalyticsModal({
   const { isMobile } = useResponsive();
   const prefersReducedMotion = useReducedMotion();
 
+  // Handle PDF export (placeholder - integrate with actual PDF library)
+  const handleExportPDF = useCallback(() => {
+    // TODO: Integrate with jsPDF or similar library
+    // For now, open print dialog as fallback
+    window.print();
+  }, []);
+
   if (!project) {
     return null;
   }
+
+  // Footer with action buttons
+  const modalFooter = (
+    <div className="flex flex-wrap gap-2">
+      <Button variant="outline" size="sm" onClick={handleExportPDF}>
+        <Download className="mr-1.5 h-4 w-4" />
+        Export PDF
+      </Button>
+      <Button variant="outline" size="sm" asChild>
+        <a href={project.url} target="_blank" rel="noopener noreferrer">
+          <ExternalLink className="mr-1.5 h-4 w-4" />
+          Open on GitHub
+        </a>
+      </Button>
+    </div>
+  );
 
   const modalContent = (
     <Tabs
@@ -150,6 +176,9 @@ export function ProjectAnalyticsModal({
             )}
           </SheetHeader>
           {modalContent}
+          <SheetFooter className="mt-4 border-t pt-4">
+            {modalFooter}
+          </SheetFooter>
         </SheetContent>
       </Sheet>
     );
@@ -173,6 +202,9 @@ export function ProjectAnalyticsModal({
           )}
         </DialogHeader>
         {modalContent}
+        <DialogFooter className="mt-4 border-t pt-4">
+          {modalFooter}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -8,23 +8,50 @@ GitHub User Analytics - React application for analyzing GitHub user profiles wit
 
 ### Current Status (November 2025)
 
-**Phase 0-7:** ✅ Complete (core refactoring)
-**Phase 8:** ✅ Complete (3-level progressive disclosure integration)
-**Phase 5:** ✅ Complete (Animation Polish)
-**Production:** ✅ Deployed and operational
-**Tests:** 1954 passing (100% pass rate)
+**Phase 0-7:** Complete (core refactoring)
+**Phase 8:** Complete (3-level progressive disclosure integration)
+**Phase 5:** Complete (Animation Polish)
+**Phase 9:** Complete (Desktop 33/67 Split Layout)
+**Phase 10:** Complete (Plan Alignment Fixes)
+**Production:** Deployed and operational
+**Tests:** 1980 passing (100% pass rate)
 **Coverage:** 91.36%
+
+### Phase 10: Plan Alignment Fixes (Complete)
+
+Fixes to align with `docs/UX&UI/github_profile_final_plan.md`:
+- **5 Metrics in QuickAssessment:** Added Authenticity as 5th metric (optional)
+- **Mobile Sheet for Metrics:** MetricExplanationModal uses Sheet on mobile, Dialog on desktop
+- **Export PDF:** ProjectAnalyticsModal footer with Export PDF & Open on GitHub buttons
+
+Updated components:
+- `QuickAssessment.tsx` - 5 metrics, grid-cols-5
+- `MetricExplanationModal.tsx` - Responsive Dialog/Sheet + authenticity support
+- `ProjectAnalyticsModal.tsx` - Footer with action buttons
+
+### Phase 9: Desktop 33/67 Split Layout (Complete)
+
+Desktop (>=1440px) now uses 33/67 split layout:
+- **Left Panel (33%):** YearCard components in scrollable sidebar
+- **Right Panel (67%):** YearDetailPanel with stats and projects
+- **Tablet/Mobile (<1440px):** Falls back to accordion layout
+
+New components:
+- `DesktopTimelineLayout.tsx` - Main grid container
+- `YearCard.tsx` - Compact year card for sidebar
+- `YearDetailPanel.tsx` - Detail view with stats
 
 ### Phase 8 Completed Components
 
 | Level | Component | Status |
 |-------|-----------|--------|
-| 0 | CompactProjectRow, ProjectListContainer | ✅ Done |
-| 1 | ExpandableProjectCard, ExpandedCardContent | ✅ Done |
-| 2 | ProjectAnalyticsModal (4 tabs) | ✅ Done |
-| Hooks | useProgressiveDisclosure, useReducedMotion, useResponsive | ✅ Done |
-| Integration | ActivityTimelineV2, TimelineYearV2 | ✅ Done |
-| E2E | progressive-disclosure.spec.ts | ✅ Done |
+| 0 | CompactProjectRow, ProjectListContainer | Done |
+| 1 | ExpandableProjectCard, ExpandedCardContent | Done |
+| 2 | ProjectAnalyticsModal (4 tabs) | Done |
+| Hooks | useProgressiveDisclosure, useReducedMotion, useResponsive | Done |
+| Integration | ActivityTimelineV2, TimelineYearV2 | Done |
+| Desktop | DesktopTimelineLayout, YearCard, YearDetailPanel | Done |
+| E2E | progressive-disclosure.spec.ts | Done |
 
 **Old components deprecated:** ActivityTimeline, TimelineYear, YearExpandedView
 
@@ -43,9 +70,10 @@ GitHub User Analytics - React application for analyzing GitHub user profiles wit
 
 ### Key Features
 
-- **4 Metrics:** Activity, Impact, Quality, Growth scores
+- **5 Metrics:** Activity, Impact, Quality, Growth, Authenticity (optional) scores
 - **OAuth:** Optional GitHub authentication for personal rate limits (details: `docs/phases/phase-7-oauth-integration.md`)
-- **Timeline:** Year-by-year contribution history
+- **Timeline:** Year-by-year contribution history with 33/67 split on desktop
+- **Responsive:** Dialog on desktop, Sheet on mobile for modals
 - **Security:** Server-side token storage, no secrets in client bundle
 
 ## Development Philosophy & Principles

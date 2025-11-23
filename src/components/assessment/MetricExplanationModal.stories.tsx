@@ -116,3 +116,33 @@ export const PerfectScore: Story = {
     },
   },
 };
+
+export const AuthenticityMetric: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => console.log("Close modal"),
+    metric: "authenticity",
+    score: 78,
+    breakdown: {
+      originalityScore: 22,
+      activityScore: 20,
+      engagementScore: 18,
+      codeOwnershipScore: 18,
+    },
+  },
+};
+
+export const AuthenticityLowScore: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => console.log("Close modal"),
+    metric: "authenticity",
+    score: 25,
+    breakdown: {
+      originalityScore: 8,
+      activityScore: 6,
+      engagementScore: 5,
+      codeOwnershipScore: 6,
+    },
+  },
+};

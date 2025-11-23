@@ -9,7 +9,7 @@ import { UserMenu } from "./components/layout/UserMenu";
 import { ProjectSection } from "./components/projects/ProjectSection";
 import { ActivityTimelineV2 } from "./components/timeline/ActivityTimelineV2";
 import UserProfile from "./components/UserProfile";
-import { useUserAnalytics } from "./hooks/useUserAnalytics";
+import { useAuthenticityScore, useUserAnalytics } from "./hooks";
 import { calculateActivityScore } from "./lib/metrics/activity";
 import { calculateGrowthScore } from "./lib/metrics/growth";
 import { calculateImpactScore } from "./lib/metrics/impact";
@@ -86,7 +86,7 @@ function App() {
   );
 
   // Calculate metrics from timeline data
-  const metrics =
+  const baseMetrics =
     timeline.length > 0
       ? {
           activity: calculateActivityScore(timeline),
@@ -97,6 +97,11 @@ function App() {
       : null;
 
   // Extract and categorize repositories from timeline
+  const allRepositories = timeline.flatMap((year) => [
+    ...year.ownedRepos.map((repo) => repo.repository),
+    ...year.contributions.map((repo) => repo.repository),
+  ]) as Repository[];
+
   const projects = {
     owned: timeline.flatMap((year) =>
       year.ownedRepos.map((repo) => repo.repository),
@@ -105,6 +110,27 @@ function App() {
       year.contributions.map((repo) => repo.repository),
     ) as Repository[],
   };
+
+  // Calculate authenticity score from all repositories
+  const authenticityData = useAuthenticityScore(allRepositories);
+
+  // Combine metrics with authenticity
+  const metrics = baseMetrics
+    ? {
+        ...baseMetrics,
+        authenticity:
+          allRepositories.length > 0
+            ? {
+                score: authenticityData.score,
+                level: authenticityData.category as
+                  | "High"
+                  | "Medium"
+                  | "Low"
+                  | "Suspicious",
+              }
+            : undefined,
+      }
+    : null;
 
   // OAuth handler - redirect to backend OAuth endpoint
   const handleGitHubAuth = () => {

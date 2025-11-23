@@ -6,6 +6,8 @@
  */
 
 export { useAuthenticityScore } from "./useAuthenticityScore";
+export { useUserAnalytics } from "./useUserAnalytics";
+export type { YearData, UseUserAnalyticsReturn } from "./useUserAnalytics";
 export { useProgressiveDisclosure } from "./useProgressiveDisclosure";
 export type {
   ProgressiveDisclosureState,

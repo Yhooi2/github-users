@@ -6,12 +6,15 @@ describe("MetricCard", () => {
   it("renders score and level", () => {
     render(<MetricCard title="Activity" score={85} level="High" />);
 
-    expect(screen.getByText("85%")).toBeInTheDocument();
+    // Score is now displayed as separate elements: number + % sign
+    expect(screen.getByText("85")).toBeInTheDocument();
+    expect(screen.getByText("%")).toBeInTheDocument();
     expect(screen.getByText("High")).toBeInTheDocument();
     expect(screen.getByText("Activity")).toBeInTheDocument();
   });
 
-  it("renders breakdown when provided", () => {
+  it("does not render breakdown (compact layout)", () => {
+    // New component is compact and doesn't display breakdown
     const breakdown = [
       { label: "Recent commits", value: 40, max: 40 },
       { label: "Consistency", value: 30, max: 30 },
@@ -26,10 +29,9 @@ describe("MetricCard", () => {
       />,
     );
 
-    expect(screen.getByText("Recent commits")).toBeInTheDocument();
-    expect(screen.getByText("40/40")).toBeInTheDocument();
-    expect(screen.getByText("Consistency")).toBeInTheDocument();
-    expect(screen.getByText("30/30")).toBeInTheDocument();
+    // Breakdown is not rendered in new compact layout
+    expect(screen.queryByText("Recent commits")).not.toBeInTheDocument();
+    expect(screen.queryByText("40/40")).not.toBeInTheDocument();
   });
 
   it("does not render breakdown when not provided", () => {
@@ -48,7 +50,7 @@ describe("MetricCard", () => {
     expect(screen.queryByText("Recent commits")).not.toBeInTheDocument();
   });
 
-  it("calls onExplainClick when info button clicked", () => {
+  it("calls onExplainClick when card is clicked", () => {
     const handleClick = vi.fn();
     render(
       <MetricCard
@@ -59,17 +61,19 @@ describe("MetricCard", () => {
       />,
     );
 
-    const button = screen.getByLabelText("Explain Activity score");
-    fireEvent.click(button);
+    // The whole card is now clickable with role="button"
+    const card = screen.getByRole("button", {
+      name: /View Activity details/i,
+    });
+    fireEvent.click(card);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it("does not render explain button when onExplainClick not provided", () => {
+  it("does not have button role when onExplainClick not provided", () => {
     render(<MetricCard title="Activity" score={85} level="High" />);
 
-    expect(
-      screen.queryByLabelText("Explain Activity score"),
-    ).not.toBeInTheDocument();
+    // Card should not have button role without click handler
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("shows loading state", () => {
@@ -79,7 +83,7 @@ describe("MetricCard", () => {
 
     expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
     // Loading state should not show score
-    expect(screen.queryByText("0%")).not.toBeInTheDocument();
+    expect(screen.queryByText("0")).not.toBeInTheDocument();
   });
 
   it("applies hover effects", () => {
@@ -96,13 +100,14 @@ describe("MetricCard", () => {
     expect(translateCard).toBeInTheDocument();
   });
 
-  it("renders progress bar with correct width", () => {
+  it("renders icon based on metric title", () => {
     const { container } = render(
       <MetricCard title="Activity" score={75} level="High" />,
     );
 
-    const progressBar = container.querySelector('[style*="width: 75%"]');
-    expect(progressBar).toBeInTheDocument();
+    // Icon should be rendered (hidden from accessibility)
+    const icon = container.querySelector('[aria-hidden="true"]');
+    expect(icon).toBeInTheDocument();
   });
 
   it("renders all level types correctly", () => {
@@ -133,35 +138,53 @@ describe("MetricCard", () => {
     });
   });
 
-  it("renders multiple breakdown items", () => {
-    const breakdown = [
-      { label: "Stars", value: 33, max: 35 },
-      { label: "Forks", value: 18, max: 20 },
-      { label: "Contributors", value: 14, max: 15 },
-      { label: "Reach", value: 18, max: 20 },
-      { label: "Engagement", value: 9, max: 10 },
-    ];
+  it("handles growth metric without percentage sign", () => {
+    render(<MetricCard title="Growth" score={25} level="Growing" />);
 
+    // Growth metric shows + sign for positive values but no %
+    expect(screen.getByText("+25")).toBeInTheDocument();
+    expect(screen.queryByText("%")).not.toBeInTheDocument();
+  });
+
+  it("handles negative growth metric", () => {
+    render(<MetricCard title="Growth" score={-15} level="Declining" />);
+
+    // Negative growth without % sign
+    expect(screen.getByText("-15")).toBeInTheDocument();
+    expect(screen.queryByText("%")).not.toBeInTheDocument();
+  });
+
+  it("renders correct aria-label for clickable card", () => {
     render(
       <MetricCard
-        title="Impact"
-        score={92}
-        level="Exceptional"
-        breakdown={breakdown}
+        title="Activity"
+        score={85}
+        level="High"
+        onExplainClick={() => {}}
       />,
     );
 
-    // Verify all labels are present
-    breakdown.forEach((item) => {
-      expect(screen.getByText(item.label)).toBeInTheDocument();
-    });
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute(
+      "aria-label",
+      "View Activity details: 85% - High",
+    );
+  });
 
-    // Verify specific value/max pairs are present
-    expect(screen.getByText("33/35")).toBeInTheDocument();
-    expect(screen.getByText("14/15")).toBeInTheDocument();
-    expect(screen.getByText("9/10")).toBeInTheDocument();
-    // Note: "18/20" appears twice (Forks and Reach), so we use getAllByText
-    const duplicateValues = screen.getAllByText("18/20");
-    expect(duplicateValues).toHaveLength(2);
+  it("renders correct aria-label for growth metric", () => {
+    render(
+      <MetricCard
+        title="Growth"
+        score={25}
+        level="Growing"
+        onExplainClick={() => {}}
+      />,
+    );
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute(
+      "aria-label",
+      "View Growth details: 25 - Growing",
+    );
   });
 });

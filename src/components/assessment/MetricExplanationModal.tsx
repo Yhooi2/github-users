@@ -5,11 +5,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { useResponsive } from "@/hooks";
 
 export interface MetricExplanationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  metric: "activity" | "impact" | "quality" | "growth";
+  metric: "activity" | "impact" | "quality" | "growth" | "authenticity";
   score: number;
   breakdown: Record<string, number>;
 }
@@ -62,8 +70,25 @@ const EXPLANATIONS: Record<string, ExplanationConfig> = {
       impactGrowth: "Stars/forks growth (0-30 pts)",
     },
   },
+  authenticity: {
+    title: "Authenticity Score",
+    description:
+      "Analyzes repository originality, activity patterns, and code ownership",
+    components: {
+      originalityScore: "Non-forked original work (0-25 pts)",
+      activityScore: "Consistent activity patterns (0-25 pts)",
+      engagementScore: "Community engagement (0-25 pts)",
+      codeOwnershipScore: "Code ownership ratio (0-25 pts)",
+    },
+  },
 };
 
+/**
+ * Metric explanation modal with responsive behavior
+ *
+ * - Desktop: Dialog (centered modal)
+ * - Mobile: Sheet (bottom drawer, full width)
+ */
 export function MetricExplanationModal({
   isOpen,
   onClose,
@@ -71,12 +96,45 @@ export function MetricExplanationModal({
   score,
   breakdown,
 }: MetricExplanationModalProps) {
+  const { isMobile } = useResponsive();
   const explanation = EXPLANATIONS[metric];
 
   if (!explanation) {
     return null;
   }
 
+  const content = (
+    <div className="space-y-3">
+      <h4 className="font-medium">Score Breakdown:</h4>
+      {Object.entries(breakdown).map(([key, value]) => (
+        <div key={key} className="flex justify-between">
+          <span className="text-sm text-muted-foreground">
+            {explanation.components[key] || key}
+          </span>
+          <span className="font-medium">{value} pts</span>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Mobile: Sheet from bottom (full width)
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={onClose}>
+        <SheetContent side="bottom" className="rounded-t-xl">
+          <SheetHeader>
+            <SheetTitle>
+              {explanation.title}: {score}%
+            </SheetTitle>
+            <SheetDescription>{explanation.description}</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4">{content}</div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Desktop: Dialog
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -86,18 +144,7 @@ export function MetricExplanationModal({
           </DialogTitle>
           <DialogDescription>{explanation.description}</DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-3">
-          <h4 className="font-medium">Score Breakdown:</h4>
-          {Object.entries(breakdown).map(([key, value]) => (
-            <div key={key} className="flex justify-between">
-              <span className="text-sm text-muted-foreground">
-                {explanation.components[key] || key}
-              </span>
-              <span className="font-medium">{value} pts</span>
-            </div>
-          ))}
-        </div>
+        {content}
       </DialogContent>
     </Dialog>
   );
