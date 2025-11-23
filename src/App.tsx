@@ -7,7 +7,7 @@ import { RateLimitBanner } from "./components/layout/RateLimitBanner";
 import { SearchHeader } from "./components/layout/SearchHeader";
 import { UserMenu } from "./components/layout/UserMenu";
 import { ProjectSection } from "./components/projects/ProjectSection";
-import { ActivityTimeline } from "./components/timeline/ActivityTimeline";
+import { ActivityTimelineV2 } from "./components/timeline/ActivityTimelineV2";
 import UserProfile from "./components/UserProfile";
 import { useUserAnalytics } from "./hooks/useUserAnalytics";
 import { calculateActivityScore } from "./lib/metrics/activity";
@@ -179,8 +179,12 @@ function App() {
             {/* Quick Assessment - 4 Key Metrics */}
             {metrics && <QuickAssessment metrics={metrics} loading={loading} />}
 
-            {/* Activity Timeline - Year by Year */}
-            <ActivityTimeline timeline={timeline} loading={loading} />
+            {/* Activity Timeline - Year by Year (V2 with 3-level disclosure) */}
+            <ActivityTimelineV2
+              timeline={timeline}
+              loading={loading}
+              username={userName}
+            />
 
             {/* Project Section - Owned vs Contributions */}
             <ProjectSection projects={projects} loading={loading} />

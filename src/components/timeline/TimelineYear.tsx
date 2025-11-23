@@ -9,7 +9,10 @@ export interface TimelineYearProps {
 }
 
 /**
- * Timeline Year Component
+ * @deprecated Use TimelineYearV2 instead.
+ * This component will be removed in the next major version.
+ *
+ * Timeline Year Component (Legacy)
  *
  * Displays a collapsible year row with activity bar and statistics.
  * Expands to show detailed breakdown when clicked.

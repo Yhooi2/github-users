@@ -7,7 +7,10 @@ export interface ActivityTimelineProps {
 }
 
 /**
- * Activity Timeline Component
+ * @deprecated Use ActivityTimelineV2 instead.
+ * This component will be removed in the next major version.
+ *
+ * Activity Timeline Component (Legacy)
  *
  * Displays year-by-year activity timeline with collapsible years.
  * Shows commits, PRs, issues, and repositories for each year.

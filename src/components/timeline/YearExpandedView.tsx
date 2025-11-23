@@ -6,6 +6,10 @@ export interface YearExpandedViewProps {
   year: YearData;
 }
 
+/**
+ * @deprecated Use ExpandedCardContent from level-1 components instead.
+ * This component will be removed in the next major version.
+ */
 export function YearExpandedView({ year }: YearExpandedViewProps) {
   const topOwnedRepos = year.ownedRepos
     .sort((a, b) => b.repository.stargazerCount - a.repository.stargazerCount)

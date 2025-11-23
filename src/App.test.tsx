@@ -43,9 +43,9 @@ vi.mock("./components/assessment/QuickAssessment", () => ({
   ),
 }));
 
-vi.mock("./components/timeline/ActivityTimeline", () => ({
-  ActivityTimeline: () => (
-    <div data-testid="activity-timeline">Activity Timeline</div>
+vi.mock("./components/timeline/ActivityTimelineV2", () => ({
+  ActivityTimelineV2: () => (
+    <div data-testid="activity-timeline">Activity Timeline V2</div>
   ),
 }));
 
