@@ -479,14 +479,15 @@ describe("calculateAuthenticityScore", () => {
 });
 
 describe("getAuthenticityColor", () => {
-  it("should return correct color for each category", () => {
-    expect(getAuthenticityColor("High")).toContain("green");
-    expect(getAuthenticityColor("Medium")).toContain("yellow");
-    expect(getAuthenticityColor("Low")).toContain("orange");
-    expect(getAuthenticityColor("Suspicious")).toContain("red");
+  it("should return design token classes for each category", () => {
+    // Uses design tokens instead of hardcoded colors
+    expect(getAuthenticityColor("High")).toBe("text-success");
+    expect(getAuthenticityColor("Medium")).toBe("text-warning");
+    expect(getAuthenticityColor("Low")).toBe("text-caution");
+    expect(getAuthenticityColor("Suspicious")).toBe("text-destructive");
   });
 
-  it("should include dark mode variants", () => {
+  it("should return valid Tailwind class for all categories", () => {
     const categories: AuthenticityScore["category"][] = [
       "High",
       "Medium",
@@ -496,7 +497,7 @@ describe("getAuthenticityColor", () => {
 
     categories.forEach((category) => {
       const color = getAuthenticityColor(category);
-      expect(color).toContain("dark:");
+      expect(color).toMatch(/^text-/);
     });
   });
 });

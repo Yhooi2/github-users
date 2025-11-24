@@ -1,5 +1,6 @@
 import type { Repository } from "@/apollo/github-api.types";
 import type { AuthenticityScore } from "@/types/metrics";
+import { scoreColors } from "./design-tokens";
 
 /**
  * Calculates authenticity score for a GitHub user based on their repositories
@@ -213,19 +214,20 @@ export function calculateAuthenticityScore(
 
 /**
  * Helper function to get authenticity category color for UI
+ * Uses design tokens for consistent theming
  * @param category - Authenticity category
- * @returns Tailwind color class
+ * @returns Tailwind color class from design tokens
  */
 export function getAuthenticityColor(
   category: AuthenticityScore["category"],
 ): string {
-  const colors = {
-    High: "text-green-600 dark:text-green-400",
-    Medium: "text-yellow-600 dark:text-yellow-400",
-    Low: "text-orange-600 dark:text-orange-400",
-    Suspicious: "text-red-600 dark:text-red-400",
+  const categoryToToken: Record<AuthenticityScore["category"], keyof typeof scoreColors> = {
+    High: "high",
+    Medium: "medium",
+    Low: "low",
+    Suspicious: "critical",
   };
-  return colors[category];
+  return scoreColors[categoryToToken[category]];
 }
 
 /**

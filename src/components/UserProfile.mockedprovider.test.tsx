@@ -178,10 +178,12 @@ describe("UserProfile with MockedProvider", () => {
       });
     });
 
-    it("should display user stats (repos, followers, following, gists)", async () => {
+    it("should display user header info (name, bio, location)", async () => {
       const mock = createUserInfoMock({
         login: "octocat",
         name: "The Octocat",
+        bio: "GitHub mascot",
+        location: "San Francisco",
         repositories: {
           ...mockUser.repositories,
           totalCount: 42,
@@ -193,12 +195,12 @@ describe("UserProfile with MockedProvider", () => {
 
       renderWithMockedProvider(<UserProfile userName="octocat" />, [mock]);
 
-      // Wait for stats to be displayed
+      // Note: UserStats (repos, followers, etc.) are now rendered in App.tsx, not UserProfile
+      // UserProfile only renders UserHeader with name, bio, location
       await waitFor(() => {
-        expect(screen.getByText("42")).toBeInTheDocument(); // repositories
-        expect(screen.getByText("1,000")).toBeInTheDocument(); // followers
-        expect(screen.getByText("50")).toBeInTheDocument(); // following
-        expect(screen.getByText("25")).toBeInTheDocument(); // gists
+        expect(screen.getByText("The Octocat")).toBeInTheDocument();
+        expect(screen.getByText("GitHub mascot")).toBeInTheDocument();
+        expect(screen.getByText("San Francisco")).toBeInTheDocument();
       });
     });
   });

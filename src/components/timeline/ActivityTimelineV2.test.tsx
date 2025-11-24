@@ -23,7 +23,7 @@ const createMockYearData = (year: number, commits: number): YearData => ({
 });
 
 describe("ActivityTimelineV2", () => {
-  it("renders section heading", () => {
+  it("renders timeline content without section heading", () => {
     const timeline = [createMockYearData(2024, 500)];
 
     render(
@@ -33,7 +33,10 @@ describe("ActivityTimelineV2", () => {
       />,
     );
 
-    expect(screen.getByText("Activity Timeline")).toBeInTheDocument();
+    // Header was removed for cleaner UX - section identified by aria-label
+    expect(screen.queryByRole("heading", { name: "Activity Timeline" })).not.toBeInTheDocument();
+    // But content renders correctly
+    expect(screen.getByTestId("timeline-year-2024")).toBeInTheDocument();
   });
 
   it("renders all years from timeline", () => {

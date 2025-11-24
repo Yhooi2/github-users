@@ -8,7 +8,19 @@ import { useResponsive } from "@/hooks";
 import { getLanguageColor } from "@/lib/constants";
 import { formatNumber } from "@/lib/statistics";
 import { cn } from "@/lib/utils";
-import { Star, User, Users } from "lucide-react";
+import { GitFork, Star } from "lucide-react";
+
+/**
+ * Language breakdown for multi-language display
+ */
+export interface LanguageInfo {
+  /** Language name */
+  name: string;
+  /** Percentage of codebase (0-100) */
+  percent: number;
+  /** Size in bytes */
+  size?: number;
+}
 
 /**
  * Project data for compact row display
@@ -24,8 +36,12 @@ export interface CompactProject {
   stars: number;
   /** Primary programming language */
   language: string;
+  /** All languages with percentages (for language bar) */
+  languages?: LanguageInfo[];
   /** Whether user is the owner */
   isOwner: boolean;
+  /** Whether repository is a fork */
+  isFork: boolean;
   /** Optional description for hover preview */
   description?: string;
   /** Repository URL */
@@ -73,14 +89,13 @@ export interface CompactProjectRowProps {
  */
 export function CompactProjectRow({
   project,
-  maxCommits,
+  maxCommits: _maxCommits,
   onClick,
   isExpanded,
 }: CompactProjectRowProps) {
   const { isMobile } = useResponsive();
-
-  // Calculate bar height (0-100%)
-  const barHeight = maxCommits > 0 ? (project.commits / maxCommits) * 100 : 0;
+  // maxCommits is kept for interface compatibility but no longer used
+  void _maxCommits;
 
   // Get language color
   const languageColor = getLanguageColor(project.language);
@@ -117,42 +132,18 @@ export function CompactProjectRow({
         "cursor-pointer",
       )}
     >
-      {/* Commit bar */}
-      <div className="relative h-full w-1 flex-shrink-0 overflow-hidden rounded-full bg-muted">
-        <div
-          className={cn(
-            "absolute bottom-0 w-full rounded-full transition-all duration-300",
-            project.isOwner
-              ? "bg-gradient-to-t from-blue-600 to-blue-400"
-              : "bg-gradient-to-t from-green-600 to-green-400",
-          )}
-          style={{ height: `${barHeight}%` }}
-          aria-hidden="true"
-        />
-      </div>
-
       {/* Project name */}
       <span className="min-w-0 flex-1 truncate text-sm font-medium">
         {project.name}
       </span>
 
-      {/* Owner/Contributor badge */}
-      <Badge
-        variant={project.isOwner ? "default" : "secondary"}
-        className="flex-shrink-0 gap-1"
-      >
-        {project.isOwner ? (
-          <>
-            <User className="h-3 w-3" aria-hidden="true" />
-            {!isMobile && <span>Owner</span>}
-          </>
-        ) : (
-          <>
-            <Users className="h-3 w-3" aria-hidden="true" />
-            {!isMobile && <span>Contrib</span>}
-          </>
-        )}
-      </Badge>
+      {/* Fork badge - only shown if forked */}
+      {project.isFork && (
+        <Badge variant="outline" className="flex-shrink-0 gap-1 text-xs">
+          <GitFork className="h-3 w-3" aria-hidden="true" />
+          {!isMobile && <span>Fork</span>}
+        </Badge>
+      )}
 
       {/* Metrics */}
       <div className="flex flex-shrink-0 items-center gap-3 text-xs text-muted-foreground">

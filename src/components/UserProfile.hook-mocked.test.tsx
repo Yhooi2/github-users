@@ -98,7 +98,7 @@ describe("UserProfile with Hook Mocking (Рекомендуемый подход
       expect(screen.getByText("@torvalds")).toBeInTheDocument();
     });
 
-    it("should display user stats (repos, followers, following, gists)", () => {
+    it("should display user header info (name, bio)", () => {
       vi.mocked(useQueryUser).mockReturnValue({
         data: {
           user: {
@@ -142,12 +142,11 @@ describe("UserProfile with Hook Mocking (Рекомендуемый подход
 
       renderWithProviders(<UserProfile userName="octocat" />);
 
-      // Verify stats are displayed
-      expect(screen.getByText("42")).toBeInTheDocument(); // repositories
-      // Note: formatNumber may use different separators (comma, thin space, etc.)
-      // Just verify component renders without errors - detailed formatting is tested in unit tests
+      // Note: UserStats (repos, followers, etc.) are now rendered in App.tsx, not UserProfile
+      // UserProfile only renders UserHeader with name, bio, location
       expect(screen.getByText("The Octocat")).toBeInTheDocument();
       expect(screen.getByText("GitHub mascot")).toBeInTheDocument();
+      expect(screen.getByText("San Francisco")).toBeInTheDocument();
     });
 
     it("should call onRateLimitUpdate callback with demo mode data", () => {

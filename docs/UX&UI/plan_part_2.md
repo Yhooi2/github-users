@@ -98,45 +98,58 @@ interface CompactProjectRowProps {
 
 **Visual Elements**:
 
-##### a) Vertical Commit Bar
+##### a) Horizontal Language Bar (Stacked)
 
-```css
-width: 4px
-height: 100%
-background: gradient based on commits
-position: absolute
-left: 0
-
-/* Owner projects */
-background: linear-gradient(to bottom, blue-500, blue-600)
-
-/* Contributions */
-background: linear-gradient(to bottom, green-500, green-600)
-
-/* Width calculation */
-height: (commits / maxCommits) * 100%
+```tsx
+{/* GitHub-style horizontal stacked bar showing language breakdown */}
+<HorizontalLanguageBar
+  languages={[
+    { name: "TypeScript", percent: 68, color: "#3178c6" },
+    { name: "JavaScript", percent: 22, color: "#f1e05a" },
+    { name: "CSS", percent: 10, color: "#563d7c" }
+  ]}
+  barHeight="h-1.5"
+  showLegend={true}
+  maxLegendItems={4}
+  compact
+/>
 ```
 
-##### b) Project Name + Badge
+**Bar specs:**
+- Height: 6px (h-1.5)
+- Border radius: rounded-full
+- Colors: GitHub language colors
+- Legend: horizontal, max 4 items on desktop, 3 on mobile
+
+##### b) Project Name + Fork Badge
 
 ```tsx
 <div className="flex items-center gap-2">
-  <span className="max-w-[200px] truncate text-sm font-medium">
+  <span className="min-w-0 flex-1 truncate text-sm font-medium">
     {project.name}
   </span>
-  <Badge variant={isOwner ? "default" : "secondary"}>
-    {isOwner ? "👤" : "👥"}
-  </Badge>
+  {/* Show Fork badge ONLY if forked, nothing if original */}
+  {project.isFork && (
+    <Badge variant="outline" className="gap-1 text-xs">
+      <GitFork className="h-3 w-3" />
+      Fork
+    </Badge>
+  )}
 </div>
 ```
 
-##### c) Metrics Line
+##### c) Metrics (commits + stars)
 
 ```tsx
-<div className="text-muted-foreground flex gap-3 text-xs">
-  <span>{commits} commits</span>
-  <span>⭐ {formatNumber(stars)}</span>
-  <span>{language}</span>
+<div className="flex items-center gap-3 text-xs text-muted-foreground">
+  <span className="flex items-center gap-0.5" title="Commits">
+    <GitCommit className="h-3 w-3" />
+    {formatNumber(commits)}
+  </span>
+  <span className="flex items-center gap-0.5" title="Stars">
+    <Star className="h-3 w-3" />
+    {formatNumber(stars)}
+  </span>
 </div>
 ```
 

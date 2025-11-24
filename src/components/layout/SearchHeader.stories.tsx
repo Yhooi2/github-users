@@ -2,13 +2,16 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SearchHeader } from "./SearchHeader";
 
 /**
- * SearchHeader displays the main application header with:
- * - App title and description
- * - Search form for GitHub usernames
+ * SearchHeader displays a compact single-row header with:
+ * - GitHub icon and app title
+ * - Search form for GitHub usernames (wider max-w-2xl)
  * - Theme toggle button
+ * - User menu (sign in / avatar dropdown)
  *
- * This component is part of Phase 5: Layout Refactoring to create
- * a single-page progressive disclosure layout.
+ * Layout: [Github Icon] User Analytics  [Search..............] [Theme] [User]
+ *
+ * Uses proper flex layout without absolute positioning.
+ * Tab order: Brand -> Search -> ThemeToggle -> UserMenu
  */
 const meta = {
   title: "Layout/SearchHeader",
@@ -18,7 +21,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Main header component for the GitHub User Analytics application. Provides search functionality and theme switching.",
+          "Compact single-row header for the GitHub User Analytics application. Includes brand, search, theme toggle, and user authentication.",
       },
     },
   },
@@ -32,9 +35,17 @@ const meta = {
       action: "searched",
       description: "Callback when search is submitted",
     },
+    userMenuProps: {
+      description: "Props passed to the UserMenu component for authentication",
+    },
   },
   args: {
     onSearch: () => {},
+    userMenuProps: {
+      isAuthenticated: false,
+      onSignIn: () => {},
+      onSignOut: () => {},
+    },
   },
 } satisfies Meta<typeof SearchHeader>;
 
@@ -42,7 +53,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default state with empty search field
+ * Default state with empty search field and unauthenticated user
  */
 export const Default: Story = {
   args: {
@@ -60,16 +71,26 @@ export const WithUsername: Story = {
 };
 
 /**
- * After searching for a user
+ * Authenticated user with avatar
  */
-export const AfterSearch: Story = {
+export const Authenticated: Story = {
   args: {
     userName: "gaearon",
+    userMenuProps: {
+      isAuthenticated: true,
+      user: {
+        login: "gaearon",
+        avatarUrl: "https://github.com/gaearon.png",
+      },
+      onSignIn: () => {},
+      onSignOut: () => {},
+    },
   },
   parameters: {
     docs: {
       description: {
-        story: "Shows the header after a user has performed a search.",
+        story:
+          "Shows the header when user is authenticated, displaying their avatar.",
       },
     },
   },
@@ -93,6 +114,7 @@ export const LongUsername: Story = {
 
 /**
  * Mobile viewport - tests responsive layout
+ * Note: Title is hidden on mobile, only icon shows
  */
 export const Mobile: Story = {
   args: {
@@ -104,7 +126,36 @@ export const Mobile: Story = {
     },
     docs: {
       description: {
-        story: "Header on mobile devices (320px width).",
+        story:
+          "Header on mobile devices (320px width). Title hidden, only GitHub icon visible.",
+      },
+    },
+  },
+};
+
+/**
+ * Mobile viewport with authenticated user
+ */
+export const MobileAuthenticated: Story = {
+  args: {
+    userName: "torvalds",
+    userMenuProps: {
+      isAuthenticated: true,
+      user: {
+        login: "torvalds",
+        avatarUrl: "https://github.com/torvalds.png",
+      },
+      onSignIn: () => {},
+      onSignOut: () => {},
+    },
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: "mobile1",
+    },
+    docs: {
+      description: {
+        story: "Mobile view with authenticated user showing avatar.",
       },
     },
   },
@@ -124,6 +175,39 @@ export const Tablet: Story = {
     docs: {
       description: {
         story: "Header on tablet devices (768px width).",
+      },
+    },
+  },
+};
+
+/**
+ * Desktop wide viewport (1440px+)
+ * Search field expands to max-w-2xl
+ */
+export const DesktopWide: Story = {
+  args: {
+    userName: "microsoft",
+    userMenuProps: {
+      isAuthenticated: true,
+      user: {
+        login: "microsoft",
+        avatarUrl: "https://github.com/microsoft.png",
+      },
+      onSignIn: () => {},
+      onSignOut: () => {},
+    },
+  },
+  parameters: {
+    viewport: {
+      viewportConfig: {
+        width: 1440,
+        height: 900,
+      },
+    },
+    docs: {
+      description: {
+        story:
+          "Header on wide desktop (1440px). Search field uses full max-w-2xl width.",
       },
     },
   },

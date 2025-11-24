@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { eventColors, type EventType } from "@/lib/design-tokens";
 import { GitCommit, GitMerge, GitPullRequest, MessageSquare } from "lucide-react";
 import type { ProjectForModal } from "../ProjectAnalyticsModal";
 
@@ -9,7 +10,7 @@ export interface TimelineTabProps {
 
 interface TimelineEvent {
   id: string;
-  type: "commit" | "pr" | "review" | "merge";
+  type: EventType;
   title: string;
   date: string;
   description?: string;
@@ -57,12 +58,7 @@ const EVENT_ICONS = {
   merge: GitMerge,
 };
 
-const EVENT_COLORS = {
-  commit: "text-blue-500",
-  pr: "text-purple-500",
-  review: "text-yellow-500",
-  merge: "text-green-500",
-};
+const EVENT_COLORS = eventColors;
 
 /**
  * Timeline tab content for project analytics modal

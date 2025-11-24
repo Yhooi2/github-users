@@ -22,6 +22,7 @@ describe("CompactProjectRow", () => {
     stars: 1200,
     language: "TypeScript",
     isOwner: true,
+    isFork: false,
     description: "A test repository description",
   };
 
@@ -61,55 +62,21 @@ describe("CompactProjectRow", () => {
       expect(screen.getByText("TypeScript")).toBeInTheDocument();
     });
 
-    it("should render Owner badge for owned projects", () => {
+    it("should not render Fork badge for non-forked projects", () => {
       render(<CompactProjectRow {...defaultProps} />);
 
-      expect(screen.getByText("Owner")).toBeInTheDocument();
+      expect(screen.queryByText("Fork")).not.toBeInTheDocument();
     });
 
-    it("should render Contrib badge for contributed projects", () => {
+    it("should render Fork badge for forked projects", () => {
       render(
         <CompactProjectRow
           {...defaultProps}
-          project={{ ...defaultProject, isOwner: false }}
+          project={{ ...defaultProject, isFork: true }}
         />,
       );
 
-      expect(screen.getByText("Contrib")).toBeInTheDocument();
-    });
-  });
-
-  describe("commit bar", () => {
-    it("should render bar with correct height percentage", () => {
-      const { container } = render(<CompactProjectRow {...defaultProps} />);
-
-      // 150/500 = 30%
-      const bar = container.querySelector("[style*='height']");
-      expect(bar).toHaveStyle({ height: "30%" });
-    });
-
-    it("should render full bar when commits equal maxCommits", () => {
-      const { container } = render(
-        <CompactProjectRow
-          {...defaultProps}
-          project={{ ...defaultProject, commits: 500 }}
-        />,
-      );
-
-      const bar = container.querySelector("[style*='height']");
-      expect(bar).toHaveStyle({ height: "100%" });
-    });
-
-    it("should render empty bar when commits is 0", () => {
-      const { container } = render(
-        <CompactProjectRow
-          {...defaultProps}
-          project={{ ...defaultProject, commits: 0 }}
-        />,
-      );
-
-      const bar = container.querySelector("[style*='height']");
-      expect(bar).toHaveStyle({ height: "0%" });
+      expect(screen.getByText("Fork")).toBeInTheDocument();
     });
   });
 
@@ -218,15 +185,6 @@ describe("CompactProjectRow", () => {
 
       expect(screen.getByText("test-repo")).toBeInTheDocument();
       expect(screen.queryByText("TypeScript")).not.toBeInTheDocument();
-    });
-
-    it("should handle zero maxCommits", () => {
-      const { container } = render(
-        <CompactProjectRow {...defaultProps} maxCommits={0} />,
-      );
-
-      const bar = container.querySelector("[style*='height']");
-      expect(bar).toHaveStyle({ height: "0%" });
     });
 
     it("should format large numbers correctly", () => {

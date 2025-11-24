@@ -33,6 +33,7 @@ describe("ExpandableProjectCard", () => {
     stars: 1200,
     language: "TypeScript",
     isOwner: true,
+    isFork: false,
     description: "A test repository",
     url: "https://github.com/user/test-repo",
     forks: 45,
@@ -60,24 +61,25 @@ describe("ExpandableProjectCard", () => {
     it("should render commits count", () => {
       render(<ExpandableProjectCard {...defaultProps} />);
 
-      expect(screen.getByText("150c")).toBeInTheDocument();
+      // Commits are now displayed as "150" with an icon, not "150c"
+      expect(screen.getByText("150")).toBeInTheDocument();
     });
 
-    it("should render Owner badge for owned projects", () => {
+    it("should not render Fork badge for non-forked projects", () => {
       render(<ExpandableProjectCard {...defaultProps} />);
 
-      expect(screen.getByText("Owner")).toBeInTheDocument();
+      expect(screen.queryByText("Fork")).not.toBeInTheDocument();
     });
 
-    it("should render Contrib badge for contributed projects", () => {
+    it("should render Fork badge for forked projects", () => {
       render(
         <ExpandableProjectCard
           {...defaultProps}
-          project={{ ...defaultProject, isOwner: false }}
+          project={{ ...defaultProject, isFork: true }}
         />,
       );
 
-      expect(screen.getByText("Contrib")).toBeInTheDocument();
+      expect(screen.getByText("Fork")).toBeInTheDocument();
     });
 
     it("should show collapse icon when expanded", () => {

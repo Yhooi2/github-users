@@ -22,8 +22,10 @@ import { GitCommit, GitPullRequest, CircleDot, FolderGit2 } from "lucide-react";
 import { useMemo } from "react";
 
 export interface YearDetailPanelProps {
-  /** Selected year data */
+  /** Selected year data (null = all-time view) */
   year: YearData | null;
+  /** Full timeline data for all-time aggregation */
+  timeline?: YearData[];
   /** GitHub username for ownership detection */
   username: string;
 }
@@ -82,7 +84,7 @@ function StatCard({
  * />
  * ```
  */
-export function YearDetailPanel({ year, username }: YearDetailPanelProps) {
+export function YearDetailPanel({ year, timeline = [], username }: YearDetailPanelProps) {
   // Progressive disclosure state for Level 1 & 2
   const {
     expandedProjects,
@@ -95,68 +97,152 @@ export function YearDetailPanel({ year, username }: YearDetailPanelProps) {
     setActiveTab,
   } = useProgressiveDisclosure({ persistToUrl: true });
 
+  // Aggregate all-time stats when year is null
+  const allTimeStats = useMemo(() => {
+    if (year !== null || !timeline.length) return null;
+
+    const repoMap = new Map<string, { repo: typeof timeline[0]["ownedRepos"][0] | typeof timeline[0]["contributions"][0]; isOwned: boolean }>();
+    let totalCommits = 0;
+    let totalPRs = 0;
+    let totalIssues = 0;
+
+    for (const y of timeline) {
+      totalCommits += y.totalCommits;
+      totalPRs += y.totalPRs;
+      totalIssues += y.totalIssues;
+
+      // Collect unique repositories (keep latest version)
+      for (const repo of y.ownedRepos) {
+        const existing = repoMap.get(repo.repository.id);
+        if (!existing || existing.isOwned === false) {
+          repoMap.set(repo.repository.id, { repo, isOwned: true });
+        }
+      }
+      for (const contrib of y.contributions) {
+        if (!repoMap.has(contrib.repository.id)) {
+          repoMap.set(contrib.repository.id, { repo: contrib, isOwned: false });
+        }
+      }
+    }
+
+    // Convert to arrays
+    const ownedRepos = Array.from(repoMap.values())
+      .filter(r => r.isOwned)
+      .map(r => r.repo);
+    const contributions = Array.from(repoMap.values())
+      .filter(r => !r.isOwned)
+      .map(r => r.repo);
+
+    return {
+      totalCommits,
+      totalPRs,
+      totalIssues,
+      totalRepos: repoMap.size,
+      ownedRepos,
+      contributions,
+      yearRange: timeline.length > 0
+        ? `${timeline[timeline.length - 1].year}-${timeline[0].year}`
+        : "",
+    };
+  }, [year, timeline]);
+
   // Convert year data to expandable projects
   const allProjects = useMemo(() => {
-    if (!year) return [];
-    const combined = [...year.ownedRepos, ...year.contributions];
-    return toExpandableProjects(combined, username);
-  }, [year, username]);
+    if (year) {
+      const combined = [...year.ownedRepos, ...year.contributions];
+      return toExpandableProjects(combined, username);
+    }
+    if (allTimeStats) {
+      const combined = [...allTimeStats.ownedRepos, ...allTimeStats.contributions];
+      return toExpandableProjects(combined, username);
+    }
+    return [];
+  }, [year, allTimeStats, username]);
 
   // Find selected project for modal
   const selectedProject = useMemo(() => {
-    if (!selectedProjectId || !year) return null;
+    if (!selectedProjectId) return null;
 
-    const found = [...year.ownedRepos, ...year.contributions].find(
-      (item) => item.repository.id === selectedProjectId
-    );
-    return found ? toProjectForModal(found) : null;
-  }, [year, selectedProjectId]);
+    if (year) {
+      const found = [...year.ownedRepos, ...year.contributions].find(
+        (item) => item.repository.id === selectedProjectId
+      );
+      return found ? toProjectForModal(found) : null;
+    }
 
-  // Max commits for project bars (within this year)
+    if (allTimeStats) {
+      const found = [...allTimeStats.ownedRepos, ...allTimeStats.contributions].find(
+        (item) => item.repository.id === selectedProjectId
+      );
+      return found ? toProjectForModal(found) : null;
+    }
+
+    return null;
+  }, [year, allTimeStats, selectedProjectId]);
+
+  // Max commits for project bars (within this year or all time)
   const maxProjectCommits = useMemo(
     () => Math.max(...allProjects.map((p) => p.commits), 1),
     [allProjects]
   );
 
-  // Empty state when no year is selected
-  if (!year) {
+  // Empty state when no year selected AND no timeline data
+  if (!year && !allTimeStats) {
     return (
       <div className="flex h-full items-center justify-center rounded-lg border border-dashed p-8">
         <div className="text-center text-muted-foreground">
-          <p className="text-lg font-medium">Select a year</p>
-          <p className="text-sm">Click on a year card to view details</p>
+          <p className="text-lg font-medium">No data available</p>
+          <p className="text-sm">No activity data to display</p>
         </div>
       </div>
     );
   }
 
+  // Check if showing all-time view (stats already in left panel)
+  const isAllTimeView = year === null;
+
+  // Determine stats to display (only for year-specific views)
+  const displayStats = year
+    ? {
+        title: `${year.year} Activity`,
+        totalCommits: year.totalCommits,
+        totalPRs: year.totalPRs,
+        totalIssues: year.totalIssues,
+        totalRepos: year.ownedRepos.length + year.contributions.length,
+      }
+    : null;
+
   const ownedProjects = allProjects.filter((p) => p.isOwner);
   const contributedProjects = allProjects.filter((p) => !p.isOwner);
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Year Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{year.year} Activity</h2>
+    <div className="flex min-h-0 flex-1 flex-col">
+      {/* Header - different for all-time vs year-specific */}
+      <div className="mb-6 flex shrink-0 items-center justify-between">
+        <h2 className="text-2xl font-bold">
+          {isAllTimeView ? "All Projects" : displayStats!.title}
+        </h2>
         <Badge variant="outline" className="text-sm">
-          {year.ownedRepos.length + year.contributions.length} repositories
+          {isAllTimeView ? allProjects.length : displayStats!.totalRepos} repositories
         </Badge>
       </div>
 
-      {/* Summary Stats Grid */}
-      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Commits" value={year.totalCommits} icon={GitCommit} />
-        <StatCard label="Pull Requests" value={year.totalPRs} icon={GitPullRequest} />
-        <StatCard label="Issues" value={year.totalIssues} icon={CircleDot} />
-        <StatCard
-          label="Repositories"
-          value={year.ownedRepos.length + year.contributions.length}
-          icon={FolderGit2}
-        />
-      </div>
+      {/* Summary Stats Grid - only for year-specific views */}
+      {!isAllTimeView && displayStats && (
+        <div className="mb-6 grid shrink-0 grid-cols-2 gap-4 lg:grid-cols-4">
+          <StatCard label="Commits" value={displayStats.totalCommits} icon={GitCommit} />
+          <StatCard label="Pull Requests" value={displayStats.totalPRs} icon={GitPullRequest} />
+          <StatCard label="Issues" value={displayStats.totalIssues} icon={CircleDot} />
+          <StatCard
+            label="Repositories"
+            value={displayStats.totalRepos}
+            icon={FolderGit2}
+          />
+        </div>
+      )}
 
       {/* Projects List with ScrollArea */}
-      <ScrollArea className="flex-1 pr-4">
+      <ScrollArea className="min-h-0 flex-1 pr-4">
         <div className="space-y-6 pb-4">
           {/* Your Projects section */}
           {ownedProjects.length > 0 && (

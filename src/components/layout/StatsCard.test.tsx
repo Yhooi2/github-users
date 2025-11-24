@@ -29,7 +29,8 @@ describe("StatsCard", () => {
       <StatsCard title="Followers" value={100} trend="up" trendValue="+12%" />,
     );
     expect(screen.getByText("+12%")).toBeInTheDocument();
-    expect(container.querySelector(".text-green-600")).toBeInTheDocument();
+    // Uses design token: text-success
+    expect(container.querySelector(".text-success")).toBeInTheDocument();
   });
 
   it("should render trend down", () => {
@@ -37,7 +38,8 @@ describe("StatsCard", () => {
       <StatsCard title="Followers" value={100} trend="down" trendValue="-5%" />,
     );
     expect(screen.getByText("-5%")).toBeInTheDocument();
-    expect(container.querySelector(".text-red-600")).toBeInTheDocument();
+    // Uses design token: text-destructive
+    expect(container.querySelector(".text-destructive")).toBeInTheDocument();
   });
 
   it("should render trend neutral", () => {

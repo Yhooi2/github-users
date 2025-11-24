@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { MetricCard } from "./MetricCard";
 
 export interface QuickAssessmentProps {
@@ -12,14 +12,13 @@ export interface QuickAssessmentProps {
       score: number;
       level: "Excellent" | "Strong" | "Good" | "Fair" | "Weak";
     };
-    growth: {
+    consistency: {
       score: number;
-      level:
-        | "Rapid Growth"
-        | "Growing"
-        | "Stable"
-        | "Declining"
-        | "Rapid Decline";
+      level: "Excellent" | "High" | "Moderate" | "Low";
+    };
+    collaboration: {
+      score: number;
+      level: "Excellent" | "High" | "Moderate" | "Low";
     };
     authenticity?: {
       score: number;
@@ -42,27 +41,17 @@ export function QuickAssessment({
   loading = false,
   onExplainMetric,
 }: QuickAssessmentProps) {
-  // Count total metrics (including optional authenticity)
+  // Always 6 metrics (5 core + optional authenticity)
   const hasAuthenticity = !!metrics.authenticity;
-  const metricCount = hasAuthenticity ? 5 : 4;
+  const metricCount = hasAuthenticity ? 6 : 5;
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <span className="text-xl" aria-hidden="true">
-            🎯
-          </span>
-          Quick Assessment
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {/* Responsive grid: 2 cols on mobile, 4-5 on desktop */}
+      <CardContent className="pt-6">
+        {/* Responsive grid: 2 cols mobile, 3 cols tablet, 6 cols desktop */}
         <div
-          className={`grid gap-3 grid-cols-2 ${
-            metricCount === 5
-              ? "md:grid-cols-3 lg:grid-cols-5"
-              : "md:grid-cols-4"
+          className={`grid gap-3 grid-cols-2 md:grid-cols-3 ${
+            metricCount === 6 ? "lg:grid-cols-6" : "lg:grid-cols-5"
           }`}
         >
           <MetricCard
@@ -93,12 +82,23 @@ export function QuickAssessment({
             }
           />
           <MetricCard
-            title="Growth"
-            score={metrics.growth.score}
-            level={metrics.growth.level}
+            title="Consistency"
+            score={metrics.consistency.score}
+            level={metrics.consistency.level}
             loading={loading}
             onExplainClick={
-              onExplainMetric ? () => onExplainMetric("growth") : undefined
+              onExplainMetric ? () => onExplainMetric("consistency") : undefined
+            }
+          />
+          <MetricCard
+            title="Collaboration"
+            score={metrics.collaboration.score}
+            level={metrics.collaboration.level}
+            loading={loading}
+            onExplainClick={
+              onExplainMetric
+                ? () => onExplainMetric("collaboration")
+                : undefined
             }
           />
           {metrics.authenticity && (

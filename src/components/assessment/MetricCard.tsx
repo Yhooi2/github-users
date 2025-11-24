@@ -1,11 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { getScoreColor } from "@/lib/design-tokens";
 import { cn } from "@/lib/utils";
 import {
   Activity,
+  Calendar,
   Shield,
-  Target,
-  TrendingUp,
   Sparkles,
+  Target,
+  Users,
 } from "lucide-react";
 
 export interface MetricCardProps {
@@ -23,12 +25,7 @@ export interface MetricCardProps {
     | "Minimal"
     | "Good"
     | "Fair"
-    | "Weak"
-    | "Rapid Growth"
-    | "Growing"
-    | "Stable"
-    | "Declining"
-    | "Rapid Decline";
+    | "Weak";
   breakdown?: Array<{
     label: string;
     value: number;
@@ -49,8 +46,10 @@ function getMetricIcon(title: string) {
       return Target;
     case "quality":
       return Sparkles;
-    case "growth":
-      return TrendingUp;
+    case "consistency":
+      return Calendar;
+    case "collaboration":
+      return Users;
     case "authenticity":
       return Shield;
     default:
@@ -58,23 +57,6 @@ function getMetricIcon(title: string) {
   }
 }
 
-/**
- * Get score color based on value and metric type
- */
-function getScoreColor(score: number, title: string): string {
-  // Growth can be negative
-  if (title.toLowerCase() === "growth") {
-    if (score >= 20) return "text-green-600 dark:text-green-400";
-    if (score >= 0) return "text-yellow-600 dark:text-yellow-400";
-    return "text-red-600 dark:text-red-400";
-  }
-
-  // Standard metrics (0-100)
-  if (score >= 80) return "text-green-600 dark:text-green-400";
-  if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
-  if (score >= 40) return "text-orange-600 dark:text-orange-400";
-  return "text-red-600 dark:text-red-400";
-}
 
 /**
  * MetricCard - Compact metric display per design plan
@@ -90,8 +72,7 @@ export function MetricCard({
   onExplainClick,
 }: MetricCardProps) {
   const Icon = getMetricIcon(title);
-  const scoreColor = getScoreColor(score, title);
-  const isGrowth = title.toLowerCase() === "growth";
+  const scoreColor = getScoreColor(score);
 
   if (loading) {
     return (
@@ -126,7 +107,7 @@ export function MetricCard({
           onExplainClick();
         }
       } : undefined}
-      aria-label={onExplainClick ? `View ${title} details: ${score}${isGrowth ? "" : "%"} - ${level}` : undefined}
+      aria-label={onExplainClick ? `View ${title} details: ${score}% - ${level}` : undefined}
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
@@ -146,12 +127,9 @@ export function MetricCard({
             </div>
             <div className="flex items-baseline gap-1">
               <span className={cn("text-2xl font-bold", scoreColor)}>
-                {isGrowth && score > 0 && "+"}
                 {score}
               </span>
-              {!isGrowth && (
-                <span className="text-sm text-muted-foreground">%</span>
-              )}
+              <span className="text-sm text-muted-foreground">%</span>
             </div>
           </div>
         </div>

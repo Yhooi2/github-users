@@ -81,7 +81,9 @@ describe("project-adapter", () => {
         commits: 200,
         stars: 500,
         language: "TypeScript",
+        languages: [{ name: "TypeScript", percent: 100 }],
         isOwner: true,
+        isFork: false,
         description: "My awesome project",
         url: "https://github.com/alice/my-project",
       });

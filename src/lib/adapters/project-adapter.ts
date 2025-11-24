@@ -3,9 +3,30 @@
  */
 
 import type { RepositoryContribution } from "@/apollo/queries/yearContributions";
-import type { CompactProject } from "@/components/level-0/CompactProjectRow";
+import type { CompactProject, LanguageInfo } from "@/components/level-0/CompactProjectRow";
 import type { ExpandableProject } from "@/components/level-1/ExpandableProjectCard";
 import type { ProjectForModal } from "@/components/level-2/ProjectAnalyticsModal";
+
+/**
+ * Extract language breakdown from repository languages data
+ */
+function extractLanguages(repository: RepositoryContribution["repository"]): LanguageInfo[] {
+  const { languages } = repository;
+
+  if (!languages?.edges || languages.edges.length === 0 || languages.totalSize === 0) {
+    // Fallback to primary language if no detailed breakdown available
+    if (repository.primaryLanguage?.name) {
+      return [{ name: repository.primaryLanguage.name, percent: 100 }];
+    }
+    return [];
+  }
+
+  return languages.edges.map((edge) => ({
+    name: edge.node.name,
+    percent: (edge.size / languages.totalSize) * 100,
+    size: edge.size,
+  }));
+}
 
 /**
  * Convert RepositoryContribution to CompactProject (Level 0)
@@ -22,7 +43,9 @@ export function toCompactProject(
     commits: contributions.totalCount,
     stars: repository.stargazerCount,
     language: repository.primaryLanguage?.name ?? "",
+    languages: extractLanguages(repository),
     isOwner: repository.owner.login === username,
+    isFork: repository.isFork ?? false,
     description: repository.description ?? undefined,
     url: repository.url,
   };
@@ -43,7 +66,9 @@ export function toExpandableProject(
     commits: contributions.totalCount,
     stars: repository.stargazerCount,
     language: repository.primaryLanguage?.name ?? "",
+    languages: extractLanguages(repository),
     isOwner: repository.owner.login === username,
+    isFork: repository.isFork ?? false,
     description: repository.description ?? undefined,
     url: repository.url,
     forks: repository.forkCount,

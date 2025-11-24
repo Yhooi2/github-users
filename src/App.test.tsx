@@ -49,11 +49,7 @@ vi.mock("./components/timeline/ActivityTimelineV2", () => ({
   ),
 }));
 
-vi.mock("./components/projects/ProjectSection", () => ({
-  ProjectSection: () => (
-    <div data-testid="project-section">Project Section</div>
-  ),
-}));
+// ProjectSection removed - projects now shown in ActivityTimelineV2
 
 vi.mock("./components/layout/RateLimitBanner", () => ({
   RateLimitBanner: () => (
@@ -139,7 +135,6 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       expect(screen.queryByTestId("user-profile")).not.toBeInTheDocument();
       expect(screen.queryByTestId("quick-assessment")).not.toBeInTheDocument();
       expect(screen.queryByTestId("activity-timeline")).not.toBeInTheDocument();
-      expect(screen.queryByTestId("project-section")).not.toBeInTheDocument();
     });
 
     it("should render rate limit banner", () => {
@@ -184,12 +179,11 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       const input = screen.getByTestId("search-input");
       await user.type(input, "testuser");
 
-      // Wait for all sections to appear
+      // Wait for all sections to appear (ProjectSection removed - merged into ActivityTimelineV2)
       await waitFor(() => {
         expect(screen.getByTestId("user-profile")).toBeInTheDocument();
         expect(screen.getByTestId("quick-assessment")).toBeInTheDocument();
         expect(screen.getByTestId("activity-timeline")).toBeInTheDocument();
-        expect(screen.getByTestId("project-section")).toBeInTheDocument();
       });
     });
 
@@ -269,7 +263,6 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
           screen.getByTestId("user-profile"),
           screen.getByTestId("quick-assessment"),
           screen.getByTestId("activity-timeline"),
-          screen.getByTestId("project-section"),
         ];
 
         // All sections should be visible (no tabs)
@@ -383,7 +376,6 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
         expect(screen.getByTestId("user-profile")).toBeInTheDocument();
         expect(screen.getByTestId("quick-assessment")).toBeInTheDocument();
         expect(screen.getByTestId("activity-timeline")).toBeInTheDocument();
-        expect(screen.getByTestId("project-section")).toBeInTheDocument();
       });
     });
   });
@@ -406,7 +398,6 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       await waitFor(() => {
         expect(screen.getByTestId("user-profile")).toBeInTheDocument();
         expect(screen.getByTestId("activity-timeline")).toBeInTheDocument();
-        expect(screen.getByTestId("project-section")).toBeInTheDocument();
       });
 
       // QuickAssessment should not show without timeline data
@@ -426,7 +417,11 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
 
       const input = screen.getByTestId("search-input") as HTMLInputElement;
 
-      // Type username
+      // App has default username "Yhooi2", clear it first
+      await user.clear(input);
+      expect(input.value).toBe("");
+
+      // Type new username
       await user.type(input, "testuser");
       expect(input.value).toBe("testuser");
 
@@ -434,7 +429,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       await user.clear(input);
       expect(input.value).toBe("");
 
-      // Content sections should not be visible
+      // Content sections should not be visible when username is empty
       expect(screen.queryByTestId("user-profile")).not.toBeInTheDocument();
     });
   });

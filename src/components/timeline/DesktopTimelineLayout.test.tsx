@@ -160,12 +160,15 @@ describe("DesktopTimelineLayout", () => {
     createMockYearData(2022, 400),
   ];
 
-  it("renders Activity Timeline heading", () => {
+  it("renders without Activity Timeline heading for cleaner UX", () => {
     render(
       <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
     );
 
-    expect(screen.getByText("Activity Timeline")).toBeInTheDocument();
+    // Header was removed - section identified by aria-label instead
+    expect(screen.queryByRole("heading", { name: "Activity Timeline" })).not.toBeInTheDocument();
+    // But the section is accessible
+    expect(screen.getByLabelText("Activity Timeline")).toBeInTheDocument();
   });
 
   it("renders year navigation sidebar", () => {
@@ -176,12 +179,12 @@ describe("DesktopTimelineLayout", () => {
     expect(screen.getByLabelText("Year navigation")).toBeInTheDocument();
   });
 
-  it("renders year details panel", () => {
+  it("renders all-time summary panel by default", () => {
     render(
       <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
     );
 
-    expect(screen.getByLabelText("Year details")).toBeInTheDocument();
+    expect(screen.getByLabelText("All-time summary")).toBeInTheDocument();
   });
 
   it("renders all year cards in sidebar", () => {
@@ -194,24 +197,26 @@ describe("DesktopTimelineLayout", () => {
     expect(screen.getByText("2022")).toBeInTheDocument();
   });
 
-  it("shows year count in sidebar header", () => {
+  it("shows All Time header in sidebar", () => {
     render(
       <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
     );
 
-    expect(screen.getByText("Years (3)")).toBeInTheDocument();
+    // All Time header exists
+    expect(screen.getByText("All Time")).toBeInTheDocument();
   });
 
-  it("selects first year by default", () => {
+  it("selects All Time view by default", () => {
     render(
       <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
     );
 
-    // First year (2024) should show "Active" badge (changed from "Selected")
-    expect(screen.getByText("Active")).toBeInTheDocument();
+    // All Time header should be highlighted (bg-primary/10)
+    const allTimeButton = screen.getByRole("button", { pressed: true });
+    expect(allTimeButton).toBeInTheDocument();
 
-    // Detail panel should show 2024 Activity
-    expect(screen.getByText("2024 Activity")).toBeInTheDocument();
+    // Detail panel should show "All Projects" header
+    expect(screen.getByText("All Projects")).toBeInTheDocument();
   });
 
   it("changes selected year when clicking a year card", async () => {
@@ -221,27 +226,35 @@ describe("DesktopTimelineLayout", () => {
       <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
     );
 
-    // Initially 2024 is selected
-    expect(screen.getByText("2024 Activity")).toBeInTheDocument();
+    // Initially All Time is selected (shows "All Projects")
+    expect(screen.getByText("All Projects")).toBeInTheDocument();
 
-    // Click on 2023 year card
-    const year2023Button = screen.getAllByRole("button").find((btn) =>
-      btn.textContent?.includes("2023")
+    // Click on 2024 year card
+    const year2024Button = screen.getAllByRole("button").find((btn) =>
+      btn.textContent?.includes("2024") && !btn.textContent?.includes("All Time")
     );
-    expect(year2023Button).toBeDefined();
+    expect(year2024Button).toBeDefined();
 
-    await user.click(year2023Button!);
+    await user.click(year2024Button!);
 
-    // Now 2023 should be selected
-    expect(screen.getByText("2023 Activity")).toBeInTheDocument();
+    // Now 2024 should be selected (shows year-specific activity)
+    expect(screen.getByText("2024 Activity")).toBeInTheDocument();
   });
 
-  it("shows summary stats for selected year", () => {
+  it("shows summary stats for selected year", async () => {
+    const user = userEvent.setup();
+
     render(
       <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
     );
 
-    // Check for stat labels (2024 has 800 commits)
+    // Click on 2024 year card to see stats
+    const year2024Button = screen.getAllByRole("button").find((btn) =>
+      btn.textContent?.includes("2024") && !btn.textContent?.includes("All Time")
+    );
+    await user.click(year2024Button!);
+
+    // Check for stat labels in the right panel
     expect(screen.getByText("Commits")).toBeInTheDocument();
     expect(screen.getByText("Pull Requests")).toBeInTheDocument();
     expect(screen.getByText("Issues")).toBeInTheDocument();

@@ -2,7 +2,6 @@ import type { RateLimit } from "@/apollo/github-api.types";
 import useQueryUser from "@/apollo/useQueryUser";
 import { EmptyState, ErrorState, LoadingState } from "@/components/layout";
 import { UserHeader } from "@/components/user/UserHeader";
-import { UserStats } from "@/components/user/UserStats";
 
 type Props = {
   userName: string;
@@ -43,28 +42,23 @@ function UserProfile({ userName, onRateLimitUpdate }: Props) {
   const user = data.user;
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6 p-6">
-      <UserHeader
-        user={{
-          avatarUrl: user.avatarUrl,
-          name: user.name,
-          login: user.login,
-          bio: user.bio,
-          location: user.location,
-          url: user.url,
-          createdAt: user.createdAt,
-        }}
-      />
-
-      <UserStats
-        stats={{
-          repositories: user.repositories.totalCount,
-          followers: user.followers.totalCount,
-          following: user.following.totalCount,
-          gists: user.gists.totalCount,
-        }}
-      />
-    </div>
+    <UserHeader
+      user={{
+        avatarUrl: user.avatarUrl,
+        name: user.name,
+        login: user.login,
+        bio: user.bio,
+        location: user.location,
+        url: user.url,
+        createdAt: user.createdAt,
+      }}
+      stats={{
+        repositories: user.repositories.totalCount,
+        followers: user.followers.totalCount,
+        following: user.following.totalCount,
+        gists: user.gists.totalCount,
+      }}
+    />
   );
 }
 

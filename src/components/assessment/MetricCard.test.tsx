@@ -138,22 +138,6 @@ describe("MetricCard", () => {
     });
   });
 
-  it("handles growth metric without percentage sign", () => {
-    render(<MetricCard title="Growth" score={25} level="Growing" />);
-
-    // Growth metric shows + sign for positive values but no %
-    expect(screen.getByText("+25")).toBeInTheDocument();
-    expect(screen.queryByText("%")).not.toBeInTheDocument();
-  });
-
-  it("handles negative growth metric", () => {
-    render(<MetricCard title="Growth" score={-15} level="Declining" />);
-
-    // Negative growth without % sign
-    expect(screen.getByText("-15")).toBeInTheDocument();
-    expect(screen.queryByText("%")).not.toBeInTheDocument();
-  });
-
   it("renders correct aria-label for clickable card", () => {
     render(
       <MetricCard
@@ -171,20 +155,30 @@ describe("MetricCard", () => {
     );
   });
 
-  it("renders correct aria-label for growth metric", () => {
-    render(
-      <MetricCard
-        title="Growth"
-        score={25}
-        level="Growing"
-        onExplainClick={() => {}}
-      />,
-    );
+  it("renders Consistency metric correctly", () => {
+    render(<MetricCard title="Consistency" score={72} level="High" />);
 
-    const button = screen.getByRole("button");
-    expect(button).toHaveAttribute(
-      "aria-label",
-      "View Growth details: 25 - Growing",
-    );
+    expect(screen.getByText("Consistency")).toBeInTheDocument();
+    expect(screen.getByText("72")).toBeInTheDocument();
+    expect(screen.getByText("%")).toBeInTheDocument();
+    expect(screen.getByText("High")).toBeInTheDocument();
+  });
+
+  it("renders Collaboration metric correctly", () => {
+    render(<MetricCard title="Collaboration" score={58} level="Moderate" />);
+
+    expect(screen.getByText("Collaboration")).toBeInTheDocument();
+    expect(screen.getByText("58")).toBeInTheDocument();
+    expect(screen.getByText("%")).toBeInTheDocument();
+    expect(screen.getByText("Moderate")).toBeInTheDocument();
+  });
+
+  it("renders Authenticity metric correctly", () => {
+    render(<MetricCard title="Authenticity" score={88} level="High" />);
+
+    expect(screen.getByText("Authenticity")).toBeInTheDocument();
+    expect(screen.getByText("88")).toBeInTheDocument();
+    expect(screen.getByText("%")).toBeInTheDocument();
+    expect(screen.getByText("High")).toBeInTheDocument();
   });
 });

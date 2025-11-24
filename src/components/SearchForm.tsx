@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -35,6 +35,11 @@ type Props = {
 function SearchForm({ userName, setUserName }: Props) {
   const [text, setText] = useState(userName);
 
+  // Sync local state when userName prop changes (e.g., from URL or external source)
+  useEffect(() => {
+    setText(userName);
+  }, [userName]);
+
   /**
    * Handles form submission with validation
    *
@@ -68,7 +73,7 @@ function SearchForm({ userName, setUserName }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-8 flex w-full items-center gap-2 lg:w-1/3"
+      className="flex w-full items-center gap-2"
     >
       <Label htmlFor="search" className="sr-only">
         Search

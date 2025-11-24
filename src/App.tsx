@@ -5,13 +5,12 @@ import { AuthRequiredModal } from "./components/auth/AuthRequiredModal";
 import { ErrorBoundary } from "./components/layout/ErrorBoundary";
 import { RateLimitBanner } from "./components/layout/RateLimitBanner";
 import { SearchHeader } from "./components/layout/SearchHeader";
-import { UserMenu } from "./components/layout/UserMenu";
-import { ProjectSection } from "./components/projects/ProjectSection";
 import { ActivityTimelineV2 } from "./components/timeline/ActivityTimelineV2";
 import UserProfile from "./components/UserProfile";
 import { useAuthenticityScore, useUserAnalytics } from "./hooks";
 import { calculateActivityScore } from "./lib/metrics/activity";
-import { calculateGrowthScore } from "./lib/metrics/growth";
+import { calculateCollaborationScore } from "./lib/metrics/collaboration";
+import { calculateConsistencyScore } from "./lib/metrics/consistency";
 import { calculateImpactScore } from "./lib/metrics/impact";
 import { calculateQualityScore } from "./lib/metrics/quality";
 
@@ -27,7 +26,7 @@ interface RateLimitState {
 }
 
 function App() {
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("Yhooi2");
 
   // Rate limit state (updated from GraphQL responses)
   const [rateLimit, setRateLimit] = useState<RateLimitState>({
@@ -92,7 +91,8 @@ function App() {
           activity: calculateActivityScore(timeline),
           impact: calculateImpactScore(timeline),
           quality: calculateQualityScore(timeline),
-          growth: calculateGrowthScore(timeline),
+          consistency: calculateConsistencyScore(timeline),
+          collaboration: calculateCollaborationScore(timeline),
         }
       : null;
 
@@ -101,15 +101,6 @@ function App() {
     ...year.ownedRepos.map((repo) => repo.repository),
     ...year.contributions.map((repo) => repo.repository),
   ]) as Repository[];
-
-  const projects = {
-    owned: timeline.flatMap((year) =>
-      year.ownedRepos.map((repo) => repo.repository),
-    ) as Repository[],
-    contributions: timeline.flatMap((year) =>
-      year.contributions.map((repo) => repo.repository),
-    ) as Repository[],
-  };
 
   // Calculate authenticity score from all repositories
   const authenticityData = useAuthenticityScore(allRepositories);
@@ -148,29 +139,22 @@ function App() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto space-y-8 p-4 pb-16">
-        {/* Header with Search and User Menu */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <SearchHeader userName={userName} onSearch={setUserName} />
-          </div>
-
-          {/* User Menu - Sign in / Avatar */}
-          <div className="flex-shrink-0 pt-2">
-            <UserMenu
-              isAuthenticated={isAuthenticated}
-              user={
-                isAuthenticated
-                  ? {
-                      login: rateLimit.userLogin!,
-                      avatarUrl: `https://github.com/${rateLimit.userLogin}.png`,
-                    }
-                  : undefined
-              }
-              onSignIn={() => setShowAuthModal(true)}
-              onSignOut={handleLogout}
-            />
-          </div>
-        </div>
+        {/* Compact Header - Brand, Search, Theme, User */}
+        <SearchHeader
+          userName={userName}
+          onSearch={setUserName}
+          userMenuProps={{
+            isAuthenticated,
+            user: isAuthenticated
+              ? {
+                  login: rateLimit.userLogin!,
+                  avatarUrl: `https://github.com/${rateLimit.userLogin}.png`,
+                }
+              : undefined,
+            onSignIn: () => setShowAuthModal(true),
+            onSignOut: handleLogout,
+          }}
+        />
 
         {/* Rate Limit Banner */}
         <RateLimitBanner
@@ -202,7 +186,7 @@ function App() {
               onRateLimitUpdate={handleRateLimitUpdate}
             />
 
-            {/* Quick Assessment - 4 Key Metrics */}
+            {/* Quick Assessment - 6 Key Metrics */}
             {metrics && <QuickAssessment metrics={metrics} loading={loading} />}
 
             {/* Activity Timeline - Year by Year (V2 with 3-level disclosure) */}
@@ -211,9 +195,6 @@ function App() {
               loading={loading}
               username={userName}
             />
-
-            {/* Project Section - Owned vs Contributions */}
-            <ProjectSection projects={projects} loading={loading} />
           </ErrorBoundary>
         )}
 

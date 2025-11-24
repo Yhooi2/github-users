@@ -58,8 +58,7 @@ export function ActivityTimelineV2({
 
   if (!timeline.length) {
     return (
-      <section className="space-y-4">
-        <h2 className="text-2xl font-bold">Activity Timeline</h2>
+      <section className="space-y-2">
         <div className="rounded-lg border p-8 text-center text-muted-foreground">
           No activity data available
         </div>
@@ -77,9 +76,7 @@ export function ActivityTimelineV2({
   const maxCommits = Math.max(...timeline.map((y) => y.totalCommits));
 
   return (
-    <section className="space-y-4" aria-label="Activity Timeline">
-      <h2 className="text-2xl font-bold">Activity Timeline</h2>
-
+    <section className="space-y-2" aria-label="Activity Timeline">
       <div className="space-y-2">
         {timeline.map((year) => (
           <TimelineYearV2
@@ -103,15 +100,17 @@ function TimelineSkeleton({ isDesktop }: { isDesktop: boolean }) {
     // Desktop: 33/67 split skeleton
     return (
       <section
-        className="h-[calc(100vh-200px)] min-h-[600px]"
+        className="flex flex-col"
         aria-label="Loading activity timeline"
       >
-        <div className="mb-4 h-8 w-64 animate-pulse rounded bg-muted" />
-        <div className="grid h-[calc(100%-48px)] grid-cols-[1fr_2fr] gap-6">
+        <div className="mb-4 h-8 w-64 shrink-0 animate-pulse rounded bg-muted" />
+        <div className="grid h-[600px] max-h-[calc(100vh-400px)] min-h-[400px] grid-cols-[1fr_2fr] gap-6">
           {/* Left panel skeleton */}
-          <div className="rounded-lg border bg-card p-4">
-            <div className="mb-4 h-6 w-24 animate-pulse rounded bg-muted" />
-            <div className="space-y-3">
+          <div className="flex flex-col overflow-hidden rounded-lg border bg-card">
+            <div className="shrink-0 border-b p-4">
+              <div className="h-6 w-24 animate-pulse rounded bg-muted" />
+            </div>
+            <div className="flex-1 space-y-3 overflow-hidden p-3">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
@@ -121,9 +120,9 @@ function TimelineSkeleton({ isDesktop }: { isDesktop: boolean }) {
             </div>
           </div>
           {/* Right panel skeleton */}
-          <div className="rounded-lg border bg-card p-6">
-            <div className="mb-6 h-8 w-48 animate-pulse rounded bg-muted" />
-            <div className="mb-6 grid grid-cols-4 gap-4">
+          <div className="flex flex-col overflow-hidden rounded-lg border bg-card p-6">
+            <div className="mb-6 h-8 w-48 shrink-0 animate-pulse rounded bg-muted" />
+            <div className="mb-6 grid shrink-0 grid-cols-4 gap-4">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
@@ -131,7 +130,7 @@ function TimelineSkeleton({ isDesktop }: { isDesktop: boolean }) {
                 />
               ))}
             </div>
-            <div className="space-y-3">
+            <div className="flex-1 space-y-3 overflow-hidden">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}

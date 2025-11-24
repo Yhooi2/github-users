@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getTrendColor, type TrendDirection } from "@/lib/design-tokens";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
@@ -21,11 +22,11 @@ type StatsCardProps = {
   description?: string;
   /**
    * Optional trend indicator
-   * - 'up': Trending up (green)
-   * - 'down': Trending down (red)
-   * - 'neutral': No change (gray)
+   * - 'up': Trending up (success color)
+   * - 'down': Trending down (destructive color)
+   * - 'neutral': No change (muted)
    */
-  trend?: "up" | "down" | "neutral";
+  trend?: TrendDirection;
   /**
    * Trend value (e.g., "+12%", "-5%", "0%")
    */
@@ -78,18 +79,7 @@ export function StatsCard({
     }
   };
 
-  const getTrendColor = () => {
-    switch (trend) {
-      case "up":
-        return "text-green-600 dark:text-green-400";
-      case "down":
-        return "text-red-600 dark:text-red-400";
-      case "neutral":
-        return "text-muted-foreground";
-      default:
-        return "";
-    }
-  };
+  const trendColorClass = trend ? getTrendColor(trend) : "";
 
   const TrendIcon = getTrendIcon();
 
@@ -113,7 +103,7 @@ export function StatsCard({
           <div className="mt-1 flex items-center gap-2">
             {trend && TrendIcon && (
               <div
-                className={`flex items-center gap-1 text-xs ${getTrendColor()}`}
+                className={`flex items-center gap-1 text-xs ${trendColorClass}`}
               >
                 <TrendIcon className="h-3 w-3" aria-hidden="true" />
                 {trendValue && <span>{trendValue}</span>}

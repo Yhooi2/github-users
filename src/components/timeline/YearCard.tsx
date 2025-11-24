@@ -67,8 +67,9 @@ export function YearCard({
           "ring-2 ring-primary/30",
         ]
       )}
-      whileHover={prefersReducedMotion ? {} : { scale: 1.01, y: -2 }}
-      whileTap={prefersReducedMotion ? {} : { scale: 0.99 }}
+      // Removed scale/translate hover animations to prevent overflow in sidebar
+      // CSS hover effects (border, shadow, bg) provide sufficient visual feedback
+      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
       aria-pressed={isSelected}
       aria-label={`Select year ${year.year}, ${year.totalCommits} commits, ${repoCount} repositories`}
     >

@@ -164,8 +164,7 @@ describe("UserProfile", () => {
     expect(screen.getByText("The Octocat")).toBeInTheDocument();
     expect(screen.getByText("@octocat")).toBeInTheDocument();
     expect(screen.getByText("GitHub mascot")).toBeInTheDocument();
-    expect(screen.getByText("1,000")).toBeInTheDocument(); // Followers
-    expect(screen.getByText("50")).toBeInTheDocument(); // Repositories
+    // Note: UserStats (Followers, Repositories) are now rendered in App.tsx, not UserProfile
   });
 
   it("calls useQueryUser with correct username", () => {

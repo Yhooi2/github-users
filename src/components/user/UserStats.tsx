@@ -1,5 +1,5 @@
 import { StatsCard } from "@/components/layout/StatsCard";
-import { FileText, GitFork, Star, Users } from "lucide-react";
+import { FileText, GitFork, UserPlus, Users } from "lucide-react";
 
 type UserStatsProps = {
   stats: {
@@ -25,7 +25,7 @@ export function UserStats({ stats }: UserStatsProps) {
     {
       title: "Following",
       value: stats.following,
-      icon: Star,
+      icon: UserPlus,
     },
     {
       title: "Gists",
