@@ -40,3 +40,4 @@ playwright-report
 
 # Local MCP server config with secrets
 .roo/mcp.json
+.mcp.json

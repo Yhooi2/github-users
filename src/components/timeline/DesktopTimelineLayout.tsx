@@ -84,7 +84,7 @@ export function DesktopTimelineLayout({
     >
       {/* Left Panel: Sticky Year Cards Sidebar (33%) */}
       <aside aria-label="Year navigation">
-        <div className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto rounded-xl border bg-card shadow-sm">
+        <div className="sticky top-6 rounded-xl border bg-card shadow-sm">
           {/* All Time Header - clickable to show all-time stats */}
           <button
             onClick={() => setSelectedYear(null)}
@@ -147,16 +147,15 @@ export function DesktopTimelineLayout({
         </div>
       </aside>
 
-      {/* Right Panel: Year Detail or All-Time Summary (67%) */}
-      <main
-        className="rounded-xl border bg-card p-6 shadow-sm"
-        aria-label={selectedYear ? "Year details" : "All-time summary"}
-      >
-        <YearDetailPanel
-          year={selectedYearData}
-          timeline={timeline}
-          username={username}
-        />
+      {/* Right Panel: Sticky Year Detail or All-Time Summary (67%) */}
+      <main aria-label={selectedYear ? "Year details" : "All-time summary"}>
+        <div className="sticky top-6 rounded-xl border bg-card p-6 shadow-sm">
+          <YearDetailPanel
+            year={selectedYearData}
+            timeline={timeline}
+            username={username}
+          />
+        </div>
       </main>
     </section>
   );

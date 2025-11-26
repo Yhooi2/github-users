@@ -59,7 +59,7 @@ export function YearCard({
     <motion.button
       onClick={onSelect}
       className={cn(
-        "w-full rounded-xl border bg-card p-4 text-left transition-all duration-200",
+        "group w-full rounded-xl border bg-card p-4 text-left transition-all duration-200",
         "hover:border-primary/50 hover:shadow-lg hover:bg-accent/50",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         isSelected && [
@@ -88,14 +88,14 @@ export function YearCard({
         )}
       </div>
 
-      {/* Visual activity bar with gradient */}
-      <div className="mb-4 h-2.5 w-full overflow-hidden rounded-full bg-muted/50">
+      {/* Visual activity bar with improved contrast */}
+      <div className="mb-4 h-2.5 w-full overflow-hidden rounded-full bg-activity-bar-bg transition-shadow duration-200 group-hover:shadow-sm">
         <motion.div
           className={cn(
-            "h-full rounded-full",
+            "h-full rounded-full transition-colors duration-200",
             isSelected
-              ? "bg-gradient-to-r from-primary to-primary/70"
-              : "bg-gradient-to-r from-muted-foreground/50 to-muted-foreground/30"
+              ? "bg-activity-bar-fill-active"
+              : "bg-activity-bar-fill"
           )}
           initial={{ width: 0 }}
           animate={{ width: `${widthPercent}%` }}
