@@ -37,9 +37,9 @@ vi.mock("./components/UserProfile", () => ({
   default: () => <div data-testid="user-profile">User Profile</div>,
 }));
 
-vi.mock("./components/assessment/QuickAssessment", () => ({
-  QuickAssessment: () => (
-    <div data-testid="quick-assessment">Quick Assessment</div>
+vi.mock("./components/assessment/MetricAssessmentGrid", () => ({
+  MetricAssessmentGrid: () => (
+    <div data-testid="metric-assessment-grid">Metric Assessment Grid</div>
   ),
 }));
 
@@ -133,7 +133,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       render(<App />);
 
       expect(screen.queryByTestId("user-profile")).not.toBeInTheDocument();
-      expect(screen.queryByTestId("quick-assessment")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("metric-assessment-grid")).not.toBeInTheDocument();
       expect(screen.queryByTestId("activity-timeline")).not.toBeInTheDocument();
     });
 
@@ -182,7 +182,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       // Wait for all sections to appear (ProjectSection removed - merged into ActivityTimelineV2)
       await waitFor(() => {
         expect(screen.getByTestId("user-profile")).toBeInTheDocument();
-        expect(screen.getByTestId("quick-assessment")).toBeInTheDocument();
+        expect(screen.getByTestId("metric-assessment-grid")).toBeInTheDocument();
         expect(screen.getByTestId("activity-timeline")).toBeInTheDocument();
       });
     });
@@ -207,7 +207,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       });
 
       // Should not show other sections while loading
-      expect(screen.queryByTestId("quick-assessment")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("metric-assessment-grid")).not.toBeInTheDocument();
     });
 
     it("should handle search errors gracefully", async () => {
@@ -239,7 +239,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       });
 
       // Should not show content sections
-      expect(screen.queryByTestId("quick-assessment")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("metric-assessment-grid")).not.toBeInTheDocument();
     });
   });
 
@@ -261,7 +261,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       await waitFor(() => {
         const sections = [
           screen.getByTestId("user-profile"),
-          screen.getByTestId("quick-assessment"),
+          screen.getByTestId("metric-assessment-grid"),
           screen.getByTestId("activity-timeline"),
         ];
 
@@ -295,7 +295,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     });
 
-    it("should show QuickAssessment when metrics are available", async () => {
+    it("should show MetricAssessmentGrid when metrics are available", async () => {
       mockUseUserAnalytics.mockReturnValue({
         profile: mockProfile,
         timeline: mockTimeline,
@@ -310,11 +310,11 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
       await user.type(input, "testuser");
 
       await waitFor(() => {
-        expect(screen.getByTestId("quick-assessment")).toBeInTheDocument();
+        expect(screen.getByTestId("metric-assessment-grid")).toBeInTheDocument();
       });
     });
 
-    it("should not show QuickAssessment when no timeline data", async () => {
+    it("should not show MetricAssessmentGrid when no timeline data", async () => {
       mockUseUserAnalytics.mockReturnValue({
         profile: mockProfile,
         timeline: [],
@@ -333,8 +333,8 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
         expect(screen.getByTestId("user-profile")).toBeInTheDocument();
       });
 
-      // QuickAssessment should not be shown without timeline data
-      expect(screen.queryByTestId("quick-assessment")).not.toBeInTheDocument();
+      // MetricAssessmentGrid should not be shown without timeline data
+      expect(screen.queryByTestId("metric-assessment-grid")).not.toBeInTheDocument();
     });
   });
 
@@ -374,7 +374,7 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("user-profile")).toBeInTheDocument();
-        expect(screen.getByTestId("quick-assessment")).toBeInTheDocument();
+        expect(screen.getByTestId("metric-assessment-grid")).toBeInTheDocument();
         expect(screen.getByTestId("activity-timeline")).toBeInTheDocument();
       });
     });
@@ -400,8 +400,8 @@ describe("App Integration Tests - Phase 5 Single Page Layout", () => {
         expect(screen.getByTestId("activity-timeline")).toBeInTheDocument();
       });
 
-      // QuickAssessment should not show without timeline data
-      expect(screen.queryByTestId("quick-assessment")).not.toBeInTheDocument();
+      // MetricAssessmentGrid should not show without timeline data
+      expect(screen.queryByTestId("metric-assessment-grid")).not.toBeInTheDocument();
     });
 
     it("should handle clearing username", async () => {

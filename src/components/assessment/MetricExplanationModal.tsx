@@ -17,7 +17,14 @@ import { useResponsive } from "@/hooks";
 export interface MetricExplanationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  metric: "activity" | "impact" | "quality" | "growth" | "authenticity";
+  metric:
+    | "activity"
+    | "impact"
+    | "quality"
+    | "growth"
+    | "authenticity"
+    | "consistency"
+    | "collaboration";
   score: number;
   breakdown: Record<string, number>;
 }
@@ -79,6 +86,26 @@ const EXPLANATIONS: Record<string, ExplanationConfig> = {
       activityScore: "Consistent activity patterns (0-25 pts)",
       engagementScore: "Community engagement (0-25 pts)",
       codeOwnershipScore: "Code ownership ratio (0-25 pts)",
+    },
+  },
+  consistency: {
+    title: "Consistency Score",
+    description:
+      "Measures regularity and stability of coding activity over time. Higher scores indicate steady, predictable contribution patterns.",
+    components: {
+      regularity: "Commit distribution evenness (0-50 pts)",
+      streak: "Consecutive active years (0-30 pts)",
+      recency: "Recent activity in last 2 years (0-20 pts)",
+    },
+  },
+  collaboration: {
+    title: "Collaboration Score",
+    description:
+      "Evaluates contributions to other developers' projects. Shows how much you work with the broader open source community.",
+    components: {
+      contributionRatio: "Contributions to others' repos (0-50 pts)",
+      diversity: "Number of external projects (0-30 pts)",
+      engagement: "Quality of contributions (0-20 pts)",
     },
   },
 };

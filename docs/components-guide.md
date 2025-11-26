@@ -2,10 +2,10 @@
 
 > Comprehensive documentation for all React components in the GitHub User Info application
 
-**Last Updated**: 2025-11-16
-**Total Components**: 28+ components across 5 categories
-**Test Coverage**: 90.04%
-**Storybook Stories**: 82+
+**Last Updated**: 2025-11-26
+**Total Components**: 35+ components across 7 categories
+**Test Coverage**: 91.36%
+**Storybook Stories**: 100+
 
 **📚 Related Documentation:**
 
@@ -22,7 +22,9 @@
 3. [User Components (6)](#user-components)
 4. [Repository Components (7)](#repository-components)
 5. [Statistics Components (4)](#statistics-components)
-6. [Form Components (1)](#form-components)
+6. [Assessment Components (7)](#assessment-components)
+7. [Shared Components (2)](#shared-components)
+8. [Form Components (1)](#form-components)
 
 ---
 
@@ -1044,6 +1046,456 @@ import { StatsOverview } from "@/components/statistics/StatsOverview";
 ```
 
 **Storybook**: `src/components/statistics/StatsOverview.stories.tsx`
+
+---
+
+## Assessment Components
+
+### Overview
+
+Assessment components display GitHub user metrics grouped into categories with explanations and visual indicators. Implements "Always Expanded Cards" pattern on desktop and accordion on mobile.
+
+**Location**: `src/components/assessment/`
+**Test Coverage**: 100%
+**Storybook Stories**: 20+ stories
+
+**Design Pattern**:
+- Desktop (≥768px): 3-column grid, all cards expanded (fixed 220px height)
+- Mobile (<768px): Vertical stack with accordion (all collapsed by default)
+
+---
+
+### 1. MetricAssessmentGrid
+
+**File**: `src/components/assessment/MetricAssessmentGrid.tsx`
+
+**Description**: Main container that combines UserSkills and MetricCategoryCards into a responsive grid. Manages accordion state for mobile and modal state for metric explanations.
+
+**Props**:
+
+```typescript
+interface MetricAssessmentGridProps {
+  /** All metrics data */
+  metrics: AllMetricsData;
+  /** User's programming languages (optional) */
+  languages?: LanguageSkill[];
+  /** Loading state */
+  loading?: boolean;
+  /** Additional CSS classes */
+  className?: string;
+}
+```
+
+**Usage**:
+
+```tsx
+import { MetricAssessmentGrid } from "@/components/assessment";
+
+<MetricAssessmentGrid
+  metrics={{
+    activity: { score: 85, level: "High", breakdown: { recentCommits: 38, consistency: 27, diversity: 20 } },
+    impact: { score: 65, level: "Moderate", breakdown: { stars: 25, forks: 15, contributors: 10 } },
+    quality: { score: 78, level: "Strong", breakdown: { originality: 25, documentation: 20 } },
+    consistency: { score: 82, level: "High", breakdown: { regularity: 40, streak: 25 } },
+    authenticity: { score: 45, level: "Medium", breakdown: { originalityScore: 15 } },
+    collaboration: { score: 55, level: "Moderate", breakdown: { contributionRatio: 25 } },
+  }}
+  languages={[
+    { name: "TypeScript", percent: 68 },
+    { name: "JavaScript", percent: 15 },
+  ]}
+/>
+```
+
+**Storybook**: `src/components/assessment/MetricAssessmentGrid.stories.tsx`
+
+---
+
+### 2. MetricCategoryCard
+
+**File**: `src/components/assessment/MetricCategoryCard.tsx`
+
+**Description**: Category card displaying 2 metrics with category score. Fixed 220px height on desktop, collapsible accordion on mobile.
+
+**Props**:
+
+```typescript
+interface MetricCategoryCardProps {
+  /** Category name (OUTPUT, QUALITY, TRUST) */
+  category: CategoryName;
+  /** Calculated category score (average of metrics) */
+  categoryScore: number;
+  /** Metrics in this category */
+  metrics: MetricData[];
+  /** Loading state */
+  loading?: boolean;
+  /** Callback when info button clicked */
+  onExplainMetric?: (metricKey: MetricKey) => void;
+  /** Whether card is expanded (mobile only) */
+  isExpanded?: boolean;
+  /** Toggle callback (mobile only) */
+  onToggle?: () => void;
+}
+```
+
+**Usage**:
+
+```tsx
+import { MetricCategoryCard } from "@/components/assessment";
+
+<MetricCategoryCard
+  category="OUTPUT"
+  categoryScore={75}
+  metrics={[
+    { key: "activity", name: "Activity", score: 85, level: "High" },
+    { key: "impact", name: "Impact", score: 65, level: "Moderate" },
+  ]}
+  onExplainMetric={(key) => openModal(key)}
+/>
+```
+
+**Categories**:
+| Category | Metrics | Description |
+|----------|---------|-------------|
+| OUTPUT | Activity + Impact | Production and influence metrics |
+| QUALITY | Quality + Consistency | Code quality and regularity |
+| TRUST | Authenticity + Collaboration | Verification and teamwork |
+
+**Storybook**: `src/components/assessment/MetricCategoryCard.stories.tsx`
+
+---
+
+### 3. MetricRowCompact
+
+**File**: `src/components/assessment/MetricRowCompact.tsx`
+
+**Description**: Compact metric row with icon, title, score, progress bar, and info button. Uses color-coded scores based on design tokens.
+
+**Props**:
+
+```typescript
+interface MetricRowCompactProps {
+  /** Metric icon */
+  icon: React.ReactNode;
+  /** Metric name */
+  title: string;
+  /** Score value (0-100) */
+  score: number;
+  /** Score level label */
+  level: string;
+  /** Info button click handler */
+  onInfoClick?: () => void;
+  /** Loading state */
+  loading?: boolean;
+}
+```
+
+**Usage**:
+
+```tsx
+import { MetricRowCompact } from "@/components/assessment";
+import { Activity } from "lucide-react";
+
+<MetricRowCompact
+  icon={<Activity className="h-4 w-4" />}
+  title="Activity"
+  score={85}
+  level="High"
+  onInfoClick={() => openExplanation("activity")}
+/>
+```
+
+**Score Colors**:
+| Range | Color | Token |
+|-------|-------|-------|
+| 80-100 | Green | success |
+| 60-79 | Yellow | warning |
+| 40-59 | Orange | caution |
+| 0-39 | Red | destructive |
+
+**Storybook**: `src/components/assessment/MetricRowCompact.stories.tsx`
+
+---
+
+### 4. UserSkills
+
+**File**: `src/components/assessment/UserSkills.tsx`
+
+**Description**: Displays user's top programming languages as colored chips with percentage.
+
+**Props**:
+
+```typescript
+interface UserSkillsProps {
+  /** Language statistics */
+  languages: LanguageSkill[];
+  /** Maximum items to display (default: 5) */
+  maxItems?: number;
+  /** Loading state */
+  loading?: boolean;
+}
+
+interface LanguageSkill {
+  name: string;
+  percent: number;
+}
+```
+
+**Usage**:
+
+```tsx
+import { UserSkills } from "@/components/assessment";
+
+<UserSkills
+  languages={[
+    { name: "TypeScript", percent: 68 },
+    { name: "JavaScript", percent: 15 },
+    { name: "Python", percent: 10 },
+    { name: "Go", percent: 5 },
+    { name: "Rust", percent: 2 },
+  ]}
+  maxItems={5}
+/>
+```
+
+**Features**:
+- Colored chips using GitHub language colors
+- Shows "+N" overflow indicator when more languages than maxItems
+- Loading skeleton state
+
+**Storybook**: `src/components/assessment/UserSkills.stories.tsx`
+
+---
+
+### 5. MetricExplanationModal
+
+**File**: `src/components/assessment/MetricExplanationModal.tsx`
+
+**Description**: Modal explaining metric calculation. Uses Dialog on desktop, Sheet on mobile for better UX.
+
+**Props**:
+
+```typescript
+interface MetricExplanationModalProps {
+  /** Whether modal is open */
+  isOpen: boolean;
+  /** Close callback */
+  onClose: () => void;
+  /** Metric being explained */
+  metric: "activity" | "impact" | "quality" | "consistency" | "authenticity" | "collaboration";
+  /** Current score */
+  score: number;
+  /** Score breakdown by component */
+  breakdown: Record<string, number>;
+}
+```
+
+**Usage**:
+
+```tsx
+import { MetricExplanationModal } from "@/components/assessment";
+
+<MetricExplanationModal
+  isOpen={modalOpen}
+  onClose={() => setModalOpen(false)}
+  metric="activity"
+  score={85}
+  breakdown={{
+    recentCommits: 38,
+    consistency: 27,
+    diversity: 20,
+  }}
+/>
+```
+
+**Supported Metrics**:
+| Metric | Components |
+|--------|------------|
+| activity | recentCommits, consistency, diversity |
+| impact | stars, forks, contributors, reach, engagement |
+| quality | originality, documentation, ownership, maturity, stack |
+| consistency | regularity, streak, recency |
+| authenticity | originalityScore, activityScore, engagementScore, codeOwnershipScore |
+| collaboration | contributionRatio, diversity, engagement |
+
+**Storybook**: `src/components/assessment/MetricExplanationModal.stories.tsx`
+
+---
+
+### 6. MetricCard (Legacy)
+
+**File**: `src/components/assessment/MetricCard.tsx`
+
+**Description**: Original metric card component. Kept for backward compatibility but replaced by MetricRowCompact + MetricCategoryCard pattern.
+
+**Props**:
+
+```typescript
+interface MetricCardProps {
+  title: string;
+  score: number;
+  level: string;
+  description?: string;
+  onClick?: () => void;
+}
+```
+
+**Status**: Deprecated - use MetricRowCompact instead
+
+---
+
+### 7. QuickAssessment (Legacy)
+
+**File**: `src/components/assessment/QuickAssessment.tsx`
+
+**Description**: Original quick assessment grid. Replaced by MetricAssessmentGrid.
+
+**Status**: Deprecated - use MetricAssessmentGrid instead
+
+---
+
+### Categories System
+
+**File**: `src/lib/metrics/categories.ts`
+
+The assessment system groups 6 metrics into 3 categories:
+
+```typescript
+// Category definitions
+const CATEGORY_CONFIGS = {
+  OUTPUT: {
+    name: "Output",
+    metrics: ["activity", "impact"],
+    description: "Production and influence",
+  },
+  QUALITY: {
+    name: "Quality",
+    metrics: ["quality", "consistency"],
+    description: "Code quality and regularity",
+  },
+  TRUST: {
+    name: "Trust",
+    metrics: ["authenticity", "collaboration"],
+    description: "Verification and teamwork",
+  },
+};
+
+// Helper functions
+getCategoryScores(metrics) // Returns scores for all categories
+calculateCategoryScore(category, metrics) // Calculates average for one category
+```
+
+---
+
+## Shared Components
+
+### Overview
+
+Reusable components used across multiple features.
+
+**Location**: `src/components/shared/`
+**Test Coverage**: 100%
+**Storybook Stories**: 20+ stories
+
+---
+
+### 1. HorizontalLanguageBar
+
+**File**: `src/components/shared/HorizontalLanguageBar.tsx`
+
+**Description**: Horizontal bar showing language distribution with colored segments.
+
+**Props**:
+
+```typescript
+interface HorizontalLanguageBarProps {
+  /** Language statistics */
+  languages: Array<{ name: string; percent: number }>;
+  /** Bar height class */
+  height?: string;
+  /** Show legend below bar */
+  showLegend?: boolean;
+}
+```
+
+**Usage**:
+
+```tsx
+import { HorizontalLanguageBar } from "@/components/shared";
+
+<HorizontalLanguageBar
+  languages={[
+    { name: "TypeScript", percent: 68 },
+    { name: "JavaScript", percent: 20 },
+    { name: "CSS", percent: 12 },
+  ]}
+  showLegend
+/>
+```
+
+**Storybook**: `src/components/shared/HorizontalLanguageBar.stories.tsx`
+
+---
+
+### 2. CombinedLanguageActivityBar
+
+**File**: `src/components/shared/CombinedLanguageActivityBar.tsx`
+
+**Description**: Dual-dimension bar encoding activity intensity (width) and language breakdown (colors). Width represents commits relative to max, colored segments show language percentages.
+
+**Props**:
+
+```typescript
+interface CombinedLanguageActivityBarProps {
+  /** Total commits for this period */
+  commitCount: number;
+  /** Maximum commits across all periods (for normalization) */
+  maxCommits: number;
+  /** Language breakdown data */
+  languages: LanguageBreakdown[];
+  /** Whether parent container is selected/active */
+  isSelected?: boolean;
+  /** Compact mode (mobile/small screens) */
+  compact?: boolean;
+  /** Custom bar height (overrides compact) */
+  barHeight?: string;
+  /** Additional container classes */
+  className?: string;
+}
+
+interface LanguageBreakdown {
+  name: string;
+  percent: number;
+}
+```
+
+**Usage**:
+
+```tsx
+import { CombinedLanguageActivityBar } from "@/components/shared";
+
+<CombinedLanguageActivityBar
+  commitCount={347}
+  maxCommits={500}
+  languages={[
+    { name: "TypeScript", percent: 68 },
+    { name: "JavaScript", percent: 22 },
+    { name: "CSS", percent: 10 },
+  ]}
+  isSelected={isCurrentYear}
+/>
+```
+
+**Features**:
+- Width = Activity intensity (commits / maxCommits)
+- Colored segments = Language distribution
+- Animated bars with Framer Motion
+- Tooltip with detailed breakdown
+- Minimum 2% width for visibility when > 0 commits
+- Supports reduced motion preference
+- ARIA labels for accessibility
+
+**Storybook**: `src/components/shared/CombinedLanguageActivityBar.stories.tsx`
 
 ---
 

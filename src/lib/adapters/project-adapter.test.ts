@@ -79,6 +79,7 @@ describe("project-adapter", () => {
         id: "repo-123",
         name: "my-project",
         commits: 200,
+        totalRepoCommits: undefined,
         stars: 500,
         language: "TypeScript",
         languages: [{ name: "TypeScript", percent: 100 }],
@@ -86,6 +87,7 @@ describe("project-adapter", () => {
         isFork: false,
         description: "My awesome project",
         url: "https://github.com/alice/my-project",
+        lastActivityDate: "2024-01-01T00:00:00Z", // From mock pushedAt
       });
     });
 

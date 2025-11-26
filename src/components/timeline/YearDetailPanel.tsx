@@ -3,20 +3,16 @@
  *
  * Used in the 67% right panel of the desktop split layout.
  * Shows summary stats, and project list with Level 0/1 components.
+ * All analytics are now inline - no modal required.
  */
 
 import { ExpandableProjectCard } from "@/components/level-1/ExpandableProjectCard";
-import { ExpandedCardContent } from "@/components/level-1/ExpandedCardContent";
-import { ProjectAnalyticsModal } from "@/components/level-2/ProjectAnalyticsModal";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProgressiveDisclosure } from "@/hooks";
 import type { YearData } from "@/hooks/useUserAnalytics";
-import {
-  toExpandableProjects,
-  toProjectForModal,
-} from "@/lib/adapters/project-adapter";
+import { toExpandableProjects } from "@/lib/adapters/project-adapter";
 import { cn } from "@/lib/utils";
 import { GitCommit, GitPullRequest, CircleDot, FolderGit2 } from "lucide-react";
 import { useMemo } from "react";
@@ -74,7 +70,8 @@ function StatCard({
  * YearDetailPanel Component
  *
  * Displays detailed information about a selected year in the desktop layout.
- * Includes summary statistics and project lists with Level 0/1/2 disclosure.
+ * Includes summary statistics and project lists with Level 0/1 disclosure.
+ * All analytics are inline - no modal needed.
  *
  * @example
  * ```tsx
@@ -85,17 +82,10 @@ function StatCard({
  * ```
  */
 export function YearDetailPanel({ year, timeline = [], username }: YearDetailPanelProps) {
-  // Progressive disclosure state for Level 1 & 2
-  const {
-    expandedProjects,
-    modalOpen,
-    selectedProjectId,
-    activeTab,
-    toggleProject,
-    openModal,
-    closeModal,
-    setActiveTab,
-  } = useProgressiveDisclosure({ persistToUrl: true });
+  // Progressive disclosure state for Level 1
+  const { expandedProjects, toggleProject } = useProgressiveDisclosure({
+    persistToUrl: true,
+  });
 
   // Aggregate all-time stats when year is null
   const allTimeStats = useMemo(() => {
@@ -158,27 +148,6 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
     }
     return [];
   }, [year, allTimeStats, username]);
-
-  // Find selected project for modal
-  const selectedProject = useMemo(() => {
-    if (!selectedProjectId) return null;
-
-    if (year) {
-      const found = [...year.ownedRepos, ...year.contributions].find(
-        (item) => item.repository.id === selectedProjectId
-      );
-      return found ? toProjectForModal(found) : null;
-    }
-
-    if (allTimeStats) {
-      const found = [...allTimeStats.ownedRepos, ...allTimeStats.contributions].find(
-        (item) => item.repository.id === selectedProjectId
-      );
-      return found ? toProjectForModal(found) : null;
-    }
-
-    return null;
-  }, [year, allTimeStats, selectedProjectId]);
 
   // Max commits for project bars (within this year or all time)
   const maxProjectCommits = useMemo(
@@ -258,14 +227,8 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
                     project={project}
                     isExpanded={expandedProjects.has(project.id)}
                     onToggle={() => toggleProject(project.id)}
-                    onOpenAnalytics={() => openModal(project.id)}
                     maxCommits={maxProjectCommits}
-                  >
-                    <ExpandedCardContent
-                      stars={project.stars}
-                      forks={project.forks ?? 0}
-                    />
-                  </ExpandableProjectCard>
+                  />
                 ))}
               </div>
             </section>
@@ -285,14 +248,8 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
                     project={project}
                     isExpanded={expandedProjects.has(project.id)}
                     onToggle={() => toggleProject(project.id)}
-                    onOpenAnalytics={() => openModal(project.id)}
                     maxCommits={maxProjectCommits}
-                  >
-                    <ExpandedCardContent
-                      stars={project.stars}
-                      forks={project.forks ?? 0}
-                    />
-                  </ExpandableProjectCard>
+                  />
                 ))}
               </div>
             </section>
@@ -306,15 +263,6 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
           )}
         </div>
       </ScrollArea>
-
-      {/* Level 2: Analytics Modal */}
-      <ProjectAnalyticsModal
-        open={modalOpen}
-        onOpenChange={(open) => !open && closeModal()}
-        project={selectedProject}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
     </div>
   );
 }

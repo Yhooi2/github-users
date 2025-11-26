@@ -69,6 +69,10 @@ src/
 | Design Tokens | `.claude/quick-ref/quick_ref_design_tokens.md` |
 | Responsive | `.claude/quick-ref/quick_ref_responsive.md` |
 | Tech Stack | `.claude/quick-ref/quick_ref_tech_stack.md` |
+| **Design System** | `.claude/quick-ref/quick_ref_design_system.md` |
+| **Visual Testing** | `.claude/quick-ref/quick_ref_visual_testing.md` |
+| **Refactoring Guide** | `.claude/quick-ref/quick_ref_refactoring_guide.md` |
+| Glassmorphism | `.claude/quick-ref/quick_ref_glassmorphism.md` |
 
 ## Quick Reference
 
@@ -77,6 +81,30 @@ src/
 **Metrics:** Activity (contributions), Impact (stars/forks), Quality (code patterns), Growth (trend), Authenticity (bot detection)
 
 **OAuth:** Optional GitHub auth for higher rate limits. Server-side token storage.
+
+## Design System (Glassmorphism UI Kit)
+
+**Location:** `docs/design_system/`
+
+| Stat | Value |
+|------|-------|
+| Components | 22 |
+| Themes | 3 (light, aurora, glass) |
+| Stories | 22 (100%) |
+| Visual Tests | 23 (100%) |
+| Unit Tests | 218 (100%) |
+
+**Key files:**
+- Components: `docs/design_system/*.tsx`
+- Stories: `docs/design_system/stories/*.stories.tsx`
+- Visual Tests: `docs/design_system/stories/visual-tests/*.visual.stories.tsx`
+- Unit Tests: `docs/design_system/__tests__/*.test.tsx`
+
+**Commands:**
+```bash
+npm test -- --run docs/design_system/__tests__/  # Unit tests
+npm run build-storybook && npm run storybook     # Visual tests
+```
 
 ## MCP Servers
 

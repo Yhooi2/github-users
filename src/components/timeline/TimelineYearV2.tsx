@@ -1,21 +1,15 @@
 /**
- * TimelineYearV2 - Year section with 3-level progressive disclosure
+ * TimelineYearV2 - Year section with 2-level progressive disclosure
  *
  * Level 0: Collapsed year row (56px header)
- * Level 1: Expanded with project cards (Framer Motion animated)
- * Level 2: Full analytics modal
+ * Level 1: Expanded with project cards (inline analytics)
  */
 
 import { ExpandableProjectCard } from "@/components/level-1/ExpandableProjectCard";
-import { ExpandedCardContent } from "@/components/level-1/ExpandedCardContent";
-import { ProjectAnalyticsModal } from "@/components/level-2/ProjectAnalyticsModal";
 import { Badge } from "@/components/ui/badge";
 import { useProgressiveDisclosure, useReducedMotion } from "@/hooks";
 import type { YearData } from "@/hooks/useUserAnalytics";
-import {
-  toExpandableProjects,
-  toProjectForModal,
-} from "@/lib/adapters/project-adapter";
+import { toExpandableProjects } from "@/lib/adapters/project-adapter";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -32,10 +26,9 @@ export interface TimelineYearV2Props {
 /**
  * TimelineYearV2 Component
  *
- * Implements 3-level progressive disclosure:
+ * Implements 2-level progressive disclosure:
  * - Level 0: Collapsed year bar with stats (DEFAULT STATE - COLLAPSED!)
- * - Level 1: Expanded list with project cards
- * - Level 2: Modal with 4 tabs for detailed analytics
+ * - Level 1: Expanded list with project cards (all analytics inline)
  *
  * @example
  * ```tsx
@@ -54,17 +47,10 @@ export function TimelineYearV2({
   // Level 0: Year expansion state (COLLAPSED BY DEFAULT!)
   const [isYearExpanded, setIsYearExpanded] = useState(false);
 
-  // Level 1 & 2: Progressive disclosure state
-  const {
-    expandedProjects,
-    modalOpen,
-    selectedProjectId,
-    activeTab,
-    toggleProject,
-    openModal,
-    closeModal,
-    setActiveTab,
-  } = useProgressiveDisclosure({ persistToUrl: true });
+  // Level 1: Project expansion state
+  const { expandedProjects, toggleProject } = useProgressiveDisclosure({
+    persistToUrl: true,
+  });
 
   const prefersReducedMotion = useReducedMotion();
 
@@ -73,16 +59,6 @@ export function TimelineYearV2({
     const combined = [...year.ownedRepos, ...year.contributions];
     return toExpandableProjects(combined, username);
   }, [year.ownedRepos, year.contributions, username]);
-
-  // Find selected project for modal
-  const selectedProject = useMemo(() => {
-    if (!selectedProjectId) return null;
-
-    const found = [...year.ownedRepos, ...year.contributions].find(
-      (item) => item.repository.id === selectedProjectId,
-    );
-    return found ? toProjectForModal(found) : null;
-  }, [year.ownedRepos, year.contributions, selectedProjectId]);
 
   // Calculate year bar width
   const widthPercent =
@@ -191,14 +167,8 @@ export function TimelineYearV2({
                           project={project}
                           isExpanded={expandedProjects.has(project.id)}
                           onToggle={() => toggleProject(project.id)}
-                          onOpenAnalytics={() => openModal(project.id)}
                           maxCommits={maxProjectCommits}
-                        >
-                          <ExpandedCardContent
-                            stars={project.stars}
-                            forks={project.forks ?? 0}
-                          />
-                        </ExpandableProjectCard>
+                        />
                       ))}
                   </div>
                 </section>
@@ -223,14 +193,8 @@ export function TimelineYearV2({
                           project={project}
                           isExpanded={expandedProjects.has(project.id)}
                           onToggle={() => toggleProject(project.id)}
-                          onOpenAnalytics={() => openModal(project.id)}
                           maxCommits={maxProjectCommits}
-                        >
-                          <ExpandedCardContent
-                            stars={project.stars}
-                            forks={project.forks ?? 0}
-                          />
-                        </ExpandableProjectCard>
+                        />
                       ))}
                   </div>
                 </section>
@@ -246,15 +210,6 @@ export function TimelineYearV2({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Level 2: Analytics Modal */}
-      <ProjectAnalyticsModal
-        open={modalOpen}
-        onOpenChange={(open) => !open && closeModal()}
-        project={selectedProject}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
     </div>
   );
 }

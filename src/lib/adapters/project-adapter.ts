@@ -23,9 +23,22 @@ function extractLanguages(repository: RepositoryContribution["repository"]): Lan
 
   return languages.edges.map((edge) => ({
     name: edge.node.name,
-    percent: (edge.size / languages.totalSize) * 100,
+    // Round to 1 decimal place for display
+    percent: Math.round((edge.size / languages.totalSize) * 1000) / 10,
     size: edge.size,
   }));
+}
+
+/**
+ * Extract total commits from repository's default branch
+ */
+function getTotalRepoCommits(repository: RepositoryContribution["repository"]): number | undefined {
+  const target = repository.defaultBranchRef?.target;
+  // Type guard for Commit target with history
+  if (target && "history" in target && target.history?.totalCount) {
+    return target.history.totalCount;
+  }
+  return undefined;
 }
 
 /**
@@ -41,6 +54,7 @@ export function toCompactProject(
     id: repository.id,
     name: repository.name,
     commits: contributions.totalCount,
+    totalRepoCommits: getTotalRepoCommits(repository),
     stars: repository.stargazerCount,
     language: repository.primaryLanguage?.name ?? "",
     languages: extractLanguages(repository),
@@ -48,7 +62,16 @@ export function toCompactProject(
     isFork: repository.isFork ?? false,
     description: repository.description ?? undefined,
     url: repository.url,
+    lastActivityDate: repository.pushedAt ?? undefined,
   };
+}
+
+/**
+ * Calculate contribution percentage
+ */
+function calculateContributionPercent(userCommits: number, totalCommits: number | undefined): number {
+  if (!totalCommits || totalCommits === 0) return 100; // Assume 100% if no total data
+  return Math.round((userCommits / totalCommits) * 100);
 }
 
 /**
@@ -59,11 +82,14 @@ export function toExpandableProject(
   username: string,
 ): ExpandableProject {
   const { repository, contributions } = item;
+  const totalRepoCommits = getTotalRepoCommits(repository);
+  const userCommits = contributions.totalCount;
 
   return {
     id: repository.id,
     name: repository.name,
-    commits: contributions.totalCount,
+    commits: userCommits,
+    totalRepoCommits,
     stars: repository.stargazerCount,
     language: repository.primaryLanguage?.name ?? "",
     languages: extractLanguages(repository),
@@ -71,7 +97,12 @@ export function toExpandableProject(
     isFork: repository.isFork ?? false,
     description: repository.description ?? undefined,
     url: repository.url,
+    lastActivityDate: repository.pushedAt ?? undefined,
     forks: repository.forkCount,
+    // User contribution data
+    contributionPercent: calculateContributionPercent(userCommits, totalRepoCommits),
+    totalCommits: totalRepoCommits,
+    userCommits,
   };
 }
 
@@ -93,20 +124,26 @@ export function toProjectForModal(item: RepositoryContribution): ProjectForModal
 
 /**
  * Convert array of RepositoryContribution to CompactProject[]
+ * Sorted by commit count (descending) for visual consistency
  */
 export function toCompactProjects(
   items: RepositoryContribution[],
   username: string,
 ): CompactProject[] {
-  return items.map((item) => toCompactProject(item, username));
+  return items
+    .map((item) => toCompactProject(item, username))
+    .sort((a, b) => b.commits - a.commits);
 }
 
 /**
  * Convert array of RepositoryContribution to ExpandableProject[]
+ * Sorted by commit count (descending) for visual consistency
  */
 export function toExpandableProjects(
   items: RepositoryContribution[],
   username: string,
 ): ExpandableProject[] {
-  return items.map((item) => toExpandableProject(item, username));
+  return items
+    .map((item) => toExpandableProject(item, username))
+    .sort((a, b) => b.commits - a.commits);
 }

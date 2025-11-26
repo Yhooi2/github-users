@@ -297,7 +297,7 @@ describe("TimelineYearV2", () => {
     expect(screen.getByText("No repositories found for this year")).toBeInTheDocument();
   });
 
-  it("renders analytics modal placeholder", () => {
+  it("renders inline analytics (no modal)", () => {
     const yearData = createMockYearData();
 
     render(
@@ -308,7 +308,7 @@ describe("TimelineYearV2", () => {
       />,
     );
 
-    // Modal component should be rendered (even if not open)
-    expect(screen.getByTestId("analytics-modal")).toBeInTheDocument();
+    // No modal is rendered - all analytics are inline now
+    expect(screen.queryByTestId("analytics-modal")).not.toBeInTheDocument();
   });
 });

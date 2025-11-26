@@ -1,0 +1,183 @@
+{/* VisualTesting.mdx */}
+
+# Visual Testing Guide
+
+Это руководство описывает процесс визуального тестирования дизайн-системы для обеспечения 100% сохранения внешнего вида компонентов при рефакторинге.
+
+## Цель
+
+**Гарантировать**, что при любых изменениях кода:
+- Все цвета остаются неизменными
+- Градиенты сохраняют точные значения
+- Шрифты (размер, вес, межстрочный интервал) не меняются
+- Отступы и размеры компонентов стабильны
+- Glow-эффекты, тени и blur сохраняются
+- Все три темы (light, aurora, glass) работают корректно
+
+## Структура Visual Tests
+
+```
+docs/design_system/stories/visual-tests/
+├── AllThemesDecorator.tsx          # Утилиты для тестирования
+├── DesignSystemOverview.visual.stories.tsx  # МАСТЕР-ТЕСТ (все компоненты)
+│
+├── Core Glass Components:
+│   ├── GlassCard.visual.stories.tsx
+│   ├── GlassButton.visual.stories.tsx
+│   ├── GlassProgress.visual.stories.tsx
+│   ├── GlassBadge.visual.stories.tsx
+│   ├── GlassInput.visual.stories.tsx
+│   ├── GlassToggle.visual.stories.tsx
+│   ├── GlassSelect.visual.stories.tsx
+│   ├── StatusIndicator.visual.stories.tsx
+│   ├── MetricCard.visual.stories.tsx
+│   ├── LanguageBar.visual.stories.tsx
+│   ├── Avatar.visual.stories.tsx
+│   └── Alert.visual.stories.tsx
+│
+├── Desktop Components:
+│   ├── SearchBar.visual.stories.tsx
+│   ├── TabToggle.visual.stories.tsx
+│   ├── YearCard.visual.stories.tsx
+│   ├── RepoCard.visual.stories.tsx
+│   ├── AIInsightsCard.visual.stories.tsx
+│   ├── FlagAlert.visual.stories.tsx
+│   └── IconButton.visual.stories.tsx
+│
+└── Layout Components:
+    ├── Background.visual.stories.tsx
+    ├── Header.visual.stories.tsx
+    └── ThemeToggle.visual.stories.tsx
+```
+
+## Использование
+
+### 1. Перед рефакторингом
+
+```bash
+# Собрать Storybook
+npm run build-storybook
+
+# Запустить Chromatic для создания baseline скриншотов
+npx chromatic --project-token=<your-token>
+```
+
+### 2. После рефакторинга
+
+```bash
+# Снова запустить Chromatic
+npx chromatic --project-token=<your-token>
+```
+
+Chromatic автоматически сравнит скриншоты и покажет все визуальные изменения.
+
+### 3. Локальная проверка
+
+```bash
+# Запустить Storybook
+npm run storybook
+
+# Открыть в браузере
+# http://localhost:6006/?path=/story/design-system-visual-tests-complete-overview
+```
+
+## Ключевые Visual Tests
+
+### CompleteDesignSystemAllThemes
+
+**Путь:** `Design System/Visual Tests/Complete Overview`
+
+Это **мастер-тест**, который показывает ВСЕ компоненты во ВСЕХ трёх темах на одной странице. Любое визуальное изменение будет сразу заметно.
+
+Покрывает:
+- Все кнопки (primary, secondary, ghost)
+- Все бейджи (6 вариантов)
+- Статус-индикаторы (green, yellow, red)
+- Инпуты и контролы
+- Glass карточки (3 интенсивности + glow)
+- Progress bars (4 градиента)
+- Metric cards (4 цвета)
+- Language bars
+- Аватары (4 размера)
+- Alerts (3 варианта)
+- Desktop компоненты
+- Theme toggle
+
+### GlassThemeDeepDive
+
+Детальный тест Glass темы с реалистичным layout:
+- Header с навигацией
+- User profile section
+- Metrics grid
+- Year cards timeline
+- Expanded repo card
+- AI insights
+- Alerts
+
+## Что проверяется
+
+### Цвета и градиенты
+
+| Элемент | Light | Aurora | Glass |
+|---------|-------|--------|-------|
+| Background | Светлый градиент | Тёмный с aurora | Тёмный с orbs |
+| Card BG | rgba белый | rgba тёмный | Blur + rgba |
+| Primary BTN | Violet gradient | Violet gradient | Violet + glow |
+| Status Green | Emerald | Emerald + glow | Emerald + glow |
+| Status Yellow | Amber | Amber + glow | Amber + glow |
+| Status Red | Rose | Rose + glow | Rose + glow |
+
+### Typography
+
+- **Primary text**: Белый/черный в зависимости от темы
+- **Secondary text**: 70% opacity
+- **Muted text**: 50% opacity
+- **Font sizes**: xs (10px), sm (14px), md (16px), lg (18px), xl (20px)
+- **Font weights**: medium (500), semibold (600), bold (700)
+
+### Effects (Glass theme)
+
+- **Backdrop blur**: 8px, 12px, 16px
+- **Glow effects**: Blue, Violet, Cyan
+- **Box shadows**: Soft shadows с violet tint
+- **Floating orbs**: Animated background elements
+
+## Best Practices
+
+1. **Запускай мастер-тест первым** - если `CompleteDesignSystemAllThemes` проходит без изменений, скорее всего всё ок
+
+2. **Проверяй все три темы** - каждый компонент должен корректно работать в light, aurora и glass
+
+3. **Обращай внимание на glow** - в glass теме многие элементы имеют glow-эффекты
+
+4. **Смотри на spacing** - отступы критичны для визуального единства
+
+5. **Проверяй typography** - шрифты часто ломаются при рефакторинге
+
+## Troubleshooting
+
+### Скриншот отличается от baseline
+
+1. Проверь изменения в токенах (`docs/styles/tokens.ts`)
+2. Проверь изменения в компоненте
+3. Если изменение намеренное - approve в Chromatic
+4. Если баг - revert изменения
+
+### Storybook не запускается
+
+```bash
+# Очистить кэш
+rm -rf node_modules/.cache/storybook
+npm run build-storybook
+```
+
+### Chromatic не видит stories
+
+Убедись, что путь к stories указан в `.storybook/main.ts`:
+
+```typescript
+stories: [
+  "../docs/design_system/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+  "../docs/design_system/**/*.mdx",
+],
+```

@@ -9,6 +9,7 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
+import { LanguagesInline, type LanguageItem } from "./LanguagesInline";
 
 type UserStats = {
   repositories: number;
@@ -29,9 +30,11 @@ type UserHeaderProps = {
   };
   /** Optional stats to display inline */
   stats?: UserStats;
+  /** Optional programming languages */
+  languages?: LanguageItem[];
 };
 
-export function UserHeader({ user, stats }: UserHeaderProps) {
+export function UserHeader({ user, stats, languages }: UserHeaderProps) {
   const displayName = user.name || user.login;
   const initials = displayName
     .split(" ")
@@ -58,7 +61,18 @@ export function UserHeader({ user, stats }: UserHeaderProps) {
       <div className="flex-1 space-y-3">
         <div>
           <h1 className="text-3xl font-bold">{displayName}</h1>
-          <p className="text-xl text-muted-foreground">@{user.login}</p>
+          <p className="text-xl text-muted-foreground">
+            @{user.login}
+            <a
+              href={user.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-1.5 inline-flex text-muted-foreground/70 hover:text-primary transition-colors"
+              aria-label="View on GitHub"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </p>
         </div>
 
         {user.bio && <p className="text-base">{user.bio}</p>}
@@ -103,15 +117,10 @@ export function UserHeader({ user, stats }: UserHeaderProps) {
           </div>
         )}
 
-        <a
-          href={user.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-        >
-          View on GitHub
-          <ExternalLink className="h-4 w-4" aria-hidden="true" />
-        </a>
+        {/* Languages */}
+        {languages && languages.length > 0 && (
+          <LanguagesInline languages={languages} maxItems={4} />
+        )}
       </div>
     </div>
   );

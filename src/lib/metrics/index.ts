@@ -35,3 +35,33 @@ export {
   getGrowthLabel,
   type GrowthMetric,
 } from "./growth";
+
+// Consistency Metric
+export {
+  calculateConsistencyScore,
+  getConsistencyLabel,
+  type ConsistencyMetric,
+} from "./consistency";
+
+// Collaboration Metric
+export {
+  calculateCollaborationScore,
+  getCollaborationLabel,
+  type CollaborationMetric,
+} from "./collaboration";
+
+// Metric Categories
+export {
+  METRIC_CONFIGS,
+  CATEGORY_CONFIGS,
+  CATEGORY_ORDER,
+  calculateCategoryScore,
+  getCategoryScores,
+  type MetricCategory,
+  type MetricKey,
+  type MetricConfig,
+  type CategoryConfig,
+  type MetricData,
+  type AllMetricsData,
+  type CategoryScore,
+} from "./categories";

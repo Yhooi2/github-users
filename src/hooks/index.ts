@@ -16,7 +16,5 @@ export type {
   TabName,
 } from "./useProgressiveDisclosure";
 export { useReducedMotion } from "./useReducedMotion";
-export { useRepositoryFilters } from "./useRepositoryFilters";
-export { useRepositorySorting } from "./useRepositorySorting";
 export { useResponsive, BREAKPOINTS } from "./useResponsive";
 export type { Breakpoint, ResponsiveState } from "./useResponsive";

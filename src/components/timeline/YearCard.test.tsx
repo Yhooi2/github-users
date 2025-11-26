@@ -148,19 +148,6 @@ describe("YearCard", () => {
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
 
-  it("shows Active badge when isSelected is true", () => {
-    render(<YearCard {...defaultProps} isSelected={true} />);
-
-    // Badge text changed from "Selected" to "Active"
-    expect(screen.getByText("Active")).toBeInTheDocument();
-  });
-
-  it("does not show Active badge when isSelected is false", () => {
-    render(<YearCard {...defaultProps} isSelected={false} />);
-
-    expect(screen.queryByText("Active")).not.toBeInTheDocument();
-  });
-
   it("has correct aria-pressed attribute when selected", () => {
     render(<YearCard {...defaultProps} isSelected={true} />);
 

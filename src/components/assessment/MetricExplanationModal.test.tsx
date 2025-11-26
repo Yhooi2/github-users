@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { MetricExplanationModal } from "./MetricExplanationModal";
 
 describe("MetricExplanationModal", () => {
@@ -183,5 +183,45 @@ describe("MetricExplanationModal", () => {
     // Should display the unknown key as-is
     expect(screen.getByText("unknownKey")).toBeInTheDocument();
     expect(screen.getByText("10 pts")).toBeInTheDocument();
+  });
+
+  it("displays consistency metric details", () => {
+    render(
+      <MetricExplanationModal
+        isOpen={true}
+        onClose={mockOnClose}
+        metric="consistency"
+        score={82}
+        breakdown={{ regularity: 45, streak: 25, recency: 12 }}
+      />,
+    );
+
+    expect(screen.getByText("Consistency Score: 82%")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Measures regularity and stability of coding activity/),
+    ).toBeInTheDocument();
+    expect(screen.getByText("45 pts")).toBeInTheDocument();
+    expect(screen.getByText("25 pts")).toBeInTheDocument();
+    expect(screen.getByText("12 pts")).toBeInTheDocument();
+  });
+
+  it("displays collaboration metric details", () => {
+    render(
+      <MetricExplanationModal
+        isOpen={true}
+        onClose={mockOnClose}
+        metric="collaboration"
+        score={65}
+        breakdown={{ contributionRatio: 30, diversity: 20, engagement: 15 }}
+      />,
+    );
+
+    expect(screen.getByText("Collaboration Score: 65%")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Evaluates contributions to other developers' projects/),
+    ).toBeInTheDocument();
+    expect(screen.getByText("30 pts")).toBeInTheDocument();
+    expect(screen.getByText("20 pts")).toBeInTheDocument();
+    expect(screen.getByText("15 pts")).toBeInTheDocument();
   });
 });

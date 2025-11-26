@@ -1,3 +1,4 @@
+import { ActivityStatusDot } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
@@ -8,6 +9,10 @@ import { useResponsive } from "@/hooks";
 import { getLanguageColor } from "@/lib/constants";
 import { formatNumber } from "@/lib/statistics";
 import { cn } from "@/lib/utils";
+import {
+  calculateContributionPercent,
+  getContributionBadgeClass,
+} from "@/lib/utils/contribution-helpers";
 import { GitFork, Star } from "lucide-react";
 
 /**
@@ -30,8 +35,10 @@ export interface CompactProject {
   id: string;
   /** Repository name */
   name: string;
-  /** Number of commits in this period */
+  /** Number of USER's commits in this period */
   commits: number;
+  /** Total commits in the repository (for calculating contribution %) */
+  totalRepoCommits?: number;
   /** Star count */
   stars: number;
   /** Primary programming language */
@@ -46,6 +53,8 @@ export interface CompactProject {
   description?: string;
   /** Repository URL */
   url?: string;
+  /** Last activity date (for activity status indicator) */
+  lastActivityDate?: string;
 }
 
 export interface CompactProjectRowProps {
@@ -100,6 +109,12 @@ export function CompactProjectRow({
   // Get language color
   const languageColor = getLanguageColor(project.language);
 
+  // Calculate contribution percentage
+  const contributionPercent = calculateContributionPercent(
+    project.commits,
+    project.totalRepoCommits
+  );
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -113,7 +128,7 @@ export function CompactProjectRow({
       tabIndex={0}
       onClick={onClick}
       onKeyDown={handleKeyDown}
-      aria-label={`Expand ${project.name} details`}
+      aria-label={`${project.name}, ${contributionPercent}% contribution. Press Enter to expand.`}
       aria-expanded={isExpanded}
       className={cn(
         // Base styles
@@ -132,6 +147,18 @@ export function CompactProjectRow({
         "cursor-pointer",
       )}
     >
+      {/* Contribution % Badge - MOST PROMINENT */}
+      <Badge
+        variant="outline"
+        className={cn(
+          "h-7 w-12 justify-center text-sm font-bold shrink-0 border",
+          getContributionBadgeClass(contributionPercent)
+        )}
+        title={`Your contribution: ${contributionPercent}%`}
+      >
+        {contributionPercent}%
+      </Badge>
+
       {/* Project name */}
       <span className="min-w-0 flex-1 truncate text-sm font-medium">
         {project.name}
@@ -148,7 +175,7 @@ export function CompactProjectRow({
       {/* Metrics */}
       <div className="flex flex-shrink-0 items-center gap-3 text-xs text-muted-foreground">
         {/* Commits */}
-        <span title={`${project.commits} commits`}>
+        <span title={`${project.commits} of your commits`}>
           {formatNumber(project.commits)}
           {!isMobile && "c"}
         </span>
@@ -158,6 +185,12 @@ export function CompactProjectRow({
           <Star className="h-3 w-3" aria-hidden="true" />
           {formatNumber(project.stars)}
         </span>
+
+        {/* Activity Status */}
+        <ActivityStatusDot
+          lastActivityDate={project.lastActivityDate}
+          size="sm"
+        />
 
         {/* Language */}
         {project.language && (
@@ -183,13 +216,47 @@ export function CompactProjectRow({
     <HoverCard openDelay={300} closeDelay={100}>
       <HoverCardTrigger asChild>{rowContent}</HoverCardTrigger>
       <HoverCardContent side="right" className="w-80">
-        <div className="space-y-2">
-          <h4 className="font-semibold">{project.name}</h4>
+        <div className="space-y-3">
+          {/* Header with contribution badge */}
+          <div className="flex items-start justify-between gap-2">
+            <h4 className="font-semibold">{project.name}</h4>
+            <Badge
+              variant="outline"
+              className={cn(
+                "shrink-0 text-xs font-bold",
+                getContributionBadgeClass(contributionPercent)
+              )}
+            >
+              {contributionPercent}% contribution
+            </Badge>
+          </div>
+
           {project.description && (
             <p className="text-sm text-muted-foreground">{project.description}</p>
           )}
-          <div className="flex flex-wrap gap-4 pt-2 text-sm text-muted-foreground">
-            <span>{formatNumber(project.commits)} commits</span>
+
+          {/* Your contribution section */}
+          <div className="space-y-1 border-t border-border pt-2">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              Your Contribution
+            </div>
+            <div className="flex flex-wrap gap-3 text-sm">
+              <span>
+                <span className="font-medium">{formatNumber(project.commits)}</span>
+                {project.totalRepoCommits && (
+                  <span className="text-muted-foreground">
+                    {" "}of {formatNumber(project.totalRepoCommits)} commits
+                  </span>
+                )}
+              </span>
+              <span className="flex items-center gap-1">
+                <ActivityStatusDot lastActivityDate={project.lastActivityDate} showLabel />
+              </span>
+            </div>
+          </div>
+
+          {/* Project stats */}
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <Star className="h-3.5 w-3.5" />
               {formatNumber(project.stars)} stars

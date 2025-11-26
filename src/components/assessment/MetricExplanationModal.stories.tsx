@@ -146,3 +146,59 @@ export const AuthenticityLowScore: Story = {
     },
   },
 };
+
+export const ConsistencyMetric: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => console.log("Close modal"),
+    metric: "consistency",
+    score: 82,
+    breakdown: {
+      regularity: 45,
+      streak: 25,
+      recency: 12,
+    },
+  },
+};
+
+export const ConsistencyLowScore: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => console.log("Close modal"),
+    metric: "consistency",
+    score: 35,
+    breakdown: {
+      regularity: 15,
+      streak: 12,
+      recency: 8,
+    },
+  },
+};
+
+export const CollaborationMetric: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => console.log("Close modal"),
+    metric: "collaboration",
+    score: 65,
+    breakdown: {
+      contributionRatio: 30,
+      diversity: 20,
+      engagement: 15,
+    },
+  },
+};
+
+export const CollaborationLowScore: Story = {
+  args: {
+    isOpen: true,
+    onClose: () => console.log("Close modal"),
+    metric: "collaboration",
+    score: 20,
+    breakdown: {
+      contributionRatio: 10,
+      diversity: 6,
+      engagement: 4,
+    },
+  },
+};

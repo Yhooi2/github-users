@@ -5,10 +5,16 @@
  * Right panel (67%): Year detail or all-time stats and projects
  */
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { YearData } from "@/hooks/useUserAnalytics";
 import { cn } from "@/lib/utils";
 import { CircleDot, FolderGit2, GitCommit, GitPullRequest } from "lucide-react";
 import { useMemo, useState } from "react";
+import { TimelineStatTooltip } from "./TimelineStatTooltip";
 import { YearCard } from "./YearCard";
 import { YearDetailPanel } from "./YearDetailPanel";
 
@@ -103,32 +109,79 @@ export function DesktopTimelineLayout({
               All Time
             </h3>
 
-            {/* Stats row - 4 columns with all metrics */}
+            {/* Stats row - 4 columns with all metrics + tooltips */}
             <div className="mt-3 grid grid-cols-4 gap-2 text-xs">
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <GitCommit className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="font-medium text-foreground">
-                  {allTimeTotals.totalCommits.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <GitPullRequest className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="font-medium text-foreground">
-                  {allTimeTotals.totalPRs.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <CircleDot className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="font-medium text-foreground">
-                  {allTimeTotals.totalIssues.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <FolderGit2 className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="font-medium text-foreground">
-                  {allTimeTotals.totalRepos}
-                </span>
-              </div>
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 text-muted-foreground cursor-default hover:text-foreground transition-colors">
+                    <GitCommit className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span className="font-medium text-foreground">
+                      {allTimeTotals.totalCommits.toLocaleString()}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="w-64 p-3">
+                  <TimelineStatTooltip
+                    statType="commits"
+                    value={allTimeTotals.totalCommits}
+                    context="all"
+                  />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 text-muted-foreground cursor-default hover:text-foreground transition-colors">
+                    <GitPullRequest className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span className="font-medium text-foreground">
+                      {allTimeTotals.totalPRs.toLocaleString()}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="w-64 p-3">
+                  <TimelineStatTooltip
+                    statType="prs"
+                    value={allTimeTotals.totalPRs}
+                    context="all"
+                  />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 text-muted-foreground cursor-default hover:text-foreground transition-colors">
+                    <CircleDot className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span className="font-medium text-foreground">
+                      {allTimeTotals.totalIssues.toLocaleString()}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="w-64 p-3">
+                  <TimelineStatTooltip
+                    statType="issues"
+                    value={allTimeTotals.totalIssues}
+                    context="all"
+                  />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 text-muted-foreground cursor-default hover:text-foreground transition-colors">
+                    <FolderGit2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span className="font-medium text-foreground">
+                      {allTimeTotals.totalRepos}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="w-64 p-3">
+                  <TimelineStatTooltip
+                    statType="repos"
+                    value={allTimeTotals.totalRepos}
+                    context="all"
+                  />
+                </TooltipContent>
+              </Tooltip>
             </div>
           </button>
 

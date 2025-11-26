@@ -1,0 +1,99 @@
+# 🎨 GitHub Analytics Design System
+
+A comprehensive glassmorphism-based design system with **three distinct themes**: Light, Aurora, and Glass.
+
+## 🌟 Features
+
+- **Three Beautiful Themes**
+  - ☀️ **Light** — Clean, professional design with soft shadows
+  - 🌙 **Aurora** — Dark slate theme with subtle glows
+  - 💎 **Glass** — Vibrant purple glassmorphism with intense effects
+
+- **Fully Typed Components**
+  - Complete TypeScript support
+  - Comprehensive prop types
+  - IntelliSense friendly
+
+- **Glassmorphism Design**
+  - Backdrop blur effects
+  - Layered transparencies
+  - Animated gradient orbs
+  - Theme-adaptive glows
+
+## 📦 Components
+
+### Core Components
+
+- `GlassCard` — Glassmorphism container with blur and glow
+- `GlassProgress` — Animated progress bar with gradients
+- `GlassBadge` — Status labels and tags
+- `GlassButton` — Multi-variant button component
+- `GlassInput` — Search and text input fields
+
+### Status & Metrics
+
+- `StatusIndicator` — Traffic light status dots
+- `MetricCard` — Compact metric display
+- `LanguageBar` — Language distribution visualization
+
+### Display Components
+
+- `Avatar` — User avatar with online indicator
+- `Alert` — Danger, warning, and info alerts
+
+### Layout Components
+
+- `Header` — Sticky glassmorphism header
+- `Background` — Animated gradient background with orbs
+
+### Theme Components
+
+- `ThemeToggle` — Theme cycle button
+- `ThemeProvider` — Context provider for theme state
+
+## 🚀 Quick Start
+
+```tsx
+import { ThemeProvider, GlassCard, Background } from "./components";
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme="glass">
+      <Background>
+        <GlassCard intensity="strong" glow="violet" className="p-6">
+          <h1>Hello World</h1>
+        </GlassCard>
+      </Background>
+    </ThemeProvider>
+  );
+}
+```
+
+## 🎛️ Theme Switching
+
+Use the toolbar above to switch between themes, or use the `useTheme` hook:
+
+```tsx
+import { useTheme } from "./components";
+
+function MyComponent() {
+  const { theme, setTheme, cycleTheme } = useTheme();
+
+  return <button onClick={cycleTheme}>Current: {theme}</button>;
+}
+```
+
+## 🎨 Design Tokens
+
+All theme values are available via `themeStyles`:
+
+```tsx
+import { themeStyles } from "./components";
+
+const lightTheme = themeStyles.light;
+console.log(lightTheme.textPrimary); // "#1e293b"
+```
+
+---
+
+**Browse the components** in the sidebar to see detailed documentation and interactive examples.

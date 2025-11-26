@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CompactProjectRow, type CompactProject } from "./CompactProjectRow";
 
-// Mock useResponsive hook
+// Mock hooks
 vi.mock("@/hooks", () => ({
   useResponsive: vi.fn(() => ({
     isMobile: false,
@@ -12,6 +12,7 @@ vi.mock("@/hooks", () => ({
     breakpoint: "desktop",
     width: 1440,
   })),
+  useReducedMotion: vi.fn(() => false),
 }));
 
 describe("CompactProjectRow", () => {
@@ -126,12 +127,12 @@ describe("CompactProjectRow", () => {
       expect(screen.getByRole("button")).toBeInTheDocument();
     });
 
-    it("should have aria-label with project name", () => {
+    it("should have aria-label with project name and contribution", () => {
       render(<CompactProjectRow {...defaultProps} />);
 
       expect(screen.getByRole("button")).toHaveAttribute(
         "aria-label",
-        "Expand test-repo details",
+        "test-repo, 100% contribution. Press Enter to expand.",
       );
     });
 

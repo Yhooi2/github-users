@@ -134,11 +134,209 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+/* ========================================
+   GLASSMORPHISM ALTERNATIVE THEME
+   Activate with .glass class on <html>
+   ======================================== */
+
+/* Glass theme variables - Light mode */
+.glass {
+  /* Background gradient - Light (soft purple-blue) */
+  --glass-bg-gradient: linear-gradient(135deg,
+    oklch(0.92 0.03 280) 0%,   /* Light lavender */
+    oklch(0.90 0.04 250) 50%,  /* Light blue */
+    oklch(0.93 0.03 220) 100%  /* Light cyan */
+  );
+
+  /* Glass surface colors - White frost on light bg */
+  --glass-frost-5:  oklch(1 0 0 / 30%);
+  --glass-frost-10: oklch(1 0 0 / 45%);
+  --glass-frost-20: oklch(1 0 0 / 60%);
+  --glass-frost-30: oklch(1 0 0 / 70%);
+  --glass-frost-50: oklch(1 0 0 / 80%);
+  --glass-frost-70: oklch(1 0 0 / 90%);
+
+  /* Text colors for light glass (dark text on light bg) */
+  --glass-text-primary:   oklch(0.20 0.03 260);   /* Dark navy */
+  --glass-text-secondary: oklch(0.40 0.02 260);   /* Medium dark */
+  --glass-text-muted:     oklch(0.50 0.02 260);   /* Muted */
+
+  /* Accent colors */
+  --glass-accent-primary:      oklch(0.60 0.20 250);
+  --glass-accent-primary-glow: oklch(0.60 0.20 250 / 40%);
+  --glass-accent-primary-pulse: oklch(0.70 0.22 250);
+
+  --glass-accent-success:      oklch(0.65 0.18 145);
+  --glass-accent-success-glow: oklch(0.65 0.18 145 / 40%);
+
+  --glass-accent-warning:      oklch(0.80 0.15 85);
+  --glass-accent-warning-glow: oklch(0.80 0.15 85 / 40%);
+
+  --glass-accent-danger:       oklch(0.60 0.22 25);
+  --glass-accent-danger-glow:  oklch(0.60 0.22 25 / 40%);
+
+  /* Borders */
+  --glass-border-light: oklch(1 0 0 / 20%);
+  --glass-border-dark:  oklch(0 0 0 / 10%);
+
+  /* Shadows */
+  --glass-shadow-sm: 0 2px 8px oklch(0 0 0 / 8%);
+  --glass-shadow-md: 0 4px 16px oklch(0 0 0 / 12%);
+  --glass-shadow-lg: 0 8px 32px oklch(0 0 0 / 16%);
+
+  /* Glow shadows */
+  --glass-glow-primary: 0 0 20px var(--glass-accent-primary-glow);
+  --glass-glow-success: 0 0 20px var(--glass-accent-success-glow);
+  --glass-glow-warning: 0 0 20px var(--glass-accent-warning-glow);
+  --glass-glow-danger:  0 0 20px var(--glass-accent-danger-glow);
+
+  /* Border radius (organic, soft) */
+  --glass-radius-sm:  12px;
+  --glass-radius-md:  16px;
+  --glass-radius-lg:  24px;
+  --glass-radius-xl:  32px;
+  --glass-radius-2xl: 40px;
+
+  /* Blur values */
+  --glass-blur-subtle:  8px;
+  --glass-blur-medium:  16px;
+  --glass-blur-heavy:   24px;
+  --glass-blur-extreme: 40px;
+
+  /* Animation timing */
+  --glass-transition-glow: 0.3s ease-out;
+  --glass-pulse-duration: 2.5s;
+  --glass-pulse-easing: ease-in-out;
+}
+
+/* Glass theme variables - Dark mode */
+.glass.dark {
+  /* Background gradient - Dark (Neutral Dark - minimalist) */
+  --glass-bg-gradient: linear-gradient(135deg,
+    oklch(0.20 0.03 260) 0%,   /* Deep navy */
+    oklch(0.25 0.04 280) 50%,  /* Dark purple */
+    oklch(0.22 0.03 240) 100%  /* Dark blue */
+  );
+
+  /* Glass surface colors - Black frost (macOS style) */
+  --glass-frost-5:  oklch(0.15 0.02 260 / 20%);
+  --glass-frost-10: oklch(0.15 0.02 260 / 30%);
+  --glass-frost-20: oklch(0.15 0.02 260 / 40%);
+  --glass-frost-30: oklch(0.15 0.02 260 / 50%);
+  --glass-frost-50: oklch(0.15 0.02 260 / 60%);
+  --glass-frost-70: oklch(0.15 0.02 260 / 75%);
+
+  /* Text colors for dark glass (light text on dark bg) */
+  --glass-text-primary:   oklch(0.95 0.01 260);   /* Almost white */
+  --glass-text-secondary: oklch(0.80 0.02 260);   /* Light gray */
+  --glass-text-muted:     oklch(0.65 0.02 260);   /* Medium gray */
+
+  /* Borders for dark mode */
+  --glass-border-light: oklch(1 0 0 / 15%);
+  --glass-border-dark:  oklch(0 0 0 / 20%);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Glass theme body styles */
+  .glass body {
+    background: var(--glass-bg-gradient);
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  /* Glass card component */
+  .glass-card {
+    background: var(--glass-frost-20);
+    backdrop-filter: blur(var(--glass-blur-medium));
+    -webkit-backdrop-filter: blur(var(--glass-blur-medium));
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--glass-radius-md);
+    box-shadow: var(--glass-shadow-md);
+    transition: box-shadow var(--glass-transition-glow);
+  }
+
+  .glass-card:hover {
+    box-shadow: var(--glass-shadow-md), 0 0 12px oklch(1 0 0 / 10%);
+  }
+
+  /* Glass card variants */
+  .glass-card-subtle {
+    background: var(--glass-frost-10);
+    backdrop-filter: blur(var(--glass-blur-subtle));
+    -webkit-backdrop-filter: blur(var(--glass-blur-subtle));
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--glass-radius-md);
+    box-shadow: var(--glass-shadow-sm);
+  }
+
+  .glass-card-prominent {
+    background: var(--glass-frost-30);
+    backdrop-filter: blur(var(--glass-blur-heavy));
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--glass-radius-lg);
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  /* Glow effects */
+  .glass-glow-primary:hover {
+    box-shadow: var(--glass-glow-primary);
+  }
+
+  .glass-glow-success:hover {
+    box-shadow: var(--glass-glow-success);
+  }
+
+  .glass-glow-warning:hover {
+    box-shadow: var(--glass-glow-warning);
+  }
+
+  .glass-glow-danger:hover {
+    box-shadow: var(--glass-glow-danger);
+  }
+
+  /* Pulse animation - for notifications only */
+  @keyframes glass-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--glass-accent-primary-glow); }
+    50% { box-shadow: 0 0 16px 2px var(--glass-accent-primary-glow); }
+  }
+
+  @keyframes glass-pulse-success {
+    0%, 100% { box-shadow: 0 0 0 0 var(--glass-accent-success-glow); }
+    50% { box-shadow: 0 0 16px 2px var(--glass-accent-success-glow); }
+  }
+
+  .glass-pulse {
+    animation: glass-pulse var(--glass-pulse-duration) var(--glass-pulse-easing) infinite;
+  }
+
+  .glass-pulse-success {
+    animation: glass-pulse-success var(--glass-pulse-duration) var(--glass-pulse-easing) infinite;
+  }
+
+  /* Score glow for high metrics */
+  .glass-score-high {
+    box-shadow: 0 0 8px var(--glass-accent-success-glow);
+  }
+
+  /* Glass text utilities */
+  .glass-text-primary {
+    color: var(--glass-text-primary);
+  }
+
+  .glass-text-secondary {
+    color: var(--glass-text-secondary);
+  }
+
+  .glass-text-muted {
+    color: var(--glass-text-muted);
   }
 }

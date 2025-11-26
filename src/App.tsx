@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Repository } from "./apollo/github-api.types";
-import { QuickAssessment } from "./components/assessment/QuickAssessment";
+import { MetricAssessmentGrid } from "./components/assessment/MetricAssessmentGrid";
 import { AuthRequiredModal } from "./components/auth/AuthRequiredModal";
 import { ErrorBoundary } from "./components/layout/ErrorBoundary";
 import { RateLimitBanner } from "./components/layout/RateLimitBanner";
 import { SearchHeader } from "./components/layout/SearchHeader";
 import { ActivityTimelineV2 } from "./components/timeline/ActivityTimelineV2";
+import { TooltipProvider } from "./components/ui/tooltip";
 import UserProfile from "./components/UserProfile";
 import { useAuthenticityScore, useUserAnalytics } from "./hooks";
 import { calculateActivityScore } from "./lib/metrics/activity";
@@ -13,6 +14,7 @@ import { calculateCollaborationScore } from "./lib/metrics/collaboration";
 import { calculateConsistencyScore } from "./lib/metrics/consistency";
 import { calculateImpactScore } from "./lib/metrics/impact";
 import { calculateQualityScore } from "./lib/metrics/quality";
+import { calculateLanguageStatistics } from "./lib/statistics";
 
 /**
  * Rate limit state interface
@@ -102,6 +104,13 @@ function App() {
     ...year.contributions.map((repo) => repo.repository),
   ]) as Repository[];
 
+  // Calculate language statistics for skills display
+  const languageStats = calculateLanguageStatistics(allRepositories);
+  const languages = languageStats.map((lang) => ({
+    name: lang.name,
+    percent: lang.percentage,
+  }));
+
   // Calculate authenticity score from all repositories
   const authenticityData = useAuthenticityScore(allRepositories);
 
@@ -109,17 +118,12 @@ function App() {
   const metrics = baseMetrics
     ? {
         ...baseMetrics,
-        authenticity:
-          allRepositories.length > 0
-            ? {
-                score: authenticityData.score,
-                level: authenticityData.category as
-                  | "High"
-                  | "Medium"
-                  | "Low"
-                  | "Suspicious",
-              }
-            : undefined,
+        authenticity: {
+          score: allRepositories.length > 0 ? authenticityData.score : 0,
+          level: allRepositories.length > 0
+            ? (authenticityData.category as "High" | "Medium" | "Low" | "Suspicious")
+            : ("Low" as const),
+        },
       }
     : null;
 
@@ -137,8 +141,9 @@ function App() {
   const isAuthenticated = !rateLimit.isDemo && !!rateLimit.userLogin;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto space-y-8 p-4 pb-16">
+    <TooltipProvider delayDuration={300}>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto space-y-8 p-4 pb-16">
         {/* Compact Header - Brand, Search, Theme, User */}
         <SearchHeader
           userName={userName}
@@ -184,10 +189,16 @@ function App() {
             <UserProfile
               userName={userName}
               onRateLimitUpdate={handleRateLimitUpdate}
+              languages={languages}
             />
 
-            {/* Quick Assessment - 6 Key Metrics */}
-            {metrics && <QuickAssessment metrics={metrics} loading={loading} />}
+            {/* Metric Assessment Grid - 6 Metrics */}
+            {metrics && (
+              <MetricAssessmentGrid
+                metrics={metrics}
+                loading={loading}
+              />
+            )}
 
             {/* Activity Timeline - Year by Year (V2 with 3-level disclosure) */}
             <ActivityTimelineV2
@@ -203,6 +214,7 @@ function App() {
           <UserProfile
             userName={userName}
             onRateLimitUpdate={handleRateLimitUpdate}
+            languages={languages}
           />
         )}
 
@@ -214,8 +226,9 @@ function App() {
           remaining={rateLimit.remaining}
           limit={rateLimit.limit}
         />
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 

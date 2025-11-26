@@ -24,6 +24,7 @@ describe("ProjectListContainer", () => {
     stars: 100,
     language: "TypeScript",
     isOwner: true,
+    isFork: false,
     description: "My project description",
   };
 
@@ -34,6 +35,7 @@ describe("ProjectListContainer", () => {
     stars: 5000,
     language: "JavaScript",
     isOwner: false,
+    isFork: false,
     description: "An open source library",
   };
 
@@ -158,8 +160,8 @@ describe("ProjectListContainer", () => {
         />,
       );
 
-      // Get project buttons (exclude dropdown trigger)
-      const projectButtons = screen.getAllByRole("button", { name: /Expand/ });
+      // Get project buttons (exclude dropdown trigger) - look for contribution % in aria-label
+      const projectButtons = screen.getAllByRole("button", { name: /contribution/ });
       // Projects should be rendered in order: 150 (b), 100 (c), 50 (a)
       expect(projectButtons[0]).toHaveAttribute(
         "aria-label",
@@ -188,8 +190,8 @@ describe("ProjectListContainer", () => {
         />,
       );
 
-      // Click on project row
-      await user.click(screen.getByRole("button", { name: /Expand my-project/ }));
+      // Click on project row (my-project has 100% contribution since totalRepoCommits not set)
+      await user.click(screen.getByRole("button", { name: /my-project.*contribution/ }));
 
       expect(onProjectClick).toHaveBeenCalledWith("1");
     });
@@ -203,7 +205,7 @@ describe("ProjectListContainer", () => {
       );
 
       const expandedButton = screen.getByRole("button", {
-        name: /Expand my-project/,
+        name: /my-project.*contribution/,
       });
       expect(expandedButton).toHaveAttribute("aria-expanded", "true");
     });

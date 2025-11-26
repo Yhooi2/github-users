@@ -2,10 +2,13 @@ import type { RateLimit } from "@/apollo/github-api.types";
 import useQueryUser from "@/apollo/useQueryUser";
 import { EmptyState, ErrorState, LoadingState } from "@/components/layout";
 import { UserHeader } from "@/components/user/UserHeader";
+import type { LanguageItem } from "@/components/user/LanguagesInline";
 
 type Props = {
   userName: string;
   onRateLimitUpdate?: (rateLimit: RateLimit) => void;
+  /** Programming languages for skills display */
+  languages?: LanguageItem[];
 };
 
 /**
@@ -16,7 +19,7 @@ type Props = {
  * - ActivityTimelineV2 (year-by-year timeline with 33/67 split)
  * - ProjectSection (owned/contributions)
  */
-function UserProfile({ userName, onRateLimitUpdate }: Props) {
+function UserProfile({ userName, onRateLimitUpdate, languages }: Props) {
   const { data, loading, error, refetch } = useQueryUser(userName, 365, {
     onRateLimitUpdate,
   });
@@ -58,6 +61,7 @@ function UserProfile({ userName, onRateLimitUpdate }: Props) {
         following: user.following.totalCount,
         gists: user.gists.totalCount,
       }}
+      languages={languages}
     />
   );
 }

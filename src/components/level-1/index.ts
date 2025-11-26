@@ -3,18 +3,15 @@
  *
  * These components implement the second level of progressive disclosure,
  * providing inline expansion with detailed project information.
+ * All analytics are now displayed inline with tooltips - no modal required.
  */
 
 export { ExpandableProjectCard } from "./ExpandableProjectCard";
 export type {
   ExpandableProject,
   ExpandableProjectCardProps,
+  TeamMember,
 } from "./ExpandableProjectCard";
 
-export { ExpandedCardContent } from "./ExpandedCardContent";
-export type {
-  ExpandedCardContentProps,
-  ProjectContribution,
-  TechStackItem,
-  TeamMember,
-} from "./ExpandedCardContent";
+export { MetricTooltip } from "./MetricTooltip";
+export type { MetricTooltipProps } from "./MetricTooltip";
