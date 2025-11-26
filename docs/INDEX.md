@@ -1,51 +1,50 @@
 # Documentation Index
 
-> Complete reference for GitHub User Analytics + Profile Analyzer  
-> **Last Updated:** November 22, 2025  
-> **Project Status:** Phase 0-7 Complete | Phase 8 (UX/UI Refactor) In Progress
+> GitHub User Analytics - Complete Reference
+> **Last Updated:** November 2025
+> **Status:** Production | Phase 10 Complete
 
 ## Quick Start
 
-1. [README.md](../README.md)
-2. [Architecture Overview](./architecture.md)
-3. [.claude/CLAUDE.md](../.claude/CLAUDE.md) ← Entry point для Claude
+1. [.claude/CLAUDE.md](../.claude/CLAUDE.md) ← **Start here for Claude Code**
+2. [README.md](../README.md)
+3. [Architecture](./architecture.md)
 
 ## Core Documentation
 
-### Development Guides
+| Document | Purpose |
+|----------|---------|
+| [architecture.md](./architecture.md) | System architecture & layers |
+| [components-guide.md](./components-guide.md) | Component development guide |
+| [apollo-client-guide.md](./apollo-client-guide.md) | GraphQL & Apollo patterns |
+| [testing-guide.md](./phases/testing-guide.md) | Testing with Vitest & Playwright |
+| [phase-7-oauth-integration.md](./phases/phase-7-oauth-integration.md) | OAuth implementation |
 
-- [Component Development](./components-guide.md)
-- [Testing Guide](./phases/testing-guide.md)
-- [Apollo Client Guide](./apollo-client-guide.md)
+## Quick References (.claude/quick-ref/)
 
-### New UX/UI Refactor (Phase 8)
+| Reference | Description |
+|-----------|-------------|
+| [quick_ref_3_levels.md](../.claude/quick-ref/quick_ref_3_levels.md) | Progressive disclosure levels |
+| [quick_ref_responsive.md](../.claude/quick-ref/quick_ref_responsive.md) | Responsive breakpoints |
+| [quick_ref_design_tokens.md](../.claude/quick-ref/quick_ref_design_tokens.md) | Colors, spacing, typography |
+| [quick_ref_tech_stack.md](../.claude/quick-ref/quick_ref_tech_stack.md) | Tech stack overview |
 
-| Phase | Name                      | Status      | Documentation                                                             |
-| ----- | ------------------------- | ----------- | ------------------------------------------------------------------------- |
-| 8     | UX/UI Refactoring         | In Progress | [master-plan.md](./phases/master-plan.md)                                 |
-| 8.1   | Research & Architecture   | Complete    | [phase-research-architecture.md](./phases/phase-research-architecture.md) |
-| 8.2   | Level Specifications      | Complete    | [phase-level-specs.md](./phases/phase-level-specs.md)                     |
-| 8.3   | Responsive Design         | Complete    | [phase-responsive-design.md](./phases/phase-responsive-design.md)         |
-| 8.4   | Tech Stack                | Complete    | [phase-tech-stack.md](./phases/phase-tech-stack.md)                       |
-| 8.5   | Agents Configuration      | Complete    | [phase-agents-config.md](./phases/phase-agents-config.md)                 |
-| 8.6   | Implementation Phases 1-3 | Complete    | [phase-implementation-1-3.md](./phases/phase-implementation-1-3.md)       |
+## Specs (.claude/specs/)
 
-### Quick References (.claude/quick-ref/)
+| Spec | Description |
+|------|-------------|
+| [level-0-compact-list.md](../.claude/specs/level-0-compact-list.md) | Ultra-compact row view |
+| [level-1-expandable-card.md](../.claude/specs/level-1-expandable-card.md) | Expandable card with preview |
+| [level-2-modal-tabs.md](../.claude/specs/level-2-modal-tabs.md) | Full modal with 4 tabs |
 
-- [3-Level Summary](./../.claude/quick-ref/3-levels-summary.md)
-- [Responsive Rules](./../.claude/quick-ref/responsive-rules.md)
-- [Design Tokens](./../.claude/quick-ref/design_tokens.md)
-- [Tech Stack](./../.claude/quick-ref/tech_stack.md)
+## Operational
 
-### Specs (.claude/specs/)
+| Document | Purpose |
+|----------|---------|
+| [PERFORMANCE_BENCHMARKS.md](./PERFORMANCE_BENCHMARKS.md) | Performance metrics |
+| [ROLLBACK_PLAN.md](./ROLLBACK_PLAN.md) | Rollback procedures |
+| [metrics-explanation.md](./metrics-explanation.md) | Metrics calculation details |
 
-- [Level 0 - Compact List](./../.claude/specs/level-0-compact-list.md)
-- [Level 1 - Expandable Card](./../.claude/specs/level-1-expandable-card.md)
-- [Level 2 - Modal + Tabs](./../.claude/specs/level-2-modal-tabs.md)
+## History (archived)
 
-### Guides (.claude/guides/)
-
-- [Phase 1 - Setup](./../.claude/guides/phase-1-setup.md)
-- [Phase 2 - Level 0](./../.claude/guides/phase-2-level-0.md)
-- [Phase 3 - Level 1](./../.claude/guides/phase-3-level-1.md)
-- [Phase 4 - Level 2](./../.claude/guides/phase-4-level-2.md)
+Legacy documentation moved to `docs/history/` for reference.
