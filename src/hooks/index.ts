@@ -5,16 +5,21 @@
  * All hooks are optimized with React.useMemo and React.useCallback for performance.
  */
 
+export { useAIAnalytics } from "./useAIAnalytics";
+export type {
+  UseAIAnalyticsParams,
+  UseAIAnalyticsResult,
+} from "./useAIAnalytics";
 export { useAuthenticityScore } from "./useAuthenticityScore";
-export { useUserAnalytics } from "./useUserAnalytics";
-export type { YearData, UseUserAnalyticsReturn } from "./useUserAnalytics";
 export { useProgressiveDisclosure } from "./useProgressiveDisclosure";
 export type {
-  ProgressiveDisclosureState,
   ProgressiveDisclosureActions,
-  UseProgressiveDisclosureOptions,
+  ProgressiveDisclosureState,
   TabName,
+  UseProgressiveDisclosureOptions,
 } from "./useProgressiveDisclosure";
 export { useReducedMotion } from "./useReducedMotion";
-export { useResponsive, BREAKPOINTS } from "./useResponsive";
+export { BREAKPOINTS, useResponsive } from "./useResponsive";
 export type { Breakpoint, ResponsiveState } from "./useResponsive";
+export { useUserAnalytics } from "./useUserAnalytics";
+export type { UseUserAnalyticsReturn, YearData } from "./useUserAnalytics";
