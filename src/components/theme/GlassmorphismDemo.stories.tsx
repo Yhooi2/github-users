@@ -229,12 +229,9 @@ Alternative theme with frosted glass effect. Activate by adding \`.glass\` class
 export default meta;
 type Story = StoryObj<typeof GlassmorphismDemo>;
 
-export const LightMode: Story = {
-  name: "Light Mode",
-};
+export const LightMode: Story = {};
 
 export const DarkMode: Story = {
-  name: "Dark Mode",
   decorators: [
     (Story) => (
       <div className="glass dark min-h-screen p-8" style={{
@@ -296,7 +293,6 @@ export const GlassCardsDark: Story = {
 };
 
 export const GlowEffects: Story = {
-  name: "Glow Effects",
   render: () => (
     <div className="glass p-8" style={{
       background: "linear-gradient(135deg, oklch(0.92 0.03 280) 0%, oklch(0.90 0.04 250) 50%, oklch(0.93 0.03 220) 100%)",
@@ -321,7 +317,6 @@ export const GlowEffects: Story = {
 };
 
 export const PulseAnimations: Story = {
-  name: "Pulse Animations",
   render: () => (
     <div className="glass p-8" style={{
       background: "linear-gradient(135deg, oklch(0.92 0.03 280) 0%, oklch(0.90 0.04 250) 50%, oklch(0.93 0.03 220) 100%)",

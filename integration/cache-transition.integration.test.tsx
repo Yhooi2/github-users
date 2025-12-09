@@ -5,7 +5,7 @@ import { GET_YEAR_CONTRIBUTIONS } from "../src/apollo/queries/yearContributions"
 /**
  * Helper to create user profile mock
  */
-function createUserProfileMock(login: string, createdAt: string) {
+function _createUserProfileMock(login: string, createdAt: string) {
   return {
     request: {
       query: GET_USER_PROFILE,
@@ -160,7 +160,7 @@ function createYearContributionsMock(
 /**
  * Helper to generate year mocks from account creation to now
  */
-function generateYearMocks(login: string, createdAt: string) {
+function _generateYearMocks(login: string, createdAt: string) {
   const accountCreationYear = new Date(createdAt).getFullYear();
   const currentYear = new Date().getFullYear();
   const mocks = [];

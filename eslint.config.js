@@ -10,7 +10,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  globalIgnores(["dist", "storybook-static"]),
+  globalIgnores(["dist", "storybook-static", "coverage", "playwright-report"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [

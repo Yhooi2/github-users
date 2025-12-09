@@ -28,7 +28,7 @@ vi.mock("framer-motion", () => ({
 // Mock Radix tooltip (it causes issues in test environment)
 vi.mock("@radix-ui/react-tooltip", () => ({
   Root: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  Trigger: ({ children, asChild, ...props }: { children: React.ReactNode; asChild?: boolean }) => (
+  Trigger: ({ children, asChild: _asChild, ...props }: { children: React.ReactNode; asChild?: boolean }) => (
     <span {...props}>{children}</span>
   ),
   Portal: ({ children }: { children: React.ReactNode }) => <>{children}</>,
