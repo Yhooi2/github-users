@@ -155,6 +155,18 @@ function createYearContributionMock(
             totalPullRequestContributions: prs,
             totalPullRequestReviewContributions: reviews,
             restrictedContributionsCount: 0,
+            contributionCalendar: {
+              totalContributions: commits,
+              weeks: [
+                {
+                  contributionDays: [
+                    { contributionCount: 5, date: `${year}-01-01` },
+                    { contributionCount: 3, date: `${year}-01-02` },
+                    { contributionCount: 7, date: `${year}-01-03` },
+                  ],
+                },
+              ],
+            },
             commitContributionsByRepository: repos,
           },
         },

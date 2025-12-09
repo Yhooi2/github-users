@@ -58,6 +58,17 @@ describe("Parallel Query Failure Integration Test", () => {
         totalPullRequestContributions: Math.floor(commits / 5),
         totalPullRequestReviewContributions: Math.floor(commits / 20),
         restrictedContributionsCount: 0,
+              contributionCalendar: {
+                totalContributions: 100,
+                weeks: [
+                  {
+                    contributionDays: [
+                      { contributionCount: 5, date: "2023-01-01" },
+                      { contributionCount: 3, date: "2023-01-02" },
+                    ],
+                  },
+                ],
+              },
         commitContributionsByRepository: [
           {
             contributions: { totalCount: commits },

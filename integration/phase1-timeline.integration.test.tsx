@@ -105,6 +105,17 @@ describe("Phase 1 Integration - Complete Timeline Flow", () => {
               totalPullRequestContributions: 60,
               totalPullRequestReviewContributions: 15,
               restrictedContributionsCount: 0,
+              contributionCalendar: {
+                totalContributions: 100,
+                weeks: [
+                  {
+                    contributionDays: [
+                      { contributionCount: 5, date: "2023-01-01" },
+                      { contributionCount: 3, date: "2023-01-02" },
+                    ],
+                  },
+                ],
+              },
               commitContributionsByRepository: [
                 {
                   contributions: { totalCount: 300 },
@@ -181,6 +192,17 @@ describe("Phase 1 Integration - Complete Timeline Flow", () => {
               totalPullRequestContributions: 80,
               totalPullRequestReviewContributions: 25,
               restrictedContributionsCount: 0,
+              contributionCalendar: {
+                totalContributions: 100,
+                weeks: [
+                  {
+                    contributionDays: [
+                      { contributionCount: 5, date: "2023-01-01" },
+                      { contributionCount: 3, date: "2023-01-02" },
+                    ],
+                  },
+                ],
+              },
               commitContributionsByRepository: [
                 {
                   contributions: { totalCount: 400 },
@@ -260,6 +282,17 @@ describe("Phase 1 Integration - Complete Timeline Flow", () => {
               totalPullRequestContributions: 35,
               totalPullRequestReviewContributions: 10,
               restrictedContributionsCount: 0,
+              contributionCalendar: {
+                totalContributions: 100,
+                weeks: [
+                  {
+                    contributionDays: [
+                      { contributionCount: 5, date: "2023-01-01" },
+                      { contributionCount: 3, date: "2023-01-02" },
+                    ],
+                  },
+                ],
+              },
               commitContributionsByRepository: [
                 {
                   contributions: { totalCount: 250 },
@@ -436,6 +469,17 @@ describe("Phase 1 Integration - Complete Timeline Flow", () => {
               totalPullRequestContributions: range.year * 3,
               totalPullRequestReviewContributions: range.year * 1,
               restrictedContributionsCount: 0,
+              contributionCalendar: {
+                totalContributions: 100,
+                weeks: [
+                  {
+                    contributionDays: [
+                      { contributionCount: 5, date: "2023-01-01" },
+                      { contributionCount: 3, date: "2023-01-02" },
+                    ],
+                  },
+                ],
+              },
               commitContributionsByRepository: [],
             },
           },
@@ -550,6 +594,17 @@ describe("Phase 1 Integration - Complete Timeline Flow", () => {
               totalPullRequestContributions: range.year * 2,
               totalPullRequestReviewContributions: 0,
               restrictedContributionsCount: 0,
+              contributionCalendar: {
+                totalContributions: 100,
+                weeks: [
+                  {
+                    contributionDays: [
+                      { contributionCount: 5, date: "2023-01-01" },
+                      { contributionCount: 3, date: "2023-01-02" },
+                    ],
+                  },
+                ],
+              },
               commitContributionsByRepository: [],
             },
           },

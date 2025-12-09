@@ -10,6 +10,10 @@ import {
   type GetYearContributionsVariables,
   type RepositoryContribution,
 } from "@/apollo/queries/yearContributions";
+import {
+  aggregateByMonth,
+  type MonthlyContribution,
+} from "@/lib/contribution-aggregator";
 import { generateYearRanges } from "@/lib/date-utils";
 import { ApolloError, useApolloClient, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
@@ -25,6 +29,8 @@ export interface YearData {
   totalReviews: number;
   ownedRepos: RepositoryContribution[];
   contributions: RepositoryContribution[];
+  /** Monthly contribution data for mini activity charts */
+  monthlyContributions?: MonthlyContribution[];
 }
 
 /**
@@ -141,6 +147,11 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
               (r) => r.repository.owner.login !== username,
             );
 
+            // Aggregate calendar data for mini activity charts
+            const monthlyContributions = aggregateByMonth(
+              collection.contributionCalendar,
+            );
+
             return {
               year,
               totalCommits: collection.totalCommitContributions,
@@ -149,6 +160,7 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
               totalReviews: collection.totalPullRequestReviewContributions,
               ownedRepos,
               contributions,
+              monthlyContributions,
             };
           } catch (error) {
             // Log individual year query failure but don't stop other queries

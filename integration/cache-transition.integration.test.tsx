@@ -62,6 +62,17 @@ function createYearContributionsMock(
             totalPullRequestContributions: 25,
             totalPullRequestReviewContributions: 15,
             restrictedContributionsCount: 0,
+              contributionCalendar: {
+                totalContributions: 100,
+                weeks: [
+                  {
+                    contributionDays: [
+                      { contributionCount: 5, date: "2023-01-01" },
+                      { contributionCount: 3, date: "2023-01-02" },
+                    ],
+                  },
+                ],
+              },
             commitContributionsByRepository: [
               {
                 contributions: {
