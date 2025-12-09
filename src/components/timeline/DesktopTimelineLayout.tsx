@@ -12,8 +12,10 @@ import {
 } from "@/components/ui/tooltip";
 import type { YearData } from "@/hooks/useUserAnalytics";
 import { cn } from "@/lib/utils";
+import { getCareerSummary } from "@/lib/year-badges";
 import { CircleDot, FolderGit2, GitCommit, GitPullRequest } from "lucide-react";
 import { useMemo, useState } from "react";
+import { CareerSummaryHeader } from "./CareerSummaryHeader";
 import { TimelineStatTooltip } from "./TimelineStatTooltip";
 import { YearCard } from "./YearCard";
 import { YearDetailPanel } from "./YearDetailPanel";
@@ -65,6 +67,11 @@ export function DesktopTimelineLayout({
     [timeline]
   );
 
+  // Calculate career summary for header
+  const careerSummary = useMemo(() => {
+    return getCareerSummary(timeline);
+  }, [timeline]);
+
   // Calculate all-time totals for sidebar header
   const allTimeTotals = useMemo(() => {
     const uniqueRepos = new Set<string>();
@@ -97,6 +104,9 @@ export function DesktopTimelineLayout({
       {/* Left Panel: Sticky Year Cards Sidebar (33%) */}
       <aside aria-label="Year navigation">
         <div className="sticky top-6 rounded-xl border bg-card shadow-sm">
+          {/* Career Summary Header */}
+          <CareerSummaryHeader summary={careerSummary} />
+
           {/* All Time Header - clickable to show all-time stats */}
           <button
             onClick={() => setSelectedYear(null)}
