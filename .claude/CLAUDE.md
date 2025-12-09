@@ -88,17 +88,22 @@ src/
 
 | Stat | Value |
 |------|-------|
-| Components | 22 |
+| Components | 30 |
 | Themes | 3 (light, aurora, glass) |
-| Stories | 22 (100%) |
-| Visual Tests | 23 (100%) |
-| Unit Tests | 218 (100%) |
+| Stories | 30 (100%) |
+| Visual Tests | 31 (100%) |
+| Unit Tests | 333 (100%) |
+
+**New Components (2025-11-27):**
+- `GlassModal`, `GlassTooltip`, `GlassDropdown`, `GlassCheckbox`
+- `GlassSkeleton`, `GlassNotification`, `GlassSlider`, `GlassTabs`
 
 **Key files:**
 - Components: `docs/design_system/*.tsx`
 - Stories: `docs/design_system/stories/*.stories.tsx`
 - Visual Tests: `docs/design_system/stories/visual-tests/*.visual.stories.tsx`
 - Unit Tests: `docs/design_system/__tests__/*.test.tsx`
+- **ComponentLibrary:** `docs/design_system/stories/ComponentLibrary.stories.tsx`
 
 **Commands:**
 ```bash
