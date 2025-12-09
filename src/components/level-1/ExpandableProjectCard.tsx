@@ -20,11 +20,15 @@ import {
   GitFork,
   GitPullRequest,
   MessageSquare,
+  Sparkles,
   Star,
   Users,
 } from "lucide-react";
 import type { CompactProject, LanguageInfo } from "../level-0/CompactProjectRow";
 import { MetricTooltip } from "./MetricTooltip";
+import { analyzeProjectHealth } from "@/lib/project-health";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
  * Team member for avatar display
@@ -66,6 +70,10 @@ export interface ExpandableProject extends CompactProject {
   teamCount?: number;
   /** Top contributors for avatar display */
   topContributors?: TeamMember[];
+  /** Whether project is archived */
+  isArchived?: boolean;
+  /** Last push date (ISO string) */
+  pushedAt?: string | null;
 }
 
 export interface ExpandableProjectCardProps {
@@ -277,6 +285,20 @@ export function ExpandableProjectCard({
               {project.description}
             </p>
           )}
+
+          {/* Health Indicator + AI Button Row */}
+          <div className="flex items-center justify-between gap-3">
+            {/* Health indicator */}
+            {(project.isArchived !== undefined || project.pushedAt !== undefined) && (
+              <HealthIndicator
+                isArchived={project.isArchived ?? false}
+                pushedAt={project.pushedAt ?? null}
+              />
+            )}
+
+            {/* AI Analytics Button */}
+            <AIAnalyticsButton projectUrl={project.url} />
+          </div>
 
           {/* Your Contribution Section */}
           <ContributionSection
@@ -565,5 +587,81 @@ function TeamSection({
         </a>
       </MetricTooltip>
     </section>
+  );
+}
+
+/**
+ * Health indicator component
+ */
+interface HealthIndicatorProps {
+  isArchived: boolean;
+  pushedAt: string | null;
+}
+
+function HealthIndicator({ isArchived, pushedAt }: HealthIndicatorProps) {
+  const health = analyzeProjectHealth({ isArchived, pushedAt });
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="flex items-center gap-1.5">
+          <span
+            className={cn("h-2 w-2 rounded-full", {
+              "bg-success": health.status === "healthy",
+              "bg-warning": health.status === "maintenance",
+              "bg-muted-foreground": health.status === "stale" || health.status === "archived",
+            })}
+            aria-hidden="true"
+          />
+          <span className={cn("text-xs font-medium", health.color)}>
+            {health.labelRu}
+          </span>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p className="text-xs">{health.reason}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+/**
+ * AI Analytics button (placeholder for future feature)
+ */
+interface AIAnalyticsButtonProps {
+  projectUrl: string;
+}
+
+function AIAnalyticsButton({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  projectUrl,
+}: AIAnalyticsButtonProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // TODO: Open AI Analytics Modal
+    // Future implementation: Open AI analytics modal for projectUrl
+  };
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={handleClick}
+          disabled
+        >
+          <Sparkles className="h-4 w-4" />
+          <span className="hidden sm:inline">AI Аналитика</span>
+          <Badge variant="secondary" className="text-[10px] px-1.5">
+            Soon
+          </Badge>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p className="text-xs">AI-анализ архитектуры проекта (скоро)</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }

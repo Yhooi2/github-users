@@ -54,6 +54,8 @@ const fullProject: ExpandableProject = {
     { name: "Bob Smith", avatar: "https://i.pravatar.cc/150?u=bob", login: "bob", commits: 312, prs: 14 },
     { name: "Charlie Brown", avatar: "https://i.pravatar.cc/150?u=charlie", login: "charlie", commits: 198, prs: 8 },
   ],
+  isArchived: false,
+  pushedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago - healthy
 };
 
 // Minimal project with only required fields
@@ -307,6 +309,74 @@ export const NoContributionData: Story = {
       ...minimalProject,
       forks: 5,
       teamCount: 3,
+    },
+    isExpanded: true,
+    maxCommits: 500,
+  },
+};
+
+/**
+ * Healthy project (updated recently)
+ */
+export const HealthyProject: Story = {
+  args: {
+    project: {
+      ...fullProject,
+      id: "healthy",
+      name: "active-repo",
+      isArchived: false,
+      pushedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+    },
+    isExpanded: true,
+    maxCommits: 500,
+  },
+};
+
+/**
+ * Maintenance project (updated 60 days ago)
+ */
+export const MaintenanceProject: Story = {
+  args: {
+    project: {
+      ...fullProject,
+      id: "maintenance",
+      name: "stable-lib",
+      isArchived: false,
+      pushedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days ago
+    },
+    isExpanded: true,
+    maxCommits: 500,
+  },
+};
+
+/**
+ * Stale project (no updates for 7 months)
+ */
+export const StaleProject: Story = {
+  args: {
+    project: {
+      ...fullProject,
+      id: "stale",
+      name: "legacy-code",
+      isArchived: false,
+      pushedAt: new Date(Date.now() - 210 * 24 * 60 * 60 * 1000).toISOString(), // 7 months ago
+    },
+    isExpanded: true,
+    maxCommits: 500,
+  },
+};
+
+/**
+ * Archived project
+ */
+export const ArchivedProject: Story = {
+  args: {
+    project: {
+      ...fullProject,
+      id: "archived",
+      name: "old-experiment",
+      isArchived: true,
+      pushedAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year ago
     },
     isExpanded: true,
     maxCommits: 500,
