@@ -16,12 +16,18 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { GitCommit, GitPullRequest, FolderGit2 } from "lucide-react";
 import { TimelineStatTooltip } from "./TimelineStatTooltip";
+import { YearBadge } from "./YearBadge";
+import { MiniActivityChart } from "./MiniActivityChart";
+import { analyzeYear } from "@/lib/year-badges";
+import { useMemo } from "react";
 
 export interface YearCardProps {
   /** Year data from Apollo */
   year: YearData;
   /** Max commits across all years (for bar normalization) */
   maxCommits: number;
+  /** All years data (for badge analysis) */
+  allYears: Array<{ year: number; totalCommits: number }>;
   /** Whether this year is currently selected */
   isSelected: boolean;
   /** Callback when year is clicked */
@@ -49,6 +55,7 @@ export interface YearCardProps {
 export function YearCard({
   year,
   maxCommits,
+  allYears,
   isSelected,
   onSelect,
 }: YearCardProps) {
@@ -59,6 +66,16 @@ export function YearCard({
     maxCommits > 0 ? (year.totalCommits / maxCommits) * 100 : 0;
 
   const repoCount = year.ownedRepos.length + year.contributions.length;
+
+  // Analyze year for badge
+  const analysis = useMemo(
+    () => analyzeYear(
+      year.year,
+      year.totalCommits,
+      allYears.map(y => ({ year: y.year, commits: y.totalCommits }))
+    ),
+    [year.year, year.totalCommits, allYears]
+  );
 
   return (
     <motion.button
@@ -75,14 +92,15 @@ export function YearCard({
       aria-pressed={isSelected}
       aria-label={`Select year ${year.year}, ${year.totalCommits} commits, ${repoCount} repositories`}
     >
-      {/* Year label */}
-      <div className="mb-3">
+      {/* Year label with badge */}
+      <div className="mb-3 flex items-center justify-between">
         <span className={cn(
           "text-2xl font-bold tracking-tight",
           isSelected && "text-primary"
         )}>
           {year.year}
         </span>
+        <YearBadge badge={analysis.badge} size="sm" />
       </div>
 
       {/* Visual activity bar with improved contrast */}
@@ -102,6 +120,13 @@ export function YearCard({
           }}
         />
       </div>
+
+      {/* Mini activity chart */}
+      {year.monthlyContributions && year.monthlyContributions.length > 0 && (
+        <div className="mb-4">
+          <MiniActivityChart monthlyData={year.monthlyContributions} />
+        </div>
+      )}
 
       {/* Metrics with icons + tooltips */}
       <div className="grid grid-cols-3 gap-2 text-xs">

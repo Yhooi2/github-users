@@ -30,7 +30,7 @@ export interface YearData {
   ownedRepos: RepositoryContribution[];
   contributions: RepositoryContribution[];
   /** Monthly contribution data for mini activity charts */
-  monthlyContributions?: MonthlyContribution[];
+  monthlyContributions: MonthlyContribution[];
 }
 
 /**
@@ -161,7 +161,7 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
               ownedRepos,
               contributions,
               monthlyContributions,
-            };
+            } satisfies YearData;
           } catch (error) {
             // Log individual year query failure but don't stop other queries
             console.warn(`Failed to fetch data for year ${year}:`, error);

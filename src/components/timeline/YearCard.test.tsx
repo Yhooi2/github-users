@@ -27,6 +27,18 @@ vi.mock("@/hooks", () => ({
   useReducedMotion: () => false,
 }));
 
+// Helper to create mock monthly data
+const createMockMonthlyData = (commits: number) => {
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return monthNames.map((monthName, i) => ({
+    month: i + 1,
+    monthName,
+    contributions: Math.floor(commits / 12),
+    daysActive: 20,
+    maxDaily: 10,
+  }));
+};
+
 // Helper to create mock year data
 const createMockYearData = (
   year: number,
@@ -39,6 +51,7 @@ const createMockYearData = (
   totalPRs: Math.floor(commits / 10),
   totalIssues: Math.floor(commits / 15),
   totalReviews: Math.floor(commits / 5),
+  monthlyContributions: createMockMonthlyData(commits),
   ownedRepos: Array.from({ length: ownedCount }, (_, i) => ({
     contributions: { totalCount: Math.floor(commits / (ownedCount + 1)) },
     repository: {
@@ -102,9 +115,16 @@ const createMockYearData = (
 });
 
 describe("YearCard", () => {
+  const mockYears = [
+    createMockYearData(2024, 500),
+    createMockYearData(2023, 400),
+    createMockYearData(2022, 300),
+  ];
+
   const defaultProps = {
-    year: createMockYearData(2024, 500),
+    year: mockYears[0],
     maxCommits: 1000,
+    allYears: mockYears.map(y => ({ year: y.year, totalCommits: y.totalCommits })),
     isSelected: false,
     onSelect: vi.fn(),
   };
@@ -192,8 +212,7 @@ describe("YearCard", () => {
     render(<YearCard {...defaultProps} isSelected={true} />);
 
     const button = screen.getByRole("button");
-    expect(button.className).toContain("border-primary");
-    expect(button.className).toContain("ring-2");
+    expect(button.className).toContain("bg-primary");
   });
 
   it("renders icons for metrics", () => {

@@ -38,6 +38,18 @@ Used in the 33% left panel of the desktop split layout (>=1440px).
 export default meta;
 type Story = StoryObj<typeof YearCard>;
 
+// Create mock monthly data
+const createMonthlyData = (year: number, commits: number) => {
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return monthNames.map((monthName, i) => ({
+    month: i + 1,
+    monthName,
+    contributions: Math.floor(commits / 12 + Math.random() * (commits / 6)),
+    daysActive: Math.floor(Math.random() * 25 + 5),
+    maxDaily: Math.floor(Math.random() * 20 + 5),
+  }));
+};
+
 // Create mock year data
 const createYearData = (
   year: number,
@@ -118,16 +130,31 @@ const createYearData = (
     totalReviews: Math.floor(commits / 5),
     ownedRepos,
     contributions,
+    monthlyContributions: createMonthlyData(year, commits),
   };
 };
+
+// Create mock allYears data for badge analysis
+const createAllYearsData = (years: YearData[]) => {
+  return years.map(y => ({ year: y.year, totalCommits: y.totalCommits }));
+};
+
+// Sample years for stories
+const sampleYears = [
+  createYearData(2024, 800, 4, 6),
+  createYearData(2023, 600, 3, 5),
+  createYearData(2022, 400, 2, 4),
+  createYearData(2021, 100, 1, 1),
+];
 
 /**
  * Default unselected state
  */
 export const Default: Story = {
   args: {
-    year: createYearData(2024, 800, 4, 6),
+    year: sampleYears[0],
     maxCommits: 1000,
+    allYears: createAllYearsData(sampleYears),
     isSelected: false,
     onSelect: () => console.log("Year selected"),
   },
@@ -138,32 +165,44 @@ export const Default: Story = {
  */
 export const Selected: Story = {
   args: {
-    year: createYearData(2024, 800, 4, 6),
+    year: sampleYears[0],
     maxCommits: 1000,
+    allYears: createAllYearsData(sampleYears),
     isSelected: true,
     onSelect: () => console.log("Year selected"),
   },
 };
 
 /**
- * High activity year (full bar)
+ * High activity year (full bar) - Peak year badge
  */
 export const HighActivity: Story = {
   args: {
     year: createYearData(2024, 1500, 8, 12),
     maxCommits: 1500,
+    allYears: createAllYearsData([
+      createYearData(2024, 1500, 8, 12),
+      createYearData(2023, 800, 4, 6),
+      createYearData(2022, 600, 3, 5),
+    ]),
     isSelected: false,
     onSelect: () => console.log("Year selected"),
   },
 };
 
 /**
- * Low activity year (small bar)
+ * Low activity year (small bar) - Inactive badge
  */
 export const LowActivity: Story = {
   args: {
-    year: createYearData(2021, 100, 1, 1),
+    year: createYearData(2021, 80, 1, 1),
     maxCommits: 1000,
+    allYears: createAllYearsData([
+      createYearData(2024, 1000, 5, 7),
+      createYearData(2023, 800, 4, 6),
+      createYearData(2022, 600, 3, 5),
+      createYearData(2021, 80, 1, 1),
+    ]),
     isSelected: false,
     onSelect: () => console.log("Year selected"),
   },
@@ -182,6 +221,7 @@ export const InteractiveList: Story = {
       createYearData(2021, 200, 1, 2),
     ];
     const maxCommits = Math.max(...years.map((y) => y.totalCommits));
+    const allYears = createAllYearsData(years);
 
     return (
       <div className="w-[300px] space-y-3">
@@ -190,6 +230,7 @@ export const InteractiveList: Story = {
             key={year.year}
             year={year}
             maxCommits={maxCommits}
+            allYears={allYears}
             isSelected={selectedYear === year.year}
             onSelect={() => setSelectedYear(year.year)}
           />
@@ -200,7 +241,7 @@ export const InteractiveList: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Click cards to see selection state change.",
+        story: "Click cards to see selection state change. Notice the different badges: 🔥 Peak, 📈 Growth, 📊 Stable, 🌱 Start.",
       },
     },
   },

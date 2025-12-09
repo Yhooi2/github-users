@@ -42,6 +42,18 @@ On tablet/mobile, the accordion layout is used instead.
 export default meta;
 type Story = StoryObj<typeof DesktopTimelineLayout>;
 
+// Helper to create mock monthly data
+const createMonthlyData = (year: number, commits: number) => {
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return monthNames.map((monthName, i) => ({
+    month: i + 1,
+    monthName,
+    contributions: Math.floor(commits / 12 + Math.random() * (commits / 6)),
+    daysActive: Math.floor(Math.random() * 25 + 5),
+    maxDaily: Math.floor(Math.random() * 20 + 5),
+  }));
+};
+
 // Create mock year data (same helper as other stories)
 const createYearData = (
   year: number,
@@ -122,6 +134,7 @@ const createYearData = (
     totalReviews: Math.floor(commits / 5),
     ownedRepos,
     contributions,
+    monthlyContributions: createMonthlyData(year, commits),
   };
 };
 

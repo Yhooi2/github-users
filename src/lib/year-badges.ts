@@ -212,7 +212,7 @@ function determineBadgeType(
 }
 
 function generateInsight(
-  year: number,
+  _year: number,
   commits: number,
   yoyChange: number | null,
   rank: number,

@@ -59,6 +59,12 @@ export function DesktopTimelineLayout({
     [timeline]
   );
 
+  // Prepare simplified years data for badge analysis
+  const allYears = useMemo(
+    () => timeline.map((y) => ({ year: y.year, totalCommits: y.totalCommits })),
+    [timeline]
+  );
+
   // Calculate all-time totals for sidebar header
   const allTimeTotals = useMemo(() => {
     const uniqueRepos = new Set<string>();
@@ -192,6 +198,7 @@ export function DesktopTimelineLayout({
                 key={year.year}
                 year={year}
                 maxCommits={maxCommits}
+                allYears={allYears}
                 isSelected={selectedYear === year.year}
                 onSelect={() => setSelectedYear(year.year)}
               />
