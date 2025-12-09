@@ -125,7 +125,8 @@ export const Loading: Story = {
 // All metrics showcase
 export const AllMetrics: Story = {
   decorators: [
-    (Story) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_Story) => (
       <div className="w-[320px] p-4 bg-card rounded-lg border space-y-4">
         <MetricRowCompact
           title="Activity"

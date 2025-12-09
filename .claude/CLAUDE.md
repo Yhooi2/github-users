@@ -5,7 +5,7 @@
 GitHub User Analytics - React 19 + TypeScript + Vite 7 + Tailwind CSS v4.
 Analyzes GitHub profiles with 5 metrics: Activity, Impact, Quality, Growth, Authenticity.
 
-**Status:** Production | Tests: 1980 (100%) | Coverage: 91.36%
+**Status:** Production | Tests: 1557 (100% passing)
 
 ## Commands
 
@@ -17,7 +17,7 @@ npm run storybook    # Run Storybook (build first!)
 npm run lint         # ESLint check
 ```
 
-## Workflow: Component → Storybook → Test
+## Workflow: Component -> Storybook -> Test
 
 1. Write component with TypeScript
 2. Create `.stories.tsx` with all states
@@ -34,8 +34,9 @@ src/
 ├── components/     # React components (shadcn/ui)
 ├── hooks/          # Custom hooks (useProgressiveDisclosure, useReducedMotion)
 ├── lib/            # Business logic (metrics, authenticity)
-├── graphql/        # Apollo queries & types
-└── pages/          # Route components
+├── apollo/         # Apollo Client setup & GraphQL queries
+├── types/          # TypeScript type definitions
+└── test/           # Test utilities & mocks
 ```
 
 **Stack:** Apollo Client (data), shadcn/ui (UI), Framer Motion (animations)
@@ -52,7 +53,7 @@ src/
 
 ## Quality Standards
 
-- **Tests:** Min 90% coverage, 100% for calculations
+- **Tests:** Target 90% coverage
 - **TypeScript:** Strict mode, no `any`
 - **Accessibility:** WCAG 2.1 AA
 - **Animations:** Respect `prefers-reduced-motion`
@@ -69,10 +70,8 @@ src/
 | Design Tokens | `.claude/quick-ref/quick_ref_design_tokens.md` |
 | Responsive | `.claude/quick-ref/quick_ref_responsive.md` |
 | Tech Stack | `.claude/quick-ref/quick_ref_tech_stack.md` |
-| **Design System** | `.claude/quick-ref/quick_ref_design_system.md` |
-| **Visual Testing** | `.claude/quick-ref/quick_ref_visual_testing.md` |
-| **Refactoring Guide** | `.claude/quick-ref/quick_ref_refactoring_guide.md` |
-| Glassmorphism | `.claude/quick-ref/quick_ref_glassmorphism.md` |
+| 3-Level System | `.claude/quick-ref/quick_ref_3_levels.md` |
+| **UX Roadmap** | `.claude/quick-ref/quick_ref_ux_roadmap.md` |
 
 ## Quick Reference
 
@@ -81,35 +80,6 @@ src/
 **Metrics:** Activity (contributions), Impact (stars/forks), Quality (code patterns), Growth (trend), Authenticity (bot detection)
 
 **OAuth:** Optional GitHub auth for higher rate limits. Server-side token storage.
-
-## Design System (Glassmorphism UI Kit)
-
-**Location:** `docs/design_system/`
-
-| Stat | Value |
-|------|-------|
-| Components | 30 |
-| Themes | 3 (light, aurora, glass) |
-| Stories | 30 (100%) |
-| Visual Tests | 31 (100%) |
-| Unit Tests | 333 (100%) |
-
-**New Components (2025-11-27):**
-- `GlassModal`, `GlassTooltip`, `GlassDropdown`, `GlassCheckbox`
-- `GlassSkeleton`, `GlassNotification`, `GlassSlider`, `GlassTabs`
-
-**Key files:**
-- Components: `docs/design_system/*.tsx`
-- Stories: `docs/design_system/stories/*.stories.tsx`
-- Visual Tests: `docs/design_system/stories/visual-tests/*.visual.stories.tsx`
-- Unit Tests: `docs/design_system/__tests__/*.test.tsx`
-- **ComponentLibrary:** `docs/design_system/stories/ComponentLibrary.stories.tsx`
-
-**Commands:**
-```bash
-npm test -- --run docs/design_system/__tests__/  # Unit tests
-npm run build-storybook && npm run storybook     # Visual tests
-```
 
 ## MCP Servers
 

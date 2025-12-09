@@ -1,4 +1,4 @@
-import { withThemeByDataAttribute } from "@storybook/addon-themes";
+import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react-vite";
 import "../src/index.css";
 
@@ -11,15 +11,19 @@ const preview: Preview = {
       },
     },
     layout: "centered",
+    docs: {
+      source: {
+        state: "collapsed",
+      },
+    },
   },
   decorators: [
-    withThemeByDataAttribute({
+    withThemeByClassName({
       themes: {
-        light: "light",
+        light: "",
         dark: "dark",
       },
       defaultTheme: "light",
-      attributeName: "class",
     }),
   ],
 };

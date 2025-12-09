@@ -65,7 +65,9 @@ const EVENT_COLORS = eventColors;
  *
  * Shows chronological list of user's activities in the project
  */
-export function TimelineTab({ project: _project }: TimelineTabProps) {
+export function TimelineTab(_props: TimelineTabProps) {
+  // TODO: Use project data when implementing real timeline
+  void _props;
   return (
     <div className="space-y-6">
       <Card>

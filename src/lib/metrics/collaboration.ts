@@ -73,13 +73,11 @@ export function calculateCollaborationScore(
   const contributedRepos = new Set<string>();
   const uniqueOrgs = new Set<string>();
   let totalContributionCommits = 0;
-  let totalOwnedCommits = 0;
 
   timeline.forEach((year) => {
     // Owned repos
     year.ownedRepos.forEach((r) => {
       ownedRepos.add(r.repository.url);
-      totalOwnedCommits += r.contributions.totalCount;
     });
 
     // Contributed repos (others' repos)

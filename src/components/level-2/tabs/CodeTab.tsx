@@ -41,7 +41,9 @@ const CODE_METRICS: CodeMetric[] = [
  * - Language breakdown with percentages
  * - Code metrics (lines, files, additions/deletions)
  */
-export function CodeTab({ project: _project }: CodeTabProps) {
+export function CodeTab(_props: CodeTabProps) {
+  // TODO: Use project data when implementing real code analysis
+  void _props;
   return (
     <div className="space-y-6">
       {/* Language breakdown */}

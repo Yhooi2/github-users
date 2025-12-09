@@ -1,8 +1,7 @@
 # Technology Stack - Quick Reference
 
-> **Purpose**: List all technologies without implementation details  
-> **For detailed setup**: See `guides/phase-1-setup.md`  
-> **For MCP usage**: See `specs/mcp-integration.md`
+> **Purpose**: List all technologies without implementation details
+> **For architecture overview**: See `docs/architecture.md`
 
 ---
 
@@ -253,7 +252,7 @@ npx shadcn@latest add <component-name>
 
 ---
 
-## 🔗 Quick Links
+## Quick Links
 
 ### Official Docs
 
@@ -267,9 +266,9 @@ npx shadcn@latest add <component-name>
 
 ### Internal Docs
 
-- [MCP Integration Details](../specs/mcp-integration.md)
-- [Setup Guide](../guides/phase-1-setup.md)
-- [Testing Guide](../guides/testing-guide.md)
+- [Architecture](../../docs/architecture.md)
+- [Testing Guide](../../docs/phases/testing-guide.md)
+- [Components Guide](../../docs/components-guide.md)
 
 ---
 
@@ -299,4 +298,4 @@ npm run build-storybook  # Build for MCP integration
 
 ---
 
-**For setup instructions**: See `guides/phase-1-setup.md`
+**For setup instructions**: See project README.md

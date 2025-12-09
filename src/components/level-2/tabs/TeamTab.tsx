@@ -73,7 +73,9 @@ const MAX_COMMITS = TOP_CONTRIBUTORS[0].commits;
  * - Top contributors with their stats
  * - Collaboration metrics
  */
-export function TeamTab({ project: _project }: TeamTabProps) {
+export function TeamTab(_props: TeamTabProps) {
+  // TODO: Use project data when implementing real team analysis
+  void _props;
   return (
     <div className="space-y-6">
       {/* Team overview */}
