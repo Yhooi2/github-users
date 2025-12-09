@@ -32,6 +32,17 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
         totalPullRequestReviewContributions
         restrictedContributionsCount
 
+        # Calendar for mini activity charts
+        contributionCalendar {
+          totalContributions
+          weeks {
+            contributionDays {
+              contributionCount
+              date
+            }
+          }
+        }
+
         commitContributionsByRepository(maxRepositories: 100) {
           contributions {
             totalCount
@@ -113,6 +124,30 @@ export const GET_YEAR_CONTRIBUTIONS = gql`
   }
 `;
 /**
+ * Single day contribution data from contributionCalendar
+ */
+export interface ContributionDay {
+  contributionCount: number;
+  date: string; // ISO date "2025-01-15"
+}
+
+/**
+ * Week of contribution days
+ */
+export interface ContributionWeek {
+  contributionDays: ContributionDay[];
+}
+
+/**
+ * Contribution calendar with daily/weekly data
+ * Used for mini activity charts in YearCard
+ */
+export interface ContributionCalendar {
+  totalContributions: number;
+  weeks: ContributionWeek[];
+}
+
+/**
  * Repository with contribution count
  */
 export interface RepositoryContribution {
@@ -131,6 +166,7 @@ export interface ContributionsCollection {
   totalPullRequestContributions: number;
   totalPullRequestReviewContributions: number;
   restrictedContributionsCount: number;
+  contributionCalendar: ContributionCalendar;
   commitContributionsByRepository: RepositoryContribution[];
 }
 
