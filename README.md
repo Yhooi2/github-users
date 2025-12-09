@@ -4,6 +4,9 @@
 
 [![CI](https://github.com/Yhooi2/git-user-info/actions/workflows/ci.yml/badge.svg)](https://github.com/Yhooi2/git-user-info/actions/workflows/ci.yml)
 [![E2E](https://github.com/Yhooi2/git-user-info/actions/workflows/e2e.yml/badge.svg)](https://github.com/Yhooi2/git-user-info/actions/workflows/e2e.yml)
+[![CodeQL](https://github.com/Yhooi2/git-user-info/actions/workflows/codeql.yml/badge.svg)](https://github.com/Yhooi2/git-user-info/actions/workflows/codeql.yml)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![semantic-release](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 [![React](https://img.shields.io/badge/React-19.2.0-blue)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.1.2-purple)](https://vitejs.dev/)
@@ -130,6 +133,7 @@ npm run build         # Production build
 npm run test          # Unit tests
 npm run test:e2e      # E2E tests
 npm run storybook     # Storybook
+npm run commit        # Interactive commit (Commitizen)
 ```
 
 ## Testing
@@ -240,6 +244,57 @@ The application follows a clean **layered architecture**:
 - **Graceful Degradation**: Automatic fallback from OAuth to demo mode on errors
 
 For detailed architecture information, see [docs/architecture.md](./docs/architecture.md)
+
+## CI/CD & Automation
+
+### GitHub Actions Workflows
+
+| Workflow    | Trigger          | Description                         |
+| ----------- | ---------------- | ----------------------------------- |
+| **CI**      | PR, push to main | Lint, TypeScript, Unit Tests, Build |
+| **E2E**     | push to main     | Playwright tests (Chromium)         |
+| **CodeQL**  | PR, push, weekly | Security vulnerability scanning     |
+| **Release** | push to main     | Auto versioning & changelog         |
+
+### Git Hooks (Husky)
+
+| Hook         | Action                               |
+| ------------ | ------------------------------------ |
+| `pre-commit` | Runs lint-staged (ESLint + Prettier) |
+| `commit-msg` | Validates commit message format      |
+
+### Commit Convention
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/):
+
+```bash
+# Interactive commit (recommended)
+npm run commit
+
+# Manual commit
+git commit -m "feat: add new feature"
+git commit -m "fix: resolve bug in component"
+git commit -m "docs: update README"
+```
+
+| Type       | Description      | Version Bump          |
+| ---------- | ---------------- | --------------------- |
+| `feat`     | New feature      | Minor (1.0.0 → 1.1.0) |
+| `fix`      | Bug fix          | Patch (1.0.0 → 1.0.1) |
+| `docs`     | Documentation    | -                     |
+| `style`    | Formatting       | -                     |
+| `refactor` | Code refactoring | -                     |
+| `perf`     | Performance      | Patch                 |
+| `test`     | Tests            | -                     |
+| `ci`       | CI/CD            | -                     |
+| `chore`    | Maintenance      | -                     |
+
+### Dependabot
+
+Automatic dependency updates every Monday for:
+
+- npm packages
+- GitHub Actions
 
 ## License
 
