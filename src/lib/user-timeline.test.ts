@@ -14,7 +14,7 @@
  * @vitest-environment jsdom
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { formatDate, generateYearRanges, type YearRange } from "./date-utils";
+import { formatDate, generateYearRanges, getYear, isCurrentYear, type YearRange } from "./date-utils";
 
 describe("User Timeline Generation", () => {
   beforeEach(() => {
@@ -234,6 +234,64 @@ describe("User Timeline Generation", () => {
       expect(typeof range.from).toBe("string");
       expect(typeof range.to).toBe("string");
       expect(typeof range.label).toBe("string");
+    });
+  });
+});
+
+describe("Date Utility Functions", () => {
+  beforeEach(() => {
+    // Fix time for consistent testing
+    vi.setSystemTime(new Date("2025-11-17T12:00:00Z"));
+  });
+
+  describe("getYear", () => {
+    it("should extract year from ISO date string", () => {
+      expect(getYear("2023-01-15T12:00:00Z")).toBe(2023);
+      expect(getYear("2020-12-31T23:59:59Z")).toBe(2020);
+      expect(getYear("2025-06-15T00:00:00Z")).toBe(2025);
+    });
+
+    it("should handle edge case dates", () => {
+      // First moment of year
+      expect(getYear("2024-01-01T00:00:00Z")).toBe(2024);
+
+      // Last moment of year
+      expect(getYear("2024-12-31T23:59:59Z")).toBe(2024);
+    });
+
+    it("should use UTC year extraction", () => {
+      // This is Dec 31 in UTC, but might be Jan 1 in some timezones
+      expect(getYear("2023-12-31T23:00:00Z")).toBe(2023);
+    });
+  });
+
+  describe("isCurrentYear", () => {
+    it("should return true for dates in current year (2025)", () => {
+      expect(isCurrentYear("2025-01-01T00:00:00Z")).toBe(true);
+      expect(isCurrentYear("2025-11-17T12:00:00Z")).toBe(true);
+      expect(isCurrentYear("2025-12-31T23:59:59Z")).toBe(true);
+    });
+
+    it("should return false for dates in past years", () => {
+      expect(isCurrentYear("2024-12-31T23:59:59Z")).toBe(false);
+      expect(isCurrentYear("2023-01-01T00:00:00Z")).toBe(false);
+      expect(isCurrentYear("2020-06-15T12:00:00Z")).toBe(false);
+    });
+
+    it("should return false for dates in future years", () => {
+      expect(isCurrentYear("2026-01-01T00:00:00Z")).toBe(false);
+      expect(isCurrentYear("2030-12-31T23:59:59Z")).toBe(false);
+    });
+
+    it("should accept Date objects", () => {
+      expect(isCurrentYear(new Date("2025-06-15T00:00:00Z"))).toBe(true);
+      expect(isCurrentYear(new Date("2024-06-15T00:00:00Z"))).toBe(false);
+    });
+
+    it("should use UTC year comparison", () => {
+      // Even at the edge of the year in UTC, it should be accurate
+      expect(isCurrentYear("2025-01-01T00:00:00Z")).toBe(true);
+      expect(isCurrentYear("2024-12-31T23:59:59Z")).toBe(false);
     });
   });
 });

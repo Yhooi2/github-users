@@ -2,6 +2,8 @@
 
 > Modern React application for searching and displaying GitHub user information via GraphQL API
 
+[![CI](https://github.com/Yhooi2/git-user-info/actions/workflows/ci.yml/badge.svg)](https://github.com/Yhooi2/git-user-info/actions/workflows/ci.yml)
+[![E2E](https://github.com/Yhooi2/git-user-info/actions/workflows/e2e.yml/badge.svg)](https://github.com/Yhooi2/git-user-info/actions/workflows/e2e.yml)
 [![React](https://img.shields.io/badge/React-19.2.0-blue)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.1.2-purple)](https://vitejs.dev/)
