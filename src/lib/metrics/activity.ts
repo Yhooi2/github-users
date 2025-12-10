@@ -1,4 +1,5 @@
 import type { YearData } from "@/hooks/useUserAnalytics";
+import { countUniqueRepos, getLastNMonths } from "./shared";
 
 /**
  * Activity metric result with detailed breakdown
@@ -98,23 +99,7 @@ export function calculateActivityScore(timeline: YearData[]): ActivityMetric {
   };
 }
 
-/**
- * Get data for last N months from timeline
- * Note: Since timeline is yearly, we approximate by treating recent years
- * @internal
- */
-function getLastNMonths(timeline: YearData[], months: number): YearData[] {
-  if (timeline.length === 0) return [];
-
-  // For 3 months: include current year only
-  // For 12 months: include current year + potentially last year
-  const yearsToInclude =
-    months <= 3 ? 1 : months <= 12 ? 2 : Math.ceil(months / 12);
-
-  return timeline
-    .sort((a, b) => b.year - a.year) // newest first
-    .slice(0, yearsToInclude);
-}
+// getLastNMonths imported from ./shared
 
 /**
  * Count active years (we have yearly data, so we count years as "month equivalents")
@@ -127,18 +112,7 @@ function countActiveMonths(data: YearData[]): number {
   return data.filter((d) => d.totalCommits > 0).length;
 }
 
-/**
- * Count unique repositories across all data
- * @internal
- */
-function countUniqueRepos(data: YearData[]): number {
-  const repos = new Set<string>();
-  data.forEach((year) => {
-    year.ownedRepos.forEach((r) => repos.add(r.repository.url));
-    year.contributions.forEach((r) => repos.add(r.repository.url));
-  });
-  return repos.size;
-}
+// countUniqueRepos imported from ./shared
 
 /**
  * Get activity level label based on score

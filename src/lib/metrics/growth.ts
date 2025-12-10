@@ -1,4 +1,10 @@
 import type { YearData } from "@/hooks/useUserAnalytics";
+import {
+  calculateTotalForks,
+  calculateTotalStars,
+  clamp,
+  extractLanguages,
+} from "./shared";
 
 /**
  * Growth metric result with detailed breakdown
@@ -165,40 +171,7 @@ function normalizeGrowth(percentageChange: number): number {
   }
 }
 
-/**
- * Calculate total stars across all repositories
- * @internal
- */
-function calculateTotalStars(yearData: YearData): number {
-  const allRepos = [...yearData.ownedRepos, ...yearData.contributions];
-  return allRepos.reduce((sum, r) => sum + r.repository.stargazerCount, 0);
-}
-
-/**
- * Calculate total forks across all repositories
- * @internal
- */
-function calculateTotalForks(yearData: YearData): number {
-  const allRepos = [...yearData.ownedRepos, ...yearData.contributions];
-  return allRepos.reduce((sum, r) => sum + r.repository.forkCount, 0);
-}
-
-/**
- * Extract unique languages from year data
- * @internal
- */
-function extractLanguages(yearData: YearData): Set<string> {
-  const languages = new Set<string>();
-  const allRepos = [...yearData.ownedRepos, ...yearData.contributions];
-
-  allRepos.forEach((r) => {
-    if (r.repository.primaryLanguage?.name) {
-      languages.add(r.repository.primaryLanguage.name);
-    }
-  });
-
-  return languages;
-}
+// calculateTotalStars, calculateTotalForks, extractLanguages imported from ./shared
 
 /**
  * Count new languages in current year that weren't in previous year
@@ -232,13 +205,7 @@ function calculateSkillsGrowth(newLanguages: number): number {
   return 0;
 }
 
-/**
- * Clamp a value between min and max
- * @internal
- */
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
+// clamp imported from ./shared
 
 /**
  * Get growth level label based on score

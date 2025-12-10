@@ -1,4 +1,5 @@
 import type { YearData } from "@/hooks/useUserAnalytics";
+import { getUniqueRepos } from "./shared";
 
 /**
  * Quality metric result with detailed breakdown
@@ -150,25 +151,7 @@ export function calculateQualityScore(timeline: YearData[]): QualityMetric {
   };
 }
 
-/**
- * Get unique repositories by URL to avoid duplicates across years
- * @internal
- */
-function getUniqueRepos<T extends { repository: { url: string } }>(
-  repos: T[],
-): T[] {
-  const seen = new Set<string>();
-  const unique: T[] = [];
-
-  for (const repo of repos) {
-    if (!seen.has(repo.repository.url)) {
-      seen.add(repo.repository.url);
-      unique.push(repo);
-    }
-  }
-
-  return unique;
-}
+// getUniqueRepos imported from ./shared
 
 /**
  * Calculate average repository age in years

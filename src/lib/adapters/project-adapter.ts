@@ -3,17 +3,24 @@
  */
 
 import type { RepositoryContribution } from "@/apollo/queries/yearContributions";
-import type { CompactProject, LanguageInfo } from "@/components/level-0/CompactProjectRow";
 import type { ExpandableProject } from "@/components/level-1/ExpandableProjectCard";
 import type { ProjectForModal } from "@/components/level-2/ProjectAnalyticsModal";
+import type { CompactProject, LanguageInfo } from "@/lib/types/project.types";
+import { calculateContributionPercent } from "@/lib/utils/contribution-helpers";
 
 /**
  * Extract language breakdown from repository languages data
  */
-function extractLanguages(repository: RepositoryContribution["repository"]): LanguageInfo[] {
+function extractLanguages(
+  repository: RepositoryContribution["repository"],
+): LanguageInfo[] {
   const { languages } = repository;
 
-  if (!languages?.edges || languages.edges.length === 0 || languages.totalSize === 0) {
+  if (
+    !languages?.edges ||
+    languages.edges.length === 0 ||
+    languages.totalSize === 0
+  ) {
     // Fallback to primary language if no detailed breakdown available
     if (repository.primaryLanguage?.name) {
       return [{ name: repository.primaryLanguage.name, percent: 100 }];
@@ -32,7 +39,9 @@ function extractLanguages(repository: RepositoryContribution["repository"]): Lan
 /**
  * Extract total commits from repository's default branch
  */
-function getTotalRepoCommits(repository: RepositoryContribution["repository"]): number | undefined {
+function getTotalRepoCommits(
+  repository: RepositoryContribution["repository"],
+): number | undefined {
   const target = repository.defaultBranchRef?.target;
   // Type guard for Commit target with history
   if (target && "history" in target && target.history?.totalCount) {
@@ -67,14 +76,6 @@ export function toCompactProject(
 }
 
 /**
- * Calculate contribution percentage
- */
-function calculateContributionPercent(userCommits: number, totalCommits: number | undefined): number {
-  if (!totalCommits || totalCommits === 0) return 100; // Assume 100% if no total data
-  return Math.round((userCommits / totalCommits) * 100);
-}
-
-/**
  * Convert RepositoryContribution to ExpandableProject (Level 1)
  */
 export function toExpandableProject(
@@ -100,7 +101,10 @@ export function toExpandableProject(
     lastActivityDate: repository.pushedAt ?? undefined,
     forks: repository.forkCount,
     // User contribution data
-    contributionPercent: calculateContributionPercent(userCommits, totalRepoCommits),
+    contributionPercent: calculateContributionPercent(
+      userCommits,
+      totalRepoCommits,
+    ),
     totalCommits: totalRepoCommits,
     userCommits,
   };
@@ -109,7 +113,9 @@ export function toExpandableProject(
 /**
  * Convert RepositoryContribution to ProjectForModal (Level 2)
  */
-export function toProjectForModal(item: RepositoryContribution): ProjectForModal {
+export function toProjectForModal(
+  item: RepositoryContribution,
+): ProjectForModal {
   const { repository } = item;
 
   return {

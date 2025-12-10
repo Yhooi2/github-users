@@ -8,6 +8,7 @@ import {
 import { useResponsive } from "@/hooks";
 import { getLanguageColor } from "@/lib/constants";
 import { formatNumber } from "@/lib/statistics";
+import type { CompactProject } from "@/lib/types/project.types";
 import { cn } from "@/lib/utils";
 import {
   calculateContributionPercent,
@@ -15,47 +16,8 @@ import {
 } from "@/lib/utils/contribution-helpers";
 import { GitFork, Star } from "lucide-react";
 
-/**
- * Language breakdown for multi-language display
- */
-export interface LanguageInfo {
-  /** Language name */
-  name: string;
-  /** Percentage of codebase (0-100) */
-  percent: number;
-  /** Size in bytes */
-  size?: number;
-}
-
-/**
- * Project data for compact row display
- */
-export interface CompactProject {
-  /** Unique identifier */
-  id: string;
-  /** Repository name */
-  name: string;
-  /** Number of USER's commits in this period */
-  commits: number;
-  /** Total commits in the repository (for calculating contribution %) */
-  totalRepoCommits?: number;
-  /** Star count */
-  stars: number;
-  /** Primary programming language */
-  language: string;
-  /** All languages with percentages (for language bar) */
-  languages?: LanguageInfo[];
-  /** Whether user is the owner */
-  isOwner: boolean;
-  /** Whether repository is a fork */
-  isFork: boolean;
-  /** Optional description for hover preview */
-  description?: string;
-  /** Repository URL */
-  url?: string;
-  /** Last activity date (for activity status indicator) */
-  lastActivityDate?: string;
-}
+// Re-export types for backward compatibility
+export type { CompactProject, LanguageInfo } from "@/lib/types/project.types";
 
 export interface CompactProjectRowProps {
   /** Project data to display */
@@ -112,7 +74,7 @@ export function CompactProjectRow({
   // Calculate contribution percentage
   const contributionPercent = calculateContributionPercent(
     project.commits,
-    project.totalRepoCommits
+    project.totalRepoCommits,
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -142,7 +104,7 @@ export function CompactProjectRow({
           ? "bg-muted/30"
           : "hover:scale-[1.02] hover:bg-muted/50 hover:shadow-md",
         // Focus ring
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
         // Cursor
         "cursor-pointer",
       )}
@@ -151,8 +113,8 @@ export function CompactProjectRow({
       <Badge
         variant="outline"
         className={cn(
-          "h-7 w-12 justify-center text-sm font-bold shrink-0 border",
-          getContributionBadgeClass(contributionPercent)
+          "h-7 w-12 shrink-0 justify-center border text-sm font-bold",
+          getContributionBadgeClass(contributionPercent),
         )}
         title={`Your contribution: ${contributionPercent}%`}
       >
@@ -181,7 +143,10 @@ export function CompactProjectRow({
         </span>
 
         {/* Stars */}
-        <span className="flex items-center gap-0.5" title={`${project.stars} stars`}>
+        <span
+          className="flex items-center gap-0.5"
+          title={`${project.stars} stars`}
+        >
           <Star className="h-3 w-3" aria-hidden="true" />
           {formatNumber(project.stars)}
         </span>
@@ -224,7 +189,7 @@ export function CompactProjectRow({
               variant="outline"
               className={cn(
                 "shrink-0 text-xs font-bold",
-                getContributionBadgeClass(contributionPercent)
+                getContributionBadgeClass(contributionPercent),
               )}
             >
               {contributionPercent}% contribution
@@ -232,25 +197,33 @@ export function CompactProjectRow({
           </div>
 
           {project.description && (
-            <p className="text-sm text-muted-foreground">{project.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {project.description}
+            </p>
           )}
 
           {/* Your contribution section */}
           <div className="space-y-1 border-t border-border pt-2">
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <div className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
               Your Contribution
             </div>
             <div className="flex flex-wrap gap-3 text-sm">
               <span>
-                <span className="font-medium">{formatNumber(project.commits)}</span>
+                <span className="font-medium">
+                  {formatNumber(project.commits)}
+                </span>
                 {project.totalRepoCommits && (
                   <span className="text-muted-foreground">
-                    {" "}of {formatNumber(project.totalRepoCommits)} commits
+                    {" "}
+                    of {formatNumber(project.totalRepoCommits)} commits
                   </span>
                 )}
               </span>
               <span className="flex items-center gap-1">
-                <ActivityStatusDot lastActivityDate={project.lastActivityDate} showLabel />
+                <ActivityStatusDot
+                  lastActivityDate={project.lastActivityDate}
+                  showLabel
+                />
               </span>
             </div>
           </div>

@@ -3,9 +3,9 @@
 ## Project Overview
 
 GitHub User Analytics - React 19 + TypeScript + Vite 7 + Tailwind CSS v4.
-Analyzes GitHub profiles with 5 metrics: Activity, Impact, Quality, Growth, Authenticity.
+Analyzes GitHub profiles with 7 metrics in 3 categories.
 
-**Status:** Production | Tests: 1557 (100% passing)
+**Status:** Production | Tests: 1733 (100% passing) | Coverage: 93%+
 
 ## Commands
 
@@ -43,13 +43,30 @@ src/
 
 ## Key Components
 
-| Component | Purpose |
-|-----------|---------|
-| `CompactProjectRow` | Level 0 - ultra-compact list |
-| `ExpandableProjectCard` | Level 1 - expandable with preview |
-| `ProjectAnalyticsModal` | Level 2 - full analytics (4 tabs) |
-| `DesktopTimelineLayout` | 33/67 split on desktop (>=1440px) |
-| `MetricExplanationModal` | Sheet on mobile, Dialog on desktop |
+### 3-Level Progressive Disclosure
+
+| Component               | Purpose                                                           |
+| ----------------------- | ----------------------------------------------------------------- |
+| `CompactProjectRow`     | Level 0 - ultra-compact list (56px)                               |
+| `ExpandableProjectCard` | Level 1 - expandable with preview                                 |
+| `ProjectAnalyticsModal` | Level 2 - full analytics (4 tabs: Overview, Team, Code, Timeline) |
+
+### Timeline Components
+
+| Component               | Purpose                            |
+| ----------------------- | ---------------------------------- |
+| `ActivityTimelineV2`    | Year-by-year contribution timeline |
+| `DesktopTimelineLayout` | 33/67 split layout (>=1440px)      |
+| `YearCard`              | Left sidebar year card             |
+| `YearDetailPanel`       | Right panel with year details      |
+
+### Shared Components
+
+| Component                | Purpose                                 |
+| ------------------------ | --------------------------------------- |
+| `MetricExplanationModal` | Sheet on mobile, Dialog on desktop      |
+| `ActivityStatusDot`      | Active/Recent/Inactive status indicator |
+| `LanguagesInline`        | Inline language badges                  |
 
 ## Quality Standards
 
@@ -60,24 +77,29 @@ src/
 
 ## Documentation
 
-| Topic | File |
-|-------|------|
-| Architecture | `docs/architecture.md` |
-| Components | `docs/components-guide.md` |
-| Apollo/GraphQL | `docs/apollo-client-guide.md` |
-| Testing | `docs/phases/testing-guide.md` |
-| OAuth | `docs/phases/phase-7-oauth-integration.md` |
-| Design Tokens | `.claude/quick-ref/quick_ref_design_tokens.md` |
-| Responsive | `.claude/quick-ref/quick_ref_responsive.md` |
-| Tech Stack | `.claude/quick-ref/quick_ref_tech_stack.md` |
-| 3-Level System | `.claude/quick-ref/quick_ref_3_levels.md` |
-| **UX Roadmap** | `.claude/quick-ref/quick_ref_ux_roadmap.md` |
+| Topic          | File                                           |
+| -------------- | ---------------------------------------------- |
+| Architecture   | `docs/architecture.md`                         |
+| Components     | `docs/components-guide.md`                     |
+| Apollo/GraphQL | `docs/apollo-client-guide.md`                  |
+| Testing        | `docs/phases/testing-guide.md`                 |
+| OAuth          | `docs/phases/phase-7-oauth-integration.md`     |
+| Design Tokens  | `.claude/quick-ref/quick_ref_design_tokens.md` |
+| Responsive     | `.claude/quick-ref/quick_ref_responsive.md`    |
+| Tech Stack     | `.claude/quick-ref/quick_ref_tech_stack.md`    |
+| 3-Level System | `.claude/quick-ref/quick_ref_3_levels.md`      |
+| **UX Roadmap** | `.claude/quick-ref/quick_ref_ux_roadmap.md`    |
 
 ## Quick Reference
 
 **Breakpoints:** Mobile (<768) | Tablet (768-1439) | Desktop (>=1440)
 
-**Metrics:** Activity (contributions), Impact (stars/forks), Quality (code patterns), Growth (trend), Authenticity (bot detection)
+**Metrics (7 in 3 categories):**
+
+- **OUTPUT:** Activity (contributions), Impact (stars/forks)
+- **QUALITY:** Quality (code patterns), Consistency (regularity)
+- **TRUST:** Authenticity (bot detection), Collaboration (external contributions)
+- **Special:** Growth (YoY trend, -100 to +100)
 
 **OAuth:** Optional GitHub auth for higher rate limits. Server-side token storage.
 
