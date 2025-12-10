@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/Yhooi2/github-users/compare/v1.1.0...v1.1.1) (2025-12-10)
+
+### Bug Fixes
+
+- **build:** suppress esbuild CSS warning for file: pseudo-element ([48aef42](https://github.com/Yhooi2/github-users/commit/48aef42bdec009ee2cec2f43a0b763952b82ca4f))
+
 # [1.1.0](https://github.com/Yhooi2/github-users/compare/v1.0.0...v1.1.0) (2025-12-10)
 
 ### Features
