@@ -1,5 +1,6 @@
 import { InMemoryCache } from "@apollo/client";
-import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { MockedResponse } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, RenderOptions } from "@testing-library/react";
 import { ThemeProvider } from "next-themes";
 

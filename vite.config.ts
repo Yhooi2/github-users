@@ -53,6 +53,20 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     css: true,
+    deps: {
+      optimizer: {
+        web: {
+          include: [
+            "@apollo/client",
+            "@apollo/client/react",
+            "@apollo/client/errors",
+            "@apollo/client/link/error",
+            "@apollo/client/testing",
+            "@apollo/client/testing/react",
+          ],
+        },
+      },
+    },
     exclude: [
       "node_modules/**",
       "dist/**",

@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { useEffect, useMemo } from "react";
 import { getQueryDates, getThreeYearRanges } from "./date-helpers";
 import type { GitHubGraphQLResponse, RateLimit } from "./github-api.types";

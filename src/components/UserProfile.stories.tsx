@@ -1,5 +1,5 @@
 import { GET_USER_INFO } from "@/apollo/queriers";
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import UserProfile from "./UserProfile";
 

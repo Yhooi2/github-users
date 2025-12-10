@@ -16,7 +16,8 @@
  */
 import { GET_USER_PROFILE } from "@/apollo/queries/userProfile";
 import { GET_YEAR_CONTRIBUTIONS } from "@/apollo/queries/yearContributions";
-import { MockedProvider, type MockedResponse } from "@apollo/client/testing";
+import type { MockedResponse } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

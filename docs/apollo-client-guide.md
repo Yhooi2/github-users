@@ -1,6 +1,6 @@
 # Apollo Client Guide - Работа с GraphQL
 
-> Полное руководство по Apollo Client 3.14 в проекте git-user-info
+> Полное руководство по Apollo Client 4.x в проекте git-user-info
 
 **📚 Related Documentation:**
 
@@ -26,7 +26,7 @@
 
 ### Apollo Client в проекте
 
-**Версия:** @apollo/client 3.14.0
+**Версия:** @apollo/client 4.x (migrated from 3.14)
 
 **Назначение:**
 

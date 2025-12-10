@@ -27,6 +27,7 @@ import {
   createHttpLink,
   gql,
 } from "@apollo/client";
+import { CombinedGraphQLErrors } from "@apollo/client/errors";
 import { onError } from "@apollo/client/link/error";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -118,11 +119,13 @@ function createMockUserData(overrides = {}) {
 
 /**
  * Creates successful HTTP response mock
+ * Apollo Client v4 requires headers.get() method on response
  */
 function createSuccessResponse(data: unknown) {
   return {
     ok: true,
     status: 200,
+    headers: new Headers({ "content-type": "application/json" }),
     text: async () => JSON.stringify(data),
     json: async () => data,
   };
@@ -130,12 +133,14 @@ function createSuccessResponse(data: unknown) {
 
 /**
  * Creates error HTTP response mock
+ * Apollo Client v4 requires headers.get() method on response
  */
 function createErrorResponse(status: number, error: unknown) {
   return {
     ok: false,
     status,
     statusText: status === 500 ? "Internal Server Error" : "Unauthorized",
+    headers: new Headers({ "content-type": "application/json" }),
     text: async () => JSON.stringify(error),
     json: async () => error,
   };
@@ -211,11 +216,14 @@ describe("Apollo Client + GitHub Proxy Integration", () => {
         errorPolicy: "all",
       });
 
-      // Assert: User sees appropriate error message
-      expect(result.errors).toBeDefined();
-      expect(result.errors?.[0].message).toContain(
-        "Could not resolve to a User",
-      );
+      // Assert: User sees appropriate error message (Apollo Client v4 uses result.error)
+      expect(result.error).toBeDefined();
+      expect(CombinedGraphQLErrors.is(result.error)).toBe(true);
+      if (CombinedGraphQLErrors.is(result.error)) {
+        expect(result.error.errors[0].message).toContain(
+          "Could not resolve to a User",
+        );
+      }
       expect(result.data).toBeNull();
     });
 
@@ -322,6 +330,7 @@ describe("Apollo Client + GitHub Proxy Integration", () => {
       fetchMock.mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
         text: async () => "Invalid JSON{{{",
         json: async () => {
           throw new SyntaxError("Unexpected token");

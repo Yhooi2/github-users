@@ -1,7 +1,8 @@
 /**
  * @vitest-environment jsdom
  */
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { toast } from "sonner";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -134,6 +135,7 @@ describe("ApolloAppProvider", () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
         text: async () => responseBody,
         json: async () => JSON.parse(responseBody),
       } as Response);
@@ -199,6 +201,7 @@ describe("ApolloAppProvider", () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
         text: async () => responseBody,
         json: async () => JSON.parse(responseBody),
       } as Response);
@@ -349,6 +352,7 @@ describe("ApolloAppProvider", () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
         text: async () => responseBody,
         json: async () => JSON.parse(responseBody),
       } as Response);
@@ -414,6 +418,7 @@ describe("ApolloAppProvider", () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
         text: async () => responseBody,
         json: async () => JSON.parse(responseBody),
       } as Response);
@@ -465,6 +470,7 @@ describe("ApolloAppProvider", () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
+        headers: new Headers({ "content-type": "application/json" }),
         text: async () => responseBody,
         json: async () => JSON.parse(responseBody),
       } as Response);

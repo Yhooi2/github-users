@@ -30,6 +30,20 @@ vi.mock("sonner", () => ({
 }));
 
 /**
+ * Helper to create mock fetch response compatible with Apollo Client v4
+ * Apollo Client v4 requires headers.get() method on response
+ */
+function createMockResponse(data: unknown, status = 200) {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    headers: new Headers({ "content-type": "application/json" }),
+    text: async () => JSON.stringify(data),
+    json: async () => data,
+  };
+}
+
+/**
  * Creates test Apollo Client with caching support
  */
 function createCachingClient() {
@@ -93,12 +107,7 @@ describe("Backend Caching - User Experience", () => {
     it("should enable backend caching when cacheKey is provided", async () => {
       // Arrange: Mock server response
       const mockData = { data: { user: { login: "testuser", name: "Test" } } };
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        text: async () => JSON.stringify(mockData),
-        json: async () => mockData,
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(mockData));
 
       // Act: Query WITH cacheKey (enables backend caching)
       await client.query({
@@ -116,12 +125,7 @@ describe("Backend Caching - User Experience", () => {
     it("should work without cacheKey when backend caching is not needed", async () => {
       // Arrange: Mock server response
       const mockData = { data: { user: { login: "test" } } };
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        text: async () => JSON.stringify(mockData),
-        json: async () => mockData,
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(mockData));
 
       // Act: Query WITHOUT cacheKey (no backend caching)
       await client.query({
@@ -141,12 +145,7 @@ describe("Backend Caching - User Experience", () => {
     it("should not break on complex context objects", async () => {
       // Arrange: Mock response
       const mockData = { data: { user: { login: "testuser", name: "Test" } } };
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        text: async () => JSON.stringify(mockData),
-        json: async () => mockData,
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(mockData));
 
       // Act: Query with complex context (potential circular references)
       const result = await client.query({
@@ -171,18 +170,8 @@ describe("Backend Caching - User Experience", () => {
       const mockRepoData = { data: { repository: { name: "test-repo" } } };
 
       fetchMock
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          text: async () => JSON.stringify(mockUserData),
-          json: async () => mockUserData,
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          text: async () => JSON.stringify(mockRepoData),
-          json: async () => mockRepoData,
-        });
+        .mockResolvedValueOnce(createMockResponse(mockUserData))
+        .mockResolvedValueOnce(createMockResponse(mockRepoData));
 
       const REPO_QUERY = gql`
         query GetRepo($owner: String!, $name: String!) {

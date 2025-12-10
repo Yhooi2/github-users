@@ -1,10 +1,20 @@
+import {
+  ActivityStatusDot,
+  CombinedLanguageActivityBar,
+} from "@/components/shared";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ActivityStatusDot, CombinedLanguageActivityBar } from "@/components/shared";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useReducedMotion, useResponsive } from "@/hooks";
 import { getLanguageColor } from "@/lib/constants";
+import { analyzeProjectHealth } from "@/lib/project-health";
 import { formatNumber } from "@/lib/statistics";
 import { cn } from "@/lib/utils";
 import {
@@ -24,11 +34,11 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import type { CompactProject, LanguageInfo } from "../level-0/CompactProjectRow";
+import type {
+  CompactProject,
+  LanguageInfo,
+} from "../level-0/CompactProjectRow";
 import { MetricTooltip } from "./MetricTooltip";
-import { analyzeProjectHealth } from "@/lib/project-health";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
  * Team member for avatar display
@@ -124,8 +134,12 @@ export function ExpandableProjectCard({
   };
 
   // Calculate contribution percentage (use provided or calculate from data)
-  const contributionPercent = project.contributionPercent ??
-    calculateContributionPercent(project.userCommits ?? project.commits, project.totalCommits);
+  const contributionPercent =
+    project.contributionPercent ??
+    calculateContributionPercent(
+      project.userCommits ?? project.commits,
+      project.totalCommits,
+    );
 
   // Get role label based on contribution
   const roleLabel = getRoleLabel(contributionPercent, project.isOwner);
@@ -135,8 +149,7 @@ export function ExpandableProjectCard({
     project.languages?.map((lang) => ({
       name: lang.name,
       percent: lang.percent,
-    })) ??
-    (project.language ? [{ name: project.language, percent: 100 }] : []);
+    })) ?? (project.language ? [{ name: project.language, percent: 100 }] : []);
 
   // Get top 3 languages for inline display (top 2 on mobile)
   const topLanguages = (project.languages ?? []).slice(0, isMobile ? 2 : 3);
@@ -151,11 +164,11 @@ export function ExpandableProjectCard({
       aria-controls={`card-content-${project.id}`}
       aria-label={`${isExpanded ? "Collapse" : "Expand"} ${project.name} details`}
       className={cn(
-        "overflow-hidden transition-all duration-200 cursor-pointer",
+        "cursor-pointer overflow-hidden transition-all duration-200",
         isExpanded
-          ? "shadow-md border-primary/40"
-          : "hover:shadow-md hover:bg-accent/50 hover:border-primary/30",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          ? "border-primary/40 shadow-md"
+          : "hover:border-primary/30 hover:bg-accent/50 hover:shadow-md",
+        "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none",
       )}
     >
       {/* Header row - always visible */}
@@ -170,8 +183,8 @@ export function ExpandableProjectCard({
             <Badge
               variant="outline"
               className={cn(
-                "h-7 w-12 justify-center text-sm font-bold shrink-0 border",
-                getContributionBadgeClass(contributionPercent)
+                "h-7 w-12 shrink-0 justify-center border text-sm font-bold",
+                getContributionBadgeClass(contributionPercent),
               )}
             >
               {contributionPercent}%
@@ -192,7 +205,7 @@ export function ExpandableProjectCard({
           )}
 
           {/* Metrics row */}
-          <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
+          <div className="flex flex-shrink-0 items-center gap-2 text-xs text-muted-foreground sm:gap-3">
             {/* Commits */}
             <MetricTooltip
               content={`${formatNumber(project.commits)} of your commits`}
@@ -257,7 +270,7 @@ export function ExpandableProjectCard({
               <span key={lang.name} className="flex items-center gap-1">
                 {index > 0 && <span className="mx-0.5">&#8226;</span>}
                 <span
-                  className="h-2 w-2 rounded-full flex-shrink-0"
+                  className="h-2 w-2 flex-shrink-0 rounded-full"
                   style={{ backgroundColor: getLanguageColor(lang.name) }}
                   aria-hidden="true"
                 />
@@ -277,11 +290,11 @@ export function ExpandableProjectCard({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
-          className="border-t px-3 py-3 space-y-4"
+          className="space-y-4 border-t px-3 py-3"
         >
           {/* Description */}
           {project.description && (
-            <p className="text-sm text-muted-foreground line-clamp-3">
+            <p className="line-clamp-3 text-sm text-muted-foreground">
               {project.description}
             </p>
           )}
@@ -289,7 +302,8 @@ export function ExpandableProjectCard({
           {/* Health Indicator + AI Button Row */}
           <div className="flex items-center justify-between gap-3">
             {/* Health indicator */}
-            {(project.isArchived !== undefined || project.pushedAt !== undefined) && (
+            {(project.isArchived !== undefined ||
+              project.pushedAt !== undefined) && (
               <HealthIndicator
                 isArchived={project.isArchived ?? false}
                 pushedAt={project.pushedAt ?? null}
@@ -366,7 +380,7 @@ function ContributionSection({
       <div className="flex items-center justify-between">
         <h4
           id="contribution-heading"
-          className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
         >
           Your Contribution
         </h4>
@@ -386,7 +400,8 @@ function ContributionSection({
               {formatNumber(userCommits)}
               {totalCommits && (
                 <span className="text-muted-foreground">
-                  {" "}of {formatNumber(totalCommits)} ({commitsPercent}%)
+                  {" "}
+                  of {formatNumber(totalCommits)} ({commitsPercent}%)
                 </span>
               )}
             </span>
@@ -397,7 +412,11 @@ function ContributionSection({
 
       {/* Activity status and period */}
       <div className="flex items-center gap-3 text-sm">
-        <ActivityStatusDot lastActivityDate={lastActivityDate} showLabel size="sm" />
+        <ActivityStatusDot
+          lastActivityDate={lastActivityDate}
+          showLabel
+          size="sm"
+        />
         {activePeriod && (
           <span className="text-muted-foreground">Active: {activePeriod}</span>
         )}
@@ -442,7 +461,7 @@ function ImpactSection({ stars, forks, teamCount }: ImpactSectionProps) {
     <section aria-labelledby="impact-heading">
       <h4
         id="impact-heading"
-        className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+        className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
       >
         Project Impact
       </h4>
@@ -489,7 +508,7 @@ function TechStackSection({ languages }: TechStackSectionProps) {
     <section aria-labelledby="tech-heading">
       <h4
         id="tech-heading"
-        className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+        className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase"
       >
         Tech Stack
       </h4>
@@ -501,7 +520,7 @@ function TechStackSection({ languages }: TechStackSectionProps) {
           >
             <span className="flex items-center gap-1">
               <span
-                className="h-2 w-2 rounded-full flex-shrink-0"
+                className="h-2 w-2 flex-shrink-0 rounded-full"
                 style={{ backgroundColor: getLanguageColor(lang.name) }}
                 aria-hidden="true"
               />
@@ -535,15 +554,19 @@ function TeamSection({
   projectUrl,
   projectName,
 }: TeamSectionProps) {
-  const hasTeam = teamCount !== undefined || (topContributors && topContributors.length > 0);
+  const hasTeam =
+    teamCount !== undefined || (topContributors && topContributors.length > 0);
 
   return (
-    <section aria-labelledby="team-heading" className="flex items-center justify-between">
+    <section
+      aria-labelledby="team-heading"
+      className="flex items-center justify-between"
+    >
       {hasTeam && (
         <div className="flex items-center gap-3">
           <h4
             id="team-heading"
-            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+            className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
           >
             Team
           </h4>
@@ -555,7 +578,7 @@ function TeamSection({
                   content={`${member.name}${member.login ? ` (${member.login})` : ""}${member.commits ? ` - ${member.commits} commits` : ""}${member.prs ? `, ${member.prs} PRs` : ""}`}
                   underline={false}
                 >
-                  <Avatar className="h-7 w-7 border-2 border-background hover:z-10 hover:scale-110 transition-transform">
+                  <Avatar className="h-7 w-7 border-2 border-background transition-transform hover:z-10 hover:scale-110">
                     <AvatarImage src={member.avatar} alt={member.name} />
                     <AvatarFallback className="text-xs">
                       {member.name.slice(0, 2).toUpperCase()}
@@ -574,14 +597,17 @@ function TeamSection({
       )}
 
       {/* GitHub link */}
-      <MetricTooltip content={`View ${projectName} on GitHub`} underline={false}>
+      <MetricTooltip
+        content={`View ${projectName} on GitHub`}
+        underline={false}
+      >
         <a
           href={projectUrl}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
           aria-label={`View ${projectName} on GitHub`}
-          className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-primary"
         >
           <ExternalLink className="h-4 w-4" />
         </a>
@@ -609,7 +635,8 @@ function HealthIndicator({ isArchived, pushedAt }: HealthIndicatorProps) {
             className={cn("h-2 w-2 rounded-full", {
               "bg-success": health.status === "healthy",
               "bg-warning": health.status === "maintenance",
-              "bg-muted-foreground": health.status === "stale" || health.status === "archived",
+              "bg-muted-foreground":
+                health.status === "stale" || health.status === "archived",
             })}
             aria-hidden="true"
           />
@@ -632,10 +659,10 @@ interface AIAnalyticsButtonProps {
   projectUrl: string;
 }
 
-function AIAnalyticsButton({
+function AIAnalyticsButton(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  projectUrl,
-}: AIAnalyticsButtonProps) {
+  { projectUrl: _projectUrl }: AIAnalyticsButtonProps,
+) {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     // TODO: Open AI Analytics Modal
@@ -654,7 +681,7 @@ function AIAnalyticsButton({
         >
           <Sparkles className="h-4 w-4" />
           <span className="hidden sm:inline">AI Аналитика</span>
-          <Badge variant="secondary" className="text-[10px] px-1.5">
+          <Badge variant="secondary" className="px-1.5 text-[10px]">
             Soon
           </Badge>
         </Button>

@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { renderHook, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";

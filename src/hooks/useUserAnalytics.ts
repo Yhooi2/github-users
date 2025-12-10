@@ -15,7 +15,7 @@ import {
   type MonthlyContribution,
 } from "@/lib/contribution-aggregator";
 import { generateYearRanges } from "@/lib/date-utils";
-import { ApolloError, useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { useEffect, useState } from "react";
 
 /**
@@ -40,7 +40,7 @@ export interface UseUserAnalyticsReturn {
   profile: UserProfile | null;
   timeline: YearData[];
   loading: boolean;
-  error: ApolloError | undefined;
+  error: Error | undefined;
 }
 
 /**
@@ -136,7 +136,10 @@ export function useUserAnalytics(username: string): UseUserAnalyticsReturn {
               context: { cacheKey: `user:${username}:year:${year}` },
             });
 
-            const collection = result.data.user.contributionsCollection;
+            const collection = result.data?.user.contributionsCollection;
+            if (!collection) {
+              throw new Error(`No contributions data for year ${year}`);
+            }
             const repos = collection.commitContributionsByRepository;
 
             // Step 4: Separate owned repos from contributions

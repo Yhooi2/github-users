@@ -2,7 +2,8 @@ import { GET_USER_PROFILE } from "@/apollo/queries/userProfile";
 import { GET_YEAR_CONTRIBUTIONS } from "@/apollo/queries/yearContributions";
 import { useUserAnalytics } from "@/hooks/useUserAnalytics";
 import { generateYearRanges } from "@/lib/date-utils";
-import { MockedProvider, type MockedResponse } from "@apollo/client/testing";
+import type { MockedResponse } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -58,17 +59,17 @@ describe("Parallel Query Failure Integration Test", () => {
         totalPullRequestContributions: Math.floor(commits / 5),
         totalPullRequestReviewContributions: Math.floor(commits / 20),
         restrictedContributionsCount: 0,
-              contributionCalendar: {
-                totalContributions: 100,
-                weeks: [
-                  {
-                    contributionDays: [
-                      { contributionCount: 5, date: "2023-01-01" },
-                      { contributionCount: 3, date: "2023-01-02" },
-                    ],
-                  },
-                ],
-              },
+        contributionCalendar: {
+          totalContributions: 100,
+          weeks: [
+            {
+              contributionDays: [
+                { contributionCount: 5, date: "2023-01-01" },
+                { contributionCount: 3, date: "2023-01-02" },
+              ],
+            },
+          ],
+        },
         commitContributionsByRepository: [
           {
             contributions: { totalCount: commits },
