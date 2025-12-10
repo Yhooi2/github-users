@@ -1,3 +1,9 @@
+# [1.1.0](https://github.com/Yhooi2/github-users/compare/v1.0.0...v1.1.0) (2025-12-10)
+
+### Features
+
+- migrate to Apollo Client v4 ([6411c95](https://github.com/Yhooi2/github-users/commit/6411c9597f32eb71c479ac33b13db91cae1aed74))
+
 # 1.0.0 (2025-12-09)
 
 ### Bug Fixes
