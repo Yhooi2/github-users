@@ -160,6 +160,7 @@ npm run storybook         # Component documentation
 - [Apollo Client Guide](./docs/apollo-client-guide.md) - GraphQL integration
 - [Testing Guide](./docs/phases/testing-guide.md) - Testing strategy
 - [OAuth Integration](./docs/phases/phase-7-oauth-integration.md) - OAuth implementation
+- [Commit Workflow](./docs/COMMIT_WORKFLOW.md) - Git commit process & conventions
 
 ### Quick References
 
