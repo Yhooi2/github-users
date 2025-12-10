@@ -8,6 +8,11 @@ import { ViteMcp } from "vite-plugin-mcp";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), ViteMcp()],
+  esbuild: {
+    logOverride: {
+      "unsupported-css-property": "silent",
+    },
+  },
   build: {
     sourcemap: false,
     rollupOptions: {
