@@ -1,3 +1,9 @@
+## [1.1.2](https://github.com/Yhooi2/github-users/compare/v1.1.1...v1.1.2) (2025-12-10)
+
+### Bug Fixes
+
+- **vite:** exclude storybook-static from dependency scanning ([e14b3c8](https://github.com/Yhooi2/github-users/commit/e14b3c813876420b227efa0c00a32450bd89d77f))
+
 ## [1.1.1](https://github.com/Yhooi2/github-users/compare/v1.1.0...v1.1.1) (2025-12-10)
 
 ### Bug Fixes
