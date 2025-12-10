@@ -41,6 +41,9 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    exclude: ["storybook-static"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
