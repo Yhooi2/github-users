@@ -10,7 +10,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), ViteMcp()],
   esbuild: {
     logOverride: {
-      "unsupported-css-property": "silent",
+      "unsupported-css-property":
+        process.env.NODE_ENV === "production" ? "silent" : "warning",
     },
   },
   build: {
