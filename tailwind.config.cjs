@@ -7,6 +7,7 @@ module.exports = {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx,html}",
     "./components/**/*.{js,ts,jsx,tsx,html}",
+    "./node_modules/shadcn-glass-ui/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
