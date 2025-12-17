@@ -1,3 +1,14 @@
+# [1.2.0](https://github.com/Yhooi2/github-users/compare/v1.1.2...v1.2.0) (2025-12-17)
+
+### Bug Fixes
+
+- **glass-ui:** update to v2.1.5 with CSS exports fix ([6790184](https://github.com/Yhooi2/github-users/commit/679018476f60284248467ecd7bc8d19dda8a6c0c))
+
+### Features
+
+- **glass-ui:** stage 0 - preparation for migration ([ef8770d](https://github.com/Yhooi2/github-users/commit/ef8770dad06c3e386f3e8efa2f13f08e4138121d))
+- **timeline:** implement progressive disclosure for YearCard ([9205324](https://github.com/Yhooi2/github-users/commit/9205324d28d23a0628977705b511bdcafcee9395))
+
 ## [1.1.2](https://github.com/Yhooi2/github-users/compare/v1.1.1...v1.1.2) (2025-12-10)
 
 ### Bug Fixes
