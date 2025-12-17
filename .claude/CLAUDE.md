@@ -89,6 +89,8 @@ src/
 | Tech Stack     | `.claude/quick-ref/quick_ref_tech_stack.md`    |
 | 3-Level System | `.claude/quick-ref/quick_ref_3_levels.md`      |
 | **UX Roadmap** | `.claude/quick-ref/quick_ref_ux_roadmap.md`    |
+| **Glass UI**   | `.claude/quick-ref/quick_ref_glass_ui.md`      |
+| Glass UI Audit | `docs/GLASS_UI_LIBRARY_AUDIT.md`               |
 
 ## Quick Reference
 

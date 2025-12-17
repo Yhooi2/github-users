@@ -128,7 +128,8 @@ Required scopes: `read:user`, `user:email`
 ## Scripts
 
 ```bash
-npm run dev           # Dev server
+npm run dev           # Dev server (Vite on port 5173)
+vercel dev            # Dev server (Vercel on port 3000, with serverless functions)
 npm run build         # Production build
 npm run test          # Unit tests
 npm run test:e2e      # E2E tests
