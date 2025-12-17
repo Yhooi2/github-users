@@ -124,7 +124,7 @@
     "vercel": "^25.2.0",
     "vite": "^7.1.2",
     "vite-plugin-mcp": "^0.2.5",
-    "vitest": "^4.0.6"
+    "vitest": "^4.0.16"
   },
   "optionalDependencies": {
     "storybook-mcp": "^0.4.0"
