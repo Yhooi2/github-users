@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "shadcn-glass-ui/styles.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -59,8 +60,8 @@
   --caution: oklch(0.65 0.18 50);
   /* Activity bar colors - better contrast */
   --activity-bar-bg: oklch(0.93 0.01 260);
-  --activity-bar-fill: oklch(0.60 0.12 250);
-  --activity-bar-fill-active: oklch(0.42 0.20 250);
+  --activity-bar-fill: oklch(0.6 0.12 250);
+  --activity-bar-fill-active: oklch(0.42 0.2 250);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
@@ -101,8 +102,8 @@
   --caution: oklch(0.72 0.16 50);
   /* Activity bar colors (dark mode) - better contrast */
   --activity-bar-bg: oklch(0.22 0.02 260);
-  --activity-bar-fill: oklch(0.50 0.14 250);
-  --activity-bar-fill-active: oklch(0.68 0.20 250);
+  --activity-bar-fill: oklch(0.5 0.14 250);
+  --activity-bar-fill-active: oklch(0.68 0.2 250);
   --card: oklch(0.208 0.042 265.755);
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
@@ -142,14 +143,15 @@
 /* Glass theme variables - Light mode */
 .glass {
   /* Background gradient - Light (soft purple-blue) */
-  --glass-bg-gradient: linear-gradient(135deg,
-    oklch(0.92 0.03 280) 0%,   /* Light lavender */
-    oklch(0.90 0.04 250) 50%,  /* Light blue */
-    oklch(0.93 0.03 220) 100%  /* Light cyan */
+  --glass-bg-gradient: linear-gradient(
+    135deg,
+    oklch(0.92 0.03 280) 0%,
+    /* Light lavender */ oklch(0.9 0.04 250) 50%,
+    /* Light blue */ oklch(0.93 0.03 220) 100% /* Light cyan */
   );
 
   /* Glass surface colors - White frost on light bg */
-  --glass-frost-5:  oklch(1 0 0 / 30%);
+  --glass-frost-5: oklch(1 0 0 / 30%);
   --glass-frost-10: oklch(1 0 0 / 45%);
   --glass-frost-20: oklch(1 0 0 / 60%);
   --glass-frost-30: oklch(1 0 0 / 70%);
@@ -157,27 +159,27 @@
   --glass-frost-70: oklch(1 0 0 / 90%);
 
   /* Text colors for light glass (dark text on light bg) */
-  --glass-text-primary:   oklch(0.20 0.03 260);   /* Dark navy */
-  --glass-text-secondary: oklch(0.40 0.02 260);   /* Medium dark */
-  --glass-text-muted:     oklch(0.50 0.02 260);   /* Muted */
+  --glass-text-primary: oklch(0.2 0.03 260); /* Dark navy */
+  --glass-text-secondary: oklch(0.4 0.02 260); /* Medium dark */
+  --glass-text-muted: oklch(0.5 0.02 260); /* Muted */
 
   /* Accent colors */
-  --glass-accent-primary:      oklch(0.60 0.20 250);
-  --glass-accent-primary-glow: oklch(0.60 0.20 250 / 40%);
-  --glass-accent-primary-pulse: oklch(0.70 0.22 250);
+  --glass-accent-primary: oklch(0.6 0.2 250);
+  --glass-accent-primary-glow: oklch(0.6 0.2 250 / 40%);
+  --glass-accent-primary-pulse: oklch(0.7 0.22 250);
 
-  --glass-accent-success:      oklch(0.65 0.18 145);
+  --glass-accent-success: oklch(0.65 0.18 145);
   --glass-accent-success-glow: oklch(0.65 0.18 145 / 40%);
 
-  --glass-accent-warning:      oklch(0.80 0.15 85);
-  --glass-accent-warning-glow: oklch(0.80 0.15 85 / 40%);
+  --glass-accent-warning: oklch(0.8 0.15 85);
+  --glass-accent-warning-glow: oklch(0.8 0.15 85 / 40%);
 
-  --glass-accent-danger:       oklch(0.60 0.22 25);
-  --glass-accent-danger-glow:  oklch(0.60 0.22 25 / 40%);
+  --glass-accent-danger: oklch(0.6 0.22 25);
+  --glass-accent-danger-glow: oklch(0.6 0.22 25 / 40%);
 
   /* Borders */
   --glass-border-light: oklch(1 0 0 / 20%);
-  --glass-border-dark:  oklch(0 0 0 / 10%);
+  --glass-border-dark: oklch(0 0 0 / 10%);
 
   /* Shadows */
   --glass-shadow-sm: 0 2px 8px oklch(0 0 0 / 8%);
@@ -188,19 +190,19 @@
   --glass-glow-primary: 0 0 20px var(--glass-accent-primary-glow);
   --glass-glow-success: 0 0 20px var(--glass-accent-success-glow);
   --glass-glow-warning: 0 0 20px var(--glass-accent-warning-glow);
-  --glass-glow-danger:  0 0 20px var(--glass-accent-danger-glow);
+  --glass-glow-danger: 0 0 20px var(--glass-accent-danger-glow);
 
   /* Border radius (organic, soft) */
-  --glass-radius-sm:  12px;
-  --glass-radius-md:  16px;
-  --glass-radius-lg:  24px;
-  --glass-radius-xl:  32px;
+  --glass-radius-sm: 12px;
+  --glass-radius-md: 16px;
+  --glass-radius-lg: 24px;
+  --glass-radius-xl: 32px;
   --glass-radius-2xl: 40px;
 
   /* Blur values */
-  --glass-blur-subtle:  8px;
-  --glass-blur-medium:  16px;
-  --glass-blur-heavy:   24px;
+  --glass-blur-subtle: 8px;
+  --glass-blur-medium: 16px;
+  --glass-blur-heavy: 24px;
   --glass-blur-extreme: 40px;
 
   /* Animation timing */
@@ -212,14 +214,15 @@
 /* Glass theme variables - Dark mode */
 .glass.dark {
   /* Background gradient - Dark (Neutral Dark - minimalist) */
-  --glass-bg-gradient: linear-gradient(135deg,
-    oklch(0.20 0.03 260) 0%,   /* Deep navy */
-    oklch(0.25 0.04 280) 50%,  /* Dark purple */
-    oklch(0.22 0.03 240) 100%  /* Dark blue */
+  --glass-bg-gradient: linear-gradient(
+    135deg,
+    oklch(0.2 0.03 260) 0%,
+    /* Deep navy */ oklch(0.25 0.04 280) 50%,
+    /* Dark purple */ oklch(0.22 0.03 240) 100% /* Dark blue */
   );
 
   /* Glass surface colors - Black frost (macOS style) */
-  --glass-frost-5:  oklch(0.15 0.02 260 / 20%);
+  --glass-frost-5: oklch(0.15 0.02 260 / 20%);
   --glass-frost-10: oklch(0.15 0.02 260 / 30%);
   --glass-frost-20: oklch(0.15 0.02 260 / 40%);
   --glass-frost-30: oklch(0.15 0.02 260 / 50%);
@@ -227,13 +230,13 @@
   --glass-frost-70: oklch(0.15 0.02 260 / 75%);
 
   /* Text colors for dark glass (light text on dark bg) */
-  --glass-text-primary:   oklch(0.95 0.01 260);   /* Almost white */
-  --glass-text-secondary: oklch(0.80 0.02 260);   /* Light gray */
-  --glass-text-muted:     oklch(0.65 0.02 260);   /* Medium gray */
+  --glass-text-primary: oklch(0.95 0.01 260); /* Almost white */
+  --glass-text-secondary: oklch(0.8 0.02 260); /* Light gray */
+  --glass-text-muted: oklch(0.65 0.02 260); /* Medium gray */
 
   /* Borders for dark mode */
   --glass-border-light: oklch(1 0 0 / 15%);
-  --glass-border-dark:  oklch(0 0 0 / 20%);
+  --glass-border-dark: oklch(0 0 0 / 20%);
 }
 
 @layer base {
@@ -264,7 +267,9 @@
   }
 
   .glass-card:hover {
-    box-shadow: var(--glass-shadow-md), 0 0 12px oklch(1 0 0 / 10%);
+    box-shadow:
+      var(--glass-shadow-md),
+      0 0 12px oklch(1 0 0 / 10%);
   }
 
   /* Glass card variants */
@@ -305,21 +310,33 @@
 
   /* Pulse animation - for notifications only */
   @keyframes glass-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 var(--glass-accent-primary-glow); }
-    50% { box-shadow: 0 0 16px 2px var(--glass-accent-primary-glow); }
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 var(--glass-accent-primary-glow);
+    }
+    50% {
+      box-shadow: 0 0 16px 2px var(--glass-accent-primary-glow);
+    }
   }
 
   @keyframes glass-pulse-success {
-    0%, 100% { box-shadow: 0 0 0 0 var(--glass-accent-success-glow); }
-    50% { box-shadow: 0 0 16px 2px var(--glass-accent-success-glow); }
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 var(--glass-accent-success-glow);
+    }
+    50% {
+      box-shadow: 0 0 16px 2px var(--glass-accent-success-glow);
+    }
   }
 
   .glass-pulse {
-    animation: glass-pulse var(--glass-pulse-duration) var(--glass-pulse-easing) infinite;
+    animation: glass-pulse var(--glass-pulse-duration) var(--glass-pulse-easing)
+      infinite;
   }
 
   .glass-pulse-success {
-    animation: glass-pulse-success var(--glass-pulse-duration) var(--glass-pulse-easing) infinite;
+    animation: glass-pulse-success var(--glass-pulse-duration)
+      var(--glass-pulse-easing) infinite;
   }
 
   /* Score glow for high metrics */
