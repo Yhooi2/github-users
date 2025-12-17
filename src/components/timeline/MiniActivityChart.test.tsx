@@ -68,10 +68,12 @@ describe("MiniActivityChart", () => {
         <MiniActivityChart monthlyData={monthlyData} />,
       );
 
-      const wrapper = container.firstChild;
-      expect(wrapper).toHaveClass("flex");
-      expect(wrapper).toHaveClass("items-end");
-      expect(wrapper).toHaveClass("gap-0.5");
+      // After refactoring: wrapper is container, bars are in nested div
+      const barsContainer = container.querySelector(".flex");
+      expect(barsContainer).toBeInTheDocument();
+      expect(barsContainer).toHaveClass("flex");
+      expect(barsContainer).toHaveClass("items-end");
+      expect(barsContainer).toHaveClass("gap-0.5");
     });
   });
 
@@ -277,14 +279,15 @@ describe("MiniActivityChart", () => {
   });
 
   describe("container height", () => {
-    it("has fixed height of h-6", () => {
+    it("has fixed height of h-6 by default", () => {
       const monthlyData = createMockMonthlyData();
       const { container } = renderWithTooltip(
         <MiniActivityChart monthlyData={monthlyData} />,
       );
 
-      const wrapper = container.firstChild;
-      expect(wrapper).toHaveClass("h-6");
+      // After refactoring: height is on bars container
+      const barsContainer = container.querySelector(".flex");
+      expect(barsContainer).toHaveClass("h-6");
     });
   });
 
