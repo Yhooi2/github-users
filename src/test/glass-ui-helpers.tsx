@@ -4,21 +4,9 @@
  * Provides helpers for testing components in both legacy and Glass UI modes.
  */
 
-/* eslint-disable react-refresh/only-export-components */
 import { render, type RenderOptions } from "@testing-library/react";
 import { ThemeProvider } from "next-themes";
 import { ReactElement } from "react";
-
-/**
- * Wrapper for rendering components with theme provider
- */
-function AllTheProviders({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemeProvider attribute="class" defaultTheme="light">
-      {children}
-    </ThemeProvider>
-  );
-}
 
 /**
  * Custom render function with providers
@@ -27,7 +15,13 @@ export function renderWithTheme(
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper">,
 ) {
-  return render(ui, { wrapper: AllTheProviders, ...options });
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      {children}
+    </ThemeProvider>
+  );
+
+  return render(ui, { wrapper: Wrapper, ...options });
 }
 
 /**
