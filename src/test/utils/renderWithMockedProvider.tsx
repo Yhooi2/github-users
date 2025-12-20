@@ -2,7 +2,7 @@ import { InMemoryCache } from "@apollo/client";
 import { MockedResponse } from "@apollo/client/testing";
 import { MockedProvider } from "@apollo/client/testing/react";
 import { render, RenderOptions } from "@testing-library/react";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "shadcn-glass-ui";
 
 /**
  * Custom render function for integration tests with Apollo MockedProvider
@@ -40,7 +40,7 @@ export function renderWithMockedProvider(
   const cache = new InMemoryCache();
 
   return render(
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider defaultTheme="glass">
       <MockedProvider mocks={mocks} cache={cache}>
         {ui}
       </MockedProvider>

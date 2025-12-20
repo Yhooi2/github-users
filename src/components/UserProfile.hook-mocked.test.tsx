@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "shadcn-glass-ui";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import UserProfile from "./UserProfile";
 
@@ -34,11 +34,7 @@ import useQueryUser from "@/apollo/useQueryUser";
 
 // Helper function to render with providers
 function renderWithProviders(ui: React.ReactElement) {
-  return render(
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      {ui}
-    </ThemeProvider>,
-  );
+  return render(<ThemeProvider defaultTheme="glass">{ui}</ThemeProvider>);
 }
 
 describe("UserProfile with Hook Mocking (Рекомендуемый подход)", () => {

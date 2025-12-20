@@ -5,8 +5,8 @@
  */
 
 import { render, type RenderOptions } from "@testing-library/react";
-import { ThemeProvider } from "next-themes";
 import { ReactElement } from "react";
+import { ThemeProvider } from "shadcn-glass-ui";
 
 /**
  * Custom render function with providers
@@ -16,9 +16,7 @@ export function renderWithTheme(
   options?: Omit<RenderOptions, "wrapper">,
 ) {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ThemeProvider attribute="class" defaultTheme="light">
-      {children}
-    </ThemeProvider>
+    <ThemeProvider defaultTheme="glass">{children}</ThemeProvider>
   );
 
   return render(ui, { wrapper: Wrapper, ...options });
