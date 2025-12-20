@@ -103,21 +103,27 @@ describe("UserHeader", () => {
     it("should display initials for fallback when name exists", () => {
       render(<UserHeader user={mockUser} />);
       // Avatar fallback should contain initials "TO" for "The Octocat"
-      const avatarFallback = document.querySelector(".bg-muted");
+      const avatarFallback = document.querySelector(
+        '[data-slot="avatar-fallback"]',
+      );
       expect(avatarFallback).toBeInTheDocument();
     });
 
     it("should handle single-word names for initials", () => {
       const singleNameUser = { ...mockUser, name: "Octocat" };
       render(<UserHeader user={singleNameUser} />);
-      const avatarFallback = document.querySelector(".bg-muted");
+      const avatarFallback = document.querySelector(
+        '[data-slot="avatar-fallback"]',
+      );
       expect(avatarFallback).toBeInTheDocument();
     });
 
     it("should use login for initials when name is null", () => {
       const userWithoutName = { ...mockUser, name: null };
       render(<UserHeader user={userWithoutName} />);
-      const avatarFallback = document.querySelector(".bg-muted");
+      const avatarFallback = document.querySelector(
+        '[data-slot="avatar-fallback"]',
+      );
       expect(avatarFallback).toBeInTheDocument();
     });
   });
