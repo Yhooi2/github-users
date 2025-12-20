@@ -1,3 +1,20 @@
+# [1.3.0](https://github.com/Yhooi2/github-users/compare/v1.2.0...v1.3.0) (2025-12-20)
+
+### Bug Fixes
+
+- **ui:** update shadcn-glass-ui to v2.4.3, restore aria-label test ([22f69c3](https://github.com/Yhooi2/github-users/commit/22f69c3ad87b88e6b2eaaeffc730bacd8ef2dca0))
+
+### Features
+
+- **theme:** migrate to shadcn-glass-ui ThemeProvider ([d1c830b](https://github.com/Yhooi2/github-users/commit/d1c830bcc5572be176146732f45757873e343e29))
+- **ui:** migrate Badge, Alert, Avatar to Glass components ([1987e36](https://github.com/Yhooi2/github-users/commit/1987e36e4ef16a18ea884ab2ece4c1ddaf986473))
+- **ui:** migrate Button to ButtonGlass ([67eb648](https://github.com/Yhooi2/github-users/commit/67eb648dbdbbf9f74e40266527720fc44ec003bb))
+- **ui:** migrate Card to CardGlass ([6ef1712](https://github.com/Yhooi2/github-users/commit/6ef171207c9a5e21e189e81a35dbeb1f51b58123))
+- **ui:** migrate Dialog and Sheet to Glass components ([d9ce164](https://github.com/Yhooi2/github-users/commit/d9ce1647c139c4c85f2bcf45dcacbfe116888dbb))
+- **ui:** migrate Progress to Glass components ([291c8ee](https://github.com/Yhooi2/github-users/commit/291c8ee05d67cdd7d7dacf9c965d6043d55c2b3f)), closes [#11](https://github.com/Yhooi2/github-users/issues/11)
+- **ui:** migrate Tabs to Glass components ([cdea2c7](https://github.com/Yhooi2/github-users/commit/cdea2c7656e6509fdaf869bd873a881255fa86c5)), closes [#9](https://github.com/Yhooi2/github-users/issues/9)
+- **ui:** migrate Tooltip to Glass components ([3fedc31](https://github.com/Yhooi2/github-users/commit/3fedc31af84d8969f1564752d72afe42940916d8))
+
 # [1.2.0](https://github.com/Yhooi2/github-users/compare/v1.1.2...v1.2.0) (2025-12-17)
 
 ### Bug Fixes
