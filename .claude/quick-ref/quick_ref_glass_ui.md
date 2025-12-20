@@ -1,21 +1,53 @@
-# shadcn-glass-ui - Quick Reference (v2.1.4)
+# shadcn-glass-ui - Quick Reference (v2.4.3)
 
-> **Версия**: 2.1.4
-> **Дата обновления**: 17 декабря 2025
+> **Версия**: 2.4.3
+> **Дата обновления**: 21 декабря 2025
 > **Совместимость**: React 19 + TypeScript 5.x + Tailwind 4
 > **Context7 ID**: `/yhooi2/shadcn-glass-ui-library`
+> **Всего компонентов**: 67+
+
+---
+
+## Stage 1 Migration Status: COMPLETED
+
+### Мигрированные компоненты (src/components/ui/)
+
+| Компонент     | Glass UI      | Версия | Статус |
+| ------------- | ------------- | ------ | ------ |
+| ThemeProvider | ThemeProvider | 2.3.0  | ✅     |
+| Button        | ButtonGlass   | 2.3.0  | ✅     |
+| Card          | CardGlass     | 2.3.0  | ✅     |
+| Badge         | BadgeGlass    | 2.3.2  | ✅     |
+| Alert         | AlertGlass    | 2.3.2  | ✅     |
+| Avatar        | AvatarGlass   | 2.3.2  | ✅     |
+| Dialog        | Dialog        | 2.4.0  | ✅     |
+| Sheet         | Sheet         | 2.4.0  | ✅     |
+| Tabs          | Tabs          | 2.4.0  | ✅     |
+| Tooltip       | Tooltip       | 2.4.1  | ✅     |
+| Progress      | Progress      | 2.4.2  | ✅     |
+
+### Ожидают миграции (Stage 2+)
+
+| Компонент    | Glass UI          | Приоритет |
+| ------------ | ----------------- | --------- |
+| Checkbox     | CheckboxGlass     | Medium    |
+| Input        | InputGlass        | Medium    |
+| DropdownMenu | DropdownMenuGlass | Medium    |
+| Skeleton     | SkeletonGlass     | Low       |
+| Select       | ComboBoxGlass     | Low       |
+| Switch       | ToggleGlass       | Low       |
 
 ---
 
 ## Установка
 
 ```bash
-npm install shadcn-glass-ui
+npm install shadcn-glass-ui@latest
 ```
 
 ```tsx
 // src/index.css
-@import "shadcn-glass-ui/dist/styles.css";
+@import "shadcn-glass-ui/styles.css";
 
 // src/main.tsx
 import { ThemeProvider } from 'shadcn-glass-ui';
@@ -27,275 +59,175 @@ import { ThemeProvider } from 'shadcn-glass-ui';
 
 ---
 
-## 🆕 Что нового в v2.0-2.1.4
+## Что нового в v2.4.x
 
 ```
-✅ SparklineGlass - компонент добавлен
-✅ InsightCardGlass - компонент добавлен
-✅ YearCardGlass - расширен (sparklineData, insights)
-✅ MetricCardGlass - расширен (sparklineData support)
-✅ StepperGlass - новый компонент (wizard patterns)
-✅ SplitLayoutGlass - ДОБАВЛЕН в v2.1.4! ← NEW
-✅ AICardGlass - для AI analytics ← NEW
-✅ 3-layer token system (225 OKLCH primitives)
-✅ Context7 integration (1243 snippets, 41 rules)
-✅ EXPORTS_MAP.json (AI-friendly)
-✅ 1,500+ tests (visual regression)
-```
+v2.4.3:
+✅ Progress - aria-label prop passthrough fixed
 
----
+v2.4.2:
+✅ Progress - shadcn/ui compatible alias (Progress)
 
-## Component Mapping (100% покрытие)
+v2.4.1:
+✅ Tooltip - shadcn/ui compatible aliases (Tooltip, TooltipTrigger, TooltipContent, TooltipProvider)
 
-### Базовые UI компоненты
-
-| Проект    | Glass UI      | Совместимость | Примечания             |
-| --------- | ------------- | ------------- | ---------------------- |
-| Button    | ButtonGlass   | ✅ 100%       | asChild, loading, icon |
-| Input     | InputGlass    | ✅ 100%       | error/success states   |
-| Card      | GlassCard     | ✅ 100%       | 3 intensities          |
-| Badge     | BadgeGlass    | ✅ 100%       | 7 variants             |
-| Dialog    | ModalGlass    | ✅ 100%       | Compound API           |
-| Sheet     | ModalGlass    | ✅ 100%       | Responsive             |
-| Tabs      | TabsGlass     | ✅ 100%       | Compound API           |
-| Tooltip   | TooltipGlass  | ✅ 100%       | Radix UI               |
-| Alert     | AlertGlass    | ✅ 100%       | 4 variants             |
-| Avatar    | AvatarGlass   | ✅ 100%       | Status indicator       |
-| Progress  | ProgressGlass | ✅ 100%       | Gradient variants      |
-| Skeleton  | SkeletonGlass | ✅ 100%       | 3 variants             |
-| Checkbox  | CheckboxGlass | ✅ 100%       | Glow effect            |
-| Switch    | ToggleGlass   | ✅ 100%       | Switch variant         |
-| Slider    | SliderGlass   | ✅ 100%       | Single/range           |
-| Select    | ComboBoxGlass | ✅ 100%       | Searchable             |
-| Dropdown  | DropdownGlass | ✅ 100%       | Submenu                |
-| HoverCard | PopoverGlass  | ✅ 100%       | Trigger+content        |
-
-### Timeline компоненты
-
-| Проект                 | Glass UI                | Props                                                              | Готовность |
-| ---------------------- | ----------------------- | ------------------------------------------------------------------ | ---------- |
-| **YearCard**           | **YearCardGlass**       | year, emoji, label, commits, progress, sparklineData✨, insights✨ | ✅ 100%    |
-| **MiniActivityChart**  | **SparklineGlass** ✨   | data, labels, showLabels, highlightMax, height, gap                | ✅ 100%    |
-| **YearInsight**        | **InsightCardGlass** ✨ | emoji, text, detail, variant (7 типов), displayMode                | ✅ 100%    |
-| **YearBadge**          | **BadgeGlass**          | 7 variants                                                         | ✅ 95%     |
-| **ActivityTimelineV2** | **CareerStatsGlass**    | timeline, username                                                 | ✅ 90%     |
-
-### Assessment компоненты
-
-| Проект                     | Glass UI                | Props                                                  | Готовность |
-| -------------------------- | ----------------------- | ------------------------------------------------------ | ---------- |
-| **MetricCard**             | **MetricCardGlass**     | label, value, change, trend, progress, sparklineData✨ | ✅ 100%    |
-| **CircularMetric**         | **CircularMetricGlass** | label, value, color, size                              | ✅ 100%    |
-| **MetricCategoryCard**     | GlassCard + grid        | -                                                      | ✅ 95%     |
-| **MetricRowCompact**       | **StatItemGlass**       | label, value, icon                                     | ✅ 100%    |
-| **MetricExplanationModal** | **ModalGlass**          | Responsive                                             | ✅ 100%    |
-
-### User компоненты
-
-| Проект          | Glass UI               | Готовность |
-| --------------- | ---------------------- | ---------- |
-| **UserHeader**  | **ProfileHeaderGlass** | ✅ 95%     |
-| **UserStats**   | **UserStatsLineGlass** | ✅ 100%    |
-| **SearchForm**  | **SearchBoxGlass**     | ✅ 100%    |
-| **ThemeToggle** | **ThemeToggleGlass**   | ✅ 100%    |
-
-### Project компоненты
-
-| Проект                    | Glass UI                             | Готовность |
-| ------------------------- | ------------------------------------ | ---------- |
-| **CompactProjectRow**     | **RepositoryCardGlass** (compact)    | ✅ 90%     |
-| **ExpandableProjectCard** | **RepositoryCardGlass** (expandable) | ✅ 95%     |
-| **ProjectAnalyticsModal** | **ModalGlass** + **TabsGlass**       | ✅ 95%     |
-| **HorizontalLanguageBar** | **LanguageBarGlass**                 | ✅ 100%    |
-| **ActivityStatusDot**     | **StatusIndicatorGlass**             | ✅ 100%    |
-
----
-
-## Критические компоненты (детально)
-
-### ✅ SparklineGlass (v2.0+)
-
-```typescript
-interface SparklineGlassProps {
-  readonly data: readonly number[]; // [10, 25, 45, 80, ...]
-  readonly labels?: readonly string[]; // ['Я', 'Ф', 'М', ...]
-  readonly showLabels?: boolean;
-  readonly highlightMax?: boolean;
-  readonly barColor?: string;
-  readonly maxBarColor?: string;
-  readonly height?: "sm" | "md" | "lg"; // 16/24/32px
-  readonly gap?: "none" | "sm" | "md"; // 0/1/2px
-  readonly animated?: boolean;
-}
-```
-
-**Использование:**
-
-```tsx
-<SparklineGlass
-  data={year.monthlyContributions.map((m) => m.contributions)}
-  labels={["Я", "Ф", "М", "А", "М", "И", "И", "А", "С", "О", "Н", "Д"]}
-  showLabels
-  highlightMax
-  height="md"
-/>
-```
-
-### ✅ InsightCardGlass (v2.0+)
-
-```typescript
-interface InsightCardGlassProps {
-  readonly emoji?: string; // default: "💡"
-  readonly text: string;
-  readonly detail?: string;
-  readonly variant?: InsightVariant;
-  readonly displayMode?: "inline" | "card";
-  readonly onClick?: () => void;
-  readonly showArrow?: boolean;
-  readonly animated?: boolean;
-}
-
-type InsightVariant =
-  | "default" // 💡 нейтральный
-  | "tip" // 💡 подсказка
-  | "highlight" // ✨ достижение
-  | "warning" // ⚠️ предупреждение
-  | "stat" // 📊 статистика
-  | "growth" // 📈 рост
-  | "decline"; // 📉 спад
-```
-
-**Использование:**
-
-```tsx
-<InsightCardGlass
-  variant="growth"
-  emoji="📈"
-  text="Лучший месяц: Апрель"
-  detail="156 коммитов - в 2.5 раза выше среднего"
-/>
-```
-
-### ✅ YearCardGlass (v2.0+ расширен)
-
-```typescript
-interface YearCardGlassProps {
-  // Базовые
-  readonly year: string | number;
-  readonly emoji: string;
-  readonly label: string;
-  readonly commits: string;
-  readonly progress: number;
-  readonly isExpanded?: boolean;
-  readonly gradient?: ProgressGradient;
-  readonly prs?: number;
-  readonly repos?: number;
-  readonly onShowYear?: () => void;
-
-  // ✨ НОВЫЕ в v2.0
-  readonly sparklineData?: readonly number[]; // ← месячная активность
-  readonly sparklineLabels?: readonly string[];
-  readonly insights?: readonly YearCardGlassInsight[];
-  readonly stats?: readonly YearCardGlassStat[];
-  readonly actionLabel?: string;
-  readonly showSparklineCollapsed?: boolean;
-}
-
-interface YearCardGlassInsight {
-  readonly variant?: InsightVariant;
-  readonly emoji?: string;
-  readonly text: string;
-  readonly detail?: string;
-}
-```
-
-**Использование:**
-
-```tsx
-<YearCardGlass
-  year={2024}
-  emoji="🔥"
-  label="Самый продуктивный"
-  commits="629"
-  progress={85}
-  prs={43}
-  repos={5}
-  sparklineData={[10, 25, 45, 156, 80, 60, 70, 55, 90, 50, 35, 28]}
-  sparklineLabels={["Я", "Ф", "М", "А", "М", "И", "И", "А", "С", "О", "Н", "Д"]}
-  insights={[
-    {
-      variant: "growth",
-      emoji: "💡",
-      text: "Лучший месяц: Апрель",
-      detail: "156 коммитов",
-    },
-  ]}
-  isExpanded={isSelected}
-/>
-```
-
-### ✅ MetricCardGlass (v2.0+ расширен)
-
-```typescript
-interface MetricCardGlassProps {
-  readonly label: string;
-  readonly value: number | string;
-  readonly change?: number; // Процент изменения
-  readonly trend?: "up" | "down" | "neutral";
-  readonly progress?: number; // 0-100
-  readonly color?: MetricColor; // emerald, amber, blue, red
-  readonly sparklineData?: readonly number[]; // ✨ v2.0
-  readonly onClick?: () => void;
-}
+v2.4.0:
+✅ Dialog - full shadcn/ui API (Dialog, DialogContent, DialogHeader, etc.)
+✅ Sheet - full shadcn/ui API with side prop
 ```
 
 ---
 
-## Новые компоненты v2.1.4
-
-### ✅ SplitLayoutGlass (ДОБАВЛЕН!)
-
-**Статус**: Готов в v2.1.4
+## Re-export Pattern (используется в проекте)
 
 ```tsx
-<SplitLayoutGlass
-  sidebar={<YearCardsList years={years} />}
-  main={<YearDetailPanel year={selectedYear} />}
-  sidebarWidth="33%"
-  gap="md"
-  stickyHeader
-  responsive
-/>
+// src/components/ui/button.tsx
+export {
+  ButtonGlass as Button,
+  type ButtonGlassProps as ButtonProps,
+} from "shadcn-glass-ui";
+export { buttonGlassVariants as buttonVariants } from "shadcn-glass-ui";
+
+// src/components/ui/dialog.tsx
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "shadcn-glass-ui";
+
+// src/components/ui/progress.tsx
+export { Progress } from "shadcn-glass-ui";
 ```
 
-> **Примечание**: Context7 индекс ещё не обновлён для этого компонента.
+---
 
-### ✅ StepperGlass
+## Полный список компонентов (67+)
 
-**Статус**: Готов в v2.1
+### Primitives (3)
 
-```tsx
-<StepperGlass.Root currentStep={2} orientation="horizontal">
-  <StepperGlass.Step step={1} status="completed">
-    <StepperGlass.Indicator />
-    <StepperGlass.Title>Choose Plan</StepperGlass.Title>
-  </StepperGlass.Step>
-</StepperGlass.Root>
-```
+- `FormFieldWrapper` - Form field structure
+- `InteractiveCard` - Hover animations
+- `TouchTarget` - 44x44px touch area
 
-### ✅ AICardGlass (для AI Analytics)
+### Core UI (24+)
 
-**Статус**: Готов
+- `ButtonGlass` / `Button` - 6 variants, loading, icon
+- `InputGlass` - label, error, success
+- `CheckboxGlass` / `Checkbox` - glow, indeterminate
+- `ToggleGlass` - switch variant
+- `SliderGlass` - single/range
+- `ModalGlass` - compound API, 3 sizes
+- `Dialog*` - full shadcn/ui API
+- `Sheet*` - full shadcn/ui API with side prop
+- `TabsGlass` / `Tabs*` - shadcn/ui compatible
+- `DropdownGlass` - submenu support
+- `DropdownMenuGlass*` - checkbox items
+- `TooltipGlass` / `Tooltip*` - 4 sides, shadcn API
+- `AlertGlass` - 4 variants
+- `NotificationGlass` - toast style
+- `BadgeGlass` - 7 variants
+- `AvatarGlass` - status indicator
+- `GlassCard` - 3 intensities
+- `CardGlass*` - compound API
+- `ProgressGlass` / `Progress` - gradient variants
+- `CircularProgressGlass` - circular
+- `SkeletonGlass` - 3 variants
+- `ComboBoxGlass` - searchable, multi
+- `PopoverGlass` - trigger/content
+- `SidebarGlass` - shadcn/ui compatible
+- `StepperGlass` - wizard patterns
 
-```tsx
-<AICardGlass
-  title="AI Analysis"
-  status={analysisStatus}
-  progress={loadingProgress}
-  result={analysisResult}
-  onRetry={handleRetry}
-/>
-```
+### Atomic (7)
+
+- `IconButtonGlass` - icon-only
+- `ThemeToggleGlass` - 3 themes
+- `SearchBoxGlass` - search input
+- `SortDropdownGlass` - sort options
+- `StatItemGlass` - label/value/trend
+- `ExpandableHeaderGlass` - collapsible
+- `InsightCardGlass` - 7 semantic variants
+
+### Specialized (9)
+
+- `StatusIndicatorGlass` - status dot
+- `SegmentedControlGlass` - button group
+- `RainbowProgressGlass` - gradient
+- `LanguageBarGlass` - proficiency
+- `ProfileAvatarGlass` - large avatar
+- `FlagAlertGlass` - warning/danger
+- `BaseProgressGlass` - base component
+- `SparklineGlass` - time series
+- `CircularMetricGlass` - circular metric
+
+### Composite (14)
+
+- `MetricCardGlass` - metric display
+- `YearCardGlass` - timeline card
+- `AICardGlass` - AI analysis
+- `RepositoryCardGlass` - repo card
+- `TrustScoreDisplayGlass` - score
+- `CareerStatsHeaderGlass` - stats header
+- `ContributionMetricsGlass` - contributions
+- `MetricsGridGlass` - grid layout
+- `RepositoryHeaderGlass` - repo header
+- `RepositoryMetadataGlass` - metadata
+- `UserInfoGlass` - user card
+- `UserStatsLineGlass` - horizontal stats
+- `SplitLayoutGlass` - master-detail
+- `CareerStatsGlass` - career section
+
+### Sections (7)
+
+- `HeaderNavGlass` - navigation
+- `ProfileHeaderGlass` - profile
+- `FlagsSectionGlass` - expandable flags
+- `TrustScoreCardGlass` - trust score
+- `ProjectsListGlass` - projects list
+- `HeaderBrandingGlass` - branded header
+- `SidebarMenuGlass` - sidebar menu
+
+---
+
+## Migration Priority (Updated)
+
+### Stage 1: Foundation - COMPLETED
+
+- ✅ ThemeProvider setup
+- ✅ Base UI: Button, Card, Badge, Alert, Avatar
+- ✅ Dialog, Sheet, Tabs, Tooltip, Progress
+
+### Stage 2: Remaining UI (Next)
+
+- Checkbox, Input, DropdownMenu
+- Skeleton, Select, Switch
+
+### Stage 3: Timeline
+
+- YearCard → YearCardGlass
+- MiniActivityChart → SparklineGlass
+- DesktopTimelineLayout → SplitLayoutGlass
+
+### Stage 4: Assessment
+
+- MetricCard → MetricCardGlass
+- MetricCategoryCard → GlassCard + grid
+
+### Stage 5: User & Projects
+
+- UserHeader → ProfileHeaderGlass
+- RepositoryCards → RepositoryCardGlass
+
+### Stage 6: AI Integration
+
+- Create AI-specific components
+- Integration and testing
 
 ---
 
@@ -308,118 +240,27 @@ interface MetricCardGlassProps {
 </ThemeProvider>;
 
 // Использование хука
-const { theme, setTheme } = useTheme();
+const { theme, setTheme, THEMES } = useTheme();
 setTheme("aurora");
 ```
 
 ---
 
-## Design Tokens (v2.0)
-
-### 3-Layer System
-
-```
-PRIMITIVE (225 tokens)
-├── oklch-primitives.css
-│   ├── Colors: oklch-neutral-*, oklch-primary-*, oklch-success-*
-│   ├── Blur: blur-{subtle|medium|heavy|extreme}
-│   ├── Radius: radius-{xs|sm|md|lg|xl|2xl|full}
-│   └── Spacing: space-{0.5|1|2|...}
-│
-SEMANTIC (mapping)
-├── semantic.css
-│   ├── --semantic-bg-primary
-│   ├── --semantic-text-primary
-│   └── --semantic-border-default
-│
-COMPONENT (auto-inherit)
-└── component.css
-    ├── --button-bg: var(--semantic-surface-interactive)
-    └── --button-text: var(--semantic-text-on-surface)
-```
-
-### Основные токены
-
-```css
-/* Glass surfaces */
---glass-frost-20: oklch(1 0 0 / 60%);
---glass-blur-medium: 16px;
---glass-radius-md: 16px;
-
-/* Glow effects */
---glass-glow-primary: 0 0 20px oklch(0.6 0.2 250 / 40%);
---glass-glow-success: 0 0 20px oklch(0.65 0.18 145 / 40%);
-```
-
----
-
-## Migration Priority
-
-### Этап 1: Base UI (2-3 дня)
-
-Button, Input, Card, Badge, Dialog, Tabs, Tooltip, etc.
-
-### Этап 2: Timeline (3-4 дня)
-
-YearCard → YearCardGlass (со sparklineData, insights)
-MiniActivityChart → SparklineGlass
-YearInsight → InsightCardGlass
-
-### Этап 3: Assessment (2-3 дня)
-
-MetricCard → MetricCardGlass (со sparklineData)
-CircularMetric → CircularMetricGlass
-
-### Этап 4: User & Projects (2-3 дня)
-
-UserHeader → ProfileHeaderGlass
-ExpandableProjectCard → RepositoryCardGlass
-
-### Этап 5: Финализация (2-3 дня)
-
-Тесты, Stories, Accessibility, Performance
-
-**Общее время**: 11-16 дней
-
----
-
-## Context7 MCP Usage
-
-```typescript
-// Поиск библиотеки
-mcp__context7__resolve_library_id({ libraryName: "shadcn-glass-ui" });
-// → /yhooi2/shadcn-glass-ui-library
-
-// Получение документации
-mcp__context7__get_library_docs({
-  context7CompatibleLibraryID: "/yhooi2/shadcn-glass-ui-library",
-  topic: "ButtonGlass variants",
-  mode: "code",
-});
-```
-
-**Stats**: 1243 snippets | 41 rules | Score: 77.6/100
-
----
-
 ## Links
 
-- 📘 [Полный аудит](../../docs/GLASS_UI_LIBRARY_AUDIT_V2.md)
-- 📦 [NPM](https://www.npmjs.com/package/shadcn-glass-ui)
-- 🐙 [GitHub](https://github.com/Yhooi2/shadcn-glass-ui-library)
-- 📚 [Storybook](https://yhooi2.github.io/shadcn-glass-ui-library)
-- 🧠 [Context7](https://github.com/yhooi2/shadcn-glass-ui-library/blob/main/context7.json)
+- [NPM](https://www.npmjs.com/package/shadcn-glass-ui)
+- [GitHub](https://github.com/Yhooi2/shadcn-glass-ui-library)
+- [Storybook](https://yhooi2.github.io/shadcn-glass-ui-library)
 
 ---
 
-## Compatibility Check
+## Compatibility
 
 | Технология   | Библиотека     | Проект | Status |
 | ------------ | -------------- | ------ | ------ |
 | React        | 18.0+ or 19.0+ | 19.2.0 | ✅     |
 | TypeScript   | 5.x            | 5.8.3  | ✅     |
 | Tailwind CSS | 4.0+           | 4.1.12 | ✅     |
-| Vite         | 7.x            | 7.1.2  | ✅     |
-| Storybook    | 10.x           | 10.1.5 | ✅     |
+| Vite         | 5.0+           | 7.1.2  | ✅     |
 
-**Вердикт**: 🎉 **100% совместимость - готов к миграции!**
+**Stage 1 Migration: COMPLETE**
