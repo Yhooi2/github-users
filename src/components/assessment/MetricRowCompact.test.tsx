@@ -44,8 +44,10 @@ describe("MetricRowCompact", () => {
 
       const progressBar = screen.getByRole("progressbar");
       expect(progressBar).toBeInTheDocument();
-      // ProgressGlass uses its own aria-label format
-      expect(progressBar).toHaveAttribute("aria-label");
+      expect(progressBar).toHaveAttribute(
+        "aria-label",
+        "Activity score: 85% - High",
+      );
     });
 
     it("renders icon", () => {
