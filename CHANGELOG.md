@@ -1,3 +1,9 @@
+# [1.6.0](https://github.com/Yhooi2/github-users/compare/v1.5.0...v1.6.0) (2025-12-21)
+
+### Features
+
+- **assessment:** migrate MetricCard to MetricCardGlass (Stage 4) ([8910a75](https://github.com/Yhooi2/github-users/commit/8910a7508d01e56bc3a625314d6fe110ed3c16cd))
+
 # [1.5.0](https://github.com/Yhooi2/github-users/compare/v1.4.0...v1.5.0) (2025-12-21)
 
 ### Features
