@@ -8,6 +8,3 @@ export {
   ButtonGlass as Button,
   type ButtonGlassProps as ButtonProps,
 } from "shadcn-glass-ui";
-
-// eslint-disable-next-line react-refresh/only-export-components
-export { buttonGlassVariants as buttonVariants } from "shadcn-glass-ui";

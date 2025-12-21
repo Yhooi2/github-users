@@ -71,10 +71,7 @@ function SearchForm({ userName, setUserName }: Props) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex w-full items-center gap-2"
-    >
+    <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
       <Label htmlFor="search" className="sr-only">
         Search
       </Label>
@@ -83,7 +80,9 @@ function SearchForm({ userName, setUserName }: Props) {
         id="search"
         value={text}
         placeholder="Search GitHub User..."
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setText(e.target.value)
+        }
         className="flex-grow bg-background"
       />
       <Button type="submit">Search</Button>

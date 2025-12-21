@@ -57,7 +57,6 @@ function getMetricIcon(title: string) {
   }
 }
 
-
 /**
  * MetricCard - Compact metric display per design plan
  *
@@ -94,35 +93,45 @@ export function MetricCard({
     <Card
       className={cn(
         "cursor-pointer transition-all duration-200",
-        "hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/50",
+        "hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg",
         "active:scale-[0.98]",
-        onExplainClick && "group"
+        onExplainClick && "group",
       )}
       onClick={onExplainClick}
       role={onExplainClick ? "button" : undefined}
       tabIndex={onExplainClick ? 0 : undefined}
-      onKeyDown={onExplainClick ? (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onExplainClick();
-        }
-      } : undefined}
-      aria-label={onExplainClick ? `View ${title} details: ${score}% - ${level}` : undefined}
+      onKeyDown={
+        onExplainClick
+          ? (e: React.KeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onExplainClick();
+              }
+            }
+          : undefined
+      }
+      aria-label={
+        onExplainClick
+          ? `View ${title} details: ${score}% - ${level}`
+          : undefined
+      }
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           {/* Icon */}
-          <div className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full",
-            "bg-primary/10 text-primary",
-            "group-hover:bg-primary/20 transition-colors"
-          )}>
+          <div
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-full",
+              "bg-primary/10 text-primary",
+              "transition-colors group-hover:bg-primary/20",
+            )}
+          >
             <Icon className="h-5 w-5" aria-hidden="true" />
           </div>
 
           {/* Title and Score */}
-          <div className="flex-1 min-w-0">
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
               {title}
             </div>
             <div className="flex items-baseline gap-1">
@@ -135,7 +144,7 @@ export function MetricCard({
         </div>
 
         {/* Level indicator - subtle */}
-        <div className="mt-2 text-[10px] text-muted-foreground/70 uppercase tracking-wider">
+        <div className="mt-2 text-[10px] tracking-wider text-muted-foreground/70 uppercase">
           {level}
         </div>
       </CardContent>

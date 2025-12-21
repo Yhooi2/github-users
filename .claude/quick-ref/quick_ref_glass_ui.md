@@ -1,6 +1,6 @@
-# shadcn-glass-ui - Quick Reference (v2.4.3)
+# shadcn-glass-ui - Quick Reference (v2.5.0)
 
-> **Версия**: 2.4.3
+> **Версия**: 2.5.0
 > **Дата обновления**: 21 декабря 2025
 > **Совместимость**: React 19 + TypeScript 5.x + Tailwind 4
 > **Context7 ID**: `/yhooi2/shadcn-glass-ui-library`
@@ -8,9 +8,9 @@
 
 ---
 
-## Stage 1 Migration Status: COMPLETED
+## Migration Status
 
-### Мигрированные компоненты (src/components/ui/)
+### Stage 1: Foundation - COMPLETED
 
 | Компонент     | Glass UI      | Версия | Статус |
 | ------------- | ------------- | ------ | ------ |
@@ -24,18 +24,27 @@
 | Sheet         | Sheet         | 2.4.0  | ✅     |
 | Tabs          | Tabs          | 2.4.0  | ✅     |
 | Tooltip       | Tooltip       | 2.4.1  | ✅     |
-| Progress      | Progress      | 2.4.2  | ✅     |
+| Progress      | Progress      | 2.4.3  | ✅     |
 
-### Ожидают миграции (Stage 2+)
+### Stage 2: Remaining UI - COMPLETED
 
-| Компонент    | Glass UI          | Приоритет |
-| ------------ | ----------------- | --------- |
-| Checkbox     | CheckboxGlass     | Medium    |
-| Input        | InputGlass        | Medium    |
-| DropdownMenu | DropdownMenuGlass | Medium    |
-| Skeleton     | SkeletonGlass     | Low       |
-| Select       | ComboBoxGlass     | Low       |
-| Switch       | ToggleGlass       | Low       |
+| Компонент    | Glass UI       | Версия | Статус |
+| ------------ | -------------- | ------ | ------ |
+| Checkbox     | Checkbox       | 2.5.0  | ✅     |
+| Input        | Input          | 2.5.0  | ✅     |
+| Switch       | Switch         | 2.5.0  | ✅     |
+| Skeleton     | Skeleton       | 2.5.0  | ✅     |
+| Select       | Select\*       | 2.5.0  | ✅     |
+| DropdownMenu | DropdownMenu\* | 2.5.0  | ✅     |
+
+### Ожидают миграции (Stage 3+)
+
+| Компонент      | Glass UI            | Приоритет |
+| -------------- | ------------------- | --------- |
+| YearCard       | YearCardGlass       | High      |
+| MetricCard     | MetricCardGlass     | High      |
+| Sparkline      | SparklineGlass      | Medium    |
+| RepositoryCard | RepositoryCardGlass | Medium    |
 
 ---
 
@@ -59,21 +68,22 @@ import { ThemeProvider } from 'shadcn-glass-ui';
 
 ---
 
-## Что нового в v2.4.x
+## Что нового в v2.5.0
 
 ```
+v2.5.0:
+✅ Checkbox - shadcn/ui compatible alias
+✅ Input - shadcn/ui compatible alias
+✅ Switch - shadcn/ui compatible alias
+✅ Skeleton - shadcn/ui compatible alias
+✅ Select - full compound API (Select, SelectTrigger, SelectContent, etc.)
+✅ DropdownMenu - full compound API (15 sub-components)
+
 v2.4.3:
 ✅ Progress - aria-label prop passthrough fixed
 
-v2.4.2:
-✅ Progress - shadcn/ui compatible alias (Progress)
-
-v2.4.1:
-✅ Tooltip - shadcn/ui compatible aliases (Tooltip, TooltipTrigger, TooltipContent, TooltipProvider)
-
-v2.4.0:
-✅ Dialog - full shadcn/ui API (Dialog, DialogContent, DialogHeader, etc.)
-✅ Sheet - full shadcn/ui API with side prop
+v2.4.0-2.4.2:
+✅ Dialog, Sheet, Tabs, Tooltip, Progress - shadcn/ui compatible APIs
 ```
 
 ---
@@ -81,30 +91,61 @@ v2.4.0:
 ## Re-export Pattern (используется в проекте)
 
 ```tsx
-// src/components/ui/button.tsx
-export {
-  ButtonGlass as Button,
-  type ButtonGlassProps as ButtonProps,
-} from "shadcn-glass-ui";
-export { buttonGlassVariants as buttonVariants } from "shadcn-glass-ui";
+// Simple components
+// src/components/ui/checkbox.tsx
+export { Checkbox } from "shadcn-glass-ui";
 
-// src/components/ui/dialog.tsx
+// src/components/ui/input.tsx
+export { Input } from "shadcn-glass-ui";
+
+// src/components/ui/switch.tsx
+export { Switch } from "shadcn-glass-ui";
+
+// src/components/ui/skeleton.tsx
+export { Skeleton } from "shadcn-glass-ui";
+
+// Compound components
+// src/components/ui/select.tsx
 export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
 } from "shadcn-glass-ui";
 
-// src/components/ui/progress.tsx
-export { Progress } from "shadcn-glass-ui";
+// src/components/ui/dropdown-menu.tsx
+export {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "shadcn-glass-ui";
 ```
+
+---
+
+## Known Issues
+
+| Issue                                                              | Component                 | Status |
+| ------------------------------------------------------------------ | ------------------------- | ------ |
+| [#13](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/13) | Checkbox/Switch className | Open   |
 
 ---
 
@@ -119,16 +160,16 @@ export { Progress } from "shadcn-glass-ui";
 ### Core UI (24+)
 
 - `ButtonGlass` / `Button` - 6 variants, loading, icon
-- `InputGlass` - label, error, success
+- `InputGlass` / `Input` - shadcn compatible
 - `CheckboxGlass` / `Checkbox` - glow, indeterminate
-- `ToggleGlass` - switch variant
+- `Switch` - shadcn compatible toggle
 - `SliderGlass` - single/range
 - `ModalGlass` - compound API, 3 sizes
 - `Dialog*` - full shadcn/ui API
 - `Sheet*` - full shadcn/ui API with side prop
 - `TabsGlass` / `Tabs*` - shadcn/ui compatible
 - `DropdownGlass` - submenu support
-- `DropdownMenuGlass*` - checkbox items
+- `DropdownMenu*` - full shadcn/ui API (15 components)
 - `TooltipGlass` / `Tooltip*` - 4 sides, shadcn API
 - `AlertGlass` - 4 variants
 - `NotificationGlass` - toast style
@@ -138,8 +179,9 @@ export { Progress } from "shadcn-glass-ui";
 - `CardGlass*` - compound API
 - `ProgressGlass` / `Progress` - gradient variants
 - `CircularProgressGlass` - circular
-- `SkeletonGlass` - 3 variants
+- `Skeleton` / `SkeletonGlass` - shadcn compatible
 - `ComboBoxGlass` - searchable, multi
+- `Select*` - full shadcn/ui API (10 components)
 - `PopoverGlass` - trigger/content
 - `SidebarGlass` - shadcn/ui compatible
 - `StepperGlass` - wizard patterns
@@ -199,16 +241,12 @@ export { Progress } from "shadcn-glass-ui";
 
 ### Stage 1: Foundation - COMPLETED
 
-- ✅ ThemeProvider setup
-- ✅ Base UI: Button, Card, Badge, Alert, Avatar
-- ✅ Dialog, Sheet, Tabs, Tooltip, Progress
+### Stage 2: Remaining UI - COMPLETED
 
-### Stage 2: Remaining UI (Next)
+- ✅ 17 base components migrated
+- ✅ All tests passing (1902)
 
-- Checkbox, Input, DropdownMenu
-- Skeleton, Select, Switch
-
-### Stage 3: Timeline
+### Stage 3: Timeline (Next)
 
 - YearCard → YearCardGlass
 - MiniActivityChart → SparklineGlass
@@ -263,4 +301,4 @@ setTheme("aurora");
 | Tailwind CSS | 4.0+           | 4.1.12 | ✅     |
 | Vite         | 5.0+           | 7.1.2  | ✅     |
 
-**Stage 1 Migration: COMPLETE**
+**Stage 1 + Stage 2 Migration: COMPLETE**

@@ -187,28 +187,27 @@ describe("Checkbox", () => {
   });
 
   describe("styling", () => {
-    it("should accept custom className", () => {
-      const { container } = render(<Checkbox className="custom-checkbox" />);
-
-      const checkbox = container.querySelector('[data-slot="checkbox"]');
-      expect(checkbox).toHaveClass("custom-checkbox");
-    });
-
-    it("should have default styling classes", () => {
+    it("should have data-slot attribute", () => {
       const { container } = render(<Checkbox />);
 
       const checkbox = container.querySelector('[data-slot="checkbox"]');
-      expect(checkbox).toHaveClass("size-4");
-      expect(checkbox).toHaveClass("rounded-[4px]");
-      expect(checkbox).toHaveClass("border");
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox).toHaveAttribute("data-slot", "checkbox");
     });
 
-    it("should have disabled styling when disabled", () => {
+    it("should render with proper structure", () => {
+      const { container } = render(<Checkbox />);
+
+      const checkbox = container.querySelector('[data-slot="checkbox"]');
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox?.tagName.toLowerCase()).toBe("button");
+    });
+
+    it("should be disabled when disabled prop is set", () => {
       const { container } = render(<Checkbox disabled />);
 
       const checkbox = container.querySelector('[data-slot="checkbox"]');
-      expect(checkbox).toHaveClass("disabled:cursor-not-allowed");
-      expect(checkbox).toHaveClass("disabled:opacity-50");
+      expect(checkbox).toBeDisabled();
     });
   });
 
@@ -302,18 +301,16 @@ describe("Checkbox", () => {
 
       const icon = container.querySelector("svg");
       expect(icon).toBeInTheDocument();
-      expect(icon).toHaveClass("size-3.5");
     });
 
-    it("should have indicator with proper classes when checked", () => {
+    it("should have indicator with data-slot when checked", () => {
       const { container } = render(<Checkbox defaultChecked />);
 
       const indicator = container.querySelector(
         '[data-slot="checkbox-indicator"]',
       );
-      expect(indicator).toHaveClass("grid");
-      expect(indicator).toHaveClass("place-content-center");
-      expect(indicator).toHaveClass("text-current");
+      expect(indicator).toBeInTheDocument();
+      expect(indicator).toHaveAttribute("data-slot", "checkbox-indicator");
     });
   });
 });

@@ -18,7 +18,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReducedMotion, useResponsive, type TabName } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { BarChart3, Clock, Code2, Download, ExternalLink, Users } from "lucide-react";
+import {
+  BarChart3,
+  Clock,
+  Code2,
+  Download,
+  ExternalLink,
+  Users,
+} from "lucide-react";
 import { Suspense, lazy, useCallback } from "react";
 
 // Lazy load tab content
@@ -57,12 +64,13 @@ export interface ProjectAnalyticsModalProps {
   onTabChange: (tab: TabName) => void;
 }
 
-const TAB_CONFIG: { value: TabName; label: string; icon: typeof BarChart3 }[] = [
-  { value: "overview", label: "Overview", icon: BarChart3 },
-  { value: "timeline", label: "Timeline", icon: Clock },
-  { value: "code", label: "Code", icon: Code2 },
-  { value: "team", label: "Team", icon: Users },
-];
+const TAB_CONFIG: { value: TabName; label: string; icon: typeof BarChart3 }[] =
+  [
+    { value: "overview", label: "Overview", icon: BarChart3 },
+    { value: "timeline", label: "Timeline", icon: Clock },
+    { value: "code", label: "Code", icon: Code2 },
+    { value: "team", label: "Team", icon: Users },
+  ];
 
 /**
  * Project analytics modal for Level 2 detailed view
@@ -123,7 +131,7 @@ export function ProjectAnalyticsModal({
   const modalContent = (
     <Tabs
       value={activeTab}
-      onValueChange={(value) => onTabChange(value as TabName)}
+      onValueChange={(value: string) => onTabChange(value as TabName)}
       className="flex h-full flex-col"
     >
       {/* Horizontal tabs navigation */}
