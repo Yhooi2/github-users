@@ -1,6 +1,6 @@
-# shadcn-glass-ui - Quick Reference (v2.5.0)
+# shadcn-glass-ui - Quick Reference (v2.5.4)
 
-> **Версия**: 2.5.0
+> **Версия**: 2.5.4
 > **Дата обновления**: 21 декабря 2025
 > **Совместимость**: React 19 + TypeScript 5.x + Tailwind 4
 > **Context7 ID**: `/yhooi2/shadcn-glass-ui-library`
@@ -37,13 +37,18 @@
 | Select       | Select\*       | 2.5.0  | ✅     |
 | DropdownMenu | DropdownMenu\* | 2.5.0  | ✅     |
 
-### Ожидают миграции (Stage 3+)
+### Stage 3: Timeline - IN PROGRESS
+
+| Компонент | Glass UI      | Версия | Статус |
+| --------- | ------------- | ------ | ------ |
+| YearCard  | YearCardGlass | 2.5.4  | ✅     |
+
+### Ожидают миграции (Stage 4+)
 
 | Компонент      | Glass UI            | Приоритет |
 | -------------- | ------------------- | --------- |
-| YearCard       | YearCardGlass       | High      |
 | MetricCard     | MetricCardGlass     | High      |
-| Sparkline      | SparklineGlass      | Medium    |
+| MiniActivity   | SparklineGlass      | Medium    |
 | RepositoryCard | RepositoryCardGlass | Medium    |
 
 ---
@@ -68,21 +73,24 @@ import { ThemeProvider } from 'shadcn-glass-ui';
 
 ---
 
-## Что нового в v2.5.0
+## Что нового
 
 ```
+v2.5.4:
+✅ YearCardGlass - compound API для timeline (issue #15)
+✅ MetricCardGlass - compound API для метрик
+✅ SparklineGlass - sparkline charts
+✅ buttonVariants export (issue #14)
+
+v2.5.1:
+✅ Checkbox/Switch className prop passthrough
+
 v2.5.0:
-✅ Checkbox - shadcn/ui compatible alias
-✅ Input - shadcn/ui compatible alias
-✅ Switch - shadcn/ui compatible alias
-✅ Skeleton - shadcn/ui compatible alias
-✅ Select - full compound API (Select, SelectTrigger, SelectContent, etc.)
-✅ DropdownMenu - full compound API (15 sub-components)
+✅ Checkbox, Input, Switch, Skeleton - shadcn/ui aliases
+✅ Select - full compound API (10 components)
+✅ DropdownMenu - full compound API (15 components)
 
-v2.4.3:
-✅ Progress - aria-label prop passthrough fixed
-
-v2.4.0-2.4.2:
+v2.4.x:
 ✅ Dialog, Sheet, Tabs, Tooltip, Progress - shadcn/ui compatible APIs
 ```
 

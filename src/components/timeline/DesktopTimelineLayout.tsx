@@ -18,7 +18,7 @@ import { CircleDot, FolderGit2, GitCommit, GitPullRequest } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CareerSummaryHeader } from "./CareerSummaryHeader";
 import { TimelineStatTooltip } from "./TimelineStatTooltip";
-import { YearCard } from "./YearCard";
+import { YearCardWrapper as YearCard } from "./YearCardGlass.wrapper";
 import { YearDetailPanel } from "./YearDetailPanel";
 
 export interface DesktopTimelineLayoutProps {

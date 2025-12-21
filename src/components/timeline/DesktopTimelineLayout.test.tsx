@@ -1,7 +1,7 @@
+import type { YearData } from "@/hooks/useUserAnalytics";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { YearData } from "@/hooks/useUserAnalytics";
 import { DesktopTimelineLayout } from "./DesktopTimelineLayout";
 
 // Mock framer-motion
@@ -16,9 +16,9 @@ vi.mock("framer-motion", () => ({
     div: ({
       children,
       ...props
-    }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) => (
-      <div {...props}>{children}</div>
-    ),
+    }: React.HTMLAttributes<HTMLDivElement> & {
+      children: React.ReactNode;
+    }) => <div {...props}>{children}</div>,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
@@ -62,19 +62,21 @@ vi.mock("@/components/level-2/ProjectAnalyticsModal", () => ({
 vi.mock("@/lib/adapters/project-adapter", () => ({
   toExpandableProjects: (items: unknown[], username: string) => {
     if (!Array.isArray(items)) return [];
-    return items.map((item: { repository?: { id?: string; name?: string } }, i) => ({
-      id: item?.repository?.id ?? `project-${i}`,
-      name: item?.repository?.name ?? `Project ${i}`,
-      fullName: `${username}/${item?.repository?.name ?? `project-${i}`}`,
-      description: "Test project",
-      commits: 100,
-      stars: 50,
-      forks: 10,
-      language: "TypeScript",
-      languageColor: "#3178c6",
-      isOwner: i < 2,
-      url: "https://github.com/test",
-    }));
+    return items.map(
+      (item: { repository?: { id?: string; name?: string } }, i) => ({
+        id: item?.repository?.id ?? `project-${i}`,
+        name: item?.repository?.name ?? `Project ${i}`,
+        fullName: `${username}/${item?.repository?.name ?? `project-${i}`}`,
+        description: "Test project",
+        commits: 100,
+        stars: 50,
+        forks: 10,
+        language: "TypeScript",
+        languageColor: "#3178c6",
+        isOwner: i < 2,
+        url: "https://github.com/test",
+      }),
+    );
   },
   toProjectForModal: () => null,
 }));
@@ -84,7 +86,7 @@ const createMockYearData = (
   year: number,
   commits: number,
   ownedCount: number = 2,
-  contribCount: number = 3
+  contribCount: number = 3,
 ): YearData => ({
   year,
   totalCommits: commits,
@@ -162,18 +164,20 @@ describe("DesktopTimelineLayout", () => {
 
   it("renders without Activity Timeline heading for cleaner UX", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     // Header was removed - section identified by aria-label instead
-    expect(screen.queryByRole("heading", { name: "Activity Timeline" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Activity Timeline" }),
+    ).not.toBeInTheDocument();
     // But the section is accessible
     expect(screen.getByLabelText("Activity Timeline")).toBeInTheDocument();
   });
 
   it("renders year navigation sidebar", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     expect(screen.getByLabelText("Year navigation")).toBeInTheDocument();
@@ -181,7 +185,7 @@ describe("DesktopTimelineLayout", () => {
 
   it("renders all-time summary panel by default", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     expect(screen.getByLabelText("All-time summary")).toBeInTheDocument();
@@ -189,7 +193,7 @@ describe("DesktopTimelineLayout", () => {
 
   it("renders all year cards in sidebar", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     expect(screen.getByText("2024")).toBeInTheDocument();
@@ -199,7 +203,7 @@ describe("DesktopTimelineLayout", () => {
 
   it("shows All Time header in sidebar", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     // All Time header exists
@@ -208,7 +212,7 @@ describe("DesktopTimelineLayout", () => {
 
   it("selects All Time view by default", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     // All Time header should be highlighted (bg-primary/10)
@@ -223,16 +227,20 @@ describe("DesktopTimelineLayout", () => {
     const user = userEvent.setup();
 
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     // Initially All Time is selected (shows "All Projects")
     expect(screen.getByText("All Projects")).toBeInTheDocument();
 
     // Click on 2024 year card
-    const year2024Button = screen.getAllByRole("button").find((btn) =>
-      btn.textContent?.includes("2024") && !btn.textContent?.includes("All Time")
-    );
+    const year2024Button = screen
+      .getAllByRole("button")
+      .find(
+        (btn) =>
+          btn.textContent?.includes("2024") &&
+          !btn.textContent?.includes("All Time"),
+      );
     expect(year2024Button).toBeDefined();
 
     await user.click(year2024Button!);
@@ -245,25 +253,33 @@ describe("DesktopTimelineLayout", () => {
     const user = userEvent.setup();
 
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     // Click on 2024 year card to see stats
-    const year2024Button = screen.getAllByRole("button").find((btn) =>
-      btn.textContent?.includes("2024") && !btn.textContent?.includes("All Time")
-    );
+    const year2024Button = screen
+      .getAllByRole("button")
+      .find(
+        (btn) =>
+          btn.textContent?.includes("2024") &&
+          !btn.textContent?.includes("All Time"),
+      );
     await user.click(year2024Button!);
 
-    // Check for stat labels in the right panel
-    expect(screen.getByText("Commits")).toBeInTheDocument();
-    expect(screen.getByText("Pull Requests")).toBeInTheDocument();
+    // Check for stat labels (may appear in both YearCard and YearDetailPanel)
+    expect(screen.getAllByText("Commits").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Pull Requests").length).toBeGreaterThanOrEqual(
+      1,
+    );
     expect(screen.getByText("Issues")).toBeInTheDocument();
-    expect(screen.getByText("Repositories")).toBeInTheDocument();
+    expect(screen.getAllByText("Repositories").length).toBeGreaterThanOrEqual(
+      1,
+    );
   });
 
   it("uses CSS Grid for 33/67 split layout", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     // Find the grid container (has grid-cols-[1fr_2fr])
@@ -273,7 +289,7 @@ describe("DesktopTimelineLayout", () => {
 
   it("has accessible section label", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     expect(screen.getByLabelText("Activity Timeline")).toBeInTheDocument();
@@ -281,7 +297,7 @@ describe("DesktopTimelineLayout", () => {
 
   it("renders project cards in detail panel", () => {
     render(
-      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />
+      <DesktopTimelineLayout timeline={mockTimeline} username="developer" />,
     );
 
     // Project cards are rendered via mocked ExpandableProjectCard
