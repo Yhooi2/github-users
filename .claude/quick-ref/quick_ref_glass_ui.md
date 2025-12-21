@@ -46,11 +46,18 @@
 
 **Note**: SparklineGlass уже используется в YearCardGlass.wrapper. MiniActivityChart удалён (не использовался).
 
-### Ожидают миграции (Stage 4+)
+### Stage 4: Assessment - COMPLETED
+
+| Компонент  | Glass UI        | Версия | Статус |
+| ---------- | --------------- | ------ | ------ |
+| MetricCard | MetricCardGlass | 2.6.1  | ✅     |
+
+**Note**: MetricCardGlass.wrapper создан с поддержкой variant (success/warning/destructive/default). Старый MetricCard.tsx удалён.
+
+### Ожидают миграции (Stage 5+)
 
 | Компонент      | Glass UI            | Приоритет |
 | -------------- | ------------------- | --------- |
-| MetricCard     | MetricCardGlass     | High      |
 | RepositoryCard | RepositoryCardGlass | Medium    |
 
 ---
@@ -255,25 +262,24 @@ export {
 
 ## Migration Priority (Updated)
 
-### Stage 1: Foundation - COMPLETED
+### Stage 1: Foundation - COMPLETED ✅
 
-### Stage 2: Remaining UI - COMPLETED
+### Stage 2: Remaining UI - COMPLETED ✅
 
 - ✅ 17 base components migrated
 - ✅ All tests passing (1902)
 
-### Stage 3: Timeline (Next)
+### Stage 3: Timeline - COMPLETED ✅
 
-- YearCard → YearCardGlass
-- MiniActivityChart → SparklineGlass
-- DesktopTimelineLayout → SplitLayoutGlass
+- ✅ YearCard → YearCardGlass
+- ✅ MiniActivityChart → SparklineGlass (deleted, not used)
 
-### Stage 4: Assessment
+### Stage 4: Assessment - COMPLETED ✅
 
-- MetricCard → MetricCardGlass
-- MetricCategoryCard → GlassCard + grid
+- ✅ MetricCard → MetricCardGlass
+- MetricCategoryCard → GlassCard + grid (TODO)
 
-### Stage 5: User & Projects
+### Stage 5: User & Projects (Next)
 
 - UserHeader → ProfileHeaderGlass
 - RepositoryCards → RepositoryCardGlass

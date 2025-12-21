@@ -7,8 +7,11 @@
  * @module assessment
  */
 
-// Original components (kept for backward compatibility)
-export { MetricCard, type MetricCardProps } from "./MetricCard";
+// Glass UI migrated components
+export {
+  MetricCardWrapper as MetricCard,
+  type MetricCardWrapperProps as MetricCardProps,
+} from "./MetricCardGlass.wrapper";
 export {
   MetricExplanationModal,
   type MetricExplanationModalProps,
@@ -16,6 +19,18 @@ export {
 export { QuickAssessment, type QuickAssessmentProps } from "./QuickAssessment";
 
 // New Always Expanded Cards components
+export {
+  CategoryTooltipContent,
+  type CategoryTooltipContentProps,
+} from "./CategoryTooltipContent";
+export {
+  MetricAssessmentGrid,
+  type MetricAssessmentGridProps,
+} from "./MetricAssessmentGrid";
+export {
+  MetricCategoryCard,
+  type MetricCategoryCardProps,
+} from "./MetricCategoryCard";
 export {
   MetricRowCompact,
   type MetricRowCompactProps,
@@ -25,15 +40,7 @@ export {
   type MetricTooltipContentProps,
 } from "./MetricTooltipContent";
 export {
-  CategoryTooltipContent,
-  type CategoryTooltipContentProps,
-} from "./CategoryTooltipContent";
-export {
-  MetricCategoryCard,
-  type MetricCategoryCardProps,
-} from "./MetricCategoryCard";
-export { UserSkills, type UserSkillsProps, type LanguageSkill } from "./UserSkills";
-export {
-  MetricAssessmentGrid,
-  type MetricAssessmentGridProps,
-} from "./MetricAssessmentGrid";
+  UserSkills,
+  type LanguageSkill,
+  type UserSkillsProps,
+} from "./UserSkills";

@@ -80,9 +80,9 @@ describe("QuickAssessment", () => {
       <QuickAssessment metrics={mockMetrics} onExplainMetric={handleExplain} />,
     );
 
-    // Cards are now clickable buttons
+    // MetricCardGlass uses "Explain this metric" aria-label for explain buttons
     const cardButtons = screen.getAllByRole("button", {
-      name: /View .* details/i,
+      name: /Explain this metric/i,
     });
     expect(cardButtons).toHaveLength(5);
 
@@ -107,9 +107,9 @@ describe("QuickAssessment", () => {
   it("does not render button roles when onExplainMetric not provided", () => {
     render(<QuickAssessment metrics={mockMetrics} />);
 
-    // MetricCard only has button role when onExplainClick is provided
+    // MetricCardGlass only shows explain button when onExplain is provided
     const cardButtons = screen.queryAllByRole("button", {
-      name: /View .* details/i,
+      name: /Explain this metric/i,
     });
     expect(cardButtons).toHaveLength(0);
   });
@@ -171,7 +171,7 @@ describe("QuickAssessment", () => {
     );
 
     const cardButtons = screen.getAllByRole("button", {
-      name: /View .* details/i,
+      name: /Explain this metric/i,
     });
     expect(cardButtons).toHaveLength(6);
   });

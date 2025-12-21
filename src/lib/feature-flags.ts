@@ -39,7 +39,8 @@ const featureFlagConfig: FeatureFlagConfig = {
   },
   GLASS_UI_ASSESSMENT: {
     defaultValue: false,
-    description: "Assessment components (MetricCard, MetricCategoryCard, etc.)",
+    description:
+      "Assessment components (MetricCardGlass migrated, MetricCategoryCard pending)",
     dependencies: ["USE_GLASS_UI"],
   },
   GLASS_UI_PROJECTS: {

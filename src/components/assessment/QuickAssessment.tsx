@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { MetricCard } from "./MetricCard";
+import { MetricCardWrapper as MetricCard } from "./MetricCardGlass.wrapper";
 
 export interface QuickAssessmentProps {
   metrics: {
@@ -50,7 +50,7 @@ export function QuickAssessment({
       <CardContent className="pt-6">
         {/* Responsive grid: 2 cols mobile, 3 cols tablet, 6 cols desktop */}
         <div
-          className={`grid gap-3 grid-cols-2 md:grid-cols-3 ${
+          className={`grid grid-cols-2 gap-3 md:grid-cols-3 ${
             metricCount === 6 ? "lg:grid-cols-6" : "lg:grid-cols-5"
           }`}
         >
