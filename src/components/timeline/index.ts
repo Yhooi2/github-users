@@ -8,3 +8,6 @@ export {
 export { TimelineYearV2 } from "./TimelineYearV2";
 export { YearCardWrapper as YearCard } from "./YearCardGlass.wrapper";
 export { YearDetailPanel } from "./YearDetailPanel";
+
+// Glass UI components (re-exported for convenience)
+export { SparklineGlass } from "shadcn-glass-ui";

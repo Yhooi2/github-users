@@ -37,18 +37,20 @@
 | Select       | Select\*       | 2.5.0  | ✅     |
 | DropdownMenu | DropdownMenu\* | 2.5.0  | ✅     |
 
-### Stage 3: Timeline - IN PROGRESS
+### Stage 3: Timeline - COMPLETED
 
-| Компонент | Glass UI      | Версия | Статус |
-| --------- | ------------- | ------ | ------ |
-| YearCard  | YearCardGlass | 2.5.4  | ✅     |
+| Компонент    | Glass UI       | Версия | Статус |
+| ------------ | -------------- | ------ | ------ |
+| YearCard     | YearCardGlass  | 2.5.4  | ✅     |
+| MiniActivity | SparklineGlass | 2.6.1  | ✅     |
+
+**Note**: SparklineGlass уже используется в YearCardGlass.wrapper. MiniActivityChart удалён (не использовался).
 
 ### Ожидают миграции (Stage 4+)
 
 | Компонент      | Glass UI            | Приоритет |
 | -------------- | ------------------- | --------- |
 | MetricCard     | MetricCardGlass     | High      |
-| MiniActivity   | SparklineGlass      | Medium    |
 | RepositoryCard | RepositoryCardGlass | Medium    |
 
 ---

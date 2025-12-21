@@ -34,7 +34,7 @@ const featureFlagConfig: FeatureFlagConfig = {
   },
   GLASS_UI_TIMELINE: {
     defaultValue: false,
-    description: "Timeline components (YearCard, MiniActivityChart, etc.)",
+    description: "Timeline components (YearCardGlass, SparklineGlass, etc.)",
     dependencies: ["USE_GLASS_UI"],
   },
   GLASS_UI_ASSESSMENT: {
