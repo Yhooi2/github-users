@@ -1,3 +1,9 @@
+# [1.5.0](https://github.com/Yhooi2/github-users/compare/v1.4.0...v1.5.0) (2025-12-21)
+
+### Features
+
+- **timeline:** migrate YearCard to YearCardGlass (Stage 3) ([bcc41ef](https://github.com/Yhooi2/github-users/commit/bcc41efba05ca40ccead5f43031781e576fb5e27))
+
 # [1.4.0](https://github.com/Yhooi2/github-users/compare/v1.3.0...v1.4.0) (2025-12-21)
 
 ### Features
