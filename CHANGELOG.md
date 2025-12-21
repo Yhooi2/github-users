@@ -1,3 +1,9 @@
+# [1.4.0](https://github.com/Yhooi2/github-users/compare/v1.3.0...v1.4.0) (2025-12-21)
+
+### Features
+
+- **ui:** complete Stage 2 Glass UI migration ([904d90f](https://github.com/Yhooi2/github-users/commit/904d90f28ff821c2a2f3c4f4fdcf91e542bd1b8c))
+
 # [1.3.0](https://github.com/Yhooi2/github-users/compare/v1.2.0...v1.3.0) (2025-12-20)
 
 ### Bug Fixes
