@@ -1,6 +1,6 @@
-# shadcn-glass-ui - Quick Reference (v2.6.1)
+# shadcn-glass-ui - Quick Reference (v2.6.2)
 
-> **Версия**: 2.6.1
+> **Версия**: 2.6.2
 > **Дата обновления**: 21 декабря 2025
 > **Совместимость**: React 19 + TypeScript 5.x + Tailwind 4
 > **Context7 ID**: `/yhooi2/shadcn-glass-ui-library`

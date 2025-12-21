@@ -80,9 +80,9 @@ describe("QuickAssessment", () => {
       <QuickAssessment metrics={mockMetrics} onExplainMetric={handleExplain} />,
     );
 
-    // MetricCardGlass uses "Explain this metric" aria-label for explain buttons
+    // MetricCardGlass v2.6.2+ uses contextual aria-label "Explain {title} metric"
     const cardButtons = screen.getAllByRole("button", {
-      name: /Explain this metric/i,
+      name: /Explain .* metric/i,
     });
     expect(cardButtons).toHaveLength(5);
 
@@ -109,7 +109,7 @@ describe("QuickAssessment", () => {
 
     // MetricCardGlass only shows explain button when onExplain is provided
     const cardButtons = screen.queryAllByRole("button", {
-      name: /Explain this metric/i,
+      name: /Explain .* metric/i,
     });
     expect(cardButtons).toHaveLength(0);
   });
@@ -171,7 +171,7 @@ describe("QuickAssessment", () => {
     );
 
     const cardButtons = screen.getAllByRole("button", {
-      name: /Explain this metric/i,
+      name: /Explain .* metric/i,
     });
     expect(cardButtons).toHaveLength(6);
   });
