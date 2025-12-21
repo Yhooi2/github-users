@@ -1,6 +1,6 @@
-# shadcn-glass-ui - Quick Reference (v2.5.4)
+# shadcn-glass-ui - Quick Reference (v2.6.1)
 
-> **Версия**: 2.5.4
+> **Версия**: 2.6.1
 > **Дата обновления**: 21 декабря 2025
 > **Совместимость**: React 19 + TypeScript 5.x + Tailwind 4
 > **Context7 ID**: `/yhooi2/shadcn-glass-ui-library`
@@ -76,6 +76,12 @@ import { ThemeProvider } from 'shadcn-glass-ui';
 ## Что нового
 
 ```
+v2.6.1:
+✅ Документация YearCardGlass (docs/components/YEAR_CARD_GLASS.md)
+✅ Документация CardGlass, SheetGlass, StepperGlass, PopoverGlass (+2155 строк)
+✅ Документация ModalGlass, TabsGlass, AlertGlass
+✅ docs/components/README.md - навигация по компонентам
+
 v2.5.4:
 ✅ YearCardGlass - compound API для timeline (issue #15)
 ✅ MetricCardGlass - compound API для метрик
