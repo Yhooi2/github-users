@@ -1,7 +1,7 @@
-# shadcn-glass-ui - Quick Reference (v2.7.0)
+# shadcn-glass-ui - Quick Reference (v2.8.0)
 
-> **Версия**: 2.7.0
-> **Дата обновления**: 22 декабря 2025
+> **Версия**: 2.8.0
+> **Дата обновления**: 24 декабря 2025
 > **Совместимость**: React 19 + TypeScript 5.x + Tailwind 4
 > **Context7 ID**: `/yhooi2/shadcn-glass-ui-library`
 > **Всего компонентов**: 67+
@@ -64,11 +64,15 @@
 
 **Note**: Новые Glass компоненты добавлены в v2.7.0. Project компоненты (CompactProjectRow, ExpandableProjectCard) уже используют Glass UI через базовые компоненты (Card, Badge, Progress, Avatar).
 
-### Ожидают миграции (Stage 6+)
+### Stage 6: User Header - COMPLETED
 
-| Компонент  | Glass UI           | Приоритет |
-| ---------- | ------------------ | --------- |
-| UserHeader | ProfileHeaderGlass | Medium    |
+| Компонент  | Glass UI                   | Версия | Статус |
+| ---------- | -------------------------- | ------ | ------ |
+| UserHeader | ProfileHeaderExtendedGlass | 2.8.0  | ✅     |
+
+**Note**: ProfileHeaderExtendedGlass добавлен в v2.8.0 по issue #29. Поддерживает все GitHub-совместимые поля: login, bio, location, url, createdAt, stats (repos, followers, following, gists), languages.
+
+### Ожидают миграции (Stage 7+)
 
 ---
 
@@ -95,6 +99,14 @@ import { ThemeProvider } from 'shadcn-glass-ui';
 ## Что нового
 
 ```
+v2.8.0:
+✅ ProfileHeaderExtendedGlass - расширенный профиль с GitHub-совместимыми полями (issue #29)
+
+v2.7.0:
+✅ HoverCardGlass - hover-triggered popover (issue #24)
+✅ ScrollAreaGlass - custom scrollable containers
+✅ SeparatorGlass - visual divider
+
 v2.6.1:
 ✅ Документация YearCardGlass (docs/components/YEAR_CARD_GLASS.md)
 ✅ Документация CardGlass, SheetGlass, StepperGlass, PopoverGlass (+2155 строк)
@@ -176,16 +188,11 @@ export {
 
 ## Known Issues
 
-| Issue                                                              | Component                 | Status |
-| ------------------------------------------------------------------ | ------------------------- | ------ |
-| [#13](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/13) | Checkbox/Switch className | Open   |
-| [#24](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/24) | HoverCardGlass missing    | Open   |
-
-**Workaround for #24**: Use Radix UI HoverCard with glass styling via className:
-
-```tsx
-<HoverCardContent className="bg-popover/95 backdrop-blur-md border-primary/10">
-```
+| Issue                                                              | Component                  | Status            |
+| ------------------------------------------------------------------ | -------------------------- | ----------------- |
+| [#13](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/13) | Checkbox/Switch className  | Open              |
+| [#24](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/24) | HoverCardGlass missing     | ✅ Fixed (v2.7.0) |
+| [#29](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/29) | ProfileHeaderExtendedGlass | ✅ Fixed (v2.8.0) |
 
 ---
 
@@ -300,11 +307,11 @@ export {
 - ✅ CompactProjectRow → CompactProjectRowGlass.wrapper
 - ✅ ExpandableProjectCard → ExpandableProjectCardGlass.wrapper
 
-### Stage 6: User Header (Next)
+### Stage 6: User Header - COMPLETED ✅
 
-- UserHeader → ProfileHeaderGlass
+- ✅ UserHeader → ProfileHeaderExtendedGlass (v2.8.0)
 
-### Stage 7: AI Integration
+### Stage 7: AI Integration (Next)
 
 - Create AI-specific components
 - Integration and testing

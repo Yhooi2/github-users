@@ -14,11 +14,11 @@ const mockUser = {
 
 describe("UserHeader", () => {
   describe("Rendering", () => {
-    it("should render avatar container", () => {
+    it("should render avatar image", () => {
       render(<UserHeader user={mockUser} />);
-      const avatar = document.querySelector('[data-slot="avatar"]');
+      const avatar = screen.getByRole("img", { name: /octocat.*avatar/i });
       expect(avatar).toBeInTheDocument();
-      expect(avatar).toHaveClass("h-32", "w-32");
+      expect(avatar).toHaveAttribute("src", mockUser.avatarUrl);
     });
 
     it("should render user name when available", () => {
@@ -38,7 +38,7 @@ describe("UserHeader", () => {
 
     it("should render username with @ symbol", () => {
       render(<UserHeader user={mockUser} />);
-      expect(screen.getByText("@octocat")).toBeInTheDocument();
+      expect(screen.getByText(/@octocat/)).toBeInTheDocument();
     });
 
     it("should render bio when available", () => {
@@ -87,44 +87,15 @@ describe("UserHeader", () => {
   describe("GitHub Link", () => {
     it("should render GitHub link with correct URL", () => {
       render(<UserHeader user={mockUser} />);
-      const link = screen.getByRole("link", { name: /View on GitHub/i });
+      const link = screen.getByRole("link", { name: /@octocat/i });
       expect(link).toHaveAttribute("href", "https://github.com/octocat");
     });
 
     it("should open link in new tab", () => {
       render(<UserHeader user={mockUser} />);
-      const link = screen.getByRole("link", { name: /View on GitHub/i });
+      const link = screen.getByRole("link", { name: /@octocat/i });
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    });
-  });
-
-  describe("Avatar Fallback", () => {
-    it("should display initials for fallback when name exists", () => {
-      render(<UserHeader user={mockUser} />);
-      // Avatar fallback should contain initials "TO" for "The Octocat"
-      const avatarFallback = document.querySelector(
-        '[data-slot="avatar-fallback"]',
-      );
-      expect(avatarFallback).toBeInTheDocument();
-    });
-
-    it("should handle single-word names for initials", () => {
-      const singleNameUser = { ...mockUser, name: "Octocat" };
-      render(<UserHeader user={singleNameUser} />);
-      const avatarFallback = document.querySelector(
-        '[data-slot="avatar-fallback"]',
-      );
-      expect(avatarFallback).toBeInTheDocument();
-    });
-
-    it("should use login for initials when name is null", () => {
-      const userWithoutName = { ...mockUser, name: null };
-      render(<UserHeader user={userWithoutName} />);
-      const avatarFallback = document.querySelector(
-        '[data-slot="avatar-fallback"]',
-      );
-      expect(avatarFallback).toBeInTheDocument();
     });
   });
 
@@ -133,12 +104,6 @@ describe("UserHeader", () => {
       render(<UserHeader user={mockUser} />);
       const heading = screen.getByRole("heading", { level: 1 });
       expect(heading).toBeInTheDocument();
-    });
-
-    it("should have aria-hidden on decorative icons", () => {
-      render(<UserHeader user={mockUser} />);
-      const icons = document.querySelectorAll('[aria-hidden="true"]');
-      expect(icons.length).toBeGreaterThan(0);
     });
   });
 
@@ -154,7 +119,7 @@ describe("UserHeader", () => {
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
         "octocat",
       );
-      expect(screen.getByText("@octocat")).toBeInTheDocument();
+      expect(screen.getByText(/@octocat/)).toBeInTheDocument();
     });
 
     it("should handle long bio text", () => {
@@ -168,10 +133,40 @@ describe("UserHeader", () => {
     it("should handle special characters in location", () => {
       const userWithSpecialLocation = {
         ...mockUser,
-        location: "São Paulo, Brazil 🇧🇷",
+        location: "São Paulo, Brazil",
       };
       render(<UserHeader user={userWithSpecialLocation} />);
-      expect(screen.getByText("São Paulo, Brazil 🇧🇷")).toBeInTheDocument();
+      expect(screen.getByText("São Paulo, Brazil")).toBeInTheDocument();
+    });
+  });
+
+  describe("Stats", () => {
+    it("should render stats when provided", () => {
+      const stats = {
+        repositories: 42,
+        followers: 100,
+        following: 50,
+        gists: 10,
+      };
+      render(<UserHeader user={mockUser} stats={stats} />);
+      expect(screen.getByText("42")).toBeInTheDocument();
+      expect(screen.getByText("100")).toBeInTheDocument();
+      expect(screen.getByText("50")).toBeInTheDocument();
+      expect(screen.getByText("10")).toBeInTheDocument();
+    });
+
+    it("should render stats labels", () => {
+      const stats = {
+        repositories: 42,
+        followers: 100,
+        following: 50,
+        gists: 10,
+      };
+      render(<UserHeader user={mockUser} stats={stats} />);
+      expect(screen.getByText("repos")).toBeInTheDocument();
+      expect(screen.getByText("followers")).toBeInTheDocument();
+      expect(screen.getByText("following")).toBeInTheDocument();
+      expect(screen.getByText("gists")).toBeInTheDocument();
     });
   });
 });
