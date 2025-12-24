@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { CompactProjectRow } from "./CompactProjectRow";
+import { CompactProjectRow } from "./index";
 
 const meta = {
   title: "Level-0/CompactProjectRow",

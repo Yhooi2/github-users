@@ -1,7 +1,7 @@
-# shadcn-glass-ui - Quick Reference (v2.6.2)
+# shadcn-glass-ui - Quick Reference (v2.7.0)
 
-> **Версия**: 2.6.2
-> **Дата обновления**: 21 декабря 2025
+> **Версия**: 2.7.0
+> **Дата обновления**: 22 декабря 2025
 > **Совместимость**: React 19 + TypeScript 5.x + Tailwind 4
 > **Context7 ID**: `/yhooi2/shadcn-glass-ui-library`
 > **Всего компонентов**: 67+
@@ -54,11 +54,21 @@
 
 **Note**: MetricCardGlass.wrapper создан с поддержкой variant (success/warning/destructive/default). Старый MetricCard.tsx удалён.
 
-### Ожидают миграции (Stage 5+)
+### Stage 5: User & Projects - COMPLETED
 
-| Компонент      | Glass UI            | Приоритет |
-| -------------- | ------------------- | --------- |
-| RepositoryCard | RepositoryCardGlass | Medium    |
+| Компонент  | Glass UI        | Версия | Статус |
+| ---------- | --------------- | ------ | ------ |
+| HoverCard  | HoverCardGlass  | 2.7.0  | ✅     |
+| ScrollArea | ScrollAreaGlass | 2.7.0  | ✅     |
+| Separator  | SeparatorGlass  | 2.7.0  | ✅     |
+
+**Note**: Новые Glass компоненты добавлены в v2.7.0. Project компоненты (CompactProjectRow, ExpandableProjectCard) уже используют Glass UI через базовые компоненты (Card, Badge, Progress, Avatar).
+
+### Ожидают миграции (Stage 6+)
+
+| Компонент  | Glass UI           | Приоритет |
+| ---------- | ------------------ | --------- |
+| UserHeader | ProfileHeaderGlass | Medium    |
 
 ---
 
@@ -169,6 +179,13 @@ export {
 | Issue                                                              | Component                 | Status |
 | ------------------------------------------------------------------ | ------------------------- | ------ |
 | [#13](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/13) | Checkbox/Switch className | Open   |
+| [#24](https://github.com/Yhooi2/shadcn-glass-ui-library/issues/24) | HoverCardGlass missing    | Open   |
+
+**Workaround for #24**: Use Radix UI HoverCard with glass styling via className:
+
+```tsx
+<HoverCardContent className="bg-popover/95 backdrop-blur-md border-primary/10">
+```
 
 ---
 
@@ -277,14 +294,17 @@ export {
 ### Stage 4: Assessment - COMPLETED ✅
 
 - ✅ MetricCard → MetricCardGlass
-- MetricCategoryCard → GlassCard + grid (TODO)
 
-### Stage 5: User & Projects (Next)
+### Stage 5: User & Projects - COMPLETED ✅
+
+- ✅ CompactProjectRow → CompactProjectRowGlass.wrapper
+- ✅ ExpandableProjectCard → ExpandableProjectCardGlass.wrapper
+
+### Stage 6: User Header (Next)
 
 - UserHeader → ProfileHeaderGlass
-- RepositoryCards → RepositoryCardGlass
 
-### Stage 6: AI Integration
+### Stage 7: AI Integration
 
 - Create AI-specific components
 - Integration and testing

@@ -1,26 +1,10 @@
-import * as SeparatorPrimitive from "@radix-ui/react-separator";
-import * as React from "react";
+/**
+ * Separator - Re-exports SeparatorGlass from shadcn-glass-ui
+ *
+ * Visual divider with Glass UI styling.
+ * Stage 5 migration: Separator → SeparatorGlass
+ */
 
-import { cn } from "@/lib/utils";
+export { Separator, SeparatorGlass } from "shadcn-glass-ui";
 
-function Separator({
-  className,
-  orientation = "horizontal",
-  decorative = true,
-  ...props
-}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
-  return (
-    <SeparatorPrimitive.Root
-      data-slot="separator"
-      decorative={decorative}
-      orientation={orientation}
-      className={cn(
-        "shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export { Separator };
+export type { SeparatorGlassProps } from "shadcn-glass-ui";

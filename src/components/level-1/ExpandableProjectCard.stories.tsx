@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { ExpandableProjectCard, type ExpandableProject } from "./ExpandableProjectCard";
+import { ExpandableProjectCard, type ExpandableProject } from "./index";
 
 const meta = {
   title: "Level-1/ExpandableProjectCard",
@@ -50,9 +50,27 @@ const fullProject: ExpandableProject = {
   activePeriod: "Jan 2024 - Nov 2025",
   teamCount: 12,
   topContributors: [
-    { name: "Alice Johnson", avatar: "https://i.pravatar.cc/150?u=alice", login: "alice", commits: 423, prs: 18 },
-    { name: "Bob Smith", avatar: "https://i.pravatar.cc/150?u=bob", login: "bob", commits: 312, prs: 14 },
-    { name: "Charlie Brown", avatar: "https://i.pravatar.cc/150?u=charlie", login: "charlie", commits: 198, prs: 8 },
+    {
+      name: "Alice Johnson",
+      avatar: "https://i.pravatar.cc/150?u=alice",
+      login: "alice",
+      commits: 423,
+      prs: 18,
+    },
+    {
+      name: "Bob Smith",
+      avatar: "https://i.pravatar.cc/150?u=bob",
+      login: "bob",
+      commits: 312,
+      prs: 14,
+    },
+    {
+      name: "Charlie Brown",
+      avatar: "https://i.pravatar.cc/150?u=charlie",
+      login: "charlie",
+      commits: 198,
+      prs: 8,
+    },
   ],
   isArchived: false,
   pushedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago - healthy
@@ -111,12 +129,42 @@ const largeTeamProject: ExpandableProject = {
   name: "enterprise-platform",
   teamCount: 50,
   topContributors: [
-    { name: "Alice", avatar: "https://i.pravatar.cc/150?u=alice1", login: "alice1", commits: 523 },
-    { name: "Bob", avatar: "https://i.pravatar.cc/150?u=bob1", login: "bob1", commits: 412 },
-    { name: "Charlie", avatar: "https://i.pravatar.cc/150?u=charlie1", login: "charlie1", commits: 398 },
-    { name: "Diana", avatar: "https://i.pravatar.cc/150?u=diana1", login: "diana1", commits: 287 },
-    { name: "Eve", avatar: "https://i.pravatar.cc/150?u=eve1", login: "eve1", commits: 256 },
-    { name: "Frank", avatar: "https://i.pravatar.cc/150?u=frank1", login: "frank1", commits: 198 },
+    {
+      name: "Alice",
+      avatar: "https://i.pravatar.cc/150?u=alice1",
+      login: "alice1",
+      commits: 523,
+    },
+    {
+      name: "Bob",
+      avatar: "https://i.pravatar.cc/150?u=bob1",
+      login: "bob1",
+      commits: 412,
+    },
+    {
+      name: "Charlie",
+      avatar: "https://i.pravatar.cc/150?u=charlie1",
+      login: "charlie1",
+      commits: 398,
+    },
+    {
+      name: "Diana",
+      avatar: "https://i.pravatar.cc/150?u=diana1",
+      login: "diana1",
+      commits: 287,
+    },
+    {
+      name: "Eve",
+      avatar: "https://i.pravatar.cc/150?u=eve1",
+      login: "eve1",
+      commits: 256,
+    },
+    {
+      name: "Frank",
+      avatar: "https://i.pravatar.cc/150?u=frank1",
+      login: "frank1",
+      commits: 198,
+    },
   ],
 };
 
