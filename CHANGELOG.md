@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/Yhooi2/github-users/compare/v1.6.0...v1.7.0) (2025-12-24)
+
+### Features
+
+- **ai:** add AI display components with Glass UI (Stage 7) ([6a92d28](https://github.com/Yhooi2/github-users/commit/6a92d284836b3853bb6f663d7d144c00b0472333))
+- **user:** migrate UserHeader to ProfileHeaderExtendedGlass (Stage 6) ([8b4e9d1](https://github.com/Yhooi2/github-users/commit/8b4e9d1beec7aaffa020e2c79cfedc805106b647)), closes [#29](https://github.com/Yhooi2/github-users/issues/29)
+
 # [1.6.0](https://github.com/Yhooi2/github-users/compare/v1.5.0...v1.6.0) (2025-12-21)
 
 ### Features
