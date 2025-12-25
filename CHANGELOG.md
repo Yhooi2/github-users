@@ -1,3 +1,9 @@
+## [1.10.1](https://github.com/Yhooi2/github-users/compare/v1.10.0...v1.10.1) (2025-12-25)
+
+### Bug Fixes
+
+- **ui:** remove class overrides blocking TooltipGlass styles ([7513233](https://github.com/Yhooi2/github-users/commit/75132337d358bf977035ad464fd36ed3a219d863))
+
 # [1.10.0](https://github.com/Yhooi2/github-users/compare/v1.9.0...v1.10.0) (2025-12-25)
 
 ### Features
