@@ -24,7 +24,9 @@
   --color-border: var(--color-border);
   --color-input: var(--color-input);
   --color-ring: var(--color-ring);
-  --color-success: var(--color-success);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-caution: var(--caution);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
