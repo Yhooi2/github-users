@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/Yhooi2/github-users/compare/v1.7.0...v1.8.0) (2025-12-25)
+
+### Features
+
+- **assessment:** migrate QuickAssessment to TrustScoreCardGlass (Stage 8) ([a96f4ee](https://github.com/Yhooi2/github-users/commit/a96f4eec41ff1019bba0216bc970151c8345bb5a))
+- **user:** upgrade to ProfileHeaderGlass Compound API (v2.11.0) ([498fc7b](https://github.com/Yhooi2/github-users/commit/498fc7b94ebc2c6d4b93c7274bfc1fa47b8c842d))
+
 # [1.7.0](https://github.com/Yhooi2/github-users/compare/v1.6.0...v1.7.0) (2025-12-24)
 
 ### Features
