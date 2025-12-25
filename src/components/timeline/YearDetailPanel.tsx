@@ -9,12 +9,11 @@
 import { ExpandableProjectCard } from "@/components/level-1/ExpandableProjectCard";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProgressiveDisclosure } from "@/hooks";
 import type { YearData } from "@/hooks/useUserAnalytics";
 import { toExpandableProjects } from "@/lib/adapters/project-adapter";
 import { cn } from "@/lib/utils";
-import { GitCommit, GitPullRequest, CircleDot, FolderGit2 } from "lucide-react";
+import { CircleDot, FolderGit2, GitCommit, GitPullRequest } from "lucide-react";
 import { useMemo } from "react";
 
 export interface YearDetailPanelProps {
@@ -41,14 +40,16 @@ function StatCard({
   className?: string;
 }) {
   return (
-    <Card className={cn(
-      "transition-all duration-200 hover:shadow-md hover:border-primary/30",
-      className
-    )}>
+    <Card
+      className={cn(
+        "transition-all duration-200 hover:border-primary/30 hover:shadow-md",
+        className,
+      )}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
               {label}
             </div>
             <div className="text-2xl font-bold text-foreground">
@@ -81,7 +82,11 @@ function StatCard({
  * />
  * ```
  */
-export function YearDetailPanel({ year, timeline = [], username }: YearDetailPanelProps) {
+export function YearDetailPanel({
+  year,
+  timeline = [],
+  username,
+}: YearDetailPanelProps) {
   // Progressive disclosure state for Level 1
   const { expandedProjects, toggleProject } = useProgressiveDisclosure({
     persistToUrl: true,
@@ -91,7 +96,15 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
   const allTimeStats = useMemo(() => {
     if (year !== null || !timeline.length) return null;
 
-    const repoMap = new Map<string, { repo: typeof timeline[0]["ownedRepos"][0] | typeof timeline[0]["contributions"][0]; isOwned: boolean }>();
+    const repoMap = new Map<
+      string,
+      {
+        repo:
+          | (typeof timeline)[0]["ownedRepos"][0]
+          | (typeof timeline)[0]["contributions"][0];
+        isOwned: boolean;
+      }
+    >();
     let totalCommits = 0;
     let totalPRs = 0;
     let totalIssues = 0;
@@ -117,11 +130,11 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
 
     // Convert to arrays
     const ownedRepos = Array.from(repoMap.values())
-      .filter(r => r.isOwned)
-      .map(r => r.repo);
+      .filter((r) => r.isOwned)
+      .map((r) => r.repo);
     const contributions = Array.from(repoMap.values())
-      .filter(r => !r.isOwned)
-      .map(r => r.repo);
+      .filter((r) => !r.isOwned)
+      .map((r) => r.repo);
 
     return {
       totalCommits,
@@ -130,9 +143,10 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
       totalRepos: repoMap.size,
       ownedRepos,
       contributions,
-      yearRange: timeline.length > 0
-        ? `${timeline[timeline.length - 1].year}-${timeline[0].year}`
-        : "",
+      yearRange:
+        timeline.length > 0
+          ? `${timeline[timeline.length - 1].year}-${timeline[0].year}`
+          : "",
     };
   }, [year, timeline]);
 
@@ -143,7 +157,10 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
       return toExpandableProjects(combined, username);
     }
     if (allTimeStats) {
-      const combined = [...allTimeStats.ownedRepos, ...allTimeStats.contributions];
+      const combined = [
+        ...allTimeStats.ownedRepos,
+        ...allTimeStats.contributions,
+      ];
       return toExpandableProjects(combined, username);
     }
     return [];
@@ -152,7 +169,7 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
   // Max commits for project bars (within this year or all time)
   const maxProjectCommits = useMemo(
     () => Math.max(...allProjects.map((p) => p.commits), 1),
-    [allProjects]
+    [allProjects],
   );
 
   // Empty state when no year selected AND no timeline data
@@ -185,23 +202,36 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
   const contributedProjects = allProjects.filter((p) => !p.isOwner);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex flex-col">
       {/* Header - different for all-time vs year-specific */}
-      <div className="mb-6 flex shrink-0 items-center justify-between">
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold">
           {isAllTimeView ? "All Projects" : displayStats!.title}
         </h2>
         <Badge variant="outline" className="text-sm">
-          {isAllTimeView ? allProjects.length : displayStats!.totalRepos} repositories
+          {isAllTimeView ? allProjects.length : displayStats!.totalRepos}{" "}
+          repositories
         </Badge>
       </div>
 
       {/* Summary Stats Grid - only for year-specific views */}
       {!isAllTimeView && displayStats && (
-        <div className="mb-6 grid shrink-0 grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard label="Commits" value={displayStats.totalCommits} icon={GitCommit} />
-          <StatCard label="Pull Requests" value={displayStats.totalPRs} icon={GitPullRequest} />
-          <StatCard label="Issues" value={displayStats.totalIssues} icon={CircleDot} />
+        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <StatCard
+            label="Commits"
+            value={displayStats.totalCommits}
+            icon={GitCommit}
+          />
+          <StatCard
+            label="Pull Requests"
+            value={displayStats.totalPRs}
+            icon={GitPullRequest}
+          />
+          <StatCard
+            label="Issues"
+            value={displayStats.totalIssues}
+            icon={CircleDot}
+          />
           <StatCard
             label="Repositories"
             value={displayStats.totalRepos}
@@ -210,8 +240,8 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
         </div>
       )}
 
-      {/* Projects List with ScrollArea */}
-      <ScrollArea className="min-h-0 flex-1 pr-4">
+      {/* Projects List */}
+      <div className="pr-4">
         <div className="space-y-6 pb-4">
           {/* Your Projects section */}
           {ownedProjects.length > 0 && (
@@ -262,7 +292,7 @@ export function YearDetailPanel({ year, timeline = [], username }: YearDetailPan
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

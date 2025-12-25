@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { AnimatedBackground } from "shadcn-glass-ui";
 import type { Repository } from "./apollo/github-api.types";
 import { MetricAssessmentGrid } from "./components/assessment/MetricAssessmentGrid";
 import { AuthRequiredModal } from "./components/auth/AuthRequiredModal";
@@ -154,7 +155,8 @@ function App() {
   return (
     <TooltipProvider delayDuration={300}>
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto space-y-8 p-4 pb-16">
+        <AnimatedBackground />
+        <div className="relative z-10 container mx-auto space-y-8 p-4 pb-16">
           {/* Compact Header - Brand, Search, Theme, User */}
           <SearchHeader
             userName={userName}

@@ -334,19 +334,6 @@ describe("YearDetailPanel", () => {
       const header = container.querySelector(".mb-6");
       expect(header).toBeInTheDocument();
     });
-
-    it("has scroll area for project list", () => {
-      const yearData = createMockYearData(2024, 500);
-      const { container } = renderWithTooltip(
-        <YearDetailPanel year={yearData} username="user" />,
-      );
-
-      // ScrollArea should be present
-      const scrollArea = container.querySelector(
-        "[data-radix-scroll-area-viewport]",
-      );
-      expect(scrollArea).toBeInTheDocument();
-    });
   });
 
   describe("stat cards", () => {

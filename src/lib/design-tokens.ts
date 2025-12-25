@@ -45,7 +45,7 @@ export const trendColors = {
 // Event type colors for timeline
 export const eventColors = {
   commit: "text-primary",
-  pr: "text-purple-500",
+  pr: "text-accent-foreground",
   review: "text-warning",
   merge: "text-success",
 } as const;

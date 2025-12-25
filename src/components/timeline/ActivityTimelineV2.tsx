@@ -8,6 +8,7 @@
  * - Tablet/Mobile (<1440px): Vertical accordion layout
  */
 
+import { Card } from "@/components/ui/card";
 import { useResponsive } from "@/hooks";
 import type { YearData } from "@/hooks/useUserAnalytics";
 import { DesktopTimelineLayout } from "./DesktopTimelineLayout";
@@ -99,34 +100,31 @@ function TimelineSkeleton({ isDesktop }: { isDesktop: boolean }) {
   if (isDesktop) {
     // Desktop: 33/67 split skeleton
     return (
-      <section
-        className="flex flex-col"
-        aria-label="Loading activity timeline"
-      >
-        <div className="mb-4 h-8 w-64 shrink-0 animate-pulse rounded bg-muted" />
+      <section className="flex flex-col" aria-label="Loading activity timeline">
+        <div className="mb-4 h-8 w-64 shrink-0 animate-pulse rounded bg-muted/50" />
         <div className="grid h-[600px] max-h-[calc(100vh-400px)] min-h-[400px] grid-cols-[1fr_2fr] gap-6">
           {/* Left panel skeleton */}
-          <div className="flex flex-col overflow-hidden rounded-lg border bg-card">
+          <Card className="flex flex-col overflow-hidden">
             <div className="shrink-0 border-b p-4">
-              <div className="h-6 w-24 animate-pulse rounded bg-muted" />
+              <div className="h-6 w-24 animate-pulse rounded bg-muted/50" />
             </div>
             <div className="flex-1 space-y-3 overflow-hidden p-3">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="h-24 animate-pulse rounded-lg bg-muted"
+                  className="h-24 animate-pulse rounded-lg bg-muted/50"
                 />
               ))}
             </div>
-          </div>
+          </Card>
           {/* Right panel skeleton */}
-          <div className="flex flex-col overflow-hidden rounded-lg border bg-card p-6">
-            <div className="mb-6 h-8 w-48 shrink-0 animate-pulse rounded bg-muted" />
+          <Card className="flex flex-col overflow-hidden p-6">
+            <div className="mb-6 h-8 w-48 shrink-0 animate-pulse rounded bg-muted/50" />
             <div className="mb-6 grid shrink-0 grid-cols-4 gap-4">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="h-20 animate-pulse rounded-lg bg-muted"
+                  className="h-20 animate-pulse rounded-lg bg-muted/50"
                 />
               ))}
             </div>
@@ -134,11 +132,11 @@ function TimelineSkeleton({ isDesktop }: { isDesktop: boolean }) {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-16 animate-pulse rounded-lg bg-muted"
+                  className="h-16 animate-pulse rounded-lg bg-muted/50"
                 />
               ))}
             </div>
-          </div>
+          </Card>
         </div>
       </section>
     );
@@ -147,10 +145,10 @@ function TimelineSkeleton({ isDesktop }: { isDesktop: boolean }) {
   // Mobile/Tablet: Accordion skeleton
   return (
     <section className="space-y-4" aria-label="Loading activity timeline">
-      <div className="h-8 w-64 animate-pulse rounded bg-muted" />
+      <div className="h-8 w-64 animate-pulse rounded bg-muted/50" />
       <div className="space-y-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
+          <Card key={i} className="h-16 animate-pulse" />
         ))}
       </div>
     </section>

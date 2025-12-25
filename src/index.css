@@ -39,7 +39,7 @@
    ============================================= */
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1rem;
 
   /* Blur tokens */
   --blur-sm: 8px;
@@ -105,6 +105,11 @@
   --activity-bar-bg: oklch(0.93 0.01 260);
   --activity-bar-fill: oklch(0.6 0.12 250);
   --activity-bar-fill-active: oklch(0.42 0.2 250);
+}
+
+/* Workaround: Missing primitive in shadcn-glass-ui 2.11.2 (issue #33) */
+:root {
+  --oklch-pink-500-20: oklch(65.6% 0.241 354.308 / 20%);
 }
 
 /* Glass/Dark theme base variables */

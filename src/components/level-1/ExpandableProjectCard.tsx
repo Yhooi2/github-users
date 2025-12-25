@@ -265,7 +265,7 @@ export function ExpandableProjectCard({
 
         {/* Top languages inline */}
         {topLanguages.length > 0 && (
-          <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="mt-1.5 flex items-center gap-1 text-xs text-foreground/70">
             {topLanguages.map((lang, index) => (
               <span key={lang.name} className="flex items-center gap-1">
                 {index > 0 && <span className="mx-0.5">&#8226;</span>}
@@ -394,7 +394,7 @@ function ContributionSection({
         content={`You contributed ${commitsPercent}% of ${formatNumber(totalCommits ?? userCommits)} total commits (${formatNumber(userCommits)} commits). ${commitsPercent > 25 ? "Significant contributor!" : "Meaningful contribution."}`}
       >
         <div>
-          <div className="mb-1 flex justify-between text-sm">
+          <div className="mb-1 flex justify-between text-sm text-foreground">
             <span>Commits</span>
             <span className="font-medium">
               {formatNumber(userCommits)}
@@ -411,7 +411,7 @@ function ContributionSection({
       </MetricTooltip>
 
       {/* Activity status and period */}
-      <div className="flex items-center gap-3 text-sm">
+      <div className="flex items-center gap-3 text-sm text-foreground">
         <ActivityStatusDot
           lastActivityDate={lastActivityDate}
           showLabel
@@ -424,7 +424,7 @@ function ContributionSection({
 
       {/* PRs and Reviews */}
       {(prsMerged !== undefined || reviews !== undefined) && (
-        <div className="flex flex-wrap gap-3 text-sm">
+        <div className="flex flex-wrap gap-3 text-sm text-foreground">
           {prsMerged !== undefined && (
             <MetricTooltip content={`${prsMerged} pull requests merged`}>
               <span className="flex items-center gap-1">
@@ -512,7 +512,7 @@ function TechStackSection({ languages }: TechStackSectionProps) {
       >
         Tech Stack
       </h4>
-      <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+      <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-foreground">
         {displayLanguages.map((lang) => (
           <MetricTooltip
             key={lang.name}

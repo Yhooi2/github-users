@@ -5,6 +5,7 @@
  * Right panel (67%): Year detail or all-time stats and projects
  */
 
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
@@ -110,9 +111,9 @@ export function DesktopTimelineLayout({
     >
       {/* Left Panel: Sticky Year Cards Sidebar (33%) */}
       <aside aria-label="Year navigation">
-        <div className="sticky top-6 flex max-h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-xl border bg-card shadow-sm">
-          {/* Fixed Header: Career Summary + All Time */}
-          <div className="shrink-0">
+        <Card className="sticky top-6">
+          {/* Header: Career Summary + All Time */}
+          <div>
             {/* Career Summary Header */}
             <CareerSummaryHeader summary={careerSummary} />
 
@@ -217,7 +218,7 @@ export function DesktopTimelineLayout({
           </div>
 
           {/* Scrollable Year Cards List */}
-          <ScrollArea className="min-h-0 flex-1">
+          <ScrollArea>
             <div className="space-y-2 p-3">
               {timeline.map((year) => (
                 <YearCard
@@ -231,18 +232,18 @@ export function DesktopTimelineLayout({
               ))}
             </div>
           </ScrollArea>
-        </div>
+        </Card>
       </aside>
 
       {/* Right Panel: Sticky Year Detail or All-Time Summary (67%) */}
       <main aria-label={selectedYear ? "Year details" : "All-time summary"}>
-        <div className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-hidden rounded-xl border bg-card p-6 shadow-sm">
+        <Card className="sticky top-6 p-6">
           <YearDetailPanel
             year={selectedYearData}
             timeline={timeline}
             username={username}
           />
-        </div>
+        </Card>
       </main>
     </section>
   );
