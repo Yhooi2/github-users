@@ -1,6 +1,14 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
-import type { Preview } from "@storybook/react-vite";
+import type { Preview, ReactRenderer } from "@storybook/react-vite";
+import type { DecoratorFunction } from "@storybook/types";
+import { ThemeProvider } from "shadcn-glass-ui";
 import "../src/index.css";
+
+const withGlassThemeProvider: DecoratorFunction<ReactRenderer> = (Story) => (
+  <ThemeProvider defaultTheme="glass">
+    <Story />
+  </ThemeProvider>
+);
 
 const preview: Preview = {
   parameters: {
@@ -18,6 +26,7 @@ const preview: Preview = {
     },
   },
   decorators: [
+    withGlassThemeProvider,
     withThemeByClassName({
       themes: {
         light: "",

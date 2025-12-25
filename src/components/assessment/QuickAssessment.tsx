@@ -1,5 +1,17 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { MetricCardWrapper as MetricCard } from "./MetricCardGlass.wrapper";
+/**
+ * QuickAssessment - Migration to TrustScoreCardGlass from shadcn-glass-ui v2.8.0
+ *
+ * Uses TrustScoreCardGlass component which provides:
+ * - Overall trust score display with rainbow progress bar
+ * - Responsive grid of metrics (2 cols mobile, 3 cols tablet, 4+ cols desktop)
+ * - Glass effect styling with proper color variants
+ *
+ * Note: TrustScoreCardGlass doesn't support individual metric click handlers.
+ * For interactive metrics, consider using MetricCardGlass directly in a custom grid.
+ */
+
+import type { MetricData } from "shadcn-glass-ui";
+import { TrustScoreCardGlass } from "shadcn-glass-ui/components";
 
 export interface QuickAssessmentProps {
   metrics: {
@@ -26,96 +38,92 @@ export interface QuickAssessmentProps {
     };
   };
   loading?: boolean;
+  /** @deprecated TrustScoreCardGlass doesn't support individual metric click handlers */
   onExplainMetric?: (metric: string) => void;
 }
 
 /**
- * QuickAssessment - Compact metrics display per design plan
+ * Map score to MetricCardGlass variant
+ * Available variants: default, secondary, success, warning, destructive
+ */
+function getMetricVariant(
+  score: number,
+): "success" | "warning" | "destructive" | "default" {
+  if (score >= 80) return "success";
+  if (score >= 60) return "default";
+  if (score >= 40) return "warning";
+  return "destructive";
+}
+
+/**
+ * QuickAssessment - Glass UI Version
  *
- * Per plan: "5 metrics compactly - icon + name + number (in profile header)"
- * - Desktop: Click metric -> Dialog (Modal) with breakdown
- * - Mobile: Click metric -> Sheet from bottom
+ * Migrated to use TrustScoreCardGlass from shadcn-glass-ui.
+ * Calculates overall trust score as average of all metrics.
  */
 export function QuickAssessment({
   metrics,
   loading = false,
-  onExplainMetric,
 }: QuickAssessmentProps) {
-  // Always 6 metrics (5 core + optional authenticity)
-  const hasAuthenticity = !!metrics.authenticity;
-  const metricCount = hasAuthenticity ? 6 : 5;
+  // Calculate overall trust score as average of all metrics
+  const scores = [
+    metrics.activity.score,
+    metrics.impact.score,
+    metrics.quality.score,
+    metrics.consistency.score,
+    metrics.collaboration.score,
+  ];
 
-  return (
-    <Card>
-      <CardContent className="pt-6">
-        {/* Responsive grid: 2 cols mobile, 3 cols tablet, 6 cols desktop */}
-        <div
-          className={`grid grid-cols-2 gap-3 md:grid-cols-3 ${
-            metricCount === 6 ? "lg:grid-cols-6" : "lg:grid-cols-5"
-          }`}
-        >
-          <MetricCard
-            title="Activity"
-            score={metrics.activity.score}
-            level={metrics.activity.level}
-            loading={loading}
-            onExplainClick={
-              onExplainMetric ? () => onExplainMetric("activity") : undefined
-            }
-          />
-          <MetricCard
-            title="Impact"
-            score={metrics.impact.score}
-            level={metrics.impact.level}
-            loading={loading}
-            onExplainClick={
-              onExplainMetric ? () => onExplainMetric("impact") : undefined
-            }
-          />
-          <MetricCard
-            title="Quality"
-            score={metrics.quality.score}
-            level={metrics.quality.level}
-            loading={loading}
-            onExplainClick={
-              onExplainMetric ? () => onExplainMetric("quality") : undefined
-            }
-          />
-          <MetricCard
-            title="Consistency"
-            score={metrics.consistency.score}
-            level={metrics.consistency.level}
-            loading={loading}
-            onExplainClick={
-              onExplainMetric ? () => onExplainMetric("consistency") : undefined
-            }
-          />
-          <MetricCard
-            title="Collaboration"
-            score={metrics.collaboration.score}
-            level={metrics.collaboration.level}
-            loading={loading}
-            onExplainClick={
-              onExplainMetric
-                ? () => onExplainMetric("collaboration")
-                : undefined
-            }
-          />
-          {metrics.authenticity && (
-            <MetricCard
-              title="Authenticity"
-              score={metrics.authenticity.score}
-              level={metrics.authenticity.level}
-              loading={loading}
-              onExplainClick={
-                onExplainMetric
-                  ? () => onExplainMetric("authenticity")
-                  : undefined
-              }
-            />
-          )}
-        </div>
-      </CardContent>
-    </Card>
+  if (metrics.authenticity) {
+    scores.push(metrics.authenticity.score);
+  }
+
+  const overallScore = Math.round(
+    scores.reduce((sum, score) => sum + score, 0) / scores.length,
   );
+
+  // Build metrics array for TrustScoreCardGlass
+  const metricsData: MetricData[] = [
+    {
+      title: "Activity",
+      value: metrics.activity.score,
+      variant: getMetricVariant(metrics.activity.score),
+    },
+    {
+      title: "Impact",
+      value: metrics.impact.score,
+      variant: getMetricVariant(metrics.impact.score),
+    },
+    {
+      title: "Quality",
+      value: metrics.quality.score,
+      variant: getMetricVariant(metrics.quality.score),
+    },
+    {
+      title: "Consistency",
+      value: metrics.consistency.score,
+      variant: getMetricVariant(metrics.consistency.score),
+    },
+    {
+      title: "Collaboration",
+      value: metrics.collaboration.score,
+      variant: getMetricVariant(metrics.collaboration.score),
+    },
+  ];
+
+  if (metrics.authenticity) {
+    metricsData.push({
+      title: "Authenticity",
+      value: metrics.authenticity.score,
+      variant: getMetricVariant(metrics.authenticity.score),
+    });
+  }
+
+  if (loading) {
+    return (
+      <TrustScoreCardGlass score={0} metrics={[]} className="animate-pulse" />
+    );
+  }
+
+  return <TrustScoreCardGlass score={overallScore} metrics={metricsData} />;
 }

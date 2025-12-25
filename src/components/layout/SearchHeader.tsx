@@ -1,7 +1,17 @@
-import SearchForm from "@/components/SearchForm";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { UserMenu, type UserMenuProps } from "@/components/layout/UserMenu";
-import { Github } from "lucide-react";
+/**
+ * SearchHeader - Migration to HeaderNavGlass from shadcn-glass-ui v2.8.0
+ *
+ * Uses HeaderNavGlass component which provides:
+ * - GitHub branding with glass effect
+ * - Integrated SearchBoxGlass
+ * - Theme toggle button
+ * - "Sign in with GitHub" button (hidden on mobile)
+ *
+ * Note: UserMenu functionality is replaced by built-in "Sign in with GitHub" button
+ */
+
+import type { UserMenuProps } from "@/components/layout/UserMenu";
+import { HeaderNavGlass } from "shadcn-glass-ui/components";
 
 export interface SearchHeaderProps {
   /**
@@ -16,19 +26,16 @@ export interface SearchHeaderProps {
 
   /**
    * Props for the UserMenu component
+   * @deprecated HeaderNavGlass uses built-in GitHub sign-in button
    */
   userMenuProps: UserMenuProps;
 }
 
 /**
- * Search Header Component
+ * Search Header Component - Glass UI Version
  *
- * Compact single-row header with brand, search, theme toggle, and user menu.
- * Uses proper flex layout without absolute positioning.
- *
- * Layout: [Github Icon] User Analytics  [Search..............] [Theme] [User]
- *
- * Tab order: Brand -> Search -> ThemeToggle -> UserMenu
+ * Migrated to use HeaderNavGlass from shadcn-glass-ui.
+ * Provides glassmorphism styling with integrated search, theme toggle, and GitHub branding.
  *
  * @example
  * ```tsx
@@ -43,32 +50,6 @@ export interface SearchHeaderProps {
  * />
  * ```
  */
-export function SearchHeader({
-  userName,
-  onSearch,
-  userMenuProps,
-}: SearchHeaderProps) {
-  return (
-    <header className="flex items-center justify-between gap-4">
-      {/* Left Section - Brand + Search */}
-      <div className="flex min-w-0 flex-1 items-center gap-4">
-        {/* Brand */}
-        <div className="flex shrink-0 items-center gap-2">
-          <Github className="h-6 w-6" aria-hidden="true" />
-          <h1 className="hidden text-lg font-semibold sm:block">User Analytics</h1>
-        </div>
-
-        {/* Search Form */}
-        <div className="min-w-0 max-w-md flex-1">
-          <SearchForm userName={userName} setUserName={onSearch} />
-        </div>
-      </div>
-
-      {/* Right Section - Theme Toggle + User Menu */}
-      <div className="flex shrink-0 items-center gap-2">
-        <ThemeToggle />
-        <UserMenu {...userMenuProps} />
-      </div>
-    </header>
-  );
+export function SearchHeader({ userName, onSearch }: SearchHeaderProps) {
+  return <HeaderNavGlass username={userName} onSearch={onSearch} />;
 }

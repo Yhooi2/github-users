@@ -1,5 +1,15 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+/**
+ * QuickAssessment tests - Updated for TrustScoreCardGlass migration
+ *
+ * TrustScoreCardGlass differences from old implementation:
+ * - Shows overall trust score at the top
+ * - Metrics don't show level labels (only numeric values)
+ * - onExplainMetric is deprecated (not supported by TrustScoreCardGlass)
+ * - Grid uses sm:grid-cols-3 md:grid-cols-4 layout
+ */
+
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { QuickAssessment } from "./QuickAssessment";
 
 describe("QuickAssessment", () => {
@@ -11,19 +21,19 @@ describe("QuickAssessment", () => {
     collaboration: { score: 65, level: "Moderate" as const },
   };
 
-  it("renders all metric cards without section title", () => {
+  it("renders overall trust score header", () => {
     render(<QuickAssessment metrics={mockMetrics} />);
 
-    // No section title - header was removed for cleaner UX
-    expect(screen.queryByText("Quick Assessment")).not.toBeInTheDocument();
-    expect(screen.queryByText("🎯")).not.toBeInTheDocument();
+    // TrustScoreCardGlass shows "Overall Trust Score" title
+    expect(screen.getByText("Overall Trust Score")).toBeInTheDocument();
 
-    // But all metrics are rendered
-    expect(screen.getByText("Activity")).toBeInTheDocument();
-    expect(screen.getByText("Impact")).toBeInTheDocument();
+    // Shows calculated average score (85+72+90+78+65)/5 = 78
+    // Note: 78 appears twice - once in overall score, once in consistency metric
+    const scoreElements = screen.getAllByText("78");
+    expect(scoreElements.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders all five metric cards", () => {
+  it("renders all metric cards", () => {
     render(<QuickAssessment metrics={mockMetrics} />);
 
     expect(screen.getByText("Activity")).toBeInTheDocument();
@@ -36,82 +46,33 @@ describe("QuickAssessment", () => {
   it("renders metric scores correctly", () => {
     render(<QuickAssessment metrics={mockMetrics} />);
 
-    // Scores are displayed as number + % separately
+    // TrustScoreCardGlass shows scores as plain numbers
     expect(screen.getByText("85")).toBeInTheDocument();
     expect(screen.getByText("72")).toBeInTheDocument();
     expect(screen.getByText("90")).toBeInTheDocument();
-    expect(screen.getByText("78")).toBeInTheDocument();
+    // Note: 78 appears twice - once in overall score, once in consistency metric
+    expect(screen.getAllByText("78")).toHaveLength(2);
     expect(screen.getByText("65")).toBeInTheDocument();
   });
 
-  it("renders metric levels correctly", () => {
-    render(<QuickAssessment metrics={mockMetrics} />);
-
-    // "High" appears twice (activity and consistency)
-    expect(screen.getAllByText("High")).toHaveLength(2);
-    expect(screen.getByText("Strong")).toBeInTheDocument();
-    expect(screen.getByText("Excellent")).toBeInTheDocument();
-    expect(screen.getByText("Moderate")).toBeInTheDocument();
-  });
-
-  it("applies responsive grid layout", () => {
+  it("applies responsive grid layout from TrustScoreCardGlass", () => {
     const { container } = render(<QuickAssessment metrics={mockMetrics} />);
 
-    // Find the grid with gap-3 class (the metrics grid, not the CardHeader grid)
+    // TrustScoreCardGlass uses: grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4
     const grid = container.querySelector(".grid.gap-3");
-    // New grid classes: grid-cols-2 md:grid-cols-3 lg:grid-cols-5 (for 5 metrics)
     expect(grid).toHaveClass("grid-cols-2");
-    expect(grid).toHaveClass("md:grid-cols-3");
-    expect(grid).toHaveClass("lg:grid-cols-5");
+    expect(grid).toHaveClass("sm:grid-cols-3");
+    expect(grid).toHaveClass("md:grid-cols-4");
   });
 
-  it("passes loading state to all metric cards", () => {
+  it("passes loading state to TrustScoreCardGlass", () => {
     const { container } = render(
       <QuickAssessment metrics={mockMetrics} loading />,
     );
 
-    const loadingCards = container.querySelectorAll(".animate-pulse");
-    expect(loadingCards).toHaveLength(5);
-  });
-
-  it("calls onExplainMetric with correct metric name when card clicked", () => {
-    const handleExplain = vi.fn();
-    render(
-      <QuickAssessment metrics={mockMetrics} onExplainMetric={handleExplain} />,
-    );
-
-    // MetricCardGlass v2.6.2+ uses contextual aria-label "Explain {title} metric"
-    const cardButtons = screen.getAllByRole("button", {
-      name: /Explain .* metric/i,
-    });
-    expect(cardButtons).toHaveLength(5);
-
-    fireEvent.click(cardButtons[0]); // Activity
-    expect(handleExplain).toHaveBeenCalledWith("activity");
-
-    fireEvent.click(cardButtons[1]); // Impact
-    expect(handleExplain).toHaveBeenCalledWith("impact");
-
-    fireEvent.click(cardButtons[2]); // Quality
-    expect(handleExplain).toHaveBeenCalledWith("quality");
-
-    fireEvent.click(cardButtons[3]); // Consistency
-    expect(handleExplain).toHaveBeenCalledWith("consistency");
-
-    fireEvent.click(cardButtons[4]); // Collaboration
-    expect(handleExplain).toHaveBeenCalledWith("collaboration");
-
-    expect(handleExplain).toHaveBeenCalledTimes(5);
-  });
-
-  it("does not render button roles when onExplainMetric not provided", () => {
-    render(<QuickAssessment metrics={mockMetrics} />);
-
-    // MetricCardGlass only shows explain button when onExplain is provided
-    const cardButtons = screen.queryAllByRole("button", {
-      name: /Explain .* metric/i,
-    });
-    expect(cardButtons).toHaveLength(0);
+    // Loading state shows animate-pulse on the container
+    const loadingCard = container.querySelector(".animate-pulse");
+    expect(loadingCard).toBeInTheDocument();
   });
 
   it("renders with different metric values", () => {
@@ -125,16 +86,15 @@ describe("QuickAssessment", () => {
 
     render(<QuickAssessment metrics={differentMetrics} />);
 
+    // Check scores
     expect(screen.getByText("20")).toBeInTheDocument();
     expect(screen.getByText("15")).toBeInTheDocument();
     expect(screen.getByText("30")).toBeInTheDocument();
     expect(screen.getByText("25")).toBeInTheDocument();
     expect(screen.getByText("18")).toBeInTheDocument();
 
-    // Check levels - "Low" appears 3 times
-    expect(screen.getAllByText("Low")).toHaveLength(3);
-    expect(screen.getByText("Minimal")).toBeInTheDocument();
-    expect(screen.getByText("Weak")).toBeInTheDocument();
+    // Overall score: (20+15+30+25+18)/5 = 21.6 => 22
+    expect(screen.getByText("22")).toBeInTheDocument();
   });
 
   it("renders Authenticity metric when provided", () => {
@@ -147,8 +107,9 @@ describe("QuickAssessment", () => {
 
     expect(screen.getByText("Authenticity")).toBeInTheDocument();
     expect(screen.getByText("92")).toBeInTheDocument();
-    // "High" appears 3 times: activity, consistency, and authenticity
-    expect(screen.getAllByText("High")).toHaveLength(3);
+
+    // Overall score with 6 metrics: (85+72+90+78+65+92)/6 = 80.33 => 80
+    expect(screen.getByText("80")).toBeInTheDocument();
   });
 
   it("does not render Authenticity when not provided", () => {
@@ -157,40 +118,15 @@ describe("QuickAssessment", () => {
     expect(screen.queryByText("Authenticity")).not.toBeInTheDocument();
   });
 
-  it("renders six metric cards when Authenticity is provided", () => {
+  it("calculates correct overall score with 6 metrics", () => {
     const metricsWithAuthenticity = {
       ...mockMetrics,
-      authenticity: { score: 65, level: "Medium" as const },
+      authenticity: { score: 60, level: "Medium" as const },
     };
 
-    render(
-      <QuickAssessment
-        metrics={metricsWithAuthenticity}
-        onExplainMetric={vi.fn()}
-      />,
-    );
+    render(<QuickAssessment metrics={metricsWithAuthenticity} />);
 
-    const cardButtons = screen.getAllByRole("button", {
-      name: /Explain .* metric/i,
-    });
-    expect(cardButtons).toHaveLength(6);
-  });
-
-  it("applies correct grid layout for 6 metrics", () => {
-    const metricsWithAuthenticity = {
-      ...mockMetrics,
-      authenticity: { score: 65, level: "Medium" as const },
-    };
-
-    const { container } = render(
-      <QuickAssessment metrics={metricsWithAuthenticity} />,
-    );
-
-    // Find the grid with gap-3 class (the metrics grid, not the CardHeader grid)
-    const grid = container.querySelector(".grid.gap-3");
-    // 6 metrics: grid-cols-2 md:grid-cols-3 lg:grid-cols-6
-    expect(grid).toHaveClass("grid-cols-2");
-    expect(grid).toHaveClass("md:grid-cols-3");
-    expect(grid).toHaveClass("lg:grid-cols-6");
+    // Overall score: (85+72+90+78+65+60)/6 = 75
+    expect(screen.getByText("75")).toBeInTheDocument();
   });
 });

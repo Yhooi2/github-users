@@ -120,9 +120,14 @@ function App() {
         ...baseMetrics,
         authenticity: {
           score: allRepositories.length > 0 ? authenticityData.score : 0,
-          level: allRepositories.length > 0
-            ? (authenticityData.category as "High" | "Medium" | "Low" | "Suspicious")
-            : ("Low" as const),
+          level:
+            allRepositories.length > 0
+              ? (authenticityData.category as
+                  | "High"
+                  | "Medium"
+                  | "Low"
+                  | "Suspicious")
+              : ("Low" as const),
         },
       }
     : null;
@@ -140,92 +145,96 @@ function App() {
   // Determine authentication status
   const isAuthenticated = !rateLimit.isDemo && !!rateLimit.userLogin;
 
+  // Handler for AI generation button
+  const handleAIGenerate = useCallback(() => {
+    // TODO: Implement AI analysis generation
+    // Placeholder for future AI integration
+  }, [userName]);
+
   return (
     <TooltipProvider delayDuration={300}>
       <div className="min-h-screen bg-background">
         <div className="container mx-auto space-y-8 p-4 pb-16">
-        {/* Compact Header - Brand, Search, Theme, User */}
-        <SearchHeader
-          userName={userName}
-          onSearch={setUserName}
-          userMenuProps={{
-            isAuthenticated,
-            user: isAuthenticated
-              ? {
-                  login: rateLimit.userLogin!,
-                  avatarUrl: `https://github.com/${rateLimit.userLogin}.png`,
-                }
-              : undefined,
-            onSignIn: () => setShowAuthModal(true),
-            onSignOut: handleLogout,
-          }}
-        />
+          {/* Compact Header - Brand, Search, Theme, User */}
+          <SearchHeader
+            userName={userName}
+            onSearch={setUserName}
+            userMenuProps={{
+              isAuthenticated,
+              user: isAuthenticated
+                ? {
+                    login: rateLimit.userLogin!,
+                    avatarUrl: `https://github.com/${rateLimit.userLogin}.png`,
+                  }
+                : undefined,
+              onSignIn: () => setShowAuthModal(true),
+              onSignOut: handleLogout,
+            }}
+          />
 
-        {/* Rate Limit Banner */}
-        <RateLimitBanner
-          remaining={rateLimit.remaining}
-          limit={rateLimit.limit}
-          reset={rateLimit.reset}
-          isDemo={rateLimit.isDemo}
-          onAuthClick={() => setShowAuthModal(true)}
-          onLogoutClick={handleLogout}
-        />
+          {/* Rate Limit Banner */}
+          <RateLimitBanner
+            remaining={rateLimit.remaining}
+            limit={rateLimit.limit}
+            reset={rateLimit.reset}
+            isDemo={rateLimit.isDemo}
+            onAuthClick={() => setShowAuthModal(true)}
+            onLogoutClick={handleLogout}
+          />
 
-        {/* Error Display */}
-        {error && (
-          <div
-            className="rounded-lg border border-destructive p-4 text-destructive"
-            role="alert"
-            aria-live="assertive"
-          >
-            Error: {error.message}
-          </div>
-        )}
+          {/* Error Display */}
+          {error && (
+            <div
+              className="rounded-lg border border-destructive p-4 text-destructive"
+              role="alert"
+              aria-live="assertive"
+            >
+              Error: {error.message}
+            </div>
+          )}
 
-        {/* Main Content - Single Page Layout */}
-        {userName && profile && !error && (
-          <ErrorBoundary>
-            {/* User Profile Section */}
+          {/* Main Content - Single Page Layout */}
+          {userName && profile && !error && (
+            <ErrorBoundary>
+              {/* User Profile Section */}
+              <UserProfile
+                userName={userName}
+                onRateLimitUpdate={handleRateLimitUpdate}
+                languages={languages}
+                onAIGenerate={handleAIGenerate}
+              />
+
+              {/* Metric Assessment Grid - 6 Metrics */}
+              {metrics && (
+                <MetricAssessmentGrid metrics={metrics} loading={loading} />
+              )}
+
+              {/* Activity Timeline - Year by Year (V2 with 3-level disclosure) */}
+              <ActivityTimelineV2
+                timeline={timeline}
+                loading={loading}
+                username={userName}
+              />
+            </ErrorBoundary>
+          )}
+
+          {/* Loading State - Show UserProfile for loading indication */}
+          {userName && loading && !profile && (
             <UserProfile
               userName={userName}
               onRateLimitUpdate={handleRateLimitUpdate}
               languages={languages}
             />
+          )}
 
-            {/* Metric Assessment Grid - 6 Metrics */}
-            {metrics && (
-              <MetricAssessmentGrid
-                metrics={metrics}
-                loading={loading}
-              />
-            )}
-
-            {/* Activity Timeline - Year by Year (V2 with 3-level disclosure) */}
-            <ActivityTimelineV2
-              timeline={timeline}
-              loading={loading}
-              username={userName}
-            />
-          </ErrorBoundary>
-        )}
-
-        {/* Loading State - Show UserProfile for loading indication */}
-        {userName && loading && !profile && (
-          <UserProfile
-            userName={userName}
-            onRateLimitUpdate={handleRateLimitUpdate}
-            languages={languages}
+          {/* Auth Required Modal */}
+          <AuthRequiredModal
+            open={showAuthModal}
+            onOpenChange={setShowAuthModal}
+            onGitHubAuth={handleGitHubAuth}
+            remaining={rateLimit.remaining}
+            limit={rateLimit.limit}
           />
-        )}
-
-        {/* Auth Required Modal */}
-        <AuthRequiredModal
-          open={showAuthModal}
-          onOpenChange={setShowAuthModal}
-          onGitHubAuth={handleGitHubAuth}
-          remaining={rateLimit.remaining}
-          limit={rateLimit.limit}
-        />
         </div>
       </div>
     </TooltipProvider>

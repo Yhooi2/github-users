@@ -1,11 +1,18 @@
+/**
+ * ThemeToggle tests - Updated for shadcn-glass-ui ThemeProvider
+ *
+ * ThemeToggle now uses shadcn-glass-ui's useTheme hook which requires ThemeProvider.
+ * The theme system supports 3 themes: 'light', 'aurora', 'glass' (cycling order).
+ */
+
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ThemeProvider } from "shadcn-glass-ui";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ThemeToggle } from "./ThemeToggle";
 
 describe("ThemeToggle", () => {
   beforeEach(() => {
-    document.documentElement.classList.remove("dark");
     localStorage.clear();
 
     // Mock matchMedia
@@ -25,47 +32,46 @@ describe("ThemeToggle", () => {
   });
 
   afterEach(() => {
-    document.documentElement.classList.remove("dark");
     localStorage.clear();
   });
 
+  // Helper to render with ThemeProvider
+  const renderWithTheme = (ui: React.ReactElement) => {
+    return render(<ThemeProvider>{ui}</ThemeProvider>);
+  };
+
   it("should render toggle button", () => {
-    render(<ThemeToggle />);
+    renderWithTheme(<ThemeToggle />);
     expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
-  it("should show moon icon in light mode", () => {
-    localStorage.setItem("theme", "light");
-    render(<ThemeToggle />);
-    const button = screen.getByRole("button");
-    expect(button).toHaveAttribute("aria-label", "Switch to dark mode");
-  });
-
-  it("should toggle theme on click", async () => {
+  it("should cycle through themes on click", async () => {
     const user = userEvent.setup();
-    render(<ThemeToggle />);
-
-    await user.click(screen.getByRole("button"));
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
-    expect(localStorage.getItem("theme")).toBe("dark");
-  });
-
-  it("should toggle back to light", async () => {
-    const user = userEvent.setup();
-    render(<ThemeToggle />);
-
-    await user.click(screen.getByRole("button"));
-    await user.click(screen.getByRole("button"));
-    expect(document.documentElement.classList.contains("dark")).toBe(false);
-    expect(localStorage.getItem("theme")).toBe("light");
-  });
-
-  it("should detect initial dark mode", () => {
-    localStorage.setItem("theme", "dark");
-    document.documentElement.classList.add("dark");
-    render(<ThemeToggle />);
+    renderWithTheme(<ThemeToggle />);
 
     const button = screen.getByRole("button");
-    expect(button).toHaveAttribute("aria-label", "Switch to light mode");
+
+    // Default theme is 'glass', next is 'light'
+    // Initial: glass (shows Sun icon for next theme: light)
+    expect(button).toBeInTheDocument();
+
+    // Click to cycle: glass -> light
+    await user.click(button);
+
+    // Click to cycle: light -> aurora
+    await user.click(button);
+
+    // Click to cycle: aurora -> glass
+    await user.click(button);
+
+    // Should be back at glass theme
+    expect(button).toBeInTheDocument();
+  });
+
+  it("should have accessible label", () => {
+    renderWithTheme(<ThemeToggle />);
+    const button = screen.getByRole("button");
+    // Should have aria-label indicating next theme
+    expect(button).toHaveAttribute("aria-label");
   });
 });

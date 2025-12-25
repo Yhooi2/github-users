@@ -1,51 +1,32 @@
+/**
+ * SearchHeader tests - Updated for HeaderNavGlass migration
+ *
+ * HeaderNavGlass is a complete section component from shadcn-glass-ui that includes:
+ * - Built-in branding (GitHub icon + "User Analytics" text)
+ * - SearchBoxGlass component
+ * - Theme toggle button
+ * - "Sign in with GitHub" button
+ *
+ * Key differences from old implementation:
+ * - Requires ThemeProvider from shadcn-glass-ui
+ * - UserMenu replaced with built-in GitHub sign-in button
+ */
+
 import { render, screen } from "@testing-library/react";
+import { ThemeProvider } from "shadcn-glass-ui";
 import { describe, expect, it, vi } from "vitest";
 import { SearchHeader, type SearchHeaderProps } from "./SearchHeader";
 
-// Mock child components
-vi.mock("@/components/SearchForm", () => ({
-  default: ({
-    userName,
-    setUserName,
-  }: {
-    userName: string;
-    setUserName: (name: string) => void;
-  }) => (
-    <div data-testid="search-form">
-      <input
-        data-testid="search-input"
-        value={userName}
-        onChange={(e) => setUserName(e.target.value)}
-        placeholder="Search GitHub User..."
-      />
-    </div>
-  ),
-}));
-
-vi.mock("@/components/layout/ThemeToggle", () => ({
-  ThemeToggle: () => <button data-testid="theme-toggle">Toggle Theme</button>,
-}));
-
-vi.mock("@/components/layout/UserMenu", () => ({
-  UserMenu: ({ isAuthenticated }: { isAuthenticated: boolean }) => (
-    <div data-testid="user-menu">
-      {isAuthenticated ? "Authenticated" : "Sign In"}
-    </div>
-  ),
-}));
-
 describe("SearchHeader", () => {
   const mockOnSearch = vi.fn();
-  const mockOnSignIn = vi.fn();
-  const mockOnSignOut = vi.fn();
 
   const defaultProps: SearchHeaderProps = {
     userName: "",
     onSearch: mockOnSearch,
     userMenuProps: {
       isAuthenticated: false,
-      onSignIn: mockOnSignIn,
-      onSignOut: mockOnSignOut,
+      onSignIn: vi.fn(),
+      onSignOut: vi.fn(),
     },
   };
 
@@ -53,103 +34,66 @@ describe("SearchHeader", () => {
     vi.clearAllMocks();
   });
 
-  it("renders compact title with Github icon", () => {
-    render(<SearchHeader {...defaultProps} />);
+  // Helper to render with ThemeProvider
+  const renderWithTheme = (ui: React.ReactElement) => {
+    return render(<ThemeProvider>{ui}</ThemeProvider>);
+  };
 
-    // Title should be "User Analytics" (compact version)
+  it("renders with HeaderNavGlass branding", () => {
+    renderWithTheme(<SearchHeader {...defaultProps} />);
+
+    // HeaderNavGlass includes "User Analytics" branding
     expect(screen.getByText("User Analytics")).toBeInTheDocument();
-    // Should have heading element
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "User Analytics",
-    );
   });
 
-  it("renders search form component", () => {
-    render(<SearchHeader {...defaultProps} />);
+  it("renders HeaderNavGlass with search input", () => {
+    renderWithTheme(<SearchHeader {...defaultProps} />);
 
-    expect(screen.getByTestId("search-form")).toBeInTheDocument();
+    // HeaderNavGlass includes SearchBoxGlass with placeholder
+    const searchInput = screen.getByPlaceholderText("Search username...");
+    expect(searchInput).toBeInTheDocument();
   });
 
-  it("renders theme toggle component", () => {
-    render(<SearchHeader {...defaultProps} />);
+  it("renders with populated username", () => {
+    renderWithTheme(<SearchHeader {...defaultProps} userName="gaearon" />);
 
-    expect(screen.getByTestId("theme-toggle")).toBeInTheDocument();
+    // Search input should have the username as value
+    const searchInput = screen.getByPlaceholderText(
+      "Search username...",
+    ) as HTMLInputElement;
+    expect(searchInput.value).toBe("gaearon");
   });
 
-  it("renders user menu component", () => {
-    render(<SearchHeader {...defaultProps} />);
+  it("renders with empty username", () => {
+    renderWithTheme(<SearchHeader {...defaultProps} />);
 
-    expect(screen.getByTestId("user-menu")).toBeInTheDocument();
+    const searchInput = screen.getByPlaceholderText(
+      "Search username...",
+    ) as HTMLInputElement;
+    expect(searchInput.value).toBe("");
   });
 
-  it("passes userName prop to SearchForm", () => {
-    render(<SearchHeader {...defaultProps} userName="torvalds" />);
+  it("renders GitHub sign-in button on desktop", () => {
+    renderWithTheme(<SearchHeader {...defaultProps} />);
 
-    const input = screen.getByTestId("search-input") as HTMLInputElement;
-    expect(input.value).toBe("torvalds");
-  });
-
-  it("passes onSearch callback to SearchForm", () => {
-    render(<SearchHeader {...defaultProps} />);
-
-    const input = screen.getByTestId("search-input");
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-
-    // SearchForm should receive the onSearch callback
-    expect(screen.getByTestId("search-form")).toBeInTheDocument();
+    // HeaderNavGlass includes "Sign in with GitHub" button
+    const signInButton = screen.getByText("Sign in with GitHub");
+    expect(signInButton).toBeInTheDocument();
   });
 
   it("has proper semantic HTML structure", () => {
-    render(<SearchHeader {...defaultProps} />);
+    renderWithTheme(<SearchHeader {...defaultProps} />);
 
     const header = screen.getByRole("banner");
     expect(header).toBeInTheDocument();
     expect(header.tagName).toBe("HEADER");
   });
 
-  it("renders with empty username", () => {
-    render(<SearchHeader {...defaultProps} />);
+  it("renders GitHub icon button", () => {
+    renderWithTheme(<SearchHeader {...defaultProps} />);
 
-    const input = screen.getByTestId("search-input") as HTMLInputElement;
-    expect(input.value).toBe("");
-  });
-
-  it("renders with populated username", () => {
-    render(<SearchHeader {...defaultProps} userName="gaearon" />);
-
-    const input = screen.getByTestId("search-input") as HTMLInputElement;
-    expect(input.value).toBe("gaearon");
-  });
-
-  it("passes userMenuProps to UserMenu when authenticated", () => {
-    render(
-      <SearchHeader
-        {...defaultProps}
-        userMenuProps={{
-          isAuthenticated: true,
-          user: { login: "testuser", avatarUrl: "https://example.com/avatar" },
-          onSignIn: mockOnSignIn,
-          onSignOut: mockOnSignOut,
-        }}
-      />,
-    );
-
-    expect(screen.getByTestId("user-menu")).toHaveTextContent("Authenticated");
-  });
-
-  it("passes userMenuProps to UserMenu when not authenticated", () => {
-    render(<SearchHeader {...defaultProps} />);
-
-    expect(screen.getByTestId("user-menu")).toHaveTextContent("Sign In");
-  });
-
-  it("uses flex layout without absolute positioning", () => {
-    render(<SearchHeader {...defaultProps} />);
-
-    const header = screen.getByRole("banner");
-    // Header should use flex layout
-    expect(header).toHaveClass("flex");
-    // Should not have relative class (which would be needed for absolute children)
-    expect(header).not.toHaveClass("relative");
+    // HeaderNavGlass includes GitHub icon button
+    const githubButton = screen.getByLabelText("GitHub");
+    expect(githubButton).toBeInTheDocument();
   });
 });

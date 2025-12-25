@@ -86,18 +86,8 @@ export function YearCardWrapper({
         </YearCardGlass.Value>
       </YearCardGlass.Header>
 
-      {/* Progress bar with sparkline preview */}
-      <div className="flex items-center gap-2">
-        <YearCardGlass.Progress value={widthPercent} gradient="blue" />
-        {sparklineData.length > 0 && (
-          <YearCardGlass.Sparkline
-            data={sparklineData}
-            labels={sparklineLabels}
-            height="sm"
-            className="w-16 md:w-20"
-          />
-        )}
-      </div>
+      {/* Progress bar */}
+      <YearCardGlass.Progress value={widthPercent} gradient="blue" />
 
       {/* Expanded content - stats, full sparkline */}
       <YearCardGlass.ExpandedContent>

@@ -1,11 +1,15 @@
 /**
  * UserHeader - User profile header with Glass UI styling
  *
- * Stage 6 migration: Uses ProfileHeaderExtendedGlass from shadcn-glass-ui v2.8.0
+ * Uses ProfileHeaderGlass from shadcn-glass-ui v2.9.1
+ * Includes AICardGlass on the right side
  */
 
 import { getLanguageColor } from "@/lib/constants";
-import { ProfileHeaderExtendedGlass } from "shadcn-glass-ui/components";
+import {
+  AICardGlass,
+  ProfileHeaderExtendedGlass,
+} from "shadcn-glass-ui/components";
 import type { LanguageItem } from "./LanguagesInline";
 
 type UserStats = {
@@ -29,44 +33,52 @@ type UserHeaderProps = {
   stats?: UserStats;
   /** Optional programming languages */
   languages?: LanguageItem[];
-  /** Optional action buttons slot */
-  actions?: React.ReactNode;
+  /** Callback for AI generation button */
+  onAIGenerate?: () => void;
 };
 
 export function UserHeader({
   user,
   stats,
   languages,
-  actions,
+  onAIGenerate,
 }: UserHeaderProps) {
-  // Transform languages to include color
-  const languagesWithColor = languages?.map((lang) => ({
+  // Transform languages to include color and round percentages
+  // Limit to top 4 languages to fit in one line
+  const topLanguages = languages?.slice(0, 4);
+  const languagesWithColor = topLanguages?.map((lang) => ({
     name: lang.name,
-    percent: lang.percent,
+    percentage: Math.round(lang.percent),
     color: getLanguageColor(lang.name),
   }));
 
   return (
-    <ProfileHeaderExtendedGlass
-      user={{
-        name: user.name ?? user.login,
-        login: user.login,
-        avatar: user.avatarUrl,
-        url: user.url,
-        createdAt: user.createdAt,
-        bio: user.bio ?? undefined,
-        location: user.location ?? undefined,
-        stats: stats
-          ? {
-              repos: stats.repositories,
-              followers: stats.followers,
-              following: stats.following,
-              gists: stats.gists,
-            }
-          : undefined,
-        languages: languagesWithColor,
-      }}
-      actions={actions}
-    />
+    <div className="flex flex-col gap-3 md:flex-row md:gap-6">
+      <ProfileHeaderExtendedGlass
+        user={{
+          name: user.name,
+          login: user.login,
+          avatar: user.avatarUrl,
+          url: user.url,
+          createdAt: user.createdAt,
+          bio: user.bio,
+          location: user.location,
+          stats: stats
+            ? {
+                repos: stats.repositories,
+                followers: stats.followers,
+                following: stats.following,
+                gists: stats.gists,
+              }
+            : undefined,
+          languages: languagesWithColor,
+        }}
+        showStatus
+        status="online"
+        transparent
+        className="flex-1 p-0"
+      />
+      <AICardGlass onGenerate={onAIGenerate} />
+    </div>
   );
 }
