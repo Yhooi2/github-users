@@ -1,3 +1,9 @@
+# [1.9.0](https://github.com/Yhooi2/github-users/compare/v1.8.0...v1.9.0) (2025-12-25)
+
+### Features
+
+- **ui:** complete Glass UI integration (Stage 9) ([9f083d4](https://github.com/Yhooi2/github-users/commit/9f083d40f3d682938d81fecd3c25ae9c8ef5c80e)), closes [#33](https://github.com/Yhooi2/github-users/issues/33)
+
 # [1.8.0](https://github.com/Yhooi2/github-users/compare/v1.7.0...v1.8.0) (2025-12-25)
 
 ### Features
