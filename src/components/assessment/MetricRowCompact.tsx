@@ -4,15 +4,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useResponsive } from "@/hooks/useResponsive";
 import {
-  getScoreColor,
   getScoreBackgroundColor,
+  getScoreColor,
   getScoreLevel,
 } from "@/lib/design-tokens";
 import { type MetricKey } from "@/lib/metrics/categories";
 import { cn } from "@/lib/utils";
 import { type LucideIcon } from "lucide-react";
-import { useResponsive } from "@/hooks/useResponsive";
 import { MetricTooltipContent } from "./MetricTooltipContent";
 
 export interface MetricRowCompactProps {
@@ -78,7 +78,7 @@ export function MetricRowCompact({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-3 animate-pulse" role="status">
+      <div className="flex animate-pulse items-center gap-3" role="status">
         <div className="h-5 w-5 rounded-full bg-muted" />
         <div className="flex-1 space-y-2">
           <div className="flex items-center justify-between">
@@ -111,10 +111,10 @@ export function MetricRowCompact({
   const metricContent = (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-md -mx-1 px-1 transition-colors",
+        "-mx-1 flex items-center gap-3 rounded-md px-1 transition-colors",
         isMobile
-          ? "active:bg-muted/50 cursor-pointer"
-          : "hover:bg-muted/30 cursor-default"
+          ? "cursor-pointer active:bg-muted/50"
+          : "cursor-default hover:bg-muted/30",
       )}
       onClick={isMobile && onMetricClick ? onMetricClick : undefined}
       role={isMobile && onMetricClick ? "button" : undefined}
@@ -139,7 +139,7 @@ export function MetricRowCompact({
       <div
         className={cn(
           "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-          bgColor
+          bgColor,
         )}
         aria-hidden="true"
       >
@@ -147,13 +147,13 @@ export function MetricRowCompact({
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0 space-y-1.5">
+      <div className="min-w-0 flex-1 space-y-1.5">
         {/* Title and Score row */}
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium text-foreground truncate">
+          <span className="truncate text-sm font-medium text-foreground">
             {title}
           </span>
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex shrink-0 items-center gap-1.5">
             <span
               className={cn("text-sm font-bold tabular-nums", scoreColor)}
               aria-label={`${score} percent`}
@@ -178,11 +178,7 @@ export function MetricRowCompact({
     return (
       <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>{metricContent}</TooltipTrigger>
-        <TooltipContent
-          side="top"
-          align="center"
-          className="w-64 p-3 bg-popover text-popover-foreground border shadow-lg"
-        >
+        <TooltipContent side="top" align="center" className="w-64">
           <MetricTooltipContent
             metricKey={metricKey}
             score={score}

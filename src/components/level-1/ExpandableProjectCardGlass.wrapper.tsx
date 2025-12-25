@@ -691,7 +691,7 @@ function HealthIndicatorGlass({
           </span>
         </div>
       </TooltipTrigger>
-      <TooltipContent side="top" className="backdrop-blur-md">
+      <TooltipContent side="top">
         <p className="text-xs">{health.reason}</p>
       </TooltipContent>
     </Tooltip>
@@ -732,7 +732,7 @@ function AIAnalyticsButtonGlass(
           </Badge>
         </Button>
       </TooltipTrigger>
-      <TooltipContent side="top" className="backdrop-blur-md">
+      <TooltipContent side="top">
         <p className="text-xs">AI-анализ архитектуры проекта (скоро)</p>
       </TooltipContent>
     </Tooltip>

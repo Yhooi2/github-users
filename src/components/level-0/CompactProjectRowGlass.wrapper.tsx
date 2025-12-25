@@ -200,16 +200,7 @@ export function CompactProjectRowGlass({
   return (
     <HoverCard openDelay={300} closeDelay={100}>
       <HoverCardTrigger asChild>{rowContent}</HoverCardTrigger>
-      <HoverCardContent
-        side="right"
-        className={cn(
-          "w-80",
-          // Glass morphism for hover card
-          "bg-popover/95 backdrop-blur-md",
-          "border-primary/10",
-          "shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
-        )}
-      >
+      <HoverCardContent side="right" className="w-80">
         <div className="space-y-3">
           {/* Header with contribution badge */}
           <div className="flex items-start justify-between gap-2">

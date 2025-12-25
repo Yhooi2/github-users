@@ -9,6 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useResponsive } from "@/hooks/useResponsive";
 import { getScoreColor } from "@/lib/design-tokens";
 import {
   CATEGORY_CONFIGS,
@@ -17,10 +18,9 @@ import {
   type MetricKey,
 } from "@/lib/metrics/categories";
 import { cn } from "@/lib/utils";
-import { useResponsive } from "@/hooks/useResponsive";
 import { ChevronDown } from "lucide-react";
-import { MetricRowCompact } from "./MetricRowCompact";
 import { CategoryTooltipContent } from "./CategoryTooltipContent";
+import { MetricRowCompact } from "./MetricRowCompact";
 
 export interface MetricCategoryCardProps {
   /** Category identifier */
@@ -134,15 +134,15 @@ export function MetricCategoryCard({
               className={cn(
                 "flex w-full items-center justify-between p-4",
                 "text-left transition-colors",
-                "hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                "hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               )}
               aria-expanded={isExpanded}
             >
               {/* Left: Icon + Title - tappable for info */}
               <div
                 className={cn(
-                  "flex items-center gap-3 rounded-lg p-1 -m-1",
-                  onCategoryClick && "active:bg-muted/50"
+                  "-m-1 flex items-center gap-3 rounded-lg p-1",
+                  onCategoryClick && "active:bg-muted/50",
                 )}
                 onClick={
                   onCategoryClick
@@ -154,7 +154,11 @@ export function MetricCategoryCard({
                 }
                 role={onCategoryClick ? "button" : undefined}
                 tabIndex={onCategoryClick ? 0 : undefined}
-                aria-label={onCategoryClick ? `${config.title}: ${categoryScore}%. Tap for details.` : undefined}
+                aria-label={
+                  onCategoryClick
+                    ? `${config.title}: ${categoryScore}%. Tap for details.`
+                    : undefined
+                }
                 onKeyDown={
                   onCategoryClick
                     ? (e) => {
@@ -170,13 +174,13 @@ export function MetricCategoryCard({
                 <div
                   className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-full",
-                    "bg-primary/10 text-primary"
+                    "bg-primary/10 text-primary",
                   )}
                 >
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold uppercase tracking-wide text-foreground">
+                  <div className="text-sm font-semibold tracking-wide text-foreground uppercase">
                     {config.title}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -188,17 +192,14 @@ export function MetricCategoryCard({
               {/* Right: Score + Chevron */}
               <div className="flex items-center gap-2">
                 <span
-                  className={cn(
-                    "text-xl font-bold tabular-nums",
-                    scoreColor
-                  )}
+                  className={cn("text-xl font-bold tabular-nums", scoreColor)}
                 >
                   {categoryScore}%
                 </span>
                 <ChevronDown
                   className={cn(
                     "h-5 w-5 text-muted-foreground transition-transform duration-200",
-                    isExpanded && "rotate-180"
+                    isExpanded && "rotate-180",
                   )}
                   aria-hidden="true"
                 />
@@ -207,7 +208,7 @@ export function MetricCategoryCard({
           </CollapsibleTrigger>
 
           <CollapsibleContent>
-            <CardContent className="border-t px-4 pb-4 pt-4">
+            <CardContent className="border-t px-4 pt-4 pb-4">
               {cardContent}
             </CardContent>
           </CollapsibleContent>
@@ -219,23 +220,23 @@ export function MetricCategoryCard({
   // Desktop: Always expanded, fixed height with tooltip on header
   return (
     <Card className="h-[220px] overflow-hidden">
-      <CardContent className="flex h-full flex-col p-4 gap-3">
+      <CardContent className="flex h-full flex-col gap-3 p-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           {/* Left: Icon + Title with Tooltip */}
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-3 cursor-default rounded-md hover:bg-muted/30 transition-colors">
+              <div className="flex cursor-default items-center gap-3 rounded-md transition-colors hover:bg-muted/30">
                 <div
                   className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-full",
-                    "bg-primary/10 text-primary"
+                    "bg-primary/10 text-primary",
                   )}
                 >
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold uppercase tracking-wide text-foreground">
+                  <div className="text-sm font-semibold tracking-wide text-foreground uppercase">
                     {config.title}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -244,11 +245,7 @@ export function MetricCategoryCard({
                 </div>
               </div>
             </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              align="start"
-              className="w-72 p-3 bg-popover text-popover-foreground border shadow-lg"
-            >
+            <TooltipContent side="bottom" align="start" className="w-72">
               <CategoryTooltipContent
                 category={category}
                 score={categoryScore}
@@ -269,7 +266,9 @@ export function MetricCategoryCard({
         <div className="border-t border-border" />
 
         {/* Metrics */}
-        <div className="flex-1 flex flex-col justify-center py-2">{cardContent}</div>
+        <div className="flex flex-1 flex-col justify-center py-2">
+          {cardContent}
+        </div>
       </CardContent>
     </Card>
   );
