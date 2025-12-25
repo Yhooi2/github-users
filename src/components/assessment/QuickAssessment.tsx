@@ -10,8 +10,21 @@
  * For interactive metrics, consider using MetricCardGlass directly in a custom grid.
  */
 
-import type { MetricData } from "shadcn-glass-ui";
 import { TrustScoreCardGlass } from "shadcn-glass-ui/components";
+
+// MetricData type with inline variant (internal to shadcn-glass-ui)
+type MetricVariant =
+  | "default"
+  | "secondary"
+  | "success"
+  | "warning"
+  | "destructive";
+
+interface MetricData {
+  readonly title: string;
+  readonly value: string | number;
+  readonly variant: MetricVariant;
+}
 
 export interface QuickAssessmentProps {
   metrics: {
