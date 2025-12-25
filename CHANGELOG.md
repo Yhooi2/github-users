@@ -1,3 +1,9 @@
+# [1.10.0](https://github.com/Yhooi2/github-users/compare/v1.9.0...v1.10.0) (2025-12-25)
+
+### Features
+
+- **ui:** migrate Tooltip/HoverCard to Glass versions (Stage 10) ([6f31416](https://github.com/Yhooi2/github-users/commit/6f31416f088852909cab418fafd465b682255644))
+
 # [1.9.0](https://github.com/Yhooi2/github-users/compare/v1.8.0...v1.9.0) (2025-12-25)
 
 ### Features
