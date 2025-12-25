@@ -80,7 +80,7 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@storybook/addon-a11y": "^10.1.0",
-    "@storybook/addon-docs": "^10.1.0",
+    "@storybook/addon-docs": "^10.1.10",
     "@storybook/addon-mcp": "^0.1.4",
     "@storybook/addon-onboarding": "^10.1.0",
     "@storybook/addon-themes": "^10.1.5",
